@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OUTLAST v2.3.7</title>
+<title>OUTLAST v2.3.5</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -144,27 +144,10 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
   #menu .menu-chip{font-size:10px!important;}
   #menu .menu-side{padding:8px 10px!important;}
 }
-
-#mobileControls{display:none;position:fixed;inset:0;z-index:35;pointer-events:none;touch-action:none}
-#mobileStick{position:absolute;left:22px;bottom:28px;width:118px;height:118px;border-radius:50%;border:2px solid rgba(130,200,255,.38);background:rgba(9,15,22,.45);pointer-events:auto;touch-action:none}
-#mobileStickKnob{position:absolute;left:31px;top:31px;width:56px;height:56px;border-radius:50%;background:rgba(105,192,255,.45);border:2px solid rgba(220,245,255,.7);box-sizing:border-box}
-#mobileActions{position:absolute;right:18px;bottom:24px;display:flex;gap:9px;pointer-events:auto}
-#mobileActions button{min-width:64px;min-height:56px;padding:8px 10px;font-size:12px;background:rgba(20,34,48,.78);border:1px solid #4c7898;box-shadow:0 4px 14px rgba(0,0,0,.3);touch-action:none}
-@media(max-width:760px){html,body{overflow:hidden!important}#game{width:100vw!important;height:100dvh!important;max-width:none!important;object-fit:contain!important;touch-action:none!important;background:#0a1016}#mobileControls{display:block}#gameAdminToggle{top:8px!important;right:8px!important}.panel .card{max-height:88dvh!important}.update-pop-card{max-height:88dvh!important}}
-
-#mobileAvatarPreview{display:none;position:fixed;left:10px;top:10px;z-index:34;width:62px;height:74px;border:1px solid rgba(140,200,255,.35);border-radius:12px;background:rgba(8,14,20,.68);backdrop-filter:blur(4px);pointer-events:none}
-#mobileAvatarPreview canvas{width:100%;height:100%}
-@media(max-width:760px){#mobileAvatarPreview{display:block}}
 </style>
 </head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
-<div id="mobileAvatarPreview"><canvas id="mobileAvatarCanvas" width="62" height="74"></canvas></div>
-<div id="mobileControls" aria-hidden="true">
-  <div id="mobileStick"><div id="mobileStickKnob"></div></div>
-  <div id="mobileActions"><button data-mobile-action="dash">DASH</button><button data-mobile-action="skill">SKILL</button><button data-mobile-action="ult">ULT</button></div>
-</div>
-
 <div id="toast"></div>
 <div id="loginPopup" class="update-pop" role="dialog" aria-modal="true" aria-labelledby="loginPopupTitle" style="display:flex">
   <div class="update-pop-card" style="width:min(520px,92vw)">
@@ -231,7 +214,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.3.7 • Mobile & Gameplay Polish</div>
+          <div class="menu-chip">v2.3.7 • Account & Session Improvements</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -318,14 +301,20 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
 
 <script>
 'use strict';
-const ADMIN_TESTER_PASSWORD='TESTER';
-const ADMIN_FULL_PASSWORD='1296813';
+const ADMIN_PASSWORD='tester';
 const ADMIN_TEST_USERNAME='TESTER';
 const ADMIN_RETURN_USERNAME_KEY='outlastAdminReturnUsername';
-let adminRole=localStorage.getItem('outlastAdminRole')|| (localStorage.getItem('outlastAdminUnlocked')==='1' ? 'tester' : '');
-let adminUnlocked=adminRole==='tester'||adminRole==='full';
+// Special-session access lasts only until a reload. Reloading restores the player's normal identity.
+let adminUnlocked=false;
+try{
+  if(localStorage.getItem('outlastAdminUnlocked')==='1'){
+    const restore=localStorage.getItem(ADMIN_RETURN_USERNAME_KEY);
+    if(restore) localStorage.setItem('outlastUsername',restore);
+    localStorage.removeItem('outlastAdminUnlocked');
+    localStorage.removeItem(ADMIN_RETURN_USERNAME_KEY);
+  }
+}catch(_){}
 function isAdmin(){return adminUnlocked}
-function isFullAdmin(){return adminUnlocked&&adminRole==='full'}
 
 function setMenuPage(page){
   document.querySelectorAll('.menu-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.page===page));
@@ -363,18 +352,6 @@ addEventListener('keyup',e=>{keys[keyName(e)]=false;keyCodes[e.code||'']=false;}
 addEventListener('blur',()=>{for(const k of Object.keys(keys))keys[k]=false;for(const k of Object.keys(keyCodes))keyCodes[k]=false;});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k of Object.keys(keys))keys[k]=false;for(const k of Object.keys(keyCodes))keyCodes[k]=false;}});
 c.addEventListener('click',()=>c.focus());
-(function setupMobileControls(){
- const controls=document.getElementById('mobileControls'),stick=document.getElementById('mobileStick'),knob=document.getElementById('mobileStickKnob');
- if(!controls||!stick||!knob)return;
- const setDir=(dx,dy)=>{for(const k of ['w','a','s','d'])keys[k]=false;const mag=Math.hypot(dx,dy);if(mag<12)return;const x=dx/mag,y=dy/mag;if(Math.abs(x)>.28){keys[x>0?'d':'a']=true;}if(Math.abs(y)>.28){keys[y>0?'s':'w']=true;}};
- const reset=()=>{for(const k of ['w','a','s','d'])keys[k]=false;knob.style.transform='translate(0px,0px)';};
- let active=null;
- stick.addEventListener('pointerdown',e=>{if(!game.running)return;active=e.pointerId;stick.setPointerCapture(e.pointerId);move(e);});
- const move=e=>{if(active!==null&&e.pointerId!==active)return;const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const max=r.width*.33;const len=Math.hypot(dx,dy)||1;if(len>max){dx=dx/len*max;dy=dy/len*max;}knob.style.transform=`translate(${dx}px,${dy}px)`;setDir(dx,dy)};
- stick.addEventListener('pointermove',move);stick.addEventListener('pointerup',e=>{if(e.pointerId===active){active=null;reset();}});stick.addEventListener('pointercancel',e=>{if(e.pointerId===active){active=null;reset();}});
- document.querySelectorAll('[data-mobile-action]').forEach(btn=>{const act=btn.dataset.mobileAction;const on=ev=>{ev.preventDefault();if(!game.running)return;btn.setPointerCapture?.(ev.pointerId);if(act==='dash')dash();else if(act==='skill')useActiveSkill();else if(act==='ult')useUltimate();};btn.addEventListener('pointerdown',on,{passive:false});});
-})();
-
 
 const mapDefs={
   Forest:{bg:'#172019',grid:'#243428',accent:'#65c27a'},
@@ -419,8 +396,6 @@ function tryMoveEntity(ent,nx,ny){
   if(!blocked(nx,ent.y,r))ent.x=nx;
   if(!blocked(ent.x,ny,r))ent.y=ny;
 }
-
-function bulletHitsObstacle(x,y,r=3){return obstacleRects().some(o=>circleRectHit(x,y,r,o))}
 function drawMapObjects(scale=1,ox=0,oy=0){
   ctx.save();
   for(const o of obstacleRects()){
@@ -605,7 +580,7 @@ const weapons={
   PulseCannon:{cost:42000,desc:'Bursting plasma cannon'},
   OmegaBlade:{cost:55000,desc:'Ultimate melee orbit weapon'}
 };
-const extraPermanent=[['Executioner','+3% damage vs elites',900],['Treasure Sense','+10% chest chance',650],['Overdrive','+8% ultimate damage',750],['Pet Training','+10% pet bonuses',800],['Relic Mastery','+8% relic bonuses',850],['Charm Mastery','+8% charm bonuses',850],['Forge Mastery','-10% forge costs',700],['Lucky Case','Better skin-case odds',900],['Scavenger','More pickups',700],['Surgeon','More lifesteal',950],['Fleet Foot','+5% movement speed',1000],['Vital Flow','+4% regeneration',1050],['Shield Core','+4% shield efficiency',1100],['Ammo Recycler','+6% fire rate',1150],['Impact Training','+5% projectile damage',1200],['Wavebreaker','+4% wave reward',1250]];
+const extraPermanent=[['Executioner','+3% damage vs elites',900],['Treasure Sense','+10% chest chance',650],['Overdrive','+8% ultimate damage',750],['Pet Training','+10% pet bonuses',800],['Relic Mastery','+8% relic bonuses',850],['Charm Mastery','+8% charm bonuses',850],['Forge Mastery','-10% forge costs',700],['Lucky Case','Better skin-case odds',900],['Scavenger','More pickups',700],['Surgeon','More lifesteal',950]];
 const permanent=[
   ['Iron Heart','Start +15 max HP',100],['Quick Step','Start +8% speed',150],['Sharpshooter','Start +3 damage',200],['Long Arm','Start +80 range',180],
   ['Collector','Start +30 magnet',120],['Scholar','Start +10% XP',220],['Rapid Hands','Start +8% attack speed',220],['Lucky Strike','Start +5% crit',260],
@@ -851,6 +826,7 @@ function sanitizeUsername(name){
   return String(name||'').trim().replace(/\s+/g,' ').slice(0,18);
 }
 function finishUsernameLogin(){
+  if(isAdmin()) return false;
   const input=document.getElementById('usernameInput');
   const err=document.getElementById('usernameError');
   const name=sanitizeUsername(input?.value);
@@ -866,7 +842,7 @@ function finishUsernameLogin(){
 
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',1500)}
-function updateMenuSummary(){const adminLabel=(isAdmin()&&currentUsername===ADMIN_TEST_USERNAME)?' • TESTING ACCOUNT':'';document.getElementById('menuSummary').textContent=`Player: ${currentUsername}${adminLabel}  •  Coins: ● ${save.coins}  •  Keys: 🔑 ${save.worldKeys||0}  •  High Score: ${save.stats.highScore}  •  Best Level: ${save.stats.bestLevel}  •  Skin: ${save.selectedSkin}`}
+function updateMenuSummary(){const adminLabel=(isAdmin()&&currentUsername===ADMIN_TEST_USERNAME)?' • TESTING ACCOUNT':'';document.getElementById('menuSummary').textContent=`Player: ${currentUsername}${adminLabel}  •  Coins: ● ${save.coins}  •  Keys: 🔑 ${save.worldKeys||0}  •  High Score: ${save.stats.highScore}  •  Best Level: ${save.stats.bestLevel}  •  Skin: ${save.selectedSkin}`; const switchBtn=document.getElementById('switchUserBtn'); if(switchBtn){switchBtn.disabled=isAdmin();switchBtn.title=isAdmin()?'Reload the game to switch usernames.':'Switch username';switchBtn.style.opacity=isAdmin()?'0.5':'1';switchBtn.style.cursor=isAdmin()?'not-allowed':'pointer'}}
 
 
 updateMenuSummary();
@@ -885,19 +861,19 @@ function startGame(){
   const up=(name)=>save.upgrades[name]||0;
   const pet=pets[save.selectedPet]||pets.None,relic=relics[save.selectedRelic]||relics.None,charm=charms[save.selectedCharm]||charms.None;
   const hp=(ch.hp+15*up('Iron Heart')-8*up('Glass Cannon'))*(1+(sk.hp||0));
-  const speedCap=40;
-  const speed=Math.min(speedCap,ch.speed*(1+.08*up('Quick Step')+.05*up('Fleet Foot'))*(1+(sk.speed||0))*(pet.speed?1+pet.speed:1)*(charm.speed?1+charm.speed:1));
+  const speedCap=ch.speed*1.20;
+  const speed=Math.min(speedCap,ch.speed*(1+.08*up('Quick Step'))*(1+(sk.speed||0))*(pet.speed?1+pet.speed:1)*(charm.speed?1+charm.speed:1));
   const weaponLevel=save.weaponLevels[save.selectedWeapon]||0;
-  const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
+  const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
   const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
   game.running=true;game.paused=false;game.over=false;syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.pvpWinner=null;game.pvp={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
-  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,luck:3*up('Lucky Drops'),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
+  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,luck:3*up('Lucky Drops'),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')))*(save.selectedPet==='Robot'?.92:1)};
   game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
   game.player2=null;
   if(save.mode==='1v1 Arena'){
     game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.pvp.started=true;
   }
-  game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:save.challengeMode==='BossGauntlet'?45:m.bossEvery,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
+  game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:save.challengeMode==='BossGauntlet'?45:m.bossEvery,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
   fatalGameError='';document.getElementById('menu').style.display='none';syncExtractUI();c.focus();
  }catch(err){fatalGameError=err?.message||String(err);game.running=false;game.paused=true;drawFatal();}
 }
@@ -1234,12 +1210,12 @@ function update(dt){
  if(save.mode!=='1v1 Arena'&&game.bossClock>=game.stats.bossEvery){game.bossClock=0;spawnBoss()}
  if(Math.random()<.001*dt && game.powerups.length<MAX_PICKUPS)game.powerups.push({x:p.x+(Math.random()-.5)*500,y:p.y+(Math.random()-.5)*500,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]});
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
- for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.pvp){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.pvpWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
+ for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;b.x+=b.vx*dt;b.y+=b.vy*dt;if(save.mode==='1v1 Arena'&&game.player2&&b.pvp){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.pvpWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
 for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.luck||0)*.003))e.slowTimer=1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>p.pierce)break}}if((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
- for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*.65)}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1,slow=p.frost&&d<130?.5:1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}const nearby=game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const enx=e.x+ex/d*e.speed*slow*squadBoost*dt,eny=e.y+ey/d*e.speed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*(p.shield>0?Math.max(.05,.15/p.shieldEfficiency):1)*p.damageTakenMult;p.hp-=actual*dt;p.shield=Math.max(0,p.shield-dt)}}
+ for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*.65)}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1,slow=p.frost&&d<130?.5:1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}const nearby=game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const enx=e.x+ex/d*e.speed*slow*squadBoost*dt,eny=e.y+ey/d*e.speed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*(p.shield>0?0.15:1)*p.damageTakenMult;p.hp-=actual*dt;p.shield=Math.max(0,p.shield-dt)}}
  // Safety cleanup: never render or process an enemy that has already been killed.
  for(let i=game.enemies.length-1;i>=0;i--){const e=game.enemies[i];if(!e||e.__dead||e.hp<=0){if(e&&!e.__dead)killEnemy(e);else game.enemies.splice(i,1);}}
- for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(!b.enemy)continue; b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue}if(Math.hypot(b.x-p.x,b.y-p.y)<b.r+18){p.hp-=b.dmg;game.bullets.splice(i,1);continue}if(b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
+ for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(!b.enemy)continue; b.x+=b.vx*dt;b.y+=b.vy*dt;if(Math.hypot(b.x-p.x,b.y-p.y)<b.r+18){p.hp-=b.dmg;game.bullets.splice(i,1);continue}if(b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
  for(let i=game.gems.length-1;i>=0;i--){const g=game.gems[i],d=Math.hypot(g.x-p.x,g.y-p.y);if(d<70||d<p.magnet+(p.tempMagnet||0)){let mult=p.lucky&&Math.random()<Math.min(.6,.25+(p.luck||0)*.003)?2:1;game.xp+=g.value*mult*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;game.gems.splice(i,1);if(game.xp>=game.xpNeed){levelUp();break}}}
  for(let i=game.coins.length-1;i>=0;i--){const q=game.coins[i];if(Math.hypot(q.x-p.x,q.y-p.y)<p.magnet){run.coins+=q.value*(game.event==='COIN RUSH'?2:1);game.score+=q.value*25*game.stats.scoreMult;game.coins.splice(i,1)}}
  for(let i=game.shrines.length-1;i>=0;i--){
@@ -1484,6 +1460,7 @@ let subBackAction=null;
 function openSub(title,body,backAction=null){subBackAction=backAction;document.getElementById('subContent').innerHTML='<h2>'+title+'</h2>'+body;document.getElementById('subPanel').style.display='flex'}
 function closeSub(){subBackAction=null;document.getElementById('subPanel').style.display='none'}
 function showUsernameLogin(){
+  if(isAdmin()){ toast('Reload the game before switching usernames.'); return; }
   const input=document.getElementById('usernameInput');
   const err=document.getElementById('usernameError');
   if(err) err.textContent='';
@@ -1620,39 +1597,24 @@ function modifierOpen(){openSub('🎲 Run Modifiers','<div class="grid">'+Object
 window.selectModifier=n=>{save.selectedModifier=n;persist();closeSub()};
 document.getElementById('adminBtn').onclick=()=>{
  if(!adminUnlocked){
-   openSub('🔐 Admin / Tester Login',`
+   openSub('🔐 Admin Login',`
     <div class="option" style="text-align:center">
       <div style="font-size:24px;font-weight:800;margin-bottom:8px">Admin Access</div>
-      <div class="small" style="margin-bottom:10px">Tester password opens the limited testing panel. Full password opens all admin controls.</div>
-      <input id="adminPasswordInput" type="password" autocomplete="off" placeholder="Password" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:2px solid #3b4d60;background:#0f151c;color:#fff;font-size:18px;margin:8px 0 12px">
-      <div class="row"><button class="gold" data-action="adminLogin">🔓 UNLOCK</button></div>
+      <div class="small" style="margin-bottom:10px">Enter the admin password to open the panel.</div>
+      <input id="adminPasswordInput" type="password" autocomplete="off" placeholder="Admin password" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:2px solid #3b4d60;background:#0f151c;color:#fff;font-size:18px;margin:8px 0 12px">
+      <div class="row"><button class="gold" data-action="adminLogin">🔓 UNLOCK ADMIN</button></div>
       <div id="adminLoginError" class="small" style="color:#ff8c8c;min-height:20px;margin-top:8px"></div>
     </div>`);
    setTimeout(()=>document.getElementById('adminPasswordInput')?.focus(),0);
    return;
  }
- const full=adminRole==='full';
- const testerButtons=`
+ openSub('🛠️ Admin Panel',`
+   <div class="option"><b>Admin Mode</b><div class="small">Unlocked on this device.</div></div>
+   <div class="grid" style="margin-top:12px">
     <button class="option" data-action="adminCoins" data-value="1000">● +1,000 Coins</button>
-    <button class="option" data-action="adminResources">◆ +1,000 Resources</button>
-    <button class="option" data-action="adminXP">✨ +10,000 XP (Run)</button>
-    <button class="option" data-action="adminRareLoot">✦ Spawn Rare Loot (Run)</button>
-    <button class="option" data-action="adminShrine">✦ Spawn Shrine (Run)</button>
-    <button class="option" data-action="adminHazard">⚠ Trigger Map Hazard (Run)</button>
-    <button class="option" data-action="adminEvent">🌎 Trigger World Event (Run)</button>
-    <button class="option" data-action="adminObjective">🎯 Complete Objective (Run)</button>
-    <button class="option" data-action="adminRaidBoss">♛ Spawn Raid Boss (Run)</button>
-    <button class="option" data-action="adminFullHeal">♥ Full Heal Current Run</button>
-    <button class="option" data-action="adminLevel">▲ +1 Current Level</button>
-    <button class="option" data-action="adminClearEnemies">✕ Clear Current Enemies</button>
-    <button class="option" data-action="adminSpawnBoss">♛ Spawn Boss</button>
-    <button class="option" data-action="adminSpawnZombie">☠ Spawn Zombie Horde</button>
-    <button class="option" data-action="adminSpawnLoot">◆ Spawn Loot</button>
-    <button class="option" data-action="adminGod">♜ Toggle God Mode</button>
-    <button class="option" data-action="adminInfinite">∞ Toggle Infinite Ultimate</button>`;
- const fullButtons=`
     <button class="option" data-action="adminCoins" data-value="10000">● +10,000 Coins</button>
     <button class="option gold" data-action="adminCoins" data-value="100000">● +100,000 Coins</button>
+    <button class="option" data-action="adminResources">◆ +1,000 Resources</button>
     <button class="option" data-action="adminUnlock">🔓 Unlock Everything</button>
     <button class="option" data-action="adminCollection">✦ Unlock All Pets / Relics / Charms / Titles</button>
     <button class="option" data-action="adminMaxGear">⚒ Max All Weapons & Upgrades</button>
@@ -1667,48 +1629,60 @@ document.getElementById('adminBtn').onclick=()=>{
     <button class="option" data-action="adminCodex">☠ Complete Zombie Codex</button>
     <button class="option" data-action="adminPrestigeMax">★ +5 Prestige</button>
     <button class="option" data-action="adminStats">📈 Max Test Stats</button>
+    <button class="option" data-action="adminXP">✨ +10,000 XP (Run)</button>
+    <button class="option" data-action="adminRareLoot">✦ Spawn Rare Loot (Run)</button>
+    <button class="option" data-action="adminShrine">✦ Spawn Shrine (Run)</button>
+    <button class="option" data-action="adminHazard">⚠ Trigger Map Hazard (Run)</button>
+    <button class="option" data-action="adminEvent">🌎 Trigger World Event (Run)</button>
+    <button class="option" data-action="adminObjective">🎯 Complete Objective (Run)</button>
+    <button class="option" data-action="adminRaidBoss">♛ Spawn Raid Boss (Run)</button>
     <button class="option" data-action="adminDaily">◆ Reset Daily Reward</button>
     <button class="option" data-action="adminWeekly">▣ Reset Weekly Challenge</button>
     <button class="option" data-action="adminLeaderboard">🧹 Clear Local Leaderboard</button>
+    <button class="option" data-action="adminFullHeal">♥ Full Heal Current Run</button>
+    <button class="option" data-action="adminLevel">▲ +1 Current Level</button>
+    <button class="option" data-action="adminClearEnemies">✕ Clear Current Enemies</button>
+    <button class="option" data-action="adminSpawnBoss">♛ Spawn Boss</button>
+    <button class="option" data-action="adminSpawnZombie">☠ Spawn Zombie Horde</button>
+    <button class="option" data-action="adminSpawnLoot">◆ Spawn Loot</button>
+    <button class="option" data-action="adminGod">♜ Toggle God Mode</button>
+    <button class="option" data-action="adminInfinite">∞ Toggle Infinite Ultimate</button>
     <button class="option" data-action="adminPrestige">★ Add Prestige</button>
-    <button class="option danger" data-action="adminReset">⚠️ Reset Save</button>`;
- openSub('🛠️ '+(full?'Full Admin Panel':'Tester Panel'),`
-   <div class="option"><b>${full?'FULL ADMIN MODE':'TESTER / LIMITED MODE'}</b><div class="small">${full?'Full gameplay and progression controls are enabled.':'Limited gameplay testing controls only.'}</div></div>
-   <div class="grid" style="margin-top:12px">${testerButtons}${full?fullButtons:''}<button class="option" data-action="adminLock">🔒 Lock Admin Panel</button></div>
-   <p class="small" style="margin-top:14px">This local password gate is not server-side security.</p>
-   <p class="small" style="margin-top:8px;color:#f2d06b">Admin access uses the shared TESTER account while unlocked. Your device save is unchanged.</p>`);
+    <button class="option danger" data-action="adminReset">⚠️ Reset Save</button>
+    <button class="option" data-action="adminLock">🔒 Lock Admin Panel</button>
+   </div>
+   <p class="small" style="margin-top:14px">This password gate is for the local HTML game; it is not server-side security.</p>
+   <p class="small" style="margin-top:8px;color:#f2d06b">Unlocking Admin switches to the shared TESTER account. Locking Admin restores your player username.</p>`);
 };
 window.adminLogin=()=>{
  const input=document.getElementById('adminPasswordInput');
  const error=document.getElementById('adminLoginError');
  const attempt=input?.value||'';
- let role='';
- if(attempt===ADMIN_FULL_PASSWORD)role='full';
- else if(attempt===ADMIN_TESTER_PASSWORD)role='tester';
- else {if(error)error.textContent='Incorrect admin password.';if(input){input.value='';input.focus();}return;}
- adminRole=role;adminUnlocked=true;localStorage.setItem('outlastAdminUnlocked','1');localStorage.setItem('outlastAdminRole',role);
+ if(attempt!==ADMIN_PASSWORD){if(error)error.textContent='Incorrect admin password.';if(input){input.value='';input.focus();}return;}
+ adminUnlocked=true;localStorage.setItem('outlastAdminUnlocked','1');
  try{localStorage.setItem(ADMIN_RETURN_USERNAME_KEY,currentUsername||'Player');}catch(_){}
  currentUsername=ADMIN_TEST_USERNAME;
  try{localStorage.setItem(USERNAME_KEY,ADMIN_TEST_USERNAME);}catch(_){}
- updateMenuSummary(); closeSub();
- toast(role==='full'?'🔓 Full admin unlocked • TESTER account active':'🧪 Tester panel unlocked • limited TESTER account active');
+ updateMenuSummary();
+ closeSub();
+ toast('🔓 Admin unlocked • TESTER account active');
  document.getElementById('adminBtn').click();
 };
 window.adminCoins=(amount)=>{if(!isAdmin())return;save.coins+=Number(amount)||0;persist();toast('● Coins added!');document.getElementById('adminBtn').click()};
 window.adminResources=()=>{if(!isAdmin())return;save.materials+=1000;save.keys+=100;save.mythicDust+=100;save.forgeCores+=100;save.caseCredits=(save.caseCredits||0)+100;persist();toast('◆ Resources added!');document.getElementById('adminBtn').click()};
-window.adminCollection=()=>{if(!isFullAdmin())return;Object.keys(pets).forEach(n=>save.pets[n]=true);Object.keys(relics).forEach(n=>save.relics[n]=true);Object.keys(charms).forEach(n=>save.charms[n]=true);Object.keys(titles).forEach(n=>save.titles[n]=true);persist();toast('✦ Collections unlocked!');document.getElementById('adminBtn').click()};
-window.adminMaxGear=()=>{if(!isFullAdmin())return;permanent.forEach(([n])=>save.upgrades[n]=5);Object.keys(weapons).forEach(n=>{save.unlockedWeapons[n]=true;save.weaponLevels[n]=5});persist();toast('⚒ Gear maxed!');document.getElementById('adminBtn').click()};
-window.adminSkills=()=>{if(!isFullAdmin())return;Object.keys(activeSkills).forEach(n=>save.ownedSkills[n]=true);persist();toast('◉ Skills unlocked!');document.getElementById('adminBtn').click()};
-window.adminMastery=()=>{if(!isFullAdmin())return;save.survivorMastery=save.survivorMastery||{};Object.keys(chars).forEach(n=>save.survivorMastery[n]=10);save.petMastery=save.petMastery||{};Object.keys(pets).forEach(n=>save.petMastery[n]=10);persist();toast('★ Masteries maxed!');document.getElementById('adminBtn').click()};
-window.adminBattlePass=()=>{if(!isFullAdmin())return;save.battlePassXP=(save.battlePassXP||0)+5000;persist();toast('🏆 Battle Pass XP added!');document.getElementById('adminBtn').click()};
-window.adminWorldKeys=()=>{if(!isFullAdmin())return;save.worldKeys=(save.worldKeys||0)+25;persist();toast('🔑 World Keys added!');document.getElementById('adminBtn').click()};
-window.adminSkillTree=()=>{if(!isFullAdmin())return;save.skillTree=save.skillTree||{};for(const k of Object.keys(skillTreeDefs))save.skillTree[k]=5;persist();toast('★ Skill Tree maxed!');document.getElementById('adminBtn').click()};
-window.adminQuests=()=>{if(!isFullAdmin())return;save.quests=save.quests||{};for(const k of Object.keys(questDefs))save.quests[k]=true;save.worldKeys=(save.worldKeys||0)+Object.values(questDefs).reduce((a,q)=>a+q.reward,0);persist();toast('📜 Daily quests completed!');document.getElementById('adminBtn').click()};
+window.adminCollection=()=>{if(!isAdmin())return;Object.keys(pets).forEach(n=>save.pets[n]=true);Object.keys(relics).forEach(n=>save.relics[n]=true);Object.keys(charms).forEach(n=>save.charms[n]=true);Object.keys(titles).forEach(n=>save.titles[n]=true);persist();toast('✦ Collections unlocked!');document.getElementById('adminBtn').click()};
+window.adminMaxGear=()=>{if(!isAdmin())return;permanent.forEach(([n])=>save.upgrades[n]=5);Object.keys(weapons).forEach(n=>{save.unlockedWeapons[n]=true;save.weaponLevels[n]=5});persist();toast('⚒ Gear maxed!');document.getElementById('adminBtn').click()};
+window.adminSkills=()=>{if(!isAdmin())return;Object.keys(activeSkills).forEach(n=>save.ownedSkills[n]=true);persist();toast('◉ Skills unlocked!');document.getElementById('adminBtn').click()};
+window.adminMastery=()=>{if(!isAdmin())return;save.survivorMastery=save.survivorMastery||{};Object.keys(chars).forEach(n=>save.survivorMastery[n]=10);save.petMastery=save.petMastery||{};Object.keys(pets).forEach(n=>save.petMastery[n]=10);persist();toast('★ Masteries maxed!');document.getElementById('adminBtn').click()};
+window.adminBattlePass=()=>{if(!isAdmin())return;save.battlePassXP=(save.battlePassXP||0)+5000;persist();toast('🏆 Battle Pass XP added!');document.getElementById('adminBtn').click()};
+window.adminWorldKeys=()=>{if(!isAdmin())return;save.worldKeys=(save.worldKeys||0)+25;persist();toast('🔑 World Keys added!');document.getElementById('adminBtn').click()};
+window.adminSkillTree=()=>{if(!isAdmin())return;save.skillTree=save.skillTree||{};for(const k of Object.keys(skillTreeDefs))save.skillTree[k]=5;persist();toast('★ Skill Tree maxed!');document.getElementById('adminBtn').click()};
+window.adminQuests=()=>{if(!isAdmin())return;save.quests=save.quests||{};for(const k of Object.keys(questDefs))save.quests[k]=true;save.worldKeys=(save.worldKeys||0)+Object.values(questDefs).reduce((a,q)=>a+q.reward,0);persist();toast('📜 Daily quests completed!');document.getElementById('adminBtn').click()};
 
-window.adminWorldBosses=()=>{if(!isFullAdmin())return;save.worldBosses=save.worldBosses||{};worldBosses.forEach(n=>save.worldBosses[n]=true);persist();toast('♛ World Bosses unlocked!');document.getElementById('adminBtn').click()};
-window.adminEvolutions=()=>{if(!isFullAdmin())return;save.weaponEvolutions=save.weaponEvolutions||{};Object.keys(weaponEvolutions).forEach(n=>{save.weaponEvolutions[n]=true;save.weaponLevels[n]=Math.max(save.weaponLevels[n]||0,6)});persist();toast('⚔ Weapon evolutions maxed!');document.getElementById('adminBtn').click()};
-window.adminCodex=()=>{if(!isFullAdmin())return;save.codex=save.codex||{};Object.keys(zombieTypes).forEach(n=>save.codex[n]=true);persist();toast('☠ Zombie Codex completed!');document.getElementById('adminBtn').click()};
-window.adminPrestigeMax=()=>{if(!isFullAdmin())return;save.prestige=(save.prestige||0)+5;save.prestigeClaimed=(save.prestigeClaimed||0)+5;save.season=(save.season||1)+1;persist();toast('★ +5 Prestige!');document.getElementById('adminBtn').click()};
+window.adminWorldBosses=()=>{if(!isAdmin())return;save.worldBosses=save.worldBosses||{};worldBosses.forEach(n=>save.worldBosses[n]=true);persist();toast('♛ World Bosses unlocked!');document.getElementById('adminBtn').click()};
+window.adminEvolutions=()=>{if(!isAdmin())return;save.weaponEvolutions=save.weaponEvolutions||{};Object.keys(weaponEvolutions).forEach(n=>{save.weaponEvolutions[n]=true;save.weaponLevels[n]=Math.max(save.weaponLevels[n]||0,6)});persist();toast('⚔ Weapon evolutions maxed!');document.getElementById('adminBtn').click()};
+window.adminCodex=()=>{if(!isAdmin())return;save.codex=save.codex||{};Object.keys(zombieTypes).forEach(n=>save.codex[n]=true);persist();toast('☠ Zombie Codex completed!');document.getElementById('adminBtn').click()};
+window.adminPrestigeMax=()=>{if(!isAdmin())return;save.prestige=(save.prestige||0)+5;save.prestigeClaimed=(save.prestigeClaimed||0)+5;save.season=(save.season||1)+1;persist();toast('★ +5 Prestige!');document.getElementById('adminBtn').click()};
 window.adminXP=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.xp+=10000;toast('✨ +10,000 XP!');document.getElementById('adminBtn').click()};
 window.adminRareLoot=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.gems.push({x:game.player.x+55,y:game.player.y,value:game.xpNeed*8,icon:'✦'});game.coins.push({x:game.player.x-55,y:game.player.y,value:500,icon:'✦'});toast('✦ Rare loot spawned!');document.getElementById('adminBtn').click()};
 window.adminShrine=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');spawnShrine();document.getElementById('adminBtn').click()};
@@ -1716,7 +1690,7 @@ window.adminHazard=()=>{if(!isAdmin())return;if(!game.running)return toast('Star
 window.adminEvent=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;toast('🌎 '+game.worldEvent+' triggered!');document.getElementById('adminBtn').click()};
 window.adminObjective=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.objectiveComplete=true;toast('🎯 Objective completed!');document.getElementById('adminBtn').click()};
 window.adminRaidBoss=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.raidBoss=save.raidBoss||Object.keys(raidBossDefs)[0];spawnBoss();toast('♛ Raid boss spawned!');document.getElementById('adminBtn').click()};
-window.adminWeekly=()=>{if(!isFullAdmin())return;save.weeklyKey='';persist();toast('▣ Weekly challenge reset!');document.getElementById('adminBtn').click()};
+window.adminWeekly=()=>{if(!isAdmin())return;save.weeklyKey='';persist();toast('▣ Weekly challenge reset!');document.getElementById('adminBtn').click()};
 window.adminFullHeal=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.player.hp=game.player.maxHp||game.player.hp;game.player.shield=999;toast('♥ Current run restored!');document.getElementById('adminBtn').click()};
 window.adminLevel=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.xp=game.xpNeed;toast('▲ Level-up queued!');document.getElementById('adminBtn').click()};
 window.adminClearEnemies=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.enemies.length=0;game.bullets.length=0;toast('✕ Enemies cleared!');document.getElementById('adminBtn').click()};
@@ -1725,19 +1699,19 @@ window.adminSpawnZombie=()=>{if(!isAdmin())return;if(!game.running)return toast(
 window.adminSpawnLoot=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.gems.push({x:game.player.x+40,y:game.player.y,value:game.xpNeed,icon:'◆'});game.coins.push({x:game.player.x-40,y:game.player.y,value:100,icon:'$'});toast('◆ Loot spawned!');document.getElementById('adminBtn').click()};
 window.adminGod=()=>{if(!isAdmin())return;if(!game.player)return toast('Start a run first');game.player.godMode=!game.player.godMode;toast('♜ God Mode '+(game.player.godMode?'ON':'OFF'));document.getElementById('adminBtn').click()};
 window.adminInfinite=()=>{if(!isAdmin())return;if(!game.player)return toast('Start a run first');game.player.infiniteUlt=!game.player.infiniteUlt;toast('∞ Infinite Ultimate '+(game.player.infiniteUlt?'ON':'OFF'));document.getElementById('adminBtn').click()};
-window.adminPrestige=()=>{if(!isFullAdmin())return;save.prestige=(save.prestige||0)+1;persist();toast('★ Prestige added!');document.getElementById('adminBtn').click()};
-window.adminUnlock=()=>{if(!isFullAdmin())return;Object.keys(chars).forEach(n=>save.unlockedChars[n]=true);Object.keys(weapons).forEach(n=>save.unlockedWeapons[n]=true);Object.keys(skins).forEach(n=>save.skins[n]=true);Object.keys(zombieTypes).forEach(n=>save.codex[n]=true);Object.keys(weaponEvolutions).forEach(n=>save.weaponEvolutions[n]=true);save.battlePassXP=1000;persist();toast('🔓 Everything unlocked!');document.getElementById('adminBtn').click()};
-window.adminStats=()=>{if(!isFullAdmin())return;save.stats.kills=Math.max(save.stats.kills,100000);save.stats.totalCoins=Math.max(save.stats.totalCoins,100000);save.stats.bestLevel=Math.max(save.stats.bestLevel,100);save.stats.bestTime=Math.max(save.stats.bestTime,36000);save.stats.bosses=Math.max(save.stats.bosses,1000);save.stats.highScore=Math.max(save.stats.highScore,10000000);save.battlePassXP=Math.max(save.battlePassXP||0,1000);Object.keys(weaponEvolutions).forEach(n=>save.weaponEvolutions[n]=true);Object.keys(zombieTypes).forEach(n=>save.codex[n]=true);persist();toast('📈 Test stats updated!');document.getElementById('adminBtn').click()};
-window.adminDaily=()=>{if(!isFullAdmin())return;save.dayKey='';save.dailyStreak=0;persist();toast('◆ Daily reward reset!');document.getElementById('adminBtn').click()};
-window.adminLeaderboard=()=>{if(!isFullAdmin())return;save.leaderboard=[];persist();toast('🧹 Leaderboard cleared!');document.getElementById('adminBtn').click()};
+window.adminPrestige=()=>{if(!isAdmin())return;save.prestige=(save.prestige||0)+1;persist();toast('★ Prestige added!');document.getElementById('adminBtn').click()};
+window.adminUnlock=()=>{if(!isAdmin())return;Object.keys(chars).forEach(n=>save.unlockedChars[n]=true);Object.keys(weapons).forEach(n=>save.unlockedWeapons[n]=true);Object.keys(skins).forEach(n=>save.skins[n]=true);Object.keys(zombieTypes).forEach(n=>save.codex[n]=true);Object.keys(weaponEvolutions).forEach(n=>save.weaponEvolutions[n]=true);save.battlePassXP=1000;persist();toast('🔓 Everything unlocked!');document.getElementById('adminBtn').click()};
+window.adminStats=()=>{if(!isAdmin())return;save.stats.kills=Math.max(save.stats.kills,100000);save.stats.totalCoins=Math.max(save.stats.totalCoins,100000);save.stats.bestLevel=Math.max(save.stats.bestLevel,100);save.stats.bestTime=Math.max(save.stats.bestTime,36000);save.stats.bosses=Math.max(save.stats.bosses,1000);save.stats.highScore=Math.max(save.stats.highScore,10000000);save.battlePassXP=Math.max(save.battlePassXP||0,1000);Object.keys(weaponEvolutions).forEach(n=>save.weaponEvolutions[n]=true);Object.keys(zombieTypes).forEach(n=>save.codex[n]=true);persist();toast('📈 Test stats updated!');document.getElementById('adminBtn').click()};
+window.adminDaily=()=>{if(!isAdmin())return;save.dayKey='';save.dailyStreak=0;persist();toast('◆ Daily reward reset!');document.getElementById('adminBtn').click()};
+window.adminLeaderboard=()=>{if(!isAdmin())return;save.leaderboard=[];persist();toast('🧹 Leaderboard cleared!');document.getElementById('adminBtn').click()};
 window.adminLock=()=>{
- adminUnlocked=false;adminRole='';localStorage.removeItem('outlastAdminUnlocked');localStorage.removeItem('outlastAdminRole');
+ adminUnlocked=false;localStorage.removeItem('outlastAdminUnlocked');
  let restore='Player'; try{restore=localStorage.getItem(ADMIN_RETURN_USERNAME_KEY)||'Player';localStorage.removeItem(ADMIN_RETURN_USERNAME_KEY);}catch(_){}
  currentUsername=restore; try{localStorage.setItem(USERNAME_KEY,currentUsername);}catch(_){}
  updateMenuSummary();
  closeSub();toast('🔒 Admin panel locked • player username restored');
 };
-window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account to a fresh OUTLAST save?')){save=freshSave();ensureMegaSave();persist();toast('Account reset.');closeSub();updateMenuSummary()}};
+window.adminReset=()=>{if(!isAdmin())return;if(confirm('Reset this account to a fresh OUTLAST save?')){save=freshSave();ensureMegaSave();persist();toast('Account reset.');closeSub();updateMenuSummary()}};
 
 document.getElementById('dailyBtn').onclick=()=>{
  const key=todayKey();const claimable=save.dayKey!==key;openSub('◆ Daily Reward',`<div style="text-align:center"><h3>${claimable?'Ready to claim!':'Already claimed today.'}</h3><p>Reward: <b>${50+save.dailyStreak*10} coins</b></p><p>Current streak: ${save.dailyStreak}</p><button ${claimable?'':'disabled'} data-action="daily" class="gold">${claimable?'CLAIM REWARD':'CLAIMED'}</button></div>`)
@@ -1866,7 +1840,7 @@ const helpArticles=[
   ['What are map hazards?','Map Hazards','Some maps have unique hazards and events. Learn their warning patterns and move around dangerous areas to survive.'],
   ['How do I see what a character will look like?','Character Preview','Open Inventory to see the live preview. It updates for your selected character and skin.'],
   ['Where can I see update information?','Update News','New versions can show an Update News popup on the main menu. You can also open the Update Log to see the full history.'],
-  ['How do I use the Admin Panel?','Admin','If the Admin Panel is unlocked, gameplay-only admin controls can appear during a run. Admin-only changes are intentionally not listed in the player Update Log.']
+  
 ];
 function openHelp(){
   const cards=helpArticles.map((a,i)=>`<button class="option help-result" data-help-index="${i}"><b>${a[0]}</b><div class="small">${a[2]}</div></button>`).join('');
@@ -1970,20 +1944,19 @@ const updates=[
   ['v2.3.1 — Username Login Restored','Restored username login so players can choose a username, load their own saved progress, and use that name for the leaderboard.'],
   ['v2.3.3 — Username Login Input Fix','Fixed username login input so all allowed letters can be typed normally, including W, A, S, D and Q.'],
   ['v2.3.4 — Device Save & Username Identity','Progress is now saved to the device instead of being tied to the username. Usernames are used for leaderboard identity and moderation only.'],
-  ['v2.3.7 — Mobile & Gameplay Polish','Improved mobile controls and avatar visibility, raised the movement speed cap, added more permanent upgrade variety, and made projectiles stop when they hit solid map objects.'],
+  ['v2.3.6 — Update Sync & Stability','Synchronized the displayed version and Update News popup with the current build so players see the correct release information. Existing progression and gameplay systems remain unchanged.'],
+  ['v2.3.7 — Account & Session Improvements','Improved account and session handling so player identity changes stay predictable while preserving device-based progression.'],
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 const CURRENT_UPDATE_VERSION='2.3.7';
 const CURRENT_UPDATE_INFO={
-  title:'v2.3.7 — Mobile & Gameplay Polish',
-  summary:'A polish update focused on better mobile play and more satisfying progression.',
+  title:'v2.3.7 — Account & Session Improvements',
+  summary:'The latest build improves account and session handling while keeping device-based progression intact.',
   items:[
-    'Mobile players now have a touch joystick plus Dash, Skill, and Ultimate controls.',
-    'A compact mobile avatar preview makes your character visible while playing on phones.',
-    'The movement speed cap is now 40.',
-    'More permanent upgrade choices add new build variety.',
-    'Bullets now stop when they hit solid map objects instead of passing through them.'
+    'Account switching is now protected during an active special session and becomes available again after a reload.',
+    'Device-based progression remains unchanged, so changing player identity does not move or reset your save.',
+    'The main menu and Update News popup now identify this build as v2.3.7.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';

@@ -120,6 +120,9 @@ c.style.outline='none';
 function keyName(e){return (e.key||'').toLowerCase()}
 function held(name,code){return !!keys[name]||!!keyCodes[code]}
 addEventListener('keydown',e=>{
+  const target=e.target;
+  const typing=target && (target.matches('input,textarea,select') || target.isContentEditable);
+  if(typing) return;
   const k=keyName(e), code=e.code||'';
   if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift','q'].includes(k)||['Space','ShiftLeft','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ'].includes(code)) e.preventDefault();
   keys[k]=true; keyCodes[code]=true;
@@ -546,7 +549,7 @@ function draw(){
  if(game.upgradeOpen){ctx.fillStyle='rgba(0,0,0,.82)';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',445,92);ctx.font='20px Arial';ctx.fillText('Choose 1, 2, or 3',450,128);game.upgradeChoices.forEach((u,i)=>{let x=45+i*350;const rarity=u[3],rdef=upgradeRarities[rarity];ctx.fillStyle='#23303b';ctx.fillRect(x,180,325,285);ctx.strokeStyle=rarity==='Legendary'?'#ffd84d':rarity==='Epic'?'#d28cff':rarity==='Rare'?'#72a8ff':rarity==='Uncommon'?'#71d68a':'#9aa5ad';ctx.lineWidth=4;ctx.strokeRect(x,180,325,285);ctx.fillStyle=ctx.strokeStyle;ctx.font='16px Arial';ctx.fillText(rdef.label, x+18,210);ctx.fillStyle='#ffe56d';ctx.font='30px Arial';ctx.fillText(String(i+1),x+145,245);ctx.fillStyle='#fff';ctx.font='22px Arial';ctx.fillText(u[0],x+18,300);ctx.fillStyle='#c4ced8';ctx.font='17px Arial';ctx.fillText(u[1],x+18,340);ctx.fillStyle='#98a7b6';ctx.font='14px Arial';ctx.fillText('Rarity affects the power of this upgrade',x+18,380);})}
 }
 function drawEnd(v){const msg=v?'VICTORY!':'GAME OVER';ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.font='52px Arial';ctx.fillText(msg,420,240);ctx.font='22px Arial';ctx.fillText('Score: '+Math.floor(game.score),460,285);ctx.fillText('Level: '+game.level,460,315);ctx.fillText('Kills: '+run.kills,460,345);ctx.fillText('Coins: '+run.coins,460,375);ctx.fillText('Press Enter for Main Menu',395,430);document.getElementById('exitGameBtn').style.display='none'}
-addEventListener('keydown',e=>{if(!game.running && e.key==='Enter' && currentUsername){fatalGameError='';game.paused=false;document.getElementById('menu').style.display='flex';updateMenuSummary()} });
+addEventListener('keydown',e=>{const t=e.target;if(t && (t.matches('input,textarea,select') || t.isContentEditable)) return;if(!game.running && e.key==='Enter' && currentUsername){fatalGameError='';game.paused=false;document.getElementById('menu').style.display='flex';updateMenuSummary()} });
 function checkAchievements(){for(const a of achievements){if(!save.ach[a[0]]&&a[2]({...save.stats})){save.ach[a[0]]=true;toast('🏆 Achievement: '+a[0])}}}
 function openSub(title,body){document.getElementById('subContent').innerHTML='<h2>'+title+'</h2>'+body;document.getElementById('subPanel').style.display='flex'}
 function closeSub(){document.getElementById('subPanel').style.display='none'}

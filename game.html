@@ -845,6 +845,14 @@ function persist(){
 }
 save=freshSave();
 try{currentUsername=localStorage.getItem(USERNAME_KEY)||'';}catch(_){currentUsername='';}
+save=currentUsername?loadDeviceSave(currentUsername):freshSave();
+ensureMegaSave();
+if(currentUsername){
+  const login=document.getElementById('loginPopup');
+  const input=document.getElementById('usernameInput');
+  if(input) input.value=currentUsername;
+  if(login) login.style.display='none';
+}
 save=freshSave();
 
 function sanitizeUsername(name){
@@ -903,7 +911,7 @@ function startGame(){
 }
 function exitGame(){
   if(!game.running){document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
-  endRun(false,false,false);
+  endRun(false,true,false);
   game.running=false;
   game.paused=false;
   game.upgradeOpen=false;
@@ -2142,7 +2150,8 @@ requestAnimationFrame(loop);
 window.addEventListener('beforeunload',()=>{try{persist();}catch(_){}});
 window.addEventListener('pagehide',()=>{try{persist();}catch(_){}});
 setInterval(()=>{try{if(typeof persist==='function')persist();}catch(_){}},2000);
-</script><section class="next-update-poll" aria-label="Next update community poll">
+</script>
+<section class="next-update-poll" aria-label="Next update community poll">
 <h3>🗳️ Help choose the next update</h3>
 <p>Vote for what you want next, or send us your own idea.</p>
 <form id="nextUpdatePollForm" name="next-update-ideas" method="POST" data-netlify="true">
@@ -2154,15 +2163,22 @@ setInterval(()=>{try{if(typeof persist==='function')persist();}catch(_){}},2000)
 <textarea id="nextUpdateIdea" name="idea" maxlength="500" placeholder="Your idea for the next update (optional)"></textarea>
 <button type="submit">SUBMIT IDEA / VOTE</button>
 <p id="nextUpdatePollStatus" aria-live="polite"></p>
-</form></section>
+</form>
+</section>
 <script id="outlastV240Poll">
 document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e=>{
- e.preventDefault(); const f=e.currentTarget,s=document.getElementById('nextUpdatePollStatus');
- const v=f.querySelector('input[name="vote"]:checked'); if(!v){if(s)s.textContent='Choose an option first.';return;}
- try{const body=new URLSearchParams(new FormData(f));const r=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
- if(!r.ok)throw new Error(); if(s)s.textContent='Thanks! Your vote and idea were submitted.';
- f.querySelectorAll('input,textarea,button').forEach(x=>x.disabled=true);}
- catch(_){if(s)s.textContent='Thanks! Your idea can still be shared with the developer through the website.';}
+ e.preventDefault();
+ const f=e.currentTarget,s=document.getElementById('nextUpdatePollStatus'),v=f.querySelector('input[name="vote"]:checked');
+ if(!v){if(s)s.textContent='Choose an option first.';return;}
+ try{
+  const body=new URLSearchParams(new FormData(f));
+  const r=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+  if(!r.ok)throw new Error();
+  if(s)s.textContent='Thanks! Your vote and idea were submitted.';
+  f.querySelectorAll('input,textarea,button').forEach(x=>x.disabled=true);
+ }catch(_){if(s)s.textContent='Thanks! Your idea can still be shared with the developer through the website.';}
 });
-</script></body>
+</script>
+<div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
+Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div></body>
 </html>

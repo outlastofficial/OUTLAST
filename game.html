@@ -323,12 +323,26 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
 <div id="subPanel" class="panel"><div class="card"><div id="subContent"></div><div class="spacer"></div><div class="row"><button id="closeSub">← Back</button></div></div></div>
 
 <script>
+/* OUTLAST v2.5.7 — safe storage bootstrap */
+const outlastStorage=(()=>{
+  try{
+    const s=window.localStorage;
+    const probe='__outlast_storage_probe__';
+    s.setItem(probe,'1'); s.removeItem(probe);
+    return s;
+  }catch(_){
+    const mem=Object.create(null);
+    return {getItem:k=>Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null,setItem:(k,v)=>{mem[k]=String(v)},removeItem:k=>{delete mem[k]},clear:()=>{for(const k of Object.keys(mem))delete mem[k]}};
+  }
+})();
+</script>
+<script>
 'use strict';
 const ADMIN_TESTER_PASSWORD='TESTER';
 const ADMIN_FULL_PASSWORD='1296813';
 const ADMIN_TEST_USERNAME='TESTER';
 const ADMIN_RETURN_USERNAME_KEY='outlastAdminReturnUsername';
-let adminRole=localStorage.getItem('outlastAdminRole')|| (localStorage.getItem('outlastAdminUnlocked')==='1' ? 'tester' : '');
+let adminRole=outlastStorage.getItem('outlastAdminRole')|| (outlastStorage.getItem('outlastAdminUnlocked')==='1' ? 'tester' : '');
 let adminUnlocked=adminRole==='tester'||adminRole==='full';
 function isAdmin(){return adminUnlocked}
 function isFullAdmin(){return adminUnlocked&&adminRole==='full'}
@@ -830,12 +844,12 @@ function migrateSave(data){
 }
 function loadDeviceSave(username){
   try{
-    const deviceSaved=localStorage.getItem(DEVICE_SAVE_KEY);
+    const deviceSaved=outlastStorage.getItem(DEVICE_SAVE_KEY);
     if(deviceSaved) return migrateSave(JSON.parse(deviceSaved));
     // Backward compatibility: migrate the old username-keyed save once, then use device-wide storage.
-    const oldUserSaved=localStorage.getItem(localAccountKey(username));
+    const oldUserSaved=outlastStorage.getItem(localAccountKey(username));
     if(oldUserSaved) return migrateSave(JSON.parse(oldUserSaved));
-    const legacy=localStorage.getItem('survivorStyleSave');
+    const legacy=outlastStorage.getItem('survivorStyleSave');
     if(legacy) return migrateSave(JSON.parse(legacy));
   }catch(_){ }
   return freshSave();
@@ -844,13 +858,13 @@ function loadDeviceSave(username){
 function persist(){
   ensureMegaSave();
   try{
-    localStorage.setItem(DEVICE_SAVE_KEY,JSON.stringify(save));
-    if(currentUsername) localStorage.setItem(USERNAME_KEY,currentUsername);
+    outlastStorage.setItem(DEVICE_SAVE_KEY,JSON.stringify(save));
+    if(currentUsername) outlastStorage.setItem(USERNAME_KEY,currentUsername);
   }catch(_){console.warn('Save failed')}
   updateMenuSummary();
 }
 save=freshSave();
-try{currentUsername=localStorage.getItem(USERNAME_KEY)||'';}catch(_){currentUsername='';}
+try{currentUsername=outlastStorage.getItem(USERNAME_KEY)||'';}catch(_){currentUsername='';}
 save=currentUsername?loadDeviceSave(currentUsername):freshSave();
 ensureMegaSave();
 if(currentUsername){
@@ -869,7 +883,7 @@ function finishUsernameLogin(){
   const name=sanitizeUsername(input?.value);
   if(!/^[A-Za-z0-9 _-]{2,18}$/.test(name)){ if(err) err.textContent='Use 2–18 letters, numbers, spaces, _ or -.'; return false; }
   currentUsername=name;
-  if(!localStorage.getItem(DEVICE_SAVE_KEY)) save=loadDeviceSave(currentUsername);
+  if(!outlastStorage.getItem(DEVICE_SAVE_KEY)) save=loadDeviceSave(currentUsername);
   ensureMegaSave();
   persist();
   document.getElementById('loginPopup').style.display='none';
@@ -1699,10 +1713,10 @@ window.adminLogin=()=>{
  if(attempt===ADMIN_FULL_PASSWORD)role='full';
  else if(attempt===ADMIN_TESTER_PASSWORD)role='tester';
  else {if(error)error.textContent='Incorrect admin password.';if(input){input.value='';input.focus();}return;}
- adminRole=role;adminUnlocked=true;localStorage.setItem('outlastAdminUnlocked','1');localStorage.setItem('outlastAdminRole',role);
- try{localStorage.setItem(ADMIN_RETURN_USERNAME_KEY,currentUsername||'Player');}catch(_){}
+ adminRole=role;adminUnlocked=true;outlastStorage.setItem('outlastAdminUnlocked','1');outlastStorage.setItem('outlastAdminRole',role);
+ try{outlastStorage.setItem(ADMIN_RETURN_USERNAME_KEY,currentUsername||'Player');}catch(_){}
  currentUsername=ADMIN_TEST_USERNAME;
- try{localStorage.setItem(USERNAME_KEY,ADMIN_TEST_USERNAME);}catch(_){}
+ try{outlastStorage.setItem(USERNAME_KEY,ADMIN_TEST_USERNAME);}catch(_){}
  updateMenuSummary(); closeSub();
  toast(role==='full'?'🔓 Full admin unlocked • TESTER account active':'🧪 Tester panel unlocked • limited TESTER account active');
  document.getElementById('adminBtn').click();
@@ -1744,9 +1758,9 @@ window.adminStats=()=>{if(!isFullAdmin())return;save.stats.kills=Math.max(save.s
 window.adminDaily=()=>{if(!isFullAdmin())return;save.dayKey='';save.dailyStreak=0;persist();toast('◆ Daily reward reset!');document.getElementById('adminBtn').click()};
 window.adminLeaderboard=()=>{if(!isFullAdmin())return;save.leaderboard=[];persist();toast('🧹 Leaderboard cleared!');document.getElementById('adminBtn').click()};
 window.adminLock=()=>{
- adminUnlocked=false;adminRole='';localStorage.removeItem('outlastAdminUnlocked');localStorage.removeItem('outlastAdminRole');
- let restore='Player'; try{restore=localStorage.getItem(ADMIN_RETURN_USERNAME_KEY)||'Player';localStorage.removeItem(ADMIN_RETURN_USERNAME_KEY);}catch(_){}
- currentUsername=restore; try{localStorage.setItem(USERNAME_KEY,currentUsername);}catch(_){}
+ adminUnlocked=false;adminRole='';outlastStorage.removeItem('outlastAdminUnlocked');outlastStorage.removeItem('outlastAdminRole');
+ let restore='Player'; try{restore=outlastStorage.getItem(ADMIN_RETURN_USERNAME_KEY)||'Player';outlastStorage.removeItem(ADMIN_RETURN_USERNAME_KEY);}catch(_){}
+ currentUsername=restore; try{outlastStorage.setItem(USERNAME_KEY,currentUsername);}catch(_){}
  updateMenuSummary();
  closeSub();toast('🔒 Admin panel locked • player username restored');
 };
@@ -1972,7 +1986,7 @@ const updates=[
   ['v2.0.9 — Help & Guide Fix','Fixed the Help & Guide button and a menu script issue that could prevent some other buttons from being initialized.'],
   ['v2.1.0 — Online Leaderboard','Leaderboard scores are now submitted to the website server so players can see the same leaderboard across devices.'],
   ['v2.1.1 — Update News Refresh','Updated the main-menu Update News popup so it matches the current version and explains the newest player-facing content.'],
-  ['v2.5.6 — Button Reliability Fix','Removed the broken password account system and replaced it with a simple username-only login while preserving the OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
+  ['v2.5.7 — Button & Startup Fix','Removed the broken password account system and replaced it with a simple username-only login while preserving the OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
   ['v2.1.2 — Fullscreen Mode','Added a Fullscreen button so players can expand the game to fill the screen. The button toggles between fullscreen and normal mode and updates its label automatically.'],
   ['v2.2.0 — World & Endgame Expansion','Major update: added World 2.0 zones with map-linked bonuses, dedicated boss raids, run objectives with rewards, three build presets, survivor and pet mastery, ranked PvP season tracking, Nightmare+/Omega/Omega+ endgame tiers, squad-style zombie pressure that reacts to nearby allies and gunfire, and expanded endgame progression.'],
   ['v2.2.1 — Fullscreen Button Move','Moved the Fullscreen button to the main Play menu so it is easier to find before starting a run.'],
@@ -1990,7 +2004,7 @@ const updates=[
 }
 const CURRENT_UPDATE_VERSION='2.5.2';
 const CURRENT_UPDATE_INFO={
-  title:'v2.5.6 — Button Reliability Fix',
+  title:'v2.5.7 — Button & Startup Fix',
   summary:'A polish update focused on better mobile play and more satisfying progression.',
   items:[
     'Mobile players now have a touch joystick plus Dash, Skill, and Ultimate controls.',
@@ -2001,7 +2015,7 @@ const CURRENT_UPDATE_INFO={
   ]};
 function showUpdatePopup(force=false){
   let seen='';
-  try{seen=localStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
+  try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;
   const pop=document.getElementById('updatePopup');
   if(!pop)return;
@@ -2010,7 +2024,7 @@ function showUpdatePopup(force=false){
   pop.style.display='flex';
 }
 function closeUpdatePopup(){
-  try{localStorage.setItem('outlastSeenUpdateVersion',CURRENT_UPDATE_VERSION);}catch(_){ }
+  try{outlastStorage.setItem('outlastSeenUpdateVersion',CURRENT_UPDATE_VERSION);}catch(_){ }
   const pop=document.getElementById('updatePopup');
   if(pop)pop.style.display='none';
 }
@@ -2490,9 +2504,9 @@ function weekId(){return weeklyKey();}
 function weekIdForDate(dt){const d=new Date(dt),start=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-W'+Math.ceil((((d-start)/86400000)+start.getDay()+1)/7)}
 function currentWeekEnd(){const now=new Date();const day=now.getDay();const daysUntilMonday=day===0?1:8-day;const end=new Date(now.getFullYear(),now.getMonth(),now.getDate()+daysUntilMonday,0,0,0,0);return end.getTime();}
 function completedWeekId(){return weekIdForDate(Date.now()-7*86400000);}
-function weeklyBoardFor(key){try{return JSON.parse(localStorage.getItem('outlastWeeklyBoard:'+key)||'[]')}catch(_){return []}}
+function weeklyBoardFor(key){try{return JSON.parse(outlastStorage.getItem('outlastWeeklyBoard:'+key)||'[]')}catch(_){return []}}
 function weeklyBoard(){return weeklyBoardFor(weekId());}
-function setWeeklyBoard(v){localStorage.setItem('outlastWeeklyBoard:'+weekId(),JSON.stringify(v.slice(0,50)))}
+function setWeeklyBoard(v){outlastStorage.setItem('outlastWeeklyBoard:'+weekId(),JSON.stringify(v.slice(0,50)))}
 const weeklyPrizes={1:10000,2:7500,3:5000,4:2500,5:2500,6:2500,7:2500,8:2500,9:2500,10:2500,11:1000,12:1000,13:1000,14:1000,15:1000,16:1000,17:1000,18:1000,19:1000,20:1000,21:1000,22:1000,23:1000,24:1000,25:1000};
 function weeklyPrizeClaims(){if(!save.weeklyPrizeClaims||typeof save.weeklyPrizeClaims!=='object')save.weeklyPrizeClaims={};return save.weeklyPrizeClaims;}
 function weeklyClaimUsed(key){return !!weeklyPrizeClaims()[key];}
@@ -2543,7 +2557,7 @@ function feedbackOpen(){openSub('💬 Bug Reports & Update Ideas',
  '<div class="option"><b>Review policy</b><div class="small">Pending → Accepted/Rejected. Duplicate/fake reports cannot be farmed.</div></div>');}
 function reportBugForm(){openSub('🐛 Report a Bug','<input id="fbTitle" placeholder="Bug title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="What happened? What should have happened?" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button class="gold" data-action="submitBug">SUBMIT BUG REPORT</button>');}
 function ideaForm(){openSub('💡 Submit Update Idea','<input id="fbTitle" placeholder="Idea title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="Describe your idea" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button class="gold" data-action="submitIdea">SUBMIT IDEA</button>');}
-function storeFeedback(type){const title=(document.getElementById('fbTitle').value||'').trim().slice(0,80),body=(document.getElementById('fbBody').value||'').trim().slice(0,1000);if(title.length<3||body.length<5)return toast('Please provide more detail');const arr=JSON.parse(localStorage.getItem('outlastFeedback')||'[]');if(arr.some(x=>x.user===currentUsername&&x.type===type&&x.title.toLowerCase()===title.toLowerCase()))return toast('Duplicate submission blocked');arr.push({id:Date.now()+Math.random(),user:currentUsername,type,title,body,status:'Pending',reward:0,date:Date.now()});localStorage.setItem('outlastFeedback',JSON.stringify(arr));toast('📨 Submitted for review');feedbackOpen();}
+function storeFeedback(type){const title=(document.getElementById('fbTitle').value||'').trim().slice(0,80),body=(document.getElementById('fbBody').value||'').trim().slice(0,1000);if(title.length<3||body.length<5)return toast('Please provide more detail');const arr=JSON.parse(outlastStorage.getItem('outlastFeedback')||'[]');if(arr.some(x=>x.user===currentUsername&&x.type===type&&x.title.toLowerCase()===title.toLowerCase()))return toast('Duplicate submission blocked');arr.push({id:Date.now()+Math.random(),user:currentUsername,type,title,body,status:'Pending',reward:0,date:Date.now()});outlastStorage.setItem('outlastFeedback',JSON.stringify(arr));toast('📨 Submitted for review');feedbackOpen();}
 
 /* ---------- Better settings ---------- */
 function settingsOpen(){openSub('⚙️ Settings','<div class="grid">'+
@@ -2732,53 +2746,36 @@ document.getElementById('subContent')?.addEventListener('click',e=>{
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v2.5.6 — button safety layer */
+/* OUTLAST v2.5.7 — universal button controller */
 (function(){
-  function byId(id){return document.getElementById(id)}
-  function safe(fn){try{if(typeof fn==='function')fn()}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error — check console');}}
-  document.addEventListener('click',function(e){
-    const b=e.target.closest && e.target.closest('button');
-    if(!b || b.disabled) return;
+  const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
+  const routes={
+    loginBtn:()=>finishUsernameLogin(),startBtn:()=>{newRunStats();startGame();setTimeout(()=>document.getElementById('game')?.focus(),0)},
+    switchUserBtn:()=>showUsernameLogin(),mapBtn:()=>openMapMenu(),difficultyBtn:()=>openDifficultyMenu(),modeBtn:()=>openModeMenu(),
+    runBuilderBtn:()=>renderRunBuilder(),challengeBtn:()=>challengeOpen(),challengeModeBtn:()=>renderChallenges(),fullscreenBtn:()=>toggleFullscreen(),
+    upgradeBtn:()=>renderUpgradeTree(),charBtn:()=>openCharacterMenu(),weaponBtn:()=>openWeaponMenu(),skinBtn:()=>openSkinMenu(),
+    petBtn:()=>openPets(),skillBtn:()=>openSkills(),elementBtn:()=>renderElements(),relicBtn:()=>openRelics(),charmBtn:()=>openCharms(),
+    forgeBtn:()=>forgeOpen(),shopBtn:()=>shopOpen(),inventoryBtn:()=>renderInventory(),craftBtn:()=>renderCrafting(),progressionBtn:()=>renderProgression(),
+    modifierBtn:()=>modifierOpen(),statsBtn:()=>openStats(),leaderBtn:()=>openServerLeaderboard(),achBtn:()=>openAchievements(),missionBtn:()=>openMissions(),
+    questBtn:()=>renderQuestBoard(),dailyBtn:()=>openDailyReward(),titleBtn:()=>titleOpen(),recordsBtn:()=>renderRecords(),extrasBtn:()=>renderExtras(),
+    worldBtn:()=>renderWorld(),world2Btn:()=>renderWorld2(),helpBtn:()=>openHelp(),updatesBtn:()=>renderUpdates(),adminBtn:()=>openAdminPanel(),
+    onlineBtn:()=>renderOnlinePanel(),closeSubBtn:()=>closeSub()
+  };
+  const aliases={openMapMenu:()=>document.getElementById('mapBtn')?.onclick?.(),openDifficultyMenu:()=>document.getElementById('difficultyBtn')?.onclick?.(),openModeMenu:()=>document.getElementById('modeBtn')?.onclick?.(),openCharacterMenu:()=>document.getElementById('charBtn')?.onclick?.(),openWeaponMenu:()=>document.getElementById('weaponBtn')?.onclick?.(),openSkinMenu:()=>document.getElementById('skinBtn')?.onclick?.(),openSkills:()=>document.getElementById('skillBtn')?.onclick?.(),openStats:()=>document.getElementById('statsBtn')?.onclick?.(),openAchievements:()=>document.getElementById('achBtn')?.onclick?.(),openMissions:()=>document.getElementById('missionBtn')?.onclick?.(),openDailyReward:()=>document.getElementById('dailyBtn')?.onclick?.(),openAdminPanel:()=>document.getElementById('adminBtn')?.onclick?.()};
+  Object.assign(routes,{mapBtn:aliases.openMapMenu,difficultyBtn:aliases.openDifficultyMenu,modeBtn:aliases.openModeMenu,charBtn:aliases.openCharacterMenu,weaponBtn:aliases.openWeaponMenu,skinBtn:aliases.openSkinMenu,skillBtn:aliases.openSkills,statsBtn:aliases.openStats,achBtn:aliases.openAchievements,missionBtn:aliases.openMissions,dailyBtn:aliases.openDailyReward,adminBtn:aliases.openAdminPanel});
+  document.addEventListener('click',e=>{
+    const nav=e.target.closest?.('.menu-nav-btn');
+    if(nav){e.preventDefault();e.stopImmediatePropagation();setMenuPage(nav.dataset.page);return;}
+    const b=e.target.closest?.('button'); if(!b||b.disabled)return;
     const id=b.id;
-    if(id==='loginBtn'){
-      e.preventDefault(); e.stopImmediatePropagation();
-      safe(typeof finishUsernameLogin==='function'?finishUsernameLogin:null);
-      return;
-    }
-    if(id==='startBtn'){
-      e.preventDefault();
-      safe(function(){if(typeof newRunStats==='function')newRunStats();if(typeof startGame==='function')startGame();const c=document.getElementById('game');if(c)c.focus();});
-      return;
-    }
-    if(id==='onlineBtn'){
-      e.preventDefault();
-      safe(typeof renderOnlinePanel==='function'?renderOnlinePanel:null);
-      return;
-    }
-    const a=b.getAttribute('data-action');
-    if(a==='onlineConnect') safe(typeof connectOutlastServer==='function'?connectOutlastServer:null);
-    else if(a==='onlineDisconnect') safe(typeof disconnectOutlastServer==='function'?disconnectOutlastServer:null);
-    else if(a==='onlinePing') safe(typeof sendOnlinePing==='function'?sendOnlinePing:null);
-  },true);
-
-  document.addEventListener('keydown',function(e){
-    if(e.key!=='Enter')return;
-    const target=e.target;
-    const typing=target && (target.matches?.('input,textarea,select') || target.isContentEditable);
-    if(typing && target.id==='usernameInput'){
-      e.preventDefault();
-      safe(typeof finishUsernameLogin==='function'?finishUsernameLogin:null);
+    if(routes[id]){e.preventDefault();e.stopImmediatePropagation();run(routes[id]);return;}
+    const a=b.dataset.action;
+    if(a){
+      const v=b.dataset.value; e.preventDefault();e.stopImmediatePropagation();
+      const map={map:()=>selectMap(v),difficulty:()=>selectDiff(v),mode:()=>selectMode(v),upgrade:()=>buyUpgrade(v,Number(b.dataset.base)),buyAffordable:()=>buyAllAffordable(),daily:()=>claimDaily(),char:()=>selectChar(v),weapon:()=>selectWeapon(v),skin:()=>selectSkin(v),case:()=>openSkinCase(),onlineConnect:()=>connectOutlastServer(),onlineDisconnect:()=>disconnectOutlastServer(),onlinePing:()=>sendOnlinePing(),weekly:()=>claimWeekly(),title:()=>selectTitle(v),modifier:()=>selectModifier(v),pet:()=>selectPet(v),relic:()=>selectRelic(v),charm:()=>selectCharm(v),forgeWeapon:()=>forgeWeapon(),buyCore:()=>buyForgeCore(),shop:()=>buyShop(v)};
+      run(map[a]);
     }
   },true);
-
-  window.addEventListener('error',function(e){
-    console.error('OUTLAST runtime error:',e.error||e.message);
-  });
-
-  /* Make sure dynamically-created buttons remain clickable. */
-  const style=document.createElement('style');
-  style.textContent='button{pointer-events:auto!important;cursor:pointer!important}button:disabled{cursor:not-allowed!important}';
-  document.head.appendChild(style);
 })();
 </script>
 </body>

@@ -38,7 +38,6 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <button class="menu-btn" id="mapBtn">🗺️ CHOOSE MAP</button>
             <button class="menu-btn" id="difficultyBtn">🎚️ DIFFICULTY</button>
             <button class="menu-btn" id="modeBtn">🎮 GAME MODE</button>
-            <button class="menu-btn gold" id="onlineBtn">🌐 ONLINE / MULTIPLAYER</button>
             
           </div>
         </div>
@@ -585,28 +584,6 @@ document.getElementById('mapBtn').onclick=()=>{openSub('🗺️ Choose Map','<di
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
 window.selectDiff=(x)=>{save.difficulty=x;persist();closeSub()};
-const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
-let outlastSocket=null;
-function openOnlinePanel(){
-  const connected=outlastSocket && outlastSocket.readyState===WebSocket.OPEN;
-  openSub('🌐 Online / Multiplayer',`<div class="note"><b>Server:</b> outlast-server.onrender.com</div><div id="onlineStatus" class="statpill">${connected?'🟢 Connected':'⚪ Disconnected'}</div><div id="onlinePlayers" class="statpill">Players: ${connected?'connected':'—'}</div><div class="row" style="margin-top:12px"><button class="menu-btn green" id="onlineConnect">${connected?'RECONNECT':'CONNECT TO SERVER'}</button><button class="menu-btn danger" id="onlineDisconnect" ${connected?'':'disabled'}>DISCONNECT</button></div><p class="small">This connects OUTLAST to the multiplayer server. Multiplayer rooms and player syncing can be added after the connection test works.</p>`);
-  document.getElementById('onlineConnect').onclick=connectOutlastServer;
-  document.getElementById('onlineDisconnect').onclick=disconnectOutlastServer;
-}
-function setOnlineStatus(text,good=false){const e=document.getElementById('onlineStatus');if(e){e.textContent=(good?'🟢 ':'⚪ ')+text;}}
-function connectOutlastServer(){
-  if(!('WebSocket' in window)){toast('WebSocket is not supported in this browser');return;}
-  if(outlastSocket) try{outlastSocket.close()}catch(_){ }
-  setOnlineStatus('Connecting…');
-  try{outlastSocket=new WebSocket(OUTLAST_SERVER_URL);
-    outlastSocket.onopen=()=>{setOnlineStatus('Connected',true);const p=document.getElementById('onlinePlayers');if(p)p.textContent='Players: connected';toast('🌐 Connected to OUTLAST server');outlastSocket.send(JSON.stringify({type:'join',username:currentUsername}));openOnlinePanel();};
-    outlastSocket.onmessage=(e)=>{try{const m=JSON.parse(e.data);if(m.type==='welcome')toast('🌐 '+m.message);if(m.type==='playerCount'){const p=document.getElementById('onlinePlayers');if(p)p.textContent='Players: '+m.count;}}catch(_){} };
-    outlastSocket.onerror=()=>{setOnlineStatus('Connection failed');toast('Could not connect to OUTLAST server');};
-    outlastSocket.onclose=()=>{if(document.getElementById('onlineStatus'))setOnlineStatus('Disconnected');};
-  }catch(_){setOnlineStatus('Connection failed');toast('Could not connect to OUTLAST server');}
-}
-function disconnectOutlastServer(){if(outlastSocket){try{outlastSocket.close()}catch(_){ }outlastSocket=null;}setOnlineStatus('Disconnected');const b=document.getElementById('onlineDisconnect');if(b)b.disabled=true;toast('Disconnected from server');}
-document.getElementById('onlineBtn').onclick=openOnlinePanel;
 document.getElementById('modeBtn').onclick=()=>{openSub('🎮 Game Mode','<div class="grid">'+Object.keys(modeDefs).map(x=>`<button class="option ${save.mode===x?'selected':''}" data-action="mode" data-value="${x}"><b>${x}</b><div class="small">${x==='Speed Run'?'Survive '+modeDefs[x].timeLimit+' seconds':x==='Endless'?'No time limit':x==='Boss Rush'?'Bosses appear much more often':x==='Global'?'High-score challenge for the leaderboard':'Standard survival'}</div></button>`).join('')+'</div>')};
 window.selectMode=(x)=>{save.mode=x;persist();closeSub()};
 function renderUpgradeTree(){
@@ -1195,6 +1172,76 @@ if(!save.coinPurchases)save.coinPurchases={};
 
 })();
 
+</script>
+<script>
+/* OUTLAST ONLINE SERVER CONNECTION */
+const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
+let outlastSocket=null;
+let outlastOnline=false;
+let outlastOnlineUsers=0;
+function onlineStatus(){return outlastOnline?'🟢 Connected':'🔴 Offline'}
+function connectOutlastServer(){
+  if(outlastSocket && (outlastSocket.readyState===WebSocket.OPEN || outlastSocket.readyState===WebSocket.CONNECTING)) return;
+  try{
+    outlastSocket=new WebSocket(OUTLAST_SERVER_URL);
+    outlastSocket.onopen=()=>{
+      outlastOnline=true;
+      toast('🌐 Connected to OUTLAST server');
+      if(outlastSocket.readyState===WebSocket.OPEN){
+        outlastSocket.send(JSON.stringify({type:'player_join',username:currentUsername||'Player'}));
+      }
+      renderOnlinePanel();
+    };
+    outlastSocket.onmessage=e=>{
+      try{
+        const msg=JSON.parse(e.data);
+        if(msg.type==='player_count') outlastOnlineUsers=Number(msg.players)||0;
+        if(msg.type==='welcome') toast('🌐 '+(msg.message||'Connected'));
+      }catch(_){ }
+      renderOnlinePanel();
+    };
+    outlastSocket.onclose=()=>{outlastOnline=false;outlastSocket=null;renderOnlinePanel();};
+    outlastSocket.onerror=()=>{outlastOnline=false;renderOnlinePanel();toast('⚠️ Could not connect to OUTLAST server');};
+  }catch(_){outlastOnline=false;renderOnlinePanel();toast('⚠️ Multiplayer connection failed');}
+}
+function disconnectOutlastServer(){
+  if(outlastSocket){try{outlastSocket.close();}catch(_){} outlastSocket=null;}
+  outlastOnline=false; renderOnlinePanel(); toast('Disconnected from server');
+}
+function sendOnlinePing(){
+  if(!outlastSocket || outlastSocket.readyState!==WebSocket.OPEN){toast('Connect to the server first');return;}
+  outlastSocket.send(JSON.stringify({type:'player_ping',username:currentUsername||'Player',time:Date.now()}));
+  toast('📡 Server connection is working');
+}
+function renderOnlinePanel(){
+  if(typeof openSub!=='function') return;
+  openSub('🌐 Online / Multiplayer',
+    '<div class="option"><b>Server:</b> outlast-server.onrender.com<div class="small">Status: '+onlineStatus()+'</div><div class="small">Connected players reported: '+outlastOnlineUsers+'</div></div>'+ 
+    '<div class="grid" style="margin-top:12px">'+
+    '<button class="option" data-action="onlineConnect">🔌 CONNECT</button>'+ 
+    '<button class="option" data-action="onlinePing">📡 TEST CONNECTION</button>'+ 
+    '<button class="option" data-action="onlineDisconnect">⛔ DISCONNECT</button>'+ 
+    '</div><p class="small" style="margin-top:12px">This connects your game to the OUTLAST multiplayer server. Full shared-world gameplay can be added on top of this connection.</p>');
+}
+/* Add the Online button to the existing menu without replacing the restored menu layout. */
+(function addOnlineButton(){
+  const host=document.querySelector('#menu .menu-sections');
+  if(!host || document.getElementById('onlineBtn')) return;
+  const section=document.createElement('details');
+  section.className='menu-section';
+  section.innerHTML='<summary>🌐 Online</summary><div class="menu-section-body"><div class="row"><button class="menu-btn" id="onlineBtn">🌐 ONLINE / MULTIPLAYER</button></div></div>';
+  host.appendChild(section);
+  document.getElementById('onlineBtn').onclick=renderOnlinePanel;
+})();
+const onlineActionRouter=()=>{};
+/* Delegate online actions through the existing sub-panel event system. */
+document.getElementById('subContent')?.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-action]'); if(!b) return;
+  const a=b.dataset.action;
+  if(a==='onlineConnect') connectOutlastServer();
+  else if(a==='onlineDisconnect') disconnectOutlastServer();
+  else if(a==='onlinePing') sendOnlinePing();
+});
 </script>
 </body>
 </html>

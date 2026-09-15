@@ -2293,6 +2293,22 @@ window.adminWave=function(){if(!isAdmin())return;if(!game.running){newRunStats()
 window.adminReset=function(){if(!isAdmin())return;save=cloneSave(adminSnapshot||freshSave());toast('↩️ Temporary test state reset');document.getElementById('adminBtn').click()};
 
 /* ---------- Account login (local browser account gate) ---------- */
+const ACCOUNT_RESET_MARKER='outlastAccountResetV3';
+if(!localStorage.getItem(ACCOUNT_RESET_MARKER)){
+  try{
+    const oldAccounts=JSON.parse(localStorage.getItem('outlastAccountsV2')||'{}');
+    for(const key of Object.keys(oldAccounts)){
+      const username=oldAccounts[key]?.username||key;
+      localStorage.removeItem(`outlastSave:${String(username).trim().toLowerCase()}`);
+    }
+  }catch(_){}
+  localStorage.removeItem('outlastAccountsV2');
+  localStorage.removeItem('outlastLastUser');
+  localStorage.removeItem('outlastDeviceSave');
+  localStorage.removeItem('outlastUsername');
+  localStorage.removeItem('survivorStyleSave');
+  localStorage.setItem(ACCOUNT_RESET_MARKER,'1');
+}
 const ACCOUNT_KEY='outlastAccountsV2';
 async function hashPassword(p){const data=new TextEncoder().encode(p);const buf=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
 function getAccounts(){try{return JSON.parse(localStorage.getItem(ACCOUNT_KEY)||'{}')}catch(_){return {}}}

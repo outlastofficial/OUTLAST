@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OUTLAST v2.3.7</title>
+<title>OUTLAST v2.5.2</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -236,7 +236,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.5.1 • Gameplay & Online Expansion</div>
+          <div class="menu-chip">v2.5.2 • Fresh Accounts & Gameplay Expansion</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -1973,6 +1973,7 @@ const updates=[
   ['v2.0.9 — Help & Guide Fix','Fixed the Help & Guide button and a menu script issue that could prevent some other buttons from being initialized.'],
   ['v2.1.0 — Online Leaderboard','Leaderboard scores are now submitted to the website server so players can see the same leaderboard across devices.'],
   ['v2.1.1 — Update News Refresh','Updated the main-menu Update News popup so it matches the current version and explains the newest player-facing content.'],
+  ['v2.5.2 — Fresh Accounts & Gameplay Expansion','Reset local player accounts and saved progress for a fresh account start, while preserving the restored OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
   ['v2.1.2 — Fullscreen Mode','Added a Fullscreen button so players can expand the game to fill the screen. The button toggles between fullscreen and normal mode and updates its label automatically.'],
   ['v2.2.0 — World & Endgame Expansion','Major update: added World 2.0 zones with map-linked bonuses, dedicated boss raids, run objectives with rewards, three build presets, survivor and pet mastery, ranked PvP season tracking, Nightmare+/Omega/Omega+ endgame tiers, squad-style zombie pressure that reacts to nearby allies and gunfire, and expanded endgame progression.'],
   ['v2.2.1 — Fullscreen Button Move','Moved the Fullscreen button to the main Play menu so it is easier to find before starting a run.'],
@@ -1988,9 +1989,9 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='2.3.7';
+const CURRENT_UPDATE_VERSION='2.5.2';
 const CURRENT_UPDATE_INFO={
-  title:'v2.3.7 — Mobile & Gameplay Polish',
+  title:'v2.5.2 — Fresh Accounts & Gameplay Expansion',
   summary:'A polish update focused on better mobile play and more satisfying progression.',
   items:[
     'Mobile players now have a touch joystick plus Dash, Skill, and Ultimate controls.',
@@ -2189,7 +2190,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='2.5.0';
+const OUTLAST_BUILD='2.5.2';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;
@@ -2315,7 +2316,24 @@ function getAccounts(){try{return JSON.parse(localStorage.getItem(ACCOUNT_KEY)||
 function setAccounts(a){localStorage.setItem(ACCOUNT_KEY,JSON.stringify(a))}
 function showPlayerLogin(){
   let el=document.getElementById('outlastLogin');
-  if(!el){el=document.createElement('div');el.id='outlastLogin';el.innerHTML='<div class="outlast-login-card"><div class="outlast-logo">OUTLAST</div><div class="small">Player Login</div><input id="olUser" maxlength="16" autocomplete="username" placeholder="Username"><input id="olPass" type="password" maxlength="64" autocomplete="current-password" placeholder="Password"><div class="row"><button id="olSignIn" class="gold">SIGN IN</button><button id="olCreate">CREATE ACCOUNT</button></div><div id="olError" class="small"></div><div class="small">Your save is stored separately for each username on this browser.</div></div>';document.body.appendChild(el);}
+  if(!el){
+    el=document.createElement('div'); el.id='outlastLogin';
+    el.innerHTML=`<div class="outlast-login-card">
+      <div class="outlast-login-top"><div class="outlast-logo">OUTLAST</div><div class="outlast-build">v2.5.2</div></div>
+      <div class="outlast-login-title">PLAYER ACCESS</div>
+      <div class="outlast-login-sub">Sign in to load your run and continue playing.</div>
+      <div class="outlast-login-fields">
+        <label>USERNAME</label><input id="olUser" maxlength="16" autocomplete="username" placeholder="Enter username">
+        <label>PASSWORD</label><div class="password-wrap"><input id="olPass" type="password" maxlength="64" autocomplete="current-password" placeholder="Enter password"><button type="button" id="olShowPass" class="pass-toggle">SHOW</button></div>
+      </div>
+      <div class="login-actions"><button id="olSignIn" class="gold login-primary">SIGN IN</button><button id="olCreate" class="login-secondary">CREATE ACCOUNT</button></div>
+      <div id="olError" class="login-error"></div>
+      <div class="login-note">Accounts and saves are stored separately on this browser.</div>
+    </div>`;
+    document.body.appendChild(el);
+    document.getElementById('olShowPass')?.addEventListener('click',()=>{const p=document.getElementById('olPass'),b=document.getElementById('olShowPass');if(!p||!b)return;p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'SHOW':'HIDE';});
+    document.getElementById('olPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doPlayerLogin(false);});
+  }
   el.style.display='flex'; document.getElementById('menu').style.display='none';
 }
 async function doPlayerLogin(create){
@@ -2677,13 +2695,12 @@ draw=function(){oldDraw2();if(!game.running)return;for(const e of game.enemies){
 
 /* ---------- Responsive UI ---------- */
 const style=document.createElement('style');style.textContent=`
-#outlastLogin{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#18222c,#080b0f 70%)}
-.outlast-login-card{width:min(420px,90vw);padding:30px;border:1px solid #405363;border-radius:18px;background:rgba(12,18,24,.96);box-shadow:0 20px 80px rgba(0,0,0,.55);text-align:center}
-.outlast-logo{font-size:42px;font-weight:900;letter-spacing:6px;margin-bottom:4px}
-.outlast-login-card input{width:100%;box-sizing:border-box;padding:13px;margin:7px 0;border-radius:10px;border:1px solid #405363;background:#0b1117;color:#fff;font-size:16px}
-.outlast-login-card button{padding:12px;border-radius:10px;border:1px solid #405363;background:#17212a;color:#fff;cursor:pointer;font-weight:800;flex:1}
-.outlast-login-card .gold{background:#66501b}
-@media(max-width:700px){.outlast-login-card{padding:20px}.outlast-logo{font-size:32px}.menu-btn{min-height:46px}.option{min-height:46px}}
+#outlastLogin{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;background:radial-gradient(circle at 50% 35%,rgba(34,48,60,.72),#05080b 68%)}
+.outlast-login-card{width:min(460px,94vw);padding:28px;border:1px solid rgba(130,157,177,.35);border-radius:20px;background:linear-gradient(180deg,rgba(15,23,30,.98),rgba(7,11,15,.98));box-shadow:0 25px 90px rgba(0,0,0,.65);text-align:left;position:relative;overflow:hidden}
+.outlast-login-card:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,transparent,#e7b84b,transparent);opacity:.9}
+.outlast-login-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.outlast-logo{font-size:34px;font-weight:950;letter-spacing:2px}.outlast-build{font-size:11px;color:#aebdca;border:1px solid #3b4a56;border-radius:999px;padding:5px 9px;background:#101820}
+.outlast-login-title{font-size:22px;font-weight:900;letter-spacing:1px}.outlast-login-sub{font-size:13px;color:#9aaab7;margin:7px 0 22px}.outlast-login-fields label{display:block;font-size:10px;font-weight:900;letter-spacing:1.4px;color:#8396a5;margin:12px 0 6px}.outlast-login-card input{width:100%;box-sizing:border-box;padding:13px 14px;border-radius:11px;border:1px solid #344653;background:#0a1117;color:#fff;font-size:16px;outline:none}.outlast-login-card input:focus{border-color:#b28a37;box-shadow:0 0 0 3px rgba(178,138,55,.12)}.password-wrap{display:flex;gap:7px}.password-wrap input{min-width:0}.pass-toggle{flex:0 0 62px!important;padding:10px!important;font-size:10px}.outlast-login-card button{padding:12px;border-radius:10px;border:1px solid #3d4e5b;background:#17212a;color:#fff;cursor:pointer;font-weight:900}.login-actions{display:flex;gap:9px;margin-top:20px}.login-actions button{flex:1}.login-primary{background:#66501b!important;border-color:#a68134!important}.login-secondary{background:#111a21!important}.login-error{min-height:20px;margin-top:12px;color:#ff9a9a;font-size:12px}.login-note{margin-top:9px;font-size:11px;color:#71818d;line-height:1.5}
+@media(max-width:700px){.outlast-login-card{padding:22px}.outlast-logo{font-size:29px}.login-actions{flex-direction:column}.login-actions button{width:100%;min-height:46px}.menu-btn{min-height:46px}.option{min-height:46px}}
 `;document.head.appendChild(style);
 
 /* Initialize migration fields without saving while Admin mode is active. */

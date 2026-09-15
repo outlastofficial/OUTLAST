@@ -1532,6 +1532,18 @@ function showUsernameLogin(){
 document.getElementById('closeSub').onclick=()=>{if(subBackAction){const fn=subBackAction;subBackAction=null;fn()}else closeSub()};
 document.addEventListener('keydown',e=>{if(e.key==='Enter' && document.getElementById('adminPasswordInput')){adminLogin()} if(e.key==='Enter' && document.getElementById('loginPopup')?.style.display!=='none'){finishUsernameLogin()}});
 // Handle buttons created inside sub-panels through one delegated listener.
+/* Feedback button reliability fallback: handles report/idea actions even if other UI routing changes. */
+document.addEventListener('click',async e=>{
+  const b=e.target.closest?.('#feedbackBtn,button[data-action="reportBug"],button[data-action="idea"],button[data-action="submitBug"],button[data-action="submitIdea"]');
+  if(!b||b.disabled)return;
+  const a=b.dataset.action;
+  if(a==='reportBug'){e.preventDefault();e.stopPropagation();reportBugForm();return;}
+  if(a==='idea'){e.preventDefault();e.stopPropagation();ideaForm();return;}
+  if(a==='submitBug'){e.preventDefault();e.stopPropagation();await storeFeedback('bug');return;}
+  if(a==='submitIdea'){e.preventDefault();e.stopPropagation();await storeFeedback('idea');return;}
+  if(b.id==='feedbackBtn'){e.preventDefault();e.stopPropagation();feedbackOpen();}
+},true);
+
 document.getElementById('subContent').addEventListener('click',e=>{
  const b=e.target.closest('button[data-action]'); if(!b) return;
  const a=b.dataset.action, v=b.dataset.value;
@@ -2595,8 +2607,8 @@ function feedbackOpen(){openSub('💬 Bug Reports & Update Ideas',
  '<div class="grid"><button class="option" data-action="reportBug">🐛 Report a Bug<div class="small">Earn 1,000 coins after review if valid.</div></button>'+ 
  '<button class="option" data-action="idea">💡 Submit Update Idea<div class="small">Earn 500 coins after review.</div></button></div>'+ 
  '<div class="option"><b>Review policy</b><div class="small">Pending → Accepted/Rejected. Duplicate/fake reports cannot be farmed.</div></div>');}
-function reportBugForm(){openSub('🐛 Report a Bug','<input id="fbTitle" placeholder="Bug title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="What happened? What should have happened?" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button class="gold" data-action="submitBug">SUBMIT BUG REPORT</button>');}
-function ideaForm(){openSub('💡 Submit Update Idea','<input id="fbTitle" placeholder="Idea title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="Describe your idea" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button class="gold" data-action="submitIdea">SUBMIT IDEA</button>');}
+function reportBugForm(){openSub('🐛 Report a Bug','<input id="fbTitle" type="text" placeholder="Bug title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="What happened? What should have happened?" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold" id="submitBugBtn" data-action="submitBug">SUBMIT BUG REPORT</button>');setTimeout(()=>document.getElementById('fbTitle')?.focus(),0);}
+function ideaForm(){openSub('💡 Submit Update Idea','<input id="fbTitle" type="text" placeholder="Idea title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="Describe your idea" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold" id="submitIdeaBtn" data-action="submitIdea">SUBMIT IDEA</button>');setTimeout(()=>document.getElementById('fbTitle')?.focus(),0);}
 const OUTLAST_HTTP_SERVER='https://outlast-server.onrender.com';
 async function syncFeedbackToServer(){
   let arr=[]; try{arr=JSON.parse(outlastStorage.getItem('outlastFeedback')||'[]');}catch(_){arr=[];}
@@ -2659,7 +2671,7 @@ addMenuButton('weeklyBoardBtn','🏆 WEEKLY LEADERBOARD',renderWeeklyLeaderboard
 (function addFeedbackToMore(){
  const more=document.querySelector('[data-page-content="more"] .menu-cards');
  if(!more||document.getElementById('feedbackBtn'))return;
- const card=document.createElement('div');card.className='menu-card';card.innerHTML='<h3>Bug / Idea Submission</h3><button class="menu-btn" id="feedbackBtn">💬 Bugs & Ideas</button>';more.appendChild(card);
+ const card=document.createElement('div');card.className='menu-card';card.innerHTML='<h3>Bug / Idea Submission</h3><button type="button" class="menu-btn" id="feedbackBtn">💬 Bugs & Ideas</button>';more.appendChild(card);
  document.getElementById('feedbackBtn').onclick=feedbackOpen;
 })();
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OUTLAST v2.5.2</title>
+<title>OUTLAST v2.3.7</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -236,7 +236,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.5.2 • Fresh Accounts & Gameplay Expansion</div>
+          <div class="menu-chip">v2.5.1 • Gameplay & Online Expansion</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -1973,7 +1973,6 @@ const updates=[
   ['v2.0.9 — Help & Guide Fix','Fixed the Help & Guide button and a menu script issue that could prevent some other buttons from being initialized.'],
   ['v2.1.0 — Online Leaderboard','Leaderboard scores are now submitted to the website server so players can see the same leaderboard across devices.'],
   ['v2.1.1 — Update News Refresh','Updated the main-menu Update News popup so it matches the current version and explains the newest player-facing content.'],
-  ['v2.5.2 — Fresh Accounts & Gameplay Expansion','Reset local player accounts and saved progress for a fresh account start, while preserving the restored OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
   ['v2.1.2 — Fullscreen Mode','Added a Fullscreen button so players can expand the game to fill the screen. The button toggles between fullscreen and normal mode and updates its label automatically.'],
   ['v2.2.0 — World & Endgame Expansion','Major update: added World 2.0 zones with map-linked bonuses, dedicated boss raids, run objectives with rewards, three build presets, survivor and pet mastery, ranked PvP season tracking, Nightmare+/Omega/Omega+ endgame tiers, squad-style zombie pressure that reacts to nearby allies and gunfire, and expanded endgame progression.'],
   ['v2.2.1 — Fullscreen Button Move','Moved the Fullscreen button to the main Play menu so it is easier to find before starting a run.'],
@@ -1989,9 +1988,9 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='2.5.2';
+const CURRENT_UPDATE_VERSION='2.3.7';
 const CURRENT_UPDATE_INFO={
-  title:'v2.5.2 — Fresh Accounts & Gameplay Expansion',
+  title:'v2.3.7 — Mobile & Gameplay Polish',
   summary:'A polish update focused on better mobile play and more satisfying progression.',
   items:[
     'Mobile players now have a touch joystick plus Dash, Skill, and Ultimate controls.',
@@ -2190,7 +2189,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='2.5.2';
+const OUTLAST_BUILD='2.5.0';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;

@@ -38,6 +38,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <button class="menu-btn" id="mapBtn">🗺️ CHOOSE MAP</button>
             <button class="menu-btn" id="difficultyBtn">🎚️ DIFFICULTY</button>
             <button class="menu-btn" id="modeBtn">🎮 GAME MODE</button>
+            <button class="menu-btn gold" id="onlineBtn">🌐 ONLINE / MULTIPLAYER</button>
             
           </div>
         </div>
@@ -584,6 +585,28 @@ document.getElementById('mapBtn').onclick=()=>{openSub('🗺️ Choose Map','<di
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
 window.selectDiff=(x)=>{save.difficulty=x;persist();closeSub()};
+const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
+let outlastSocket=null;
+function openOnlinePanel(){
+  const connected=outlastSocket && outlastSocket.readyState===WebSocket.OPEN;
+  openSub('🌐 Online / Multiplayer',`<div class="note"><b>Server:</b> outlast-server.onrender.com</div><div id="onlineStatus" class="statpill">${connected?'🟢 Connected':'⚪ Disconnected'}</div><div id="onlinePlayers" class="statpill">Players: ${connected?'connected':'—'}</div><div class="row" style="margin-top:12px"><button class="menu-btn green" id="onlineConnect">${connected?'RECONNECT':'CONNECT TO SERVER'}</button><button class="menu-btn danger" id="onlineDisconnect" ${connected?'':'disabled'}>DISCONNECT</button></div><p class="small">This connects OUTLAST to the multiplayer server. Multiplayer rooms and player syncing can be added after the connection test works.</p>`);
+  document.getElementById('onlineConnect').onclick=connectOutlastServer;
+  document.getElementById('onlineDisconnect').onclick=disconnectOutlastServer;
+}
+function setOnlineStatus(text,good=false){const e=document.getElementById('onlineStatus');if(e){e.textContent=(good?'🟢 ':'⚪ ')+text;}}
+function connectOutlastServer(){
+  if(!('WebSocket' in window)){toast('WebSocket is not supported in this browser');return;}
+  if(outlastSocket) try{outlastSocket.close()}catch(_){ }
+  setOnlineStatus('Connecting…');
+  try{outlastSocket=new WebSocket(OUTLAST_SERVER_URL);
+    outlastSocket.onopen=()=>{setOnlineStatus('Connected',true);const p=document.getElementById('onlinePlayers');if(p)p.textContent='Players: connected';toast('🌐 Connected to OUTLAST server');outlastSocket.send(JSON.stringify({type:'join',username:currentUsername}));openOnlinePanel();};
+    outlastSocket.onmessage=(e)=>{try{const m=JSON.parse(e.data);if(m.type==='welcome')toast('🌐 '+m.message);if(m.type==='playerCount'){const p=document.getElementById('onlinePlayers');if(p)p.textContent='Players: '+m.count;}}catch(_){} };
+    outlastSocket.onerror=()=>{setOnlineStatus('Connection failed');toast('Could not connect to OUTLAST server');};
+    outlastSocket.onclose=()=>{if(document.getElementById('onlineStatus'))setOnlineStatus('Disconnected');};
+  }catch(_){setOnlineStatus('Connection failed');toast('Could not connect to OUTLAST server');}
+}
+function disconnectOutlastServer(){if(outlastSocket){try{outlastSocket.close()}catch(_){ }outlastSocket=null;}setOnlineStatus('Disconnected');const b=document.getElementById('onlineDisconnect');if(b)b.disabled=true;toast('Disconnected from server');}
+document.getElementById('onlineBtn').onclick=openOnlinePanel;
 document.getElementById('modeBtn').onclick=()=>{openSub('🎮 Game Mode','<div class="grid">'+Object.keys(modeDefs).map(x=>`<button class="option ${save.mode===x?'selected':''}" data-action="mode" data-value="${x}"><b>${x}</b><div class="small">${x==='Speed Run'?'Survive '+modeDefs[x].timeLimit+' seconds':x==='Endless'?'No time limit':x==='Boss Rush'?'Bosses appear much more often':x==='Global'?'High-score challenge for the leaderboard':'Standard survival'}</div></button>`).join('')+'</div>')};
 window.selectMode=(x)=>{save.mode=x;persist();closeSub()};
 function renderUpgradeTree(){

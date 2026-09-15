@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OUTLAST v2.5.5</title>
+<title>OUTLAST v2.5.6</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -1972,7 +1972,7 @@ const updates=[
   ['v2.0.9 — Help & Guide Fix','Fixed the Help & Guide button and a menu script issue that could prevent some other buttons from being initialized.'],
   ['v2.1.0 — Online Leaderboard','Leaderboard scores are now submitted to the website server so players can see the same leaderboard across devices.'],
   ['v2.1.1 — Update News Refresh','Updated the main-menu Update News popup so it matches the current version and explains the newest player-facing content.'],
-  ['v2.5.5 — Username-Only Login','Removed the broken password account system and replaced it with a simple username-only login while preserving the OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
+  ['v2.5.6 — Button Reliability Fix','Removed the broken password account system and replaced it with a simple username-only login while preserving the OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
   ['v2.1.2 — Fullscreen Mode','Added a Fullscreen button so players can expand the game to fill the screen. The button toggles between fullscreen and normal mode and updates its label automatically.'],
   ['v2.2.0 — World & Endgame Expansion','Major update: added World 2.0 zones with map-linked bonuses, dedicated boss raids, run objectives with rewards, three build presets, survivor and pet mastery, ranked PvP season tracking, Nightmare+/Omega/Omega+ endgame tiers, squad-style zombie pressure that reacts to nearby allies and gunfire, and expanded endgame progression.'],
   ['v2.2.1 — Fullscreen Button Move','Moved the Fullscreen button to the main Play menu so it is easier to find before starting a run.'],
@@ -1990,7 +1990,7 @@ const updates=[
 }
 const CURRENT_UPDATE_VERSION='2.5.2';
 const CURRENT_UPDATE_INFO={
-  title:'v2.5.5 — Username-Only Login',
+  title:'v2.5.6 — Button Reliability Fix',
   summary:'A polish update focused on better mobile play and more satisfying progression.',
   items:[
     'Mobile players now have a touch joystick plus Dash, Skill, and Ultimate controls.',
@@ -2730,5 +2730,56 @@ document.getElementById('subContent')?.addEventListener('click',e=>{
 (function(){function refreshMobileAvatar(){const cv=document.getElementById('mobileAvatarCanvas');if(!cv||!currentUsername||typeof chars==='undefined'||typeof skins==='undefined')return;const ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;const mctx=cv.getContext('2d');mctx.save();mctx.scale(cv.width/180,cv.height/220);drawAvatarPreview(mctx,{...(ch.visual||{}),body:sk.color},sk.color||'#5e9fff');mctx.restore();}setInterval(refreshMobileAvatar,500);})();
 </script>
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
-Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div></body>
+Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
+<script>
+/* OUTLAST v2.5.6 — button safety layer */
+(function(){
+  function byId(id){return document.getElementById(id)}
+  function safe(fn){try{if(typeof fn==='function')fn()}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error — check console');}}
+  document.addEventListener('click',function(e){
+    const b=e.target.closest && e.target.closest('button');
+    if(!b || b.disabled) return;
+    const id=b.id;
+    if(id==='loginBtn'){
+      e.preventDefault(); e.stopImmediatePropagation();
+      safe(typeof finishUsernameLogin==='function'?finishUsernameLogin:null);
+      return;
+    }
+    if(id==='startBtn'){
+      e.preventDefault();
+      safe(function(){if(typeof newRunStats==='function')newRunStats();if(typeof startGame==='function')startGame();const c=document.getElementById('game');if(c)c.focus();});
+      return;
+    }
+    if(id==='onlineBtn'){
+      e.preventDefault();
+      safe(typeof renderOnlinePanel==='function'?renderOnlinePanel:null);
+      return;
+    }
+    const a=b.getAttribute('data-action');
+    if(a==='onlineConnect') safe(typeof connectOutlastServer==='function'?connectOutlastServer:null);
+    else if(a==='onlineDisconnect') safe(typeof disconnectOutlastServer==='function'?disconnectOutlastServer:null);
+    else if(a==='onlinePing') safe(typeof sendOnlinePing==='function'?sendOnlinePing:null);
+  },true);
+
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Enter')return;
+    const target=e.target;
+    const typing=target && (target.matches?.('input,textarea,select') || target.isContentEditable);
+    if(typing && target.id==='usernameInput'){
+      e.preventDefault();
+      safe(typeof finishUsernameLogin==='function'?finishUsernameLogin:null);
+    }
+  },true);
+
+  window.addEventListener('error',function(e){
+    console.error('OUTLAST runtime error:',e.error||e.message);
+  });
+
+  /* Make sure dynamically-created buttons remain clickable. */
+  const style=document.createElement('style');
+  style.textContent='button{pointer-events:auto!important;cursor:pointer!important}button:disabled{cursor:not-allowed!important}';
+  document.head.appendChild(style);
+})();
+</script>
+</body>
 </html>

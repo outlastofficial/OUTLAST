@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OUTLAST v2.5.7</title>
+<title>OUTLAST v2.5.10</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -236,7 +236,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.5.5 • Username Login & Gameplay Expansion</div>
+          <div class="menu-chip">v2.6.0 • Cumulative Update</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -313,7 +313,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div>
             <div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
-            <div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div>
+            <div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div><div class="menu-card"><h3>Prize Wheel</h3><button class="menu-btn gold" id="prizeWheelBtn">🎡 Free Prize Wheel</button></div>
           </div>
         </section>
       </main>
@@ -323,7 +323,18 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
 <div id="subPanel" class="panel"><div class="card"><div id="subContent"></div><div class="spacer"></div><div class="row"><button id="closeSub">← Back</button></div></div></div>
 
 <script>
-const outlastStorage=(()=>{try{const s=window.localStorage;const probe='__outlast_storage_probe__';s.setItem(probe,'1');s.removeItem(probe);return s}catch(_){const mem=Object.create(null);return {getItem:k=>Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null,setItem:(k,v)=>{mem[k]=String(v)},removeItem:k=>{delete mem[k]},clear:()=>{for(const k of Object.keys(mem))delete mem[k]}}}})();
+/* OUTLAST v2.5.7 — safe storage bootstrap */
+const outlastStorage=(()=>{
+  try{
+    const s=window.localStorage;
+    const probe='__outlast_storage_probe__';
+    s.setItem(probe,'1'); s.removeItem(probe);
+    return s;
+  }catch(_){
+    const mem=Object.create(null);
+    return {getItem:k=>Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null,setItem:(k,v)=>{mem[k]=String(v)},removeItem:k=>{delete mem[k]},clear:()=>{for(const k of Object.keys(mem))delete mem[k]}};
+  }
+})();
 </script>
 <script>
 'use strict';
@@ -371,7 +382,15 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>{keys[keyName(e)]=false;keyCodes[e.code||'']=false;});
 addEventListener('blur',()=>{for(const k of Object.keys(keys))keys[k]=false;for(const k of Object.keys(keyCodes))keyCodes[k]=false;});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k of Object.keys(keys))keys[k]=false;for(const k of Object.keys(keyCodes))keyCodes[k]=false;}});
-c.addEventListener('click',()=>c.focus());
+c.addEventListener('click',e=>{
+  c.focus();
+  if(game.upgradeOpen){
+    const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
+    const x=(e.clientX-r.left)*sx,y=(e.clientY-r.top)*sy;
+    if(y>=180&&y<=465){for(let i=0;i<3;i++){const bx=45+i*350;if(x>=bx&&x<=bx+325){chooseUpgrade(i);break}}}
+  }
+});
+
 (function setupMobileControls(){
  const controls=document.getElementById('mobileControls'),stick=document.getElementById('mobileStick'),knob=document.getElementById('mobileStickKnob');
  if(!controls||!stick||!knob)return;
@@ -771,7 +790,7 @@ function renderQuestBoard(){
  openSub('📜 Quest Board',`<p class="note">Complete daily quests for World Keys. Quests reset each day.</p><div class="grid">${rows}</div>`);
 }
 
-function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1}}
+function freshSave(){return {coins:0,worldKeys:0,prizeWheelSpins:0,prizeWheelKills:0,prizeWheelDay:'',prizeWheelUsedToday:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1}}
 function ensureMegaSave(){
   if(!save||typeof save!=='object')return;
   if(!Array.isArray(save.builderMods))save.builderMods=[];
@@ -793,6 +812,10 @@ function ensureMegaSave(){
   if(typeof save.raidClears!=='number')save.raidClears=0;
   if(typeof save.worldKeys!=='number')save.worldKeys=0;
   if(typeof save.pvpSeason!=='number')save.pvpSeason=1;
+  if(typeof save.prizeWheelSpins!=='number')save.prizeWheelSpins=0;
+  if(typeof save.prizeWheelKills!=='number')save.prizeWheelKills=0;
+  if(typeof save.prizeWheelDay!=='string')save.prizeWheelDay='';
+  if(typeof save.prizeWheelUsedToday!=='number')save.prizeWheelUsedToday=0;
   if(typeof save.materials!=='number')save.materials=0;
   if(typeof save.keys!=='number')save.keys=0;
   if(typeof save.mythicDust!=='number')save.mythicDust=0;
@@ -907,7 +930,7 @@ function startGame(){
   const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
   const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
   game.running=true;game.paused=false;game.over=false;syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.pvpWinner=null;game.pvp={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
-  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,luck:3*up('Lucky Drops'),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
+  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
   game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
   game.player2=null;
   if(save.mode==='1v1 Arena'){
@@ -1133,11 +1156,11 @@ function shootPvP(owner){
 function useUltimate(){const p=game.player;if(!p||p.ult<100)return;p.ult=0;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];damageEnemy(e,120*(p.ultDamage||1));if(e.hp<=0)killEnemy(e)}game.effects.push({x:p.x,y:p.y,t:.7,r:180})}
 function damageEnemy(e,dmg){if(!e||!game.player||!Number.isFinite(dmg))return;let crit=Math.random()<Math.min(.95,game.player.crit);if(crit)dmg*=game.player.critMult;if(e.boss)dmg*=game.player.bossMult;if(e.kind==='elite')dmg*=1+.03*(save.upgrades.Executioner||0);if(game.player.armorPierce)dmg*=1+game.player.armorPierce;e.hp-=Math.max(0,dmg);e.hitFlash=.12;burst(e.x,e.y,crit?'#fff08a':'#ff7b6e',crit?8:2,crit?80:55);if(crit)ring(e.x,e.y,'#fff08a',24,.22);if(game.player&&game.player===game.player2){}if(dmg>(save.records.bestDamage||0))save.records.bestDamage=dmg;game.shots.push({x:e.x,y:e.y,text:Math.floor(dmg),t:.5,crit})}
 function applyElement(e){if(!game.player)return;const el=game.player.element;if(el==='Fire')e.burn=3;if(el==='Ice')e.slowTimer=Math.max(e.slowTimer||0,3);if(el==='Shock')e.chainTimer=.5;if(el==='Poison')e.poison=4;if(el==='Void'&&(e.boss||e.kind==='elite'))e.hp-=game.player.damage*.35}
-function killEnemy(target){const e=typeof target==='number'?game.enemies[target]:target;const i=e?game.enemies.indexOf(e):-1;if(!e||i<0||e.__dead)return;e.__dead=true;burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);run.kills++;save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);game.combo=Math.min(50,game.combo+1);if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;if(Math.random()<.12)save.materials++;game.comboTimer=4;const comboMult=1+Math.min(20,game.combo)*0.03;game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
- const val=e.boss?Math.max(1,game.xpNeed-game.xp):Math.max(1,Math.floor(e.xp*game.stats.rewardMult*1.06));game.gems.push({x:e.x,y:e.y,value:val,icon:'◆'}); if(e.boss||e.kind==='golden') {ring(e.x,e.y,'#ffd84d',34,.55);burst(e.x,e.y,'#ffd84d',12,100);} if(e.kind==='golden')game.coins.push({x:e.x+8,y:e.y+8,value:25*game.player.coinMult,icon:'$'}); if(e.kind==='elite'||e.boss||Math.random()<Math.min(.18,.03*game.player.coinMult+(game.player.luck||0)*.001))game.coins.push({x:e.x+5,y:e.y+5,value:(e.boss?30:e.kind==='elite'?6:2)*game.player.coinMult,icon:'$'}); if(e.boss){run.bosses++;} if(run.kills%35===0){save.keys++;save.records.totalChests++;game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});toast('□ Treasure cache found!');}
- if(game.player.treasure||Math.random()<Math.min(.012,.002+(game.player.luck||0)*.0003))game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]}); if(game.player.shockwave && run.kills%12===0){for(let j=game.enemies.length-1;j>=0;j--){const q=game.enemies[j];if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){damageEnemy(q,game.player.damage*.8);if(q.hp<=0)killEnemy(j)}}game.effects.push({x:e.x,y:e.y,t:.3,r:150})} if(game.player.vampire){game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire)} game.enemies.splice(i,1);
+function killEnemy(target){const e=typeof target==='number'?game.enemies[target]:target;const i=e?game.enemies.indexOf(e):-1;if(!e||i<0||e.__dead)return;e.__dead=true;burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);run.kills++;save.prizeWheelKills=(save.prizeWheelKills||0)+1;awardPrizeWheelSpinByKills();save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);game.combo=Math.min(50,game.combo+1);if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;if(Math.random()<.12)save.materials++;game.comboTimer=4;const comboMult=1+Math.min(20,game.combo)*0.03;game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
+ const val=e.boss?Math.max(1,game.xpNeed-game.xp):Math.max(1,Math.floor(e.xp*game.stats.rewardMult*1.06));game.gems.push({x:e.x,y:e.y,value:val,icon:'◆'}); if(e.boss||e.kind==='golden') {ring(e.x,e.y,'#ffd84d',34,.55);burst(e.x,e.y,'#ffd84d',12,100);} if(e.kind==='golden')game.coins.push({x:e.x+8,y:e.y+8,value:25*game.player.coinMult,icon:'$'}); const lootLuck=Math.max(0,Number(game.player.lootLuck||0)); if(e.kind==='elite'||e.boss||Math.random()<Math.min(.18,.025*game.player.coinMult+lootLuck*.002))game.coins.push({x:e.x+5,y:e.y+5,value:(e.boss?30:e.kind==='elite'?6:2)*game.player.coinMult,icon:'$'}); if(e.boss){run.bosses++;} if(run.kills%35===0){save.keys++;save.records.totalChests++;game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});toast('□ Treasure cache found!');}
+ const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));const radarMult=game.player.treasure?3:1;const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult); if(Math.random()<powerupChance)game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]}); if(game.player.shockwave && run.kills%12===0){for(let j=game.enemies.length-1;j>=0;j--){const q=game.enemies[j];if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){damageEnemy(q,game.player.damage*.8);if(q.hp<=0)killEnemy(j)}}game.effects.push({x:e.x,y:e.y,t:.3,r:150})} if(game.player.vampire){game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire)} game.enemies.splice(i,1);
 }
-function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices()}
+function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=false;game.upgradeOpen=true;game.upgradeChoices=makeChoices()}
 const upgradeRarities={
  Common:{mult:1,label:'COMMON',weight:55},
  Uncommon:{mult:1.5,label:'UNCOMMON',weight:25},
@@ -1173,14 +1196,14 @@ const tempUp=[
  ['Lifesteal',v=>`+${(0.2*v).toFixed(1)} HP per kill effect`,v=>game.player.vampire=(game.player.vampire||0)+.2*v],
  ['Armor Pierce',v=>`+${Math.round(15*v)}% enemy defense ignored`,v=>game.player.armorPierce=(game.player.armorPierce||0)+.15*v],
  ['Double Tap',v=>`${Math.round(20*v)}% chance to fire an extra shot`,v=>game.player.doubleTap=true],
- ['Treasure Radar',v=>`Better coin and chest luck`,v=>game.player.treasure=true],
+ ['Treasure Radar',v=>`3x power-up drop chance`,v=>game.player.treasure=true],
  ['Shockwave',v=>`Every ${Math.max(6,Math.round(12/v))}th kill can blast nearby enemies`,v=>game.player.shockwave=true],
- ['Lucky Charm',v=>`+${Math.round(5*v)} Luck`,v=>game.player.luck=(game.player.luck||0)+5*v],
- ['Fortune',v=>`+${Math.round(10*v)} Luck`,v=>game.player.luck=(game.player.luck||0)+10*v],
- ['Treasure Luck',v=>`+${Math.round(15*v)} Luck`,v=>game.player.luck=(game.player.luck||0)+15*v],
- ['Scavenger Luck',v=>`+${Math.round(8*v)}% rare drop chance`,v=>game.player.luck=(game.player.luck||0)+8*v]
+ ['Lucky Charm',v=>`+${Math.round(5*v)} Upgrade Luck`,v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
+  ['Fortune',v=>`+${Math.round(10*v)} Loot Luck`,v=>{game.player.lootLuck=(game.player.lootLuck||0)+10*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
+  ['Treasure Luck',v=>`+${Math.round(15*v)} Treasure Luck`,v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+15*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
+  ['Scavenger Luck',v=>`+${Math.round(8*v)} Loot Luck`,v=>{game.player.lootLuck=(game.player.lootLuck||0)+8*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}]
 ];
-function rollUpgradeRarity(){const total=Object.values(upgradeRarities).reduce((a,r)=>a+r.weight,0);let r=Math.random()*total;for(const [name,def] of Object.entries(upgradeRarities)){r-=def.weight;if(r<=0)return name}return 'Common'}
+function rollUpgradeRarity(){const luck=Math.max(0,Number(game.player?.upgradeLuck||0));const bonus=Math.min(.8,luck/100);const weights={Common:55*(1-bonus),Uncommon:25*(1-bonus*.65),Rare:12*(1+bonus*.75),Epic:6*(1+bonus*1.35),Legendary:2*(1+bonus*2.4)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name];if(r<=0)return name}return 'Common'}
 function makeChoices(){const a=[...tempUp],out=[];while(out.length<3){const i=Math.floor(Math.random()*a.length);if(out.some(u=>u[0]===a[i][0]))continue;const [name,desc,apply]=a.splice(i,1)[0],rarity=rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;out.push([name,desc(mult),()=>apply(mult),rarity])}return out}
 function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[]}
 function upg(name){return save.upgrades[name]||0}
@@ -1215,7 +1238,7 @@ function gameAdminAction(action){
 document.getElementById('gameAdminToggle').onclick=()=>{if(!adminUnlocked||!game.running)return;const panel=document.getElementById('gameAdminPanel');panel.style.display=panel.style.display==='block'?'none':'block';};
 document.querySelectorAll('[data-game-admin]').forEach(btn=>btn.addEventListener('click',()=>gameAdminAction(btn.dataset.gameAdmin)));
 function update(dt){
- if(!game.running||game.paused||game.upgradeOpen)return;
+ if(!game.running||game.paused)return;
  const p=game.player;if(p.hp<p.max*.25){game.lowHpAlert=(game.lowHpAlert||0)+dt;if(game.lowHpAlert>.9){game.lowHpAlert=0;game.effects.push({x:p.x,y:p.y,t:.18,r:40,color:'#ff3d4d'});}}else game.lowHpAlert=0;if(p.dashCooldown>0)p.dashCooldown-=dt;if(p.skillCooldown>0)p.skillCooldown-=dt;let dx=0,dy=0;if(save.mode==='1v1 Arena'){if(held('w','KeyW'))dy--;if(held('s','KeyS'))dy++;if(held('a','KeyA'))dx--;if(held('d','KeyD'))dx++;}else{if(held('w','KeyW')||held('arrowup','ArrowUp'))dy--;if(held('s','KeyS')||held('arrowdown','ArrowDown'))dy++;if(held('a','KeyA')||held('arrowleft','ArrowLeft'))dx--;if(held('d','KeyD')||held('arrowright','ArrowRight'))dx++;}const len=Math.hypot(dx,dy)||1;const moveBoost=(p.adrenaline&&p.hp<p.max*.5?1.2:1)+(p.tempSpeed||0)/Math.max(1,p.speed);const movementSpeed=Math.min(p.speedCap||Infinity,p.speed*moveBoost*(p.adminSpeedBoost?1.75:1));
  if(p.infiniteShield)p.shield=Math.max(p.shield||0,999);const nx=Math.max(30,Math.min(W-30,p.x+dx/len*movementSpeed*dt));const ny=Math.max(30,Math.min(H-30,p.y+dy/len*movementSpeed*dt));tryMoveEntity(p,nx,ny);game.time+=dt;updateWorldObjective(dt);
  if(save.mode!=='1v1 Arena'){game.mapEventTimer-=dt;if(game.mapEventTimer<=0)triggerMapEvent();}
@@ -1251,12 +1274,12 @@ function update(dt){
  if(Math.random()<.001*dt && game.powerups.length<MAX_PICKUPS)game.powerups.push({x:p.x+(Math.random()-.5)*500,y:p.y+(Math.random()-.5)*500,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]});
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
  for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.pvp){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.pvpWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
-for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.luck||0)*.003))e.slowTimer=1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>p.pierce)break}}if((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
- for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*.65)}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1,slow=p.frost&&d<130?.5:1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}const nearby=game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const enx=e.x+ex/d*e.speed*slow*squadBoost*dt,eny=e.y+ey/d*e.speed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*(p.shield>0?Math.max(.05,.15/p.shieldEfficiency):1)*p.damageTakenMult;p.hp-=actual*dt;p.shield=Math.max(0,p.shield-dt)}}
+for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.lootLuck||0)*.003))e.slowTimer=1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>p.pierce)break}}if((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
+ for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1,slow=p.frost&&d<130?.5:1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}const nearby=game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const enx=e.x+ex/d*e.speed*slow*squadBoost*dt,eny=e.y+ey/d*e.speed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*(p.shield>0?Math.max(.05,.15/p.shieldEfficiency):1)*p.damageTakenMult;p.hp-=actual*dt;p.shield=Math.max(0,p.shield-dt)}}
  // Safety cleanup: never render or process an enemy that has already been killed.
  for(let i=game.enemies.length-1;i>=0;i--){const e=game.enemies[i];if(!e||e.__dead||e.hp<=0){if(e&&!e.__dead)killEnemy(e);else game.enemies.splice(i,1);}}
  for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(!b.enemy)continue; b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue}if(Math.hypot(b.x-p.x,b.y-p.y)<b.r+18){p.hp-=b.dmg;game.bullets.splice(i,1);continue}if(b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
- for(let i=game.gems.length-1;i>=0;i--){const g=game.gems[i],d=Math.hypot(g.x-p.x,g.y-p.y);if(d<70||d<p.magnet+(p.tempMagnet||0)){let mult=p.lucky&&Math.random()<Math.min(.6,.25+(p.luck||0)*.003)?2:1;game.xp+=g.value*mult*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;game.gems.splice(i,1);if(game.xp>=game.xpNeed){levelUp();break}}}
+ for(let i=game.gems.length-1;i>=0;i--){const g=game.gems[i],d=Math.hypot(g.x-p.x,g.y-p.y);if(d<70||d<p.magnet+(p.tempMagnet||0)){let mult=p.lucky&&Math.random()<Math.min(.6,.25+(p.lootLuck||0)*.003)?2:1;game.xp+=g.value*mult*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;game.gems.splice(i,1);if(game.xp>=game.xpNeed){levelUp();break}}}
  for(let i=game.coins.length-1;i>=0;i--){const q=game.coins[i];if(Math.hypot(q.x-p.x,q.y-p.y)<p.magnet){run.coins+=q.value*(game.event==='COIN RUSH'?2:1);game.score+=q.value*25*game.stats.scoreMult;game.coins.splice(i,1)}}
  for(let i=game.shrines.length-1;i>=0;i--){
    const s=game.shrines[i];s.ttl-=dt;
@@ -1491,7 +1514,7 @@ function draw(){
   ctx.fillStyle='#7f8c99';ctx.font='14px Arial';ctx.fillText('All current run stats',startX,startY+8*lineH+18);
   ctx.textAlign='left';
 }
- if(game.upgradeOpen){ctx.fillStyle='rgba(0,0,0,.94)';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',445,92);ctx.font='20px Arial';ctx.fillText('Choose 1, 2, or 3',450,128);game.upgradeChoices.forEach((u,i)=>{let x=45+i*350;const rarity=u[3],rdef=upgradeRarities[rarity];ctx.fillStyle='#23303b';ctx.fillRect(x,180,325,285);ctx.strokeStyle=rarity==='Legendary'?'#ffd84d':rarity==='Epic'?'#d28cff':rarity==='Rare'?'#72a8ff':rarity==='Uncommon'?'#71d68a':'#9aa5ad';ctx.lineWidth=4;ctx.strokeRect(x,180,325,285);ctx.fillStyle=ctx.strokeStyle;ctx.font='16px Arial';ctx.fillText(rdef.label, x+18,210);ctx.fillStyle='#ffe56d';ctx.font='30px Arial';ctx.fillText(String(i+1),x+145,245);ctx.fillStyle='#fff';ctx.font='22px Arial';ctx.fillText(u[0],x+18,300);ctx.fillStyle='#c4ced8';ctx.font='17px Arial';ctx.fillText(u[1],x+18,340);ctx.fillStyle='#98a7b6';ctx.font='14px Arial';ctx.fillText('Rarity affects the power of this upgrade',x+18,380);})}
+ if(game.upgradeOpen){ctx.fillStyle='rgba(0,0,0,.94)';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',445,92);ctx.font='20px Arial';ctx.fillText('Choose 1, 2, or 3',450,128);ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0),330,153);game.upgradeChoices.forEach((u,i)=>{let x=45+i*350;const rarity=u[3],rdef=upgradeRarities[rarity];ctx.fillStyle='#23303b';ctx.fillRect(x,180,325,285);ctx.strokeStyle=rarity==='Legendary'?'#ffd84d':rarity==='Epic'?'#d28cff':rarity==='Rare'?'#72a8ff':rarity==='Uncommon'?'#71d68a':'#9aa5ad';ctx.lineWidth=4;ctx.strokeRect(x,180,325,285);ctx.fillStyle=ctx.strokeStyle;ctx.font='16px Arial';ctx.fillText(rdef.label, x+18,210);ctx.fillStyle='#ffe56d';ctx.font='30px Arial';ctx.fillText(String(i+1),x+145,245);ctx.fillStyle='#fff';ctx.font='22px Arial';ctx.fillText(u[0],x+18,300);ctx.fillStyle='#c4ced8';ctx.font='17px Arial';ctx.fillText(u[1],x+18,340);ctx.fillStyle='#98a7b6';ctx.font='14px Arial';ctx.fillText('Rarity affects the power of this upgrade',x+18,380);})}
 }
 function drawEnd(v){const msg=save.mode==='1v1 Arena'?'1V1 '+(game.pvpWinner||'MATCH OVER'):v?'VICTORY!':'GAME OVER';ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.font='52px Arial';ctx.fillText(msg,420,240);ctx.font='22px Arial';ctx.fillText('Score: '+Math.floor(game.score),460,285);ctx.fillText('Level: '+game.level,460,315);ctx.fillText('Kills: '+run.kills,460,345);ctx.fillText('Coins: '+run.coins,460,375);ctx.fillText('Press Enter for Main Menu',395,430);document.getElementById('exitGameBtn').style.display='none';syncGameAdminUI();}
 addEventListener('keydown',e=>{if(!game.running && e.key==='Enter' && currentUsername){fatalGameError='';game.endScreen=false;game.endVictory=false;game.paused=false;document.getElementById('menu').style.display='flex';updateMenuSummary()} });
@@ -1555,7 +1578,16 @@ document.getElementById('subContent').addEventListener('click',e=>{
  else if(a==='randomRun') prepareRandomChallenge(); else if(a==='randomRunStart') startRandomChallenge();
  else if(a==='pet') selectPet(v); else if(a==='relic') selectRelic(v); else if(a==='charm') selectCharm(v); else if(a==='forgeWeapon') forgeWeapon(); else if(a==='buyCore') buyForgeCore(); else if(a==='forgeBundle') buyForgeBundle(); else if(a==='refineForge') refineForge(); else if(a==='shop') buyShop(v); else if(a==='weekly') claimWeekly(); else if(a==='title') selectTitle(v); else if(a==='modifier') selectModifier(v);
 });
-document.getElementById('startBtn').onclick=()=>{newRunStats();startGame();setTimeout(()=>c.focus(),0)};
+const startBtn=document.getElementById('startBtn');
+function activateStartRun(ev){
+  if(ev){ev.preventDefault();ev.stopPropagation();}
+  if(startBtn.dataset.startLock==='1') return;
+  startBtn.dataset.startLock='1';
+  try{newRunStats();startGame();setTimeout(()=>c.focus(),0);}finally{setTimeout(()=>{startBtn.dataset.startLock='';},350);}
+}
+startBtn.onclick=activateStartRun;
+startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch')activateStartRun(e)},{passive:false});
+startBtn.addEventListener('touchend',e=>activateStartRun(e),{passive:false});
 document.getElementById('mapBtn').onclick=()=>{openSub('🗺️ Choose Map','<div class="grid">'+Object.keys(mapDefs).map(x=>`<button class="option ${save.map===x?'selected':''}" data-action="map" data-value="${x}"><b>${x}</b></button>`).join('')+'</div>')};
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
@@ -1585,15 +1617,16 @@ window.buyAllAffordable=()=>{
  toast(total?`● Bought ${total} affordable upgrade level${total===1?'':'s'}!`:'Nothing affordable right now');
  renderUpgradeTree();
 };
-document.getElementById('skinBtn').onclick=()=>{
+function openSkinMenu(){
  const owned=Object.keys(skins).filter(n=>save.skins[n]);
  const byRarity={Common:[],Rare:[],Epic:[],Legendary:[],Mythic:[]};
  for(const n of owned)byRarity[skins[n].rarity].push(n);
  let ownedHtml=Object.keys(skins).map(n=>{const v=skins[n],ok=!!save.skins[n];return `<button class="option ${save.selectedSkin===n?'selected':''}" data-action="skin" data-value="${n}"><b>${n}</b><div class="small">${v.rarity} • ${v.bonus}</div><div class="small">${ok?'Owned':'Case only'}</div></button>`}).join('');
  openSub('✦ Skin Cases',`<div class="option"><b>◆ Skin Case</b><div class="small">Costs 250 coins or 1 Case Voucher • Random skin</div><button class="gold" data-action="case">OPEN CASE — 250 ● / 1 Voucher</button></div><h3>Skins</h3><div class="grid">${ownedHtml}</div>`);
-};
-window.selectSkin=(n)=>{if(!save.skins[n])return toast('Open Skin Cases to unlock this skin');save.selectedSkin=n;persist();document.getElementById('skinBtn').click()};
-window.openSkinCase=()=>{const usedVoucher=save.caseCredits>0;if(usedVoucher)save.caseCredits--;else{if(save.coins<250)return toast('Not enough coins');save.coins-=250}const r=Math.random();let rarity='Common',acc=0;for(const [name,pct] of skinCaseOdds){acc+=pct;if(r<=acc){rarity=name;break}}let pool=Object.keys(skins).filter(n=>!save.skins[n]&&skins[n].rarity===rarity);if(!pool.length)pool=Object.keys(skins).filter(n=>!save.skins[n]);if(!pool.length){if(!usedVoucher)save.coins+=250;save.forgeCores++;persist();toast('◆ All skins owned — +1 Forge Core!');return}const got=pool[Math.floor(Math.random()*pool.length)];save.skins[got]=true;save.selectedSkin=got;persist();toast('✦ Unlocked '+got+'!');document.getElementById('skinBtn').click()};
+}
+document.getElementById('skinBtn').onclick=openSkinMenu;
+window.selectSkin=(n)=>{if(!save.skins[n])return toast('Open Skin Cases to unlock this skin');save.selectedSkin=n;persist();openSkinMenu()};
+window.openSkinCase=()=>{const usedVoucher=save.caseCredits>0;if(usedVoucher)save.caseCredits--;else{if(save.coins<250)return toast('Not enough coins');save.coins-=250}const r=Math.random();let rarity='Common',acc=0;for(const [name,pct] of skinCaseOdds){acc+=pct;if(r<=acc){rarity=name;break}}let pool=Object.keys(skins).filter(n=>!save.skins[n]&&skins[n].rarity===rarity);if(!pool.length)pool=Object.keys(skins).filter(n=>!save.skins[n]);if(!pool.length){if(!usedVoucher)save.coins+=250;save.forgeCores++;persist();toast('◆ All skins owned — +1 Forge Core!');return}const got=pool[Math.floor(Math.random()*pool.length)];save.skins[got]=true;save.selectedSkin=got;persist();toast('✦ Unlocked '+got+'!');openSkinMenu()};
 
 document.getElementById('statsBtn').onclick=()=>{const s=save.stats;openSub('▤ Stats',`<p>Total games: ${s.games}</p><p>Total kills: ${s.kills}</p><p>Total coins earned: ${s.totalCoins}</p><p>High score: ${s.highScore}</p><p>Best level: ${s.bestLevel}</p><p>Best survival time: ${Math.floor(s.bestTime)}s</p><p>Bosses defeated: ${s.bosses}</p>`) };
 document.getElementById('leaderBtn').onclick=openServerLeaderboard;
@@ -1975,7 +2008,7 @@ const updates=[
   ['v2.0.9 — Help & Guide Fix','Fixed the Help & Guide button and a menu script issue that could prevent some other buttons from being initialized.'],
   ['v2.1.0 — Online Leaderboard','Leaderboard scores are now submitted to the website server so players can see the same leaderboard across devices.'],
   ['v2.1.1 — Update News Refresh','Updated the main-menu Update News popup so it matches the current version and explains the newest player-facing content.'],
-  ['v2.5.7 — Button Reliability Fix','Removed the broken password account system and replaced it with a simple username-only login while preserving the OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
+  ['v2.5.7 — Button & Startup Fix','Removed the broken password account system and replaced it with a simple username-only login while preserving the OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
   ['v2.1.2 — Fullscreen Mode','Added a Fullscreen button so players can expand the game to fill the screen. The button toggles between fullscreen and normal mode and updates its label automatically.'],
   ['v2.2.0 — World & Endgame Expansion','Major update: added World 2.0 zones with map-linked bonuses, dedicated boss raids, run objectives with rewards, three build presets, survivor and pet mastery, ranked PvP season tracking, Nightmare+/Omega/Omega+ endgame tiers, squad-style zombie pressure that reacts to nearby allies and gunfire, and expanded endgame progression.'],
   ['v2.2.1 — Fullscreen Button Move','Moved the Fullscreen button to the main Play menu so it is easier to find before starting a run.'],
@@ -1993,7 +2026,7 @@ const updates=[
 }
 const CURRENT_UPDATE_VERSION='2.5.2';
 const CURRENT_UPDATE_INFO={
-  title:'v2.5.7 — Button Reliability Fix',
+  title:'v2.5.7 — Button & Startup Fix',
   summary:'A polish update focused on better mobile play and more satisfying progression.',
   items:[
     'Mobile players now have a touch joystick plus Dash, Skill, and Ultimate controls.',
@@ -2400,14 +2433,12 @@ function assignSpecialEnemy(e){
   const lvl=game.level||1;
   if(lvl<5)return;
   const roll=Math.random();
-  if(roll<.035)e.kind='stalker';
-  else if(roll<.07)e.kind='shielder';
+  if(roll<.07)e.kind='shielder';
   else if(roll<.105)e.kind='spitter';
   else if(roll<.135)e.kind='splitter';
   else if(roll<.16)e.kind='reaper';
   else if(roll<.185)e.kind='warden';
   e.abilityClock=2+Math.random()*2;e.shield= e.kind==='shielder'?e.max*.45:0;
-  if(e.kind==='stalker'){e.speed*=1.25;e.damage*=.9;}
   if(e.kind==='reaper'){e.speed*=1.55;e.damage*=1.3;e.r=18;}
   if(e.kind==='warden'){e.speed*=.7;e.damage*=1.25;e.max*=1.8;e.hp=e.max;}
 }
@@ -2430,7 +2461,6 @@ function specialEnemyTick(dt){
     const nearby=game.enemies.filter(q=>q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<120);for(const q of nearby)q.shieldTimer=.2;
   }
   if(e.kind==='spitter'&&e.abilityClock<=0){const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:dx/d*240,vy:dy/d*240,r:9,dmg:e.damage*1.3,acid:true});e.abilityClock=2.8;}
-  if(e.kind==='stalker'&&e.abilityClock<=0){e.speed*=1.35;e.abilityClock=3;}
   if(e.kind==='reaper'&&e.abilityClock<=0&&Math.hypot(p.x-e.x,p.y-e.y)>180){e.x=p.x+(Math.random()-.5)*500;e.y=p.y+(Math.random()-.5)*500;toast('⚠️ Reaper appeared nearby!');e.abilityClock=4;}
   if(e.kind==='warden'&&e.abilityClock<=0){for(const q of game.enemies){if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<170)q.speed*=1.12;}e.abilityClock=4;}
   if(e.kind==='splitter'&&e.hp<e.max*.45&&!e.splitDone){e.splitDone=true;for(let k=0;k<2;k++)spawnEnemy('fast');}
@@ -2539,6 +2569,27 @@ endRun=function(victory){
 const oldRealEndRun=realEndRun;
 // The wrapper above calls the original endRun, which already prevents duplicate calls by game.running.
 
+/* ---------- Free Prize Wheel ---------- */
+const prizeWheelRewards=[
+  {label:'+250 Coins',apply:()=>{save.coins=(save.coins||0)+250}},
+  {label:'+500 Coins',apply:()=>{save.coins=(save.coins||0)+500}},
+  {label:'+1,000 Coins',apply:()=>{save.coins=(save.coins||0)+1000}},
+  {label:'+3 Materials',apply:()=>{save.materials=(save.materials||0)+3}},
+  {label:'+1 World Key',apply:()=>{save.worldKeys=(save.worldKeys||0)+1}},
+  {label:'+1 Forge Core',apply:()=>{save.forgeCores=(save.forgeCores||0)+1}},
+  {label:'+5 Mythic Dust',apply:()=>{save.mythicDust=(save.mythicDust||0)+5}},
+  {label:'+1 Skin Case Credit',apply:()=>{save.caseCredits=(save.caseCredits||0)+1}}
+];
+function prizeWheelDayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function ensurePrizeWheelDay(){const d=prizeWheelDayKey();if(save.prizeWheelDay!==d){save.prizeWheelDay=d;save.prizeWheelUsedToday=0;persist();}save.prizeWheelSpins=Math.max(0,Math.min(3,Math.floor(Number(save.prizeWheelSpins)||0)));save.prizeWheelUsedToday=Math.max(0,Math.min(3,Math.floor(Number(save.prizeWheelUsedToday)||0)));}
+function awardPrizeWheelSpinByKills(){ensurePrizeWheelDay();const kills=Math.max(0,Math.floor(Number(save.prizeWheelKills)||0));const threshold=25;const earned=Math.floor(kills/threshold);const oldEarned=Math.floor((save.prizeWheelAwardedKills||0)/threshold);if(earned>oldEarned){save.prizeWheelSpins=Math.min(3,save.prizeWheelSpins+(earned-oldEarned));save.prizeWheelAwardedKills=earned*threshold;persist();toast('🎡 You earned a free Prize Wheel spin!');}}
+function renderPrizeWheel(){ensurePrizeWheelDay();const spins=save.prizeWheelSpins||0,used=save.prizeWheelUsedToday||0;const rewardLabels=prizeWheelRewards.map((r,i)=>'<div class="option" style="text-align:center"><b>'+String(i+1)+'. '+r.label+'</b></div>').join('');openSub('🎡 Free Prize Wheel',
+  '<div class="option"><b>Free spins only — no coins are wagered.</b><div class="small">Earn 1 spin every 25 lifetime kills, up to 3 banked. You can use up to 3 spins per day.</div><div class="small">Available: '+spins+' • Used today: '+used+'/3</div></div>'+ 
+  '<div id="prizeWheelVisual" style="margin:14px auto;width:min(360px,72vw);height:110px;border:2px solid #4b6880;border-radius:18px;background:radial-gradient(circle at 50% 50%,#203447,#0c151d);display:flex;align-items:center;justify-content:center;text-align:center;font-size:24px;font-weight:900;box-shadow:0 15px 40px rgba(0,0,0,.35)">READY TO SPIN</div>'+ 
+  '<button class="gold" style="width:100%;margin-top:10px" data-action="spinPrizeWheel" '+(spins<=0||used>=3?'disabled':'')+'>🎡 SPIN FREE WHEEL</button>'+ 
+  '<h3 style="margin-top:16px">Possible Rewards</h3><div class="grid">'+rewardLabels+'</div>');}
+async function spinPrizeWheel(){ensurePrizeWheelDay();if(save.prizeWheelSpins<=0)return toast('Earn a Prize Wheel spin by playing');if(save.prizeWheelUsedToday>=3)return toast('Daily Prize Wheel limit reached');save.prizeWheelSpins--;save.prizeWheelUsedToday++;persist();const el=document.getElementById('prizeWheelVisual');if(el){el.textContent='SPINNING…';el.style.transform='rotate(0deg)';el.style.transition='transform 1.1s cubic-bezier(.12,.78,.18,1)';requestAnimationFrame(()=>el.style.transform='rotate(900deg)');}await new Promise(r=>setTimeout(r,1150));const reward=prizeWheelRewards[Math.floor(Math.random()*prizeWheelRewards.length)];reward.apply();persist();if(el){el.style.transform='none';el.textContent='🎁 '+reward.label;}toast('🎁 Prize Wheel: '+reward.label);setTimeout(renderPrizeWheel,450);}
+
 /* ---------- Community feedback ---------- */
 function feedbackOpen(){openSub('💬 Bug Reports & Update Ideas',
  '<div class="grid"><button class="option" data-action="reportBug">🐛 Report a Bug<div class="small">Earn 1,000 coins after review if valid.</div></button>'+ 
@@ -2546,13 +2597,44 @@ function feedbackOpen(){openSub('💬 Bug Reports & Update Ideas',
  '<div class="option"><b>Review policy</b><div class="small">Pending → Accepted/Rejected. Duplicate/fake reports cannot be farmed.</div></div>');}
 function reportBugForm(){openSub('🐛 Report a Bug','<input id="fbTitle" placeholder="Bug title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="What happened? What should have happened?" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button class="gold" data-action="submitBug">SUBMIT BUG REPORT</button>');}
 function ideaForm(){openSub('💡 Submit Update Idea','<input id="fbTitle" placeholder="Idea title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="Describe your idea" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button class="gold" data-action="submitIdea">SUBMIT IDEA</button>');}
-function storeFeedback(type){const title=(document.getElementById('fbTitle').value||'').trim().slice(0,80),body=(document.getElementById('fbBody').value||'').trim().slice(0,1000);if(title.length<3||body.length<5)return toast('Please provide more detail');const arr=JSON.parse(outlastStorage.getItem('outlastFeedback')||'[]');if(arr.some(x=>x.user===currentUsername&&x.type===type&&x.title.toLowerCase()===title.toLowerCase()))return toast('Duplicate submission blocked');arr.push({id:Date.now()+Math.random(),user:currentUsername,type,title,body,status:'Pending',reward:0,date:Date.now()});outlastStorage.setItem('outlastFeedback',JSON.stringify(arr));toast('📨 Submitted for review');feedbackOpen();}
+const OUTLAST_HTTP_SERVER='https://outlast-server.onrender.com';
+async function syncFeedbackToServer(){
+  let arr=[]; try{arr=JSON.parse(outlastStorage.getItem('outlastFeedback')||'[]');}catch(_){arr=[];}
+  if(!Array.isArray(arr)||!arr.length)return;
+  for(const item of arr){
+    if(item.serverSaved)return;
+    try{
+      const res=await fetch(OUTLAST_HTTP_SERVER+'/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        clientId:String(item.id),user:String(item.user||currentUsername||'Player').slice(0,18),type:item.type==='idea'?'idea':'bug',title:String(item.title||'').slice(0,80),body:String(item.body||'').slice(0,1000),date:Number(item.date)||Date.now()
+      })});
+      if(!res.ok)continue;
+      item.serverSaved=true;
+    }catch(_){break;}
+  }
+  try{outlastStorage.setItem('outlastFeedback',JSON.stringify(arr));}catch(_){ }
+}
+async function storeFeedback(type){
+ const title=(document.getElementById('fbTitle').value||'').trim().slice(0,80),body=(document.getElementById('fbBody').value||'').trim().slice(0,1000);
+ if(title.length<3||body.length<5)return toast('Please provide more detail');
+ let arr=[];try{arr=JSON.parse(outlastStorage.getItem('outlastFeedback')||'[]');}catch(_){arr=[];}
+ if(!Array.isArray(arr))arr=[];
+ if(arr.some(x=>x.user===currentUsername&&x.type===type&&x.title.toLowerCase()===title.toLowerCase()))return toast('Duplicate submission blocked');
+ const item={id:Date.now()+Math.random(),user:currentUsername,type,title,body,status:'Pending',reward:0,date:Date.now(),serverSaved:false};
+ arr.push(item);try{outlastStorage.setItem('outlastFeedback',JSON.stringify(arr));}catch(_){ }
+ try{
+   const res=await fetch(OUTLAST_HTTP_SERVER+'/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId:String(item.id),user:String(currentUsername||'Player').slice(0,18),type,title,body,date:item.date})});
+   if(!res.ok)throw new Error('server rejected');
+   item.serverSaved=true;try{outlastStorage.setItem('outlastFeedback',JSON.stringify(arr));}catch(_){ }
+   toast('📨 Submitted and saved to the OUTLAST server');
+ }catch(_){toast('📨 Saved on this device. Server sync will retry when online.');}
+ feedbackOpen();
+}
+
 
 /* ---------- Better settings ---------- */
 function settingsOpen(){openSub('⚙️ Settings','<div class="grid">'+
  '<button class="option" data-action="toggleSetting" data-value="shake">Screen Shake: '+(save.settings?.shake!==false?'ON':'OFF')+'</button>'+ 
  '<button class="option" data-action="toggleSetting" data-value="damageNumbers">Damage Numbers: '+(save.settings?.damageNumbers!==false?'ON':'OFF')+'</button>'+ 
- '<button class="option" data-action="toggleSetting" data-value="autoPause">Auto-Pause: '+(save.settings?.autoPause!==false?'ON':'OFF')+'</button>'+ 
  '<button class="option" data-action="fullscreen">🖥️ Toggle Fullscreen</button>'+ 
  '<button class="option" data-action="resetSettings">↩️ Reset Settings</button></div>');}
 
@@ -2563,9 +2645,10 @@ document.getElementById('subContent').addEventListener('click',e=>{
  else if(a==='adminXP')adminXP(v); else if(a==='adminLevel')adminLevel(v); else if(a==='adminCoins')adminCoins(v); else if(a==='adminUnlock')adminUnlock();else if(a==='adminStats')adminStats();else if(a==='adminDaily')adminDaily();else if(a==='adminLeaderboard')adminLeaderboard();else if(a==='adminGod')adminGod();else if(a==='adminInfinite')adminInfinite();else if(a==='adminPrestige')adminPrestige();else if(a==='adminQuests')adminQuests();else if(a==='adminSkillTree')adminSkillTree();else if(a==='adminSpawnBoss')adminSpawnBoss();else if(a==='adminSpawnElite')adminSpawnElite();else if(a==='adminSpawnZombie')adminSpawnZombie();else if(a==='adminSpawnLoot')adminSpawnLoot();else if(a==='adminWave')adminWave();else if(a==='adminReset')adminReset();else if(a==='adminLock')adminLock();
  else if(a==='shop')buyShop(v); else if(a==='coinbuy'){if(!save.coinPurchases)save.coinPurchases={};const costs={starter:2000,luck:3500,mastery:5000,cosmetic:7500};if(save.coinPurchases[v])return toast('Already purchased');if(save.coins<costs[v])return toast('Not enough coins');save.coins-=costs[v];save.coinPurchases[v]=true;if(v==='starter')save.reviveTokens=(save.reviveTokens||0)+1;if(v==='luck')save.permanentLuck=(save.permanentLuck||0)+10;if(v==='mastery')save.masteryCores=(save.masteryCores||0)+1;if(v==='cosmetic')save.cosmeticTokens=(save.cosmeticTokens||0)+1;persist();toast('🪙 Purchase complete');openCoinStore();}
  else if(a==='weeklyClaim')claimWeeklyPrize();else if(a==='reportBug')reportBugForm();else if(a==='idea')ideaForm();else if(a==='submitBug')storeFeedback('bug');else if(a==='submitIdea')storeFeedback('idea');
+ else if(a==='spinPrizeWheel')spinPrizeWheel();
  else if(a==='toggleSetting'){save.settings=save.settings||{};save.settings[v]=save.settings[v]===false?true:false;persist();settingsOpen();}
  else if(a==='fullscreen'){if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();}
- else if(a==='resetSettings'){save.settings={shake:true,damageNumbers:true,autoPause:true};persist();settingsOpen();}
+ else if(a==='resetSettings'){save.settings={shake:true,damageNumbers:true};persist();settingsOpen();}
  else if(a==='map')selectMap(v);
  else if(a==='weapon')selectWeapon(v);
 });
@@ -2573,9 +2656,17 @@ document.getElementById('subContent').addEventListener('click',e=>{
 /* ---------- Add new menu buttons ---------- */
 function addMenuButton(id,text,fn){if(document.getElementById(id))return;const b=document.createElement('button');b.id=id;b.className='menu-btn';b.textContent=text;b.onclick=fn;const anchor=document.getElementById('recordsBtn')||document.getElementById('worldBtn')||document.querySelector('.menu-btn');(anchor?.parentElement||document.body).appendChild(b);}
 addMenuButton('weeklyBoardBtn','🏆 WEEKLY LEADERBOARD',renderWeeklyLeaderboard);
-addMenuButton('feedbackBtn','💬 BUGS & IDEAS',feedbackOpen);
+(function addFeedbackToMore(){
+ const more=document.querySelector('[data-page-content="more"] .menu-cards');
+ if(!more||document.getElementById('feedbackBtn'))return;
+ const card=document.createElement('div');card.className='menu-card';card.innerHTML='<h3>Bug / Idea Submission</h3><button class="menu-btn" id="feedbackBtn">💬 Bugs & Ideas</button>';more.appendChild(card);
+ document.getElementById('feedbackBtn').onclick=feedbackOpen;
+})();
+
 addMenuButton('coinStoreBtn','🪙 BLACK MARKET',openCoinStore);
 addMenuButton('settingsNewBtn','⚙️ SETTINGS',settingsOpen);
+
+(function addPrizeWheel(){const b=document.getElementById('prizeWheelBtn');if(b)b.onclick=renderPrizeWheel;})();
 
 
 /* ---------- Restored character/avatar rendering ---------- */
@@ -2635,7 +2726,7 @@ draw=function(){
 
 /* Special enemy labels are drawn by a light overlay after the base draw. */
 const oldDraw2=draw;
-draw=function(){oldDraw2();if(!game.running)return;for(const e of game.enemies){if(['stalker','shielder','spitter','splitter','reaper','warden'].includes(e.kind)){const [x,y]=worldPoint(e.x,e.y);ctx.fillStyle='#fff';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText(e.kind.toUpperCase(),x,y-e.r-14);ctx.textAlign='left';}}};
+draw=function(){oldDraw2();if(!game.running)return;for(const e of game.enemies){if(['shielder','spitter','splitter','reaper','warden'].includes(e.kind)){const [x,y]=worldPoint(e.x,e.y);ctx.fillStyle='#fff';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText(e.kind.toUpperCase(),x,y-e.r-14);ctx.textAlign='left';}}};
 
 /* ---------- Responsive UI ---------- */
 const style=document.createElement('style');style.textContent=`
@@ -2648,7 +2739,7 @@ const style=document.createElement('style');style.textContent=`
 `;document.head.appendChild(style);
 
 /* Initialize migration fields without saving while Admin mode is active. */
-if(!save.settings)save.settings={shake:true,damageNumbers:true,autoPause:true};
+if(!save.settings)save.settings={shake:true,damageNumbers:true};
 if(!save.shopPurchases)save.shopPurchases={};
 if(!save.coinPurchases)save.coinPurchases={};
 
@@ -2657,6 +2748,7 @@ if(!save.coinPurchases)save.coinPurchases={};
 </script>
 <script>
 /* OUTLAST ONLINE SERVER CONNECTION */
+setTimeout(()=>{if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();},1500);
 const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
 let outlastSocket=null;
 let outlastOnline=false;
@@ -2671,6 +2763,7 @@ function connectOutlastServer(){
       toast('🌐 Connected to OUTLAST server');
       if(outlastSocket.readyState===WebSocket.OPEN){
         outlastSocket.send(JSON.stringify({type:'player_join',username:currentUsername||'Player'}));
+        syncFeedbackToServer();
       }
       renderOnlinePanel();
     };
@@ -2732,56 +2825,40 @@ document.getElementById('subContent')?.addEventListener('click',e=>{
 
 (function(){function refreshMobileAvatar(){const cv=document.getElementById('mobileAvatarCanvas');if(!cv||!currentUsername||typeof chars==='undefined'||typeof skins==='undefined')return;const ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;const mctx=cv.getContext('2d');mctx.save();mctx.scale(cv.width/180,cv.height/220);drawAvatarPreview(mctx,{...(ch.visual||{}),body:sk.color},sk.color||'#5e9fff');mctx.restore();}setInterval(refreshMobileAvatar,500);})();
 </script>
+<div class="update-entry"><b>v2.6.0 — Cumulative Update</b><br>Prize Wheel, server-backed bug/idea reports, clearer Luck systems, clickable Level Up choices, upgrade behavior fixes, Treasure Radar drop tuning, and mobile/UI polish consolidated from all post-v2.5.7 changes.</div>
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v2.5.7 — button safety layer */
+/* OUTLAST v2.5.7 — universal button controller */
 (function(){
-  function byId(id){return document.getElementById(id)}
-  function safe(fn){try{if(typeof fn==='function')fn()}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error — check console');}}
-  document.addEventListener('click',function(e){
-    const b=e.target.closest && e.target.closest('button');
-    if(!b || b.disabled) return;
+  const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
+  const routes={
+    loginBtn:()=>finishUsernameLogin(),startBtn:()=>{newRunStats();startGame();setTimeout(()=>document.getElementById('game')?.focus(),0)},
+    switchUserBtn:()=>showUsernameLogin(),mapBtn:()=>openMapMenu(),difficultyBtn:()=>openDifficultyMenu(),modeBtn:()=>openModeMenu(),
+    runBuilderBtn:()=>renderRunBuilder(),challengeBtn:()=>challengeOpen(),challengeModeBtn:()=>renderChallenges(),fullscreenBtn:()=>toggleFullscreen(),
+    upgradeBtn:()=>renderUpgradeTree(),charBtn:()=>openCharacterMenu(),weaponBtn:()=>openWeaponMenu(),skinBtn:()=>openSkinMenu(),
+    petBtn:()=>openPets(),skillBtn:()=>openSkills(),elementBtn:()=>renderElements(),relicBtn:()=>openRelics(),charmBtn:()=>openCharms(),
+    forgeBtn:()=>forgeOpen(),shopBtn:()=>shopOpen(),inventoryBtn:()=>renderInventory(),craftBtn:()=>renderCrafting(),progressionBtn:()=>renderProgression(),
+    modifierBtn:()=>modifierOpen(),statsBtn:()=>openStats(),leaderBtn:()=>openServerLeaderboard(),achBtn:()=>openAchievements(),missionBtn:()=>openMissions(),
+    questBtn:()=>renderQuestBoard(),dailyBtn:()=>openDailyReward(),titleBtn:()=>titleOpen(),recordsBtn:()=>renderRecords(),extrasBtn:()=>renderExtras(),
+    worldBtn:()=>renderWorld(),world2Btn:()=>renderWorld2(),helpBtn:()=>openHelp(),updatesBtn:()=>renderUpdates(),adminBtn:()=>openAdminPanel(),
+    onlineBtn:()=>renderOnlinePanel(),closeSubBtn:()=>closeSub()
+  };
+  const aliases={openMapMenu:()=>document.getElementById('mapBtn')?.onclick?.(),openDifficultyMenu:()=>document.getElementById('difficultyBtn')?.onclick?.(),openModeMenu:()=>document.getElementById('modeBtn')?.onclick?.(),openCharacterMenu:()=>document.getElementById('charBtn')?.onclick?.(),openWeaponMenu:()=>document.getElementById('weaponBtn')?.onclick?.(),openSkinMenu:()=>document.getElementById('skinBtn')?.onclick?.(),openSkills:()=>document.getElementById('skillBtn')?.onclick?.(),openStats:()=>document.getElementById('statsBtn')?.onclick?.(),openAchievements:()=>document.getElementById('achBtn')?.onclick?.(),openMissions:()=>document.getElementById('missionBtn')?.onclick?.(),openDailyReward:()=>document.getElementById('dailyBtn')?.onclick?.(),openAdminPanel:()=>document.getElementById('adminBtn')?.onclick?.()};
+  Object.assign(routes,{mapBtn:aliases.openMapMenu,difficultyBtn:aliases.openDifficultyMenu,modeBtn:aliases.openModeMenu,charBtn:aliases.openCharacterMenu,weaponBtn:aliases.openWeaponMenu,skinBtn:aliases.openSkinMenu,skillBtn:aliases.openSkills,statsBtn:aliases.openStats,achBtn:aliases.openAchievements,missionBtn:aliases.openMissions,dailyBtn:aliases.openDailyReward,adminBtn:aliases.openAdminPanel});
+  document.addEventListener('click',e=>{
+    const nav=e.target.closest?.('.menu-nav-btn');
+    if(nav){e.preventDefault();e.stopImmediatePropagation();setMenuPage(nav.dataset.page);return;}
+    const b=e.target.closest?.('button'); if(!b||b.disabled)return;
     const id=b.id;
-    if(id==='loginBtn'){
-      e.preventDefault(); e.stopImmediatePropagation();
-      safe(typeof finishUsernameLogin==='function'?finishUsernameLogin:null);
-      return;
-    }
-    if(id==='startBtn'){
-      e.preventDefault();
-      safe(function(){if(typeof newRunStats==='function')newRunStats();if(typeof startGame==='function')startGame();const c=document.getElementById('game');if(c)c.focus();});
-      return;
-    }
-    if(id==='onlineBtn'){
-      e.preventDefault();
-      safe(typeof renderOnlinePanel==='function'?renderOnlinePanel:null);
-      return;
-    }
-    const a=b.getAttribute('data-action');
-    if(a==='onlineConnect') safe(typeof connectOutlastServer==='function'?connectOutlastServer:null);
-    else if(a==='onlineDisconnect') safe(typeof disconnectOutlastServer==='function'?disconnectOutlastServer:null);
-    else if(a==='onlinePing') safe(typeof sendOnlinePing==='function'?sendOnlinePing:null);
-  },true);
-
-  document.addEventListener('keydown',function(e){
-    if(e.key!=='Enter')return;
-    const target=e.target;
-    const typing=target && (target.matches?.('input,textarea,select') || target.isContentEditable);
-    if(typing && target.id==='usernameInput'){
-      e.preventDefault();
-      safe(typeof finishUsernameLogin==='function'?finishUsernameLogin:null);
+    if(routes[id]){e.preventDefault();e.stopImmediatePropagation();run(routes[id]);return;}
+    const a=b.dataset.action;
+    if(a){
+      const v=b.dataset.value; e.preventDefault();e.stopImmediatePropagation();
+      const map={map:()=>selectMap(v),difficulty:()=>selectDiff(v),mode:()=>selectMode(v),upgrade:()=>buyUpgrade(v,Number(b.dataset.base)),buyAffordable:()=>buyAllAffordable(),daily:()=>claimDaily(),char:()=>selectChar(v),weapon:()=>selectWeapon(v),skin:()=>selectSkin(v),case:()=>openSkinCase(),onlineConnect:()=>connectOutlastServer(),onlineDisconnect:()=>disconnectOutlastServer(),onlinePing:()=>sendOnlinePing(),weekly:()=>claimWeekly(),title:()=>selectTitle(v),modifier:()=>selectModifier(v),pet:()=>selectPet(v),relic:()=>selectRelic(v),charm:()=>selectCharm(v),forgeWeapon:()=>forgeWeapon(),buyCore:()=>buyForgeCore(),shop:()=>buyShop(v)};
+      run(map[a]);
     }
   },true);
-
-  window.addEventListener('error',function(e){
-    console.error('OUTLAST runtime error:',e.error||e.message);
-  });
-
-  /* Make sure dynamically-created buttons remain clickable. */
-  const style=document.createElement('style');
-  style.textContent='button{pointer-events:auto!important;cursor:pointer!important}button:disabled{cursor:not-allowed!important}';
-  document.head.appendChild(style);
 })();
 </script>
 </body>

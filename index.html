@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OUTLAST v2.5.4</title>
+<title>OUTLAST v2.5.5</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -174,8 +174,8 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
 <div id="loginPopup" class="update-pop" role="dialog" aria-modal="true" aria-labelledby="loginPopupTitle" style="display:flex">
   <div class="update-pop-card" style="width:min(520px,92vw)">
     <div id="loginPopupTitle" style="font-size:30px;font-weight:900">Welcome to OUTLAST</div>
-    <div class="update-pop-version">USERNAME LOGIN</div>
-    <p class="small" style="font-size:14px;line-height:1.5">Choose a username for the leaderboard. Your progress is saved on this device, not to the username.</p>
+    <div class="update-pop-version">USERNAME ONLY</div>
+    <p class="small" style="font-size:14px;line-height:1.5">Enter a username to play. No password or account is required. Your progress is saved on this device.</p>
     <input id="usernameInput" maxlength="18" autocomplete="nickname" placeholder="Enter username" style="width:100%;box-sizing:border-box;padding:13px 14px;border-radius:10px;border:1px solid #3b5266;background:#0b1219;color:#fff;font:700 18px Arial;outline:none">
     <div id="usernameError" class="small" style="color:#ff8c8c;min-height:22px;margin-top:8px"></div>
     <div class="update-pop-actions"><button id="loginBtn" class="green">CONTINUE</button></div>
@@ -236,7 +236,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.5.4 • Fresh Accounts & Gameplay Expansion</div>
+          <div class="menu-chip">v2.5.5 • Username Login & Gameplay Expansion</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -859,7 +859,6 @@ if(currentUsername){
   if(input) input.value=currentUsername;
   if(login) login.style.display='none';
 }
-save=freshSave();
 
 function sanitizeUsername(name){
   return String(name||'').trim().replace(/\s+/g,' ').slice(0,18);
@@ -1973,7 +1972,7 @@ const updates=[
   ['v2.0.9 — Help & Guide Fix','Fixed the Help & Guide button and a menu script issue that could prevent some other buttons from being initialized.'],
   ['v2.1.0 — Online Leaderboard','Leaderboard scores are now submitted to the website server so players can see the same leaderboard across devices.'],
   ['v2.1.1 — Update News Refresh','Updated the main-menu Update News popup so it matches the current version and explains the newest player-facing content.'],
-  ['v2.5.4 — Online Button Fix','Reset local player accounts and saved progress for a fresh account start, while preserving the restored OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
+  ['v2.5.5 — Username-Only Login','Removed the broken password account system and replaced it with a simple username-only login while preserving the OUTLAST gameplay, UI, avatars, maps, systems, and online features.'],
   ['v2.1.2 — Fullscreen Mode','Added a Fullscreen button so players can expand the game to fill the screen. The button toggles between fullscreen and normal mode and updates its label automatically.'],
   ['v2.2.0 — World & Endgame Expansion','Major update: added World 2.0 zones with map-linked bonuses, dedicated boss raids, run objectives with rewards, three build presets, survivor and pet mastery, ranked PvP season tracking, Nightmare+/Omega/Omega+ endgame tiers, squad-style zombie pressure that reacts to nearby allies and gunfire, and expanded endgame progression.'],
   ['v2.2.1 — Fullscreen Button Move','Moved the Fullscreen button to the main Play menu so it is easier to find before starting a run.'],
@@ -1991,7 +1990,7 @@ const updates=[
 }
 const CURRENT_UPDATE_VERSION='2.5.2';
 const CURRENT_UPDATE_INFO={
-  title:'v2.5.4 — Online Button Fix',
+  title:'v2.5.5 — Username-Only Login',
   summary:'A polish update focused on better mobile play and more satisfying progression.',
   items:[
     'Mobile players now have a touch joystick plus Dash, Skill, and Ultimate controls.',
@@ -2292,69 +2291,6 @@ window.adminSpawnZombie=function(){if(!isAdmin())return;if(!game.running){newRun
 window.adminSpawnLoot=function(){if(!isAdmin())return;if(!game.running){newRunStats();realStartGame();}for(let i=0;i<8;i++)game.coins.push({x:game.player.x+(Math.random()-.5)*300,y:game.player.y+(Math.random()-.5)*300,value:10});toast('💎 Loot spawned');document.getElementById('adminBtn').click()};
 window.adminWave=function(){if(!isAdmin())return;if(!game.running){newRunStats();realStartGame();}game.level++;game.xp=0;game.enemies=[];for(let i=0;i<Math.min(10+game.level,35);i++)realSpawnEnemy();toast('🌊 Wave advanced');document.getElementById('adminBtn').click()};
 window.adminReset=function(){if(!isAdmin())return;save=cloneSave(adminSnapshot||freshSave());toast('↩️ Temporary test state reset');document.getElementById('adminBtn').click()};
-
-/* ---------- Account login (local browser account gate) ---------- */
-const ACCOUNT_RESET_MARKER='outlastAccountResetV4';
-if(!localStorage.getItem(ACCOUNT_RESET_MARKER)){
-  try{
-    const oldAccounts=JSON.parse(localStorage.getItem('outlastAccountsV2')||'{}');
-    for(const key of Object.keys(oldAccounts)){
-      const username=oldAccounts[key]?.username||key;
-      localStorage.removeItem(`outlastSave:${String(username).trim().toLowerCase()}`);
-    }
-  }catch(_){}
-  localStorage.removeItem('outlastAccountsV2');
-  localStorage.removeItem('outlastLastUser');
-  localStorage.removeItem('outlastDeviceSave');
-  localStorage.removeItem('outlastUsername');
-  localStorage.removeItem('survivorStyleSave');
-  localStorage.setItem(ACCOUNT_RESET_MARKER,'1');
-}
-const ACCOUNT_KEY='outlastAccountsV2';
-async function hashPassword(p){const data=new TextEncoder().encode(p);const buf=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-function getAccounts(){try{return JSON.parse(localStorage.getItem(ACCOUNT_KEY)||'{}')}catch(_){return {}}}
-function setAccounts(a){localStorage.setItem(ACCOUNT_KEY,JSON.stringify(a))}
-function showPlayerLogin(){
-  let el=document.getElementById('outlastLogin');
-  if(!el){
-    el=document.createElement('div'); el.id='outlastLogin';
-    el.innerHTML=`<div class="outlast-login-card">
-      <div class="outlast-login-top"><div class="outlast-logo">OUTLAST</div><div class="outlast-build">v2.5.4</div></div>
-      <div class="outlast-login-title">PLAYER ACCESS</div>
-      <div class="outlast-login-sub">Sign in to load your run and continue playing.</div>
-      <div class="outlast-login-fields">
-        <label>USERNAME</label><input id="olUser" maxlength="16" autocomplete="username" placeholder="Enter username">
-        <label>PASSWORD</label><div class="password-wrap"><input id="olPass" type="password" maxlength="64" autocomplete="current-password" placeholder="Enter password"><button type="button" id="olShowPass" class="pass-toggle">SHOW</button></div>
-      </div>
-      <div class="login-actions"><button id="olSignIn" class="gold login-primary">SIGN IN</button><button id="olCreate" class="login-secondary">CREATE ACCOUNT</button></div>
-      <div id="olError" class="login-error"></div>
-      <div class="login-note">Accounts and saves are stored separately on this browser.</div>
-    </div>`;
-    document.body.appendChild(el);
-    document.getElementById('olShowPass')?.addEventListener('click',()=>{const p=document.getElementById('olPass'),b=document.getElementById('olShowPass');if(!p||!b)return;p.type=p.type==='password'?'text':'password';b.textContent=p.type==='password'?'SHOW':'HIDE';});
-    document.getElementById('olPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doPlayerLogin(false);});
-  }
-  el.style.display='flex'; document.getElementById('menu').style.display='none';
-}
-async function doPlayerLogin(create){
-  const u=(document.getElementById('olUser').value||'').trim().replace(/[^a-zA-Z0-9 _-]/g,'').slice(0,16), p=document.getElementById('olPass').value||'', err=document.getElementById('olError');
-  if(u.length<3||p.length<4){err.textContent='Use at least 3 username characters and 4 password characters.';return;}
-  const accounts=getAccounts(), key=u.toLowerCase(), hp=await hashPassword(p);
-  if(create){
-    if(accounts[key]){err.textContent='That username is already in use on this browser. Choose another username or sign in.';return;}
-    accounts[key]={username:u,password:hp,created:Date.now()};
-    setAccounts(accounts);
-    err.textContent='Account created! Signing you in...';
-  }
-  else if(!accounts[key]){err.textContent='Account not found. Create it first.';return;}
-  else if(accounts[key].password!==hp){err.textContent='Incorrect username or password.';return;}
-  currentUsername=u;save=loadLocalSaveForUser(currentUsername);ensureMegaSave();
-  localStorage.setItem('outlastLastUser',currentUsername);
-  document.getElementById('outlastLogin').style.display='none';document.getElementById('menu').style.display='flex';updateMenuSummary();
-}
-setTimeout(()=>{const remembered=localStorage.getItem('outlastLastUser');if(remembered){document.getElementById('olUser')&&(document.getElementById('olUser').value=remembered);}showPlayerLogin();},0);
-
-document.addEventListener('click',e=>{if(e.target.id==='olSignIn')doPlayerLogin(false);if(e.target.id==='olCreate')doPlayerLogin(true);});
 
 /* ---------- Permanent upgrade effects ---------- */
 const oldStartGame=realStartGame;

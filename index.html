@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OUTLAST v2.5.10</title>
+<title>OUTLAST v2.6.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -242,7 +242,7 @@ body.outlast-in-game #mobileControls{display:block!important}
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.6.1 • Rooms & Mobile</div>
+          <div class="menu-chip">v2.6.0 • Rooms & Mobile</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -330,7 +330,7 @@ body.outlast-in-game #mobileControls{display:block!important}
 
 <script>
 /* OUTLAST v2.5.7 — safe storage bootstrap */
-/* OUTLAST v2.6.1 universal button safety layer
+/* OUTLAST v2.6.0 universal button safety layer
    Replays button clicks through the normal DOM event path at capture-time.
    This prevents one broken/missing button handler from making later buttons appear dead. */
 (function installUniversalButtonSafety(){
@@ -431,8 +431,8 @@ c.addEventListener('click',e=>{
  const move=e=>{if(active!==null&&e.pointerId!==active)return;const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const max=r.width*.33;const len=Math.hypot(dx,dy)||1;if(len>max){dx=dx/len*max;dy=dy/len*max;}knob.style.transform=`translate(${dx}px,${dy}px)`;setDir(dx,dy)};
  stick.addEventListener('pointermove',move);stick.addEventListener('pointerup',e=>{if(e.pointerId===active){active=null;reset();}});stick.addEventListener('pointercancel',e=>{if(e.pointerId===active){active=null;reset();}});
  document.querySelectorAll('[data-mobile-action]').forEach(btn=>{const act=btn.dataset.mobileAction;const on=ev=>{ev.preventDefault();if(!game.running)return;btn.setPointerCapture?.(ev.pointerId);if(act==='dash')dash();else if(act==='skill')useActiveSkill();else if(act==='ult')useUltimate();};btn.addEventListener('pointerdown',on,{passive:false});});
-function syncMobileControls(){const active=typeof game!=='undefined'&&!!game.running;document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls)controls.setAttribute('aria-hidden',active?'false':'true')}
 })();
+function syncMobileControls(){let active=false;try{active=!!game.running}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls)controls.setAttribute('aria-hidden',active?'false':'true')}
 
 
 const mapDefs={
@@ -2819,7 +2819,7 @@ function renderOnlinePanel(){if(typeof openSub!=='function')return;const list=Ob
 document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a==='roomCreate')createRoom();else if(a==='roomJoin')joinRoom();else if(a==='roomLeave')leaveRoom();else if(a==='roomStart'){broadcastRoomStart();if(!game.running)startGame(false)}else if(a==='onlineConnect')connectOutlastServer();else if(a==='onlineDisconnect')disconnectOutlastServer();else if(a==='onlinePing')sendOnlinePing()});
 (function(){function refreshMobileAvatar(){const cv=document.getElementById('mobileAvatarCanvas');if(!cv||!currentUsername||typeof chars==='undefined'||typeof skins==='undefined')return;const mctx=cv.getContext('2d');mctx.save();mctx.scale(cv.width/180,cv.height/220);const ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;drawAvatarPreview(mctx,{...(ch.visual||{}),body:sk.color},sk.color||'#5e9fff');mctx.restore()}setInterval(refreshMobileAvatar,500)})();
 </script>
-<div class="update-entry"><b>v2.6.1 — Rooms & Mobile</b><br>Mobile joystick/actions now appear only during gameplay, plus online co-op rooms for up to 4 players with room codes, shared player positions, and room-start synchronization.</div><div class="update-entry"><b>v2.6.0 — Cumulative Update</b><br>Prize Wheel, server-backed bug/idea reports, clearer Luck systems, clickable Level Up choices, upgrade behavior fixes, Treasure Radar drop tuning, and mobile/UI polish consolidated from all post-v2.5.7 changes.</div>
+<div class="update-entry"><b>v2.6.0 — Rooms & Mobile</b><br>Mobile joystick/actions now appear only during gameplay, plus online co-op rooms for up to 4 players with room codes, shared player positions, and room-start synchronization.</div><div class="update-entry"><b>v2.6.0 — Cumulative Update</b><br>Prize Wheel, server-backed bug/idea reports, clearer Luck systems, clickable Level Up choices, upgrade behavior fixes, Treasure Radar drop tuning, and mobile/UI polish consolidated from all post-v2.5.7 changes.</div>
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>

@@ -34,7 +34,7 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
 #menu .menu-cards{overflow:visible !important;grid-auto-rows:minmax(120px,auto) !important}
 #menu .menu-card{min-height:120px !important}
 @media(max-width:700px){#menu .main-menu{overflow-y:auto !important}#menu .menu-cards{grid-template-columns:1fr !important;grid-auto-rows:auto !important}#menu .menu-card{min-height:auto !important}}
-</style></style>
+<style>#devicePcBtn.selected,#deviceMobileBtn.selected,#joystickOnBtn.selected,#joystickOffBtn.selected{border:2px solid #69c0ff;background:#1b3a56;box-shadow:0 0 0 2px rgba(105,192,255,.18) inset}</style></style></style>
 
 <style id="menu-redesign-v224">
 /* v2.2.4 full menu redesign */
@@ -467,10 +467,10 @@ function setupMobileControls(){
  document.querySelectorAll('[data-mobile-action]').forEach(btn=>{const act=btn.dataset.mobileAction;const on=ev=>{ev.preventDefault();ev.stopPropagation();if(!game.running||game.paused||game.upgradeOpen)return;try{if(act==='dash')dash();else if(act==='skill')useActiveSkill();else if(act==='ult')useUltimate();}catch(_){}};if('PointerEvent' in window)btn.addEventListener('pointerdown',on,{passive:false});else btn.addEventListener('touchstart',on,{passive:false});});
 }
 function getDeviceMode(){return outlastStorage.getItem('outlastDeviceMode')||'';}
-function setDeviceMode(mode){outlastStorage.setItem('outlastDeviceMode',mode);syncMobileControls();updateDeviceModeStatus();}
-function getJoystickMode(){return outlastStorage.getItem('outlastJoystickMode')||'on';}
+function setDeviceMode(mode){outlastStorage.setItem('outlastDeviceMode',mode);if(mode==='pc')outlastStorage.setItem('outlastJoystickMode','off');syncMobileControls();updateDeviceModeStatus();}
+function getJoystickMode(){return outlastStorage.getItem('outlastJoystickMode')||'';}
 function setJoystickMode(mode){outlastStorage.setItem('outlastJoystickMode',mode==='off'?'off':'on');syncMobileControls();updateDeviceModeStatus();}
-function updateDeviceModeStatus(){const el=document.getElementById('deviceModeStatus');if(!el)return;const d=getDeviceMode()||'not selected',j=getJoystickMode();el.textContent='Device: '+d.toUpperCase()+' • Joystick: '+j.toUpperCase();}
+function updateDeviceModeStatus(){const el=document.getElementById('deviceModeStatus');const d=getDeviceMode()||'not selected',j=getJoystickMode()||'not selected';if(el)el.textContent='Device: '+d.toUpperCase()+' • Joystick: '+j.toUpperCase();const ids=['devicePcBtn','deviceMobileBtn','joystickOnBtn','joystickOffBtn'];ids.forEach(id=>document.getElementById(id)?.classList.remove('selected'));if(d==='pc')document.getElementById('devicePcBtn')?.classList.add('selected');if(d==='mobile')document.getElementById('deviceMobileBtn')?.classList.add('selected');if(j==='on')document.getElementById('joystickOnBtn')?.classList.add('selected');if(j==='off')document.getElementById('joystickOffBtn')?.classList.add('selected');}
 function syncMobileControls(){let active=false;try{active=getDeviceMode()==='mobile'&&getJoystickMode()==='on'&&!!game.running&&!game.over&&!fatalErrorShown}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls){controls.style.display=active?'block':'none';controls.setAttribute('aria-hidden',active?'false':'true');}updateDeviceModeStatus();}
 
 
@@ -988,7 +988,7 @@ document.getElementById('devicePcBtn')?.addEventListener('click',()=>{setDeviceM
 document.getElementById('deviceMobileBtn')?.addEventListener('click',()=>{setDeviceMode('mobile'); updateDeviceModeStatus();});
 document.getElementById('joystickOnBtn')?.addEventListener('click',()=>{if(getDeviceMode()==='mobile')setJoystickMode('on');else{setJoystickMode('off');updateDeviceModeStatus();}});
 document.getElementById('joystickOffBtn')?.addEventListener('click',()=>setJoystickMode('off'));
-document.getElementById('deviceModeContinueBtn')?.addEventListener('click',()=>{if(!getDeviceMode()){toast('Choose PC or Mobile first');return;} if(getDeviceMode()==='pc')setJoystickMode('off'); document.getElementById('deviceModePopup').style.display='none'; syncMobileControls();});
+document.getElementById('deviceModeContinueBtn')?.addEventListener('click',()=>{const d=getDeviceMode(),j=getJoystickMode();if(!d){toast('Choose PC or Mobile first');return;}if(d==='pc'){setJoystickMode('off');}else if(j!=='on'&&j!=='off'){toast('Choose Joystick ON or OFF');return;}document.getElementById('deviceModePopup').style.display='none';syncMobileControls();});
 document.getElementById('controlsBtn')?.addEventListener('click',()=>{updateDeviceModeStatus();document.getElementById('deviceModePopup').style.display='flex';});
 document.getElementById('switchUserBtn')?.addEventListener('click',showUsernameLogin);
 
@@ -2812,7 +2812,16 @@ draw=function(){
 
 /* Special enemy labels are drawn by a light overlay after the base draw. */
 const oldDraw2=draw;
-draw=function(){oldDraw2();if(!game.running)return;for(const e of game.enemies){if(['shielder','spitter','splitter','reaper','warden'].includes(e.kind)){const [x,y]=worldPoint(e.x,e.y);ctx.fillStyle='#fff';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText(e.kind.toUpperCase(),x,y-e.r-14);ctx.textAlign='left';}}};
+draw=function(){oldDraw2();if(!game.running)return;
+ if(roomCode&&typeof roomPlayers==='object'){
+  for(const rp of Object.values(roomPlayers)){
+   if(!rp||rp.id===roomClientId||!Number.isFinite(Number(rp.x))||!Number.isFinite(Number(rp.y)))continue;
+   const remote={x:Number(rp.x),y:Number(rp.y),r:20,skinColor:rp.skinColor||'#ff9d5c',characterVisual:rp.characterVisual||{body:rp.skinColor||'#ff9d5c',style:'survivor'}};
+   drawPlayerAvatar(remote,'#ffb15c',false);
+   const [rx,ry]=worldPoint(remote.x,remote.y);ctx.save();ctx.textAlign='center';ctx.font='bold 12px Arial';ctx.lineWidth=4;ctx.strokeStyle='rgba(0,0,0,.85)';ctx.fillStyle='#fff';const label=String(rp.username||'Player').replace(/[<>&]/g,'')+' • Lv '+String(rp.level||1);ctx.strokeText(label,rx,ry-34);ctx.fillText(label,rx,ry-34);ctx.restore();
+  }
+ }
+ for(const e of game.enemies){if(['shielder','spitter','splitter','reaper','warden'].includes(e.kind)){const [x,y]=worldPoint(e.x,e.y);ctx.fillStyle='#fff';ctx.font='10px Arial';ctx.textAlign='center';ctx.fillText(e.kind.toUpperCase(),x,y-e.r-14);ctx.textAlign='left';}}};
 
 /* ---------- Responsive UI ---------- */
 const style=document.createElement('style');style.textContent=`

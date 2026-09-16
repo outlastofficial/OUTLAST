@@ -187,6 +187,17 @@ body.outlast-in-game #mobileControls{display:block!important}
     <div class="update-pop-actions"><button id="loginBtn" class="green">CONTINUE</button></div>
   </div>
 </div>
+<div id="deviceModePopup" class="update-pop" role="dialog" aria-modal="true" aria-labelledby="deviceModeTitle" style="display:none">
+  <div class="update-pop-card" style="width:min(560px,92vw);text-align:center">
+    <div id="deviceModeTitle" style="font-size:30px;font-weight:900">How are you playing?</div>
+    <div class="update-pop-version">DEVICE SETUP</div>
+    <p class="small" style="font-size:14px;line-height:1.5">Choose your control type. PC players will not see the mobile joystick or touch controls.</p>
+    <div class="row" style="margin-top:18px">
+      <button id="devicePcBtn" class="green" type="button" style="min-width:160px">🖥️ PC</button>
+      <button id="deviceMobileBtn" type="button" style="min-width:160px">📱 MOBILE</button>
+    </div>
+  </div>
+</div>
 <div id="updatePopup" class="update-pop" role="dialog" aria-modal="true" aria-labelledby="updatePopupTitle">
   <div class="update-pop-card">
     <div id="updatePopupTitle">New Update</div>
@@ -444,7 +455,9 @@ function setupMobileControls(){
  }
  document.querySelectorAll('[data-mobile-action]').forEach(btn=>{const act=btn.dataset.mobileAction;const on=ev=>{ev.preventDefault();ev.stopPropagation();if(!game.running||game.paused||game.upgradeOpen)return;try{if(act==='dash')dash();else if(act==='skill')useActiveSkill();else if(act==='ult')useUltimate();}catch(_){}};if('PointerEvent' in window)btn.addEventListener('pointerdown',on,{passive:false});else btn.addEventListener('touchstart',on,{passive:false});});
 }
-function syncMobileControls(){let active=false;try{active=!!game.running&&!game.over&&!fatalErrorShown}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls){controls.style.display=active?'block':'none';controls.setAttribute('aria-hidden',active?'false':'true');}}
+function getDeviceMode(){return outlastStorage.getItem('outlastDeviceMode')||'';}
+function setDeviceMode(mode){outlastStorage.setItem('outlastDeviceMode',mode);syncMobileControls();}
+function syncMobileControls(){let active=false;try{active=getDeviceMode()==='mobile'&&!!game.running&&!game.over&&!fatalErrorShown}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls){controls.style.display=active?'block':'none';controls.setAttribute('aria-hidden',active?'false':'true');}}
 
 
 const mapDefs={
@@ -943,6 +956,13 @@ function finishUsernameLogin(){
   persist();
   document.getElementById('loginPopup').style.display='none';
   updateMenuSummary();
+  const mode=getDeviceMode();
+  if(!mode){
+    document.getElementById('deviceModePopup').style.display='flex';
+  }else{
+    document.getElementById('deviceModePopup').style.display='none';
+  }
+  syncMobileControls();
   return true;
 }
 
@@ -954,6 +974,8 @@ function updateMenuSummary(){const adminLabel=(isAdmin()&&currentUsername===ADMI
 updateMenuSummary();
 
 document.getElementById('loginBtn')?.addEventListener('click',finishUsernameLogin);
+document.getElementById('devicePcBtn')?.addEventListener('click',()=>{setDeviceMode('pc');document.getElementById('deviceModePopup').style.display='none';});
+document.getElementById('deviceMobileBtn')?.addEventListener('click',()=>{setDeviceMode('mobile');document.getElementById('deviceModePopup').style.display='none';});
 document.getElementById('switchUserBtn')?.addEventListener('click',showUsernameLogin);
 
 const game={running:false,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,time:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,upgradeChoices:[],player:null,player2:null,stats:null,pvpWinner:null,pvp:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};
@@ -2553,10 +2575,13 @@ update=function(dt){
 };
 
 /* ---------- Score scaling ---------- */
-killEnemy=function(i){
- const e=game.enemies[i];if(!e)return;
- const before=game.score;realKillEnemy(i);const gain=Math.max(0,game.score-before);
- let factor=e.boss?.28:e.kind==='elite'?.36:.30;
+killEnemy=function(target){
+ const e=(typeof target==='number')?game.enemies[target]:target;
+ if(!e)return;
+ const before=game.score;
+ realKillEnemy(e);
+ const gain=Math.max(0,game.score-before);
+ const factor=e.boss?.28:e.kind==='elite'?.36:.30;
  game.score=before+gain*factor;
 };
 
@@ -2820,15 +2845,16 @@ setTimeout(()=>{if(typeof syncFeedbackToServer==='function')syncFeedbackToServer
 const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
 let outlastSocket=null,outlastOnline=false,outlastOnlineUsers=0,roomCode='',roomClientId='',roomPlayers={},roomStarted=false;
 function onlineStatus(){return outlastOnline?'🟢 Connected':'🔴 Offline'}
+let pendingRoomAction='';
 function connectOutlastServer(){
  if(outlastSocket&&(outlastSocket.readyState===WebSocket.OPEN||outlastSocket.readyState===WebSocket.CONNECTING))return;
- try{outlastSocket=new WebSocket(OUTLAST_SERVER_URL);outlastSocket.onopen=()=>{outlastOnline=true;roomClientId=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2));roomSend({type:'player_join',username:currentUsername||'Player'});if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();toast('🌐 Connected to OUTLAST server');renderOnlinePanel()};
+ try{outlastSocket=new WebSocket(OUTLAST_SERVER_URL);outlastSocket.onopen=()=>{outlastOnline=true;roomClientId=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2));roomSend({type:'player_join',username:currentUsername||'Player'});if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();toast('🌐 Connected to OUTLAST server');renderOnlinePanel();const action=pendingRoomAction;pendingRoomAction='';if(action==='create')createRoom();else if(action==='join')joinRoom();};
  outlastSocket.onmessage=e=>{try{const m=JSON.parse(e.data);if(m.type==='player_count')outlastOnlineUsers=Number(m.players)||0;if(m.type==='room_created'||m.type==='room_joined'){roomCode=String(m.code||'').toUpperCase();roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);toast('🏠 Room '+roomCode);if(roomStarted&&!game.running)startGame(true)}if(m.type==='room_state'){roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);if(roomStarted&&!game.running)startGame(true)}if(m.type==='room_error')toast('⚠️ '+(m.error||'Room error'));if(m.type==='player_left'){delete roomPlayers[m.id]}if(m.type==='room_game_start'){roomStarted=true;if(!game.running)startGame(true);toast('▶ Co-op run started')}if(m.type==='player_state'&&m.id){roomPlayers[m.id]={...(roomPlayers[m.id]||{}),...m};delete roomPlayers[m.id].type}}catch(_){ }renderOnlinePanel()};
  outlastSocket.onclose=()=>{outlastOnline=false;outlastSocket=null;roomCode='';roomPlayers={};roomStarted=false;renderOnlinePanel()};outlastSocket.onerror=()=>{outlastOnline=false;renderOnlinePanel();toast('⚠️ Could not connect to OUTLAST server')};
  }catch(_){outlastOnline=false;toast('⚠️ Multiplayer connection failed')}}
 function roomSend(o){if(outlastSocket&&outlastSocket.readyState===WebSocket.OPEN)outlastSocket.send(JSON.stringify(o))}
-function createRoom(){if(!outlastOnline){connectOutlastServer();setTimeout(createRoom,600);return}roomSend({type:'create_room',username:currentUsername||'Player'})}
-function joinRoom(){const v=(document.getElementById('roomJoinInput')?.value||'').trim().toUpperCase();if(!/^[A-Z0-9]{4}$/.test(v)){toast('Enter a 4-character room code');return}if(!outlastOnline){connectOutlastServer();setTimeout(joinRoom,600);return}roomSend({type:'join_room',code:v,username:currentUsername||'Player'})}
+function createRoom(){if(!outlastOnline){pendingRoomAction='create';connectOutlastServer();toast('🌐 Connecting to server…');return}roomSend({type:'create_room',username:currentUsername||'Player'});toast('🏠 Creating room…')}
+function joinRoom(){const v=(document.getElementById('roomJoinInput')?.value||'').trim().toUpperCase();if(!/^[A-Z0-9]{4}$/.test(v)){toast('Enter a 4-character room code');return}if(!outlastOnline){pendingRoomAction='join';connectOutlastServer();toast('🌐 Connecting to server…');return}roomSend({type:'join_room',code:v,username:currentUsername||'Player'});toast('🚪 Joining room…')}
 function leaveRoom(){if(roomCode)roomSend({type:'leave_room'});roomCode='';roomPlayers={};roomStarted=false;renderOnlinePanel()}
 function broadcastRoomStart(){if(roomCode)roomSend({type:'start_run'})}
 function sendOnlinePing(){if(!outlastSocket||outlastSocket.readyState!==WebSocket.OPEN){toast('Connect to the server first');return}roomSend({type:'player_ping',username:currentUsername||'Player'});toast('📡 Server connection is working')}

@@ -191,11 +191,18 @@ body.outlast-in-game #mobileControls{display:block!important}
   <div class="update-pop-card" style="width:min(560px,92vw);text-align:center">
     <div id="deviceModeTitle" style="font-size:30px;font-weight:900">How are you playing?</div>
     <div class="update-pop-version">DEVICE SETUP</div>
-    <p class="small" style="font-size:14px;line-height:1.5">Choose your control type. PC players will not see the mobile joystick or touch controls.</p>
-    <div class="row" style="margin-top:18px">
-      <button id="devicePcBtn" class="green" type="button" style="min-width:160px">🖥️ PC</button>
-      <button id="deviceMobileBtn" type="button" style="min-width:160px">📱 MOBILE</button>
+    <p class="small" style="font-size:14px;line-height:1.5">Choose your device and whether you want the on-screen joystick.</p>
+    <div class="small" style="margin-top:14px;font-weight:800;text-align:left">DEVICE</div>
+    <div class="row" style="margin-top:8px">
+      <button id="devicePcBtn" class="green" type="button" style="min-width:150px">🖥️ PC</button>
+      <button id="deviceMobileBtn" type="button" style="min-width:150px">📱 MOBILE</button>
     </div>
+    <div class="small" style="margin-top:14px;font-weight:800;text-align:left">JOYSTICK</div>
+    <div class="row" style="margin-top:8px">
+      <button id="joystickOnBtn" type="button" style="min-width:150px">🕹️ ON</button>
+      <button id="joystickOffBtn" type="button" style="min-width:150px">🚫 OFF</button>
+    </div>
+    <div id="deviceModeStatus" class="small" style="margin-top:14px;min-height:18px"></div>
   </div>
 </div>
 <div id="updatePopup" class="update-pop" role="dialog" aria-modal="true" aria-labelledby="updatePopupTitle">
@@ -330,7 +337,7 @@ body.outlast-in-game #mobileControls{display:block!important}
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div>
             <div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
-            <div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div><div class="menu-card"><h3>Prize Wheel</h3><button class="menu-btn gold" id="prizeWheelBtn">🎡 Free Prize Wheel</button></div>
+            <div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div>
           </div>
         </section>
       </main>
@@ -456,8 +463,11 @@ function setupMobileControls(){
  document.querySelectorAll('[data-mobile-action]').forEach(btn=>{const act=btn.dataset.mobileAction;const on=ev=>{ev.preventDefault();ev.stopPropagation();if(!game.running||game.paused||game.upgradeOpen)return;try{if(act==='dash')dash();else if(act==='skill')useActiveSkill();else if(act==='ult')useUltimate();}catch(_){}};if('PointerEvent' in window)btn.addEventListener('pointerdown',on,{passive:false});else btn.addEventListener('touchstart',on,{passive:false});});
 }
 function getDeviceMode(){return outlastStorage.getItem('outlastDeviceMode')||'';}
-function setDeviceMode(mode){outlastStorage.setItem('outlastDeviceMode',mode);syncMobileControls();}
-function syncMobileControls(){let active=false;try{active=getDeviceMode()==='mobile'&&!!game.running&&!game.over&&!fatalErrorShown}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls){controls.style.display=active?'block':'none';controls.setAttribute('aria-hidden',active?'false':'true');}}
+function setDeviceMode(mode){outlastStorage.setItem('outlastDeviceMode',mode);syncMobileControls();updateDeviceModeStatus();}
+function getJoystickMode(){return outlastStorage.getItem('outlastJoystickMode')||'on';}
+function setJoystickMode(mode){outlastStorage.setItem('outlastJoystickMode',mode==='off'?'off':'on');syncMobileControls();updateDeviceModeStatus();}
+function updateDeviceModeStatus(){const el=document.getElementById('deviceModeStatus');if(!el)return;const d=getDeviceMode()||'not selected',j=getJoystickMode();el.textContent='Device: '+d.toUpperCase()+' • Joystick: '+j.toUpperCase();}
+function syncMobileControls(){let active=false;try{active=getDeviceMode()==='mobile'&&getJoystickMode()==='on'&&!!game.running&&!game.over&&!fatalErrorShown}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls){controls.style.display=active?'block':'none';controls.setAttribute('aria-hidden',active?'false':'true');}updateDeviceModeStatus();}
 
 
 const mapDefs={
@@ -846,7 +856,7 @@ function renderQuestBoard(){
  openSub('📜 Quest Board',`<p class="note">Complete daily quests for World Keys. Quests reset each day.</p><div class="grid">${rows}</div>`);
 }
 
-function freshSave(){return {coins:0,worldKeys:0,prizeWheelSpins:0,prizeWheelKills:0,prizeWheelDay:'',prizeWheelUsedToday:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1}}
+function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1}}
 function ensureMegaSave(){
   if(!save||typeof save!=='object')return;
   if(!Array.isArray(save.builderMods))save.builderMods=[];
@@ -868,10 +878,6 @@ function ensureMegaSave(){
   if(typeof save.raidClears!=='number')save.raidClears=0;
   if(typeof save.worldKeys!=='number')save.worldKeys=0;
   if(typeof save.pvpSeason!=='number')save.pvpSeason=1;
-  if(typeof save.prizeWheelSpins!=='number')save.prizeWheelSpins=0;
-  if(typeof save.prizeWheelKills!=='number')save.prizeWheelKills=0;
-  if(typeof save.prizeWheelDay!=='string')save.prizeWheelDay='';
-  if(typeof save.prizeWheelUsedToday!=='number')save.prizeWheelUsedToday=0;
   if(typeof save.materials!=='number')save.materials=0;
   if(typeof save.keys!=='number')save.keys=0;
   if(typeof save.mythicDust!=='number')save.mythicDust=0;
@@ -976,6 +982,8 @@ updateMenuSummary();
 document.getElementById('loginBtn')?.addEventListener('click',finishUsernameLogin);
 document.getElementById('devicePcBtn')?.addEventListener('click',()=>{setDeviceMode('pc');document.getElementById('deviceModePopup').style.display='none';});
 document.getElementById('deviceMobileBtn')?.addEventListener('click',()=>{setDeviceMode('mobile');document.getElementById('deviceModePopup').style.display='none';});
+document.getElementById('joystickOnBtn')?.addEventListener('click',()=>setJoystickMode('on'));
+document.getElementById('joystickOffBtn')?.addEventListener('click',()=>setJoystickMode('off'));
 document.getElementById('switchUserBtn')?.addEventListener('click',showUsernameLogin);
 
 const game={running:false,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,time:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,upgradeChoices:[],player:null,player2:null,stats:null,pvpWinner:null,pvp:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};
@@ -1233,7 +1241,7 @@ function shootPvP(owner){
 function useUltimate(){const p=game.player;if(!p||p.ult<100)return;p.ult=0;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];damageEnemy(e,120*(p.ultDamage||1));if(e.hp<=0)killEnemy(e)}game.effects.push({x:p.x,y:p.y,t:.7,r:180})}
 function damageEnemy(e,dmg){if(!e||!game.player||!Number.isFinite(dmg))return;let crit=Math.random()<Math.min(.95,game.player.crit);if(crit)dmg*=game.player.critMult;if(e.boss)dmg*=game.player.bossMult;if(e.kind==='elite')dmg*=1+.03*(save.upgrades.Executioner||0);if(game.player.armorPierce)dmg*=1+game.player.armorPierce;e.hp-=Math.max(0,dmg);e.hitFlash=.12;burst(e.x,e.y,crit?'#fff08a':'#ff7b6e',crit?8:2,crit?80:55);if(crit)ring(e.x,e.y,'#fff08a',24,.22);if(game.player&&game.player===game.player2){}if(dmg>(save.records.bestDamage||0))save.records.bestDamage=dmg;game.shots.push({x:e.x,y:e.y,text:Math.floor(dmg),t:.5,crit})}
 function applyElement(e){if(!game.player)return;const el=game.player.element;if(el==='Fire')e.burn=3;if(el==='Ice')e.slowTimer=Math.max(e.slowTimer||0,3);if(el==='Shock')e.chainTimer=.5;if(el==='Poison')e.poison=4;if(el==='Void'&&(e.boss||e.kind==='elite'))e.hp-=game.player.damage*.35}
-function killEnemy(target){const e=typeof target==='number'?game.enemies[target]:target;const i=e?game.enemies.indexOf(e):-1;if(!e||i<0||e.__dead)return;e.__dead=true;burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);run.kills++;save.prizeWheelKills=(save.prizeWheelKills||0)+1;awardPrizeWheelSpinByKills();save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);game.combo=Math.min(50,game.combo+1);if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;if(Math.random()<.12)save.materials++;game.comboTimer=4;const comboMult=1+Math.min(20,game.combo)*0.03;game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
+function killEnemy(target){const e=typeof target==='number'?game.enemies[target]:target;const i=e?game.enemies.indexOf(e):-1;if(!e||i<0||e.__dead)return;e.__dead=true;burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);run.kills++;save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);game.combo=Math.min(50,game.combo+1);if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;if(Math.random()<.12)save.materials++;game.comboTimer=4;const comboMult=1+Math.min(20,game.combo)*0.03;game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
  const val=e.boss?Math.max(1,game.xpNeed-game.xp):Math.max(1,Math.floor(e.xp*game.stats.rewardMult*1.06));game.gems.push({x:e.x,y:e.y,value:val,icon:'◆'}); if(e.boss||e.kind==='golden') {ring(e.x,e.y,'#ffd84d',34,.55);burst(e.x,e.y,'#ffd84d',12,100);} if(e.kind==='golden')game.coins.push({x:e.x+8,y:e.y+8,value:25*game.player.coinMult,icon:'$'}); const lootLuck=Math.max(0,Number(game.player.lootLuck||0)); if(e.kind==='elite'||e.boss||Math.random()<Math.min(.18,.025*game.player.coinMult+lootLuck*.002))game.coins.push({x:e.x+5,y:e.y+5,value:(e.boss?30:e.kind==='elite'?6:2)*game.player.coinMult,icon:'$'}); if(e.boss){run.bosses++;} if(run.kills%35===0){save.keys++;save.records.totalChests++;game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});toast('□ Treasure cache found!');}
  const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));const radarMult=game.player.treasure?3:1;const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult); if(Math.random()<powerupChance)game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]}); if(game.player.shockwave && run.kills%12===0){for(let j=game.enemies.length-1;j>=0;j--){const q=game.enemies[j];if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){damageEnemy(q,game.player.damage*.8);if(q.hp<=0)killEnemy(j)}}game.effects.push({x:e.x,y:e.y,t:.3,r:150})} if(game.player.vampire){game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire)} game.enemies.splice(i,1);
 }
@@ -2662,34 +2670,15 @@ endRun=function(victory){
 const oldRealEndRun=realEndRun;
 // The wrapper above calls the original endRun, which already prevents duplicate calls by game.running.
 
-/* ---------- Free Prize Wheel ---------- */
-const prizeWheelRewards=[
-  {label:'+250 Coins',apply:()=>{save.coins=(save.coins||0)+250}},
-  {label:'+500 Coins',apply:()=>{save.coins=(save.coins||0)+500}},
-  {label:'+1,000 Coins',apply:()=>{save.coins=(save.coins||0)+1000}},
-  {label:'+3 Materials',apply:()=>{save.materials=(save.materials||0)+3}},
-  {label:'+1 World Key',apply:()=>{save.worldKeys=(save.worldKeys||0)+1}},
-  {label:'+1 Forge Core',apply:()=>{save.forgeCores=(save.forgeCores||0)+1}},
-  {label:'+5 Mythic Dust',apply:()=>{save.mythicDust=(save.mythicDust||0)+5}},
-  {label:'+1 Skin Case Credit',apply:()=>{save.caseCredits=(save.caseCredits||0)+1}}
-];
-function prizeWheelDayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function ensurePrizeWheelDay(){const d=prizeWheelDayKey();if(save.prizeWheelDay!==d){save.prizeWheelDay=d;save.prizeWheelUsedToday=0;persist();}save.prizeWheelSpins=Math.max(0,Math.min(3,Math.floor(Number(save.prizeWheelSpins)||0)));save.prizeWheelUsedToday=Math.max(0,Math.min(3,Math.floor(Number(save.prizeWheelUsedToday)||0)));}
-function awardPrizeWheelSpinByKills(){ensurePrizeWheelDay();const kills=Math.max(0,Math.floor(Number(save.prizeWheelKills)||0));const threshold=25;const earned=Math.floor(kills/threshold);const oldEarned=Math.floor((save.prizeWheelAwardedKills||0)/threshold);if(earned>oldEarned){save.prizeWheelSpins=Math.min(3,save.prizeWheelSpins+(earned-oldEarned));save.prizeWheelAwardedKills=earned*threshold;persist();toast('🎡 You earned a free Prize Wheel spin!');}}
-function renderPrizeWheel(){ensurePrizeWheelDay();const spins=save.prizeWheelSpins||0,used=save.prizeWheelUsedToday||0;const rewardLabels=prizeWheelRewards.map((r,i)=>'<div class="option" style="text-align:center"><b>'+String(i+1)+'. '+r.label+'</b></div>').join('');openSub('🎡 Free Prize Wheel',
-  '<div class="option"><b>Free spins only — no coins are wagered.</b><div class="small">Earn 1 spin every 25 lifetime kills, up to 3 banked. You can use up to 3 spins per day.</div><div class="small">Available: '+spins+' • Used today: '+used+'/3</div></div>'+ 
-  '<div id="prizeWheelVisual" style="margin:14px auto;width:min(360px,72vw);height:110px;border:2px solid #4b6880;border-radius:18px;background:radial-gradient(circle at 50% 50%,#203447,#0c151d);display:flex;align-items:center;justify-content:center;text-align:center;font-size:24px;font-weight:900;box-shadow:0 15px 40px rgba(0,0,0,.35)">READY TO SPIN</div>'+ 
-  '<button class="gold" style="width:100%;margin-top:10px" data-action="spinPrizeWheel" '+(spins<=0||used>=3?'disabled':'')+'>🎡 SPIN FREE WHEEL</button>'+ 
-  '<h3 style="margin-top:16px">Possible Rewards</h3><div class="grid">'+rewardLabels+'</div>');}
-async function spinPrizeWheel(){ensurePrizeWheelDay();if(save.prizeWheelSpins<=0)return toast('Earn a Prize Wheel spin by playing');if(save.prizeWheelUsedToday>=3)return toast('Daily Prize Wheel limit reached');save.prizeWheelSpins--;save.prizeWheelUsedToday++;persist();const el=document.getElementById('prizeWheelVisual');if(el){el.textContent='SPINNING…';el.style.transform='rotate(0deg)';el.style.transition='transform 1.1s cubic-bezier(.12,.78,.18,1)';requestAnimationFrame(()=>el.style.transform='rotate(900deg)');}await new Promise(r=>setTimeout(r,1150));const reward=prizeWheelRewards[Math.floor(Math.random()*prizeWheelRewards.length)];reward.apply();persist();if(el){el.style.transform='none';el.textContent='🎁 '+reward.label;}toast('🎁 Prize Wheel: '+reward.label);setTimeout(renderPrizeWheel,450);}
 
 /* ---------- Community feedback ---------- */
 function feedbackOpen(){openSub('💬 Bug Reports & Update Ideas',
- '<div class="grid"><button type="button" class="option feedback-choice-btn" data-action="reportBug" onclick="reportBugForm();return false;">🐛 Report a Bug<div class="small">Earn 1,000 coins after review if valid.</div></button>'+ 
- '<button type="button" class="option feedback-choice-btn" data-action="idea" onclick="ideaForm();return false;">💡 Submit Update Idea<div class="small">Earn 500 coins after review.</div></button></div>'+ 
- '<div class="option"><b>Review policy</b><div class="small">Pending → Accepted/Rejected. Duplicate/fake reports cannot be farmed.</div></div>');}
-function reportBugForm(){openSub('🐛 Report a Bug','<input id="fbTitle" type="text" placeholder="Bug title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="What happened? What should have happened?" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold feedback-submit-btn" id="submitBugBtn" data-action="submitBug" onclick="storeFeedback(\"bug\");return false;">SUBMIT BUG REPORT</button>');setTimeout(()=>document.getElementById('fbTitle')?.focus(),0);}
-function ideaForm(){openSub('💡 Submit Update Idea','<input id="fbTitle" type="text" placeholder="Idea title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="Describe your idea" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold feedback-submit-btn" id="submitIdeaBtn" data-action="submitIdea" onclick="storeFeedback(\"idea\");return false;">SUBMIT IDEA</button>');setTimeout(()=>document.getElementById('fbTitle')?.focus(),0);}
+ '<div class="grid"><button type="button" class="option feedback-choice-btn" id="reportBugChoice">🐛 Report a Bug<div class="small">Earn 1,000 coins after review if valid.</div></button>'+ 
+ '<button type="button" class="option feedback-choice-btn" id="ideaChoice">💡 Submit Update Idea<div class="small">Earn 500 coins after review.</div></button></div>'+ 
+ '<div class="option"><b>Review policy</b><div class="small">Pending → Accepted/Rejected. Duplicate/fake reports cannot be farmed.</div></div>');
+ setTimeout(()=>{document.getElementById('reportBugChoice')?.addEventListener('pointerup',e=>{e.preventDefault();reportBugForm();});document.getElementById('ideaChoice')?.addEventListener('pointerup',e=>{e.preventDefault();ideaForm();});document.getElementById('reportBugChoice')?.addEventListener('click',e=>{e.preventDefault();reportBugForm();});document.getElementById('ideaChoice')?.addEventListener('click',e=>{e.preventDefault();ideaForm();});},0);}
+function reportBugForm(){openSub('🐛 Report a Bug','<input id="fbTitle" type="text" placeholder="Bug title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="What happened? What should have happened?" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold feedback-submit-btn" id="submitBugBtn">SUBMIT BUG REPORT</button>');setTimeout(()=>{document.getElementById('fbTitle')?.focus();document.getElementById('submitBugBtn')?.addEventListener('click',()=>storeFeedback('bug'));document.getElementById('submitBugBtn')?.addEventListener('pointerup',e=>{e.preventDefault();storeFeedback('bug');});},0);}
+function ideaForm(){openSub('💡 Submit Update Idea','<input id="fbTitle" type="text" placeholder="Idea title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="Describe your idea" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold feedback-submit-btn" id="submitIdeaBtn">SUBMIT IDEA</button>');setTimeout(()=>{document.getElementById('fbTitle')?.focus();document.getElementById('submitIdeaBtn')?.addEventListener('click',()=>storeFeedback('idea'));document.getElementById('submitIdeaBtn')?.addEventListener('pointerup',e=>{e.preventDefault();storeFeedback('idea');});},0);}
 const OUTLAST_HTTP_SERVER='https://outlast-server.onrender.com';
 async function syncFeedbackToServer(){
   let arr=[]; try{arr=JSON.parse(outlastStorage.getItem('outlastFeedback')||'[]');}catch(_){arr=[];}
@@ -2738,7 +2727,6 @@ document.getElementById('subContent').addEventListener('click',e=>{
  else if(a==='adminXP')adminXP(v); else if(a==='adminLevel')adminLevel(v); else if(a==='adminCoins')adminCoins(v); else if(a==='adminUnlock')adminUnlock();else if(a==='adminStats')adminStats();else if(a==='adminDaily')adminDaily();else if(a==='adminLeaderboard')adminLeaderboard();else if(a==='adminGod')adminGod();else if(a==='adminInfinite')adminInfinite();else if(a==='adminPrestige')adminPrestige();else if(a==='adminQuests')adminQuests();else if(a==='adminSkillTree')adminSkillTree();else if(a==='adminSpawnBoss')adminSpawnBoss();else if(a==='adminSpawnElite')adminSpawnElite();else if(a==='adminSpawnZombie')adminSpawnZombie();else if(a==='adminSpawnLoot')adminSpawnLoot();else if(a==='adminWave')adminWave();else if(a==='adminReset')adminReset();else if(a==='adminLock')adminLock();
  else if(a==='shop')buyShop(v); else if(a==='coinbuy'){if(!save.coinPurchases)save.coinPurchases={};const costs={starter:2000,luck:3500,mastery:5000,cosmetic:7500};if(save.coinPurchases[v])return toast('Already purchased');if(save.coins<costs[v])return toast('Not enough coins');save.coins-=costs[v];save.coinPurchases[v]=true;if(v==='starter')save.reviveTokens=(save.reviveTokens||0)+1;if(v==='luck')save.permanentLuck=(save.permanentLuck||0)+10;if(v==='mastery')save.masteryCores=(save.masteryCores||0)+1;if(v==='cosmetic')save.cosmeticTokens=(save.cosmeticTokens||0)+1;persist();toast('🪙 Purchase complete');openCoinStore();}
  else if(a==='weeklyClaim')claimWeeklyPrize();else if(a==='reportBug')reportBugForm();else if(a==='idea')ideaForm();else if(a==='submitBug')storeFeedback('bug');else if(a==='submitIdea')storeFeedback('idea');
- else if(a==='spinPrizeWheel')spinPrizeWheel();
  else if(a==='toggleSetting'){save.settings=save.settings||{};save.settings[v]=save.settings[v]===false?true:false;persist();settingsOpen();}
  else if(a==='fullscreen'){if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();}
  else if(a==='resetSettings'){save.settings={shake:true,damageNumbers:true};persist();settingsOpen();}
@@ -2753,13 +2741,12 @@ addMenuButton('weeklyBoardBtn','🏆 WEEKLY LEADERBOARD',renderWeeklyLeaderboard
  const more=document.querySelector('[data-page-content="more"] .menu-cards');
  if(!more||document.getElementById('feedbackBtn'))return;
  const card=document.createElement('div');card.className='menu-card';card.innerHTML='<h3>Bug / Idea Submission</h3><button type="button" class="menu-btn" id="feedbackBtn">💬 Bugs & Ideas</button>';more.appendChild(card);
- document.getElementById('feedbackBtn').onclick=feedbackOpen;
+ const fb=document.getElementById('feedbackBtn');
+ if(fb){fb.onclick=feedbackOpen;fb.onpointerup=e=>{e.preventDefault();feedbackOpen();};fb.ontouchend=e=>{e.preventDefault();feedbackOpen();};}
 })();
 
 addMenuButton('coinStoreBtn','🪙 BLACK MARKET',openCoinStore);
 addMenuButton('settingsNewBtn','⚙️ SETTINGS',settingsOpen);
-
-(function addPrizeWheel(){const b=document.getElementById('prizeWheelBtn');if(b)b.onclick=renderPrizeWheel;})();
 
 
 /* ---------- Restored character/avatar rendering ---------- */
@@ -2866,7 +2853,7 @@ function renderOnlinePanel(){if(typeof openSub!=='function')return;const list=Ob
 document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a==='roomCreate')createRoom();else if(a==='roomJoin')joinRoom();else if(a==='roomLeave')leaveRoom();else if(a==='roomStart'){broadcastRoomStart();if(!game.running)startGame(false)}else if(a==='onlineConnect')connectOutlastServer();else if(a==='onlineDisconnect')disconnectOutlastServer();else if(a==='onlinePing')sendOnlinePing()});
 (function(){function refreshMobileAvatar(){const cv=document.getElementById('mobileAvatarCanvas');if(!cv||!currentUsername||typeof chars==='undefined'||typeof skins==='undefined')return;const mctx=cv.getContext('2d');mctx.save();mctx.scale(cv.width/180,cv.height/220);const ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;drawAvatarPreview(mctx,{...(ch.visual||{}),body:sk.color},sk.color||'#5e9fff');mctx.restore()}setInterval(refreshMobileAvatar,500)})();
 </script>
-<div class="update-entry"><b>v2.6.0 — Rooms & Mobile</b><br>Mobile joystick/actions now appear only during gameplay, plus online co-op rooms for up to 4 players with room codes, shared player positions, and room-start synchronization.</div><div class="update-entry"><b>v2.6.0 — Cumulative Update</b><br>Prize Wheel, server-backed bug/idea reports, clearer Luck systems, clickable Level Up choices, upgrade behavior fixes, Treasure Radar drop tuning, and mobile/UI polish consolidated from all post-v2.5.7 changes.</div>
+<div class="update-entry"><b>v2.6.0 — Rooms & Mobile</b><br>Mobile joystick/actions now appear only during gameplay, plus online co-op rooms for up to 4 players with room codes, shared player positions, and room-start synchronization.</div><div class="update-entry"><b>v2.6.0 — Cumulative Update</b><br>server-backed bug/idea reports, clearer Luck systems, clickable Level Up choices, upgrade behavior fixes, Treasure Radar drop tuning, mobile/device selection, co-op rooms, and mobile/UI polish consolidated from all post-v2.5.7 changes.</div>
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>

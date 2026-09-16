@@ -203,6 +203,9 @@ body.outlast-in-game #mobileControls{display:block!important}
       <button id="joystickOffBtn" type="button" style="min-width:150px">🚫 OFF</button>
     </div>
     <div id="deviceModeStatus" class="small" style="margin-top:14px;min-height:18px"></div>
+    <div class="update-pop-actions" style="justify-content:center">
+      <button id="deviceModeContinueBtn" class="green" type="button">CONTINUE</button>
+    </div>
   </div>
 </div>
 <div id="updatePopup" class="update-pop" role="dialog" aria-modal="true" aria-labelledby="updatePopupTitle">
@@ -336,6 +339,7 @@ body.outlast-in-game #mobileControls{display:block!important}
             <div class="menu-card"><h3>World 2.0</h3><button class="menu-btn" id="world2Btn">World & Endgame</button></div>
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div>
+            <div class="menu-card"><h3>Controls</h3><button class="menu-btn" id="controlsBtn">Device & Joystick</button></div>
             <div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
             <div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div>
           </div>
@@ -980,10 +984,12 @@ function updateMenuSummary(){const adminLabel=(isAdmin()&&currentUsername===ADMI
 updateMenuSummary();
 
 document.getElementById('loginBtn')?.addEventListener('click',finishUsernameLogin);
-document.getElementById('devicePcBtn')?.addEventListener('click',()=>{setDeviceMode('pc');document.getElementById('deviceModePopup').style.display='none';});
-document.getElementById('deviceMobileBtn')?.addEventListener('click',()=>{setDeviceMode('mobile');document.getElementById('deviceModePopup').style.display='none';});
-document.getElementById('joystickOnBtn')?.addEventListener('click',()=>setJoystickMode('on'));
+document.getElementById('devicePcBtn')?.addEventListener('click',()=>{setDeviceMode('pc'); updateDeviceModeStatus();});
+document.getElementById('deviceMobileBtn')?.addEventListener('click',()=>{setDeviceMode('mobile'); updateDeviceModeStatus();});
+document.getElementById('joystickOnBtn')?.addEventListener('click',()=>{if(getDeviceMode()==='mobile')setJoystickMode('on');else{setJoystickMode('off');updateDeviceModeStatus();}});
 document.getElementById('joystickOffBtn')?.addEventListener('click',()=>setJoystickMode('off'));
+document.getElementById('deviceModeContinueBtn')?.addEventListener('click',()=>{if(!getDeviceMode()){toast('Choose PC or Mobile first');return;} if(getDeviceMode()==='pc')setJoystickMode('off'); document.getElementById('deviceModePopup').style.display='none'; syncMobileControls();});
+document.getElementById('controlsBtn')?.addEventListener('click',()=>{updateDeviceModeStatus();document.getElementById('deviceModePopup').style.display='flex';});
 document.getElementById('switchUserBtn')?.addEventListener('click',showUsernameLogin);
 
 const game={running:false,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,time:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,upgradeChoices:[],player:null,player2:null,stats:null,pvpWinner:null,pvp:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};

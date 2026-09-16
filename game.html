@@ -325,6 +325,30 @@ button:hover{filter:brightness(1.08)}button:active{transform:translateY(2px);box
 
 <script>
 /* OUTLAST v2.5.7 — safe storage bootstrap */
+/* OUTLAST v2.6.0 universal button safety layer
+   Replays button clicks through the normal DOM event path at capture-time.
+   This prevents one broken/missing button handler from making later buttons appear dead. */
+(function installUniversalButtonSafety(){
+  let replaying=false;
+  document.addEventListener('click',e=>{
+    if(replaying)return;
+    const raw=e.target;
+    const b=raw&&raw.closest?raw.closest('button'):null;
+    if(!b||b.disabled)return;
+    const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit');
+    if(!hasRoute)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    replaying=true;
+    try{
+      b.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
+    }catch(err){console.error('OUTLAST button dispatch failed',err)}
+    finally{replaying=false}
+  },true);
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('button:not([type])').forEach(b=>b.type='button');
+  });
+})();
 const outlastStorage=(()=>{
   try{
     const s=window.localStorage;
@@ -1024,7 +1048,7 @@ function renderServerLeaderboard(entries){
 }
 async function openServerLeaderboard(){
  openSub('★ Leaderboard','<p class="small">Online leaderboard • one record per player name.</p><div class="row"><button class="green" id="refreshLeaderboardBtn">↻ Refresh</button></div><div id="leaderboardRows" class="grid" style="margin-top:10px"><p class="small">Loading leaderboard…</p></div>');
- document.getElementById('refreshLeaderboardBtn').onclick=async()=>{const b=document.getElementById('refreshLeaderboardBtn');b.disabled=true;b.textContent='Loading…';renderServerLeaderboard(await fetchServerLeaderboard());b.disabled=false;b.textContent='↻ Refresh'};
+ const refreshLeaderboardBtn=document.getElementById('refreshLeaderboardBtn'); if(refreshLeaderboardBtn) refreshLeaderboardBtn.onclick=async()=>{const b=document.getElementById('refreshLeaderboardBtn');if(!b)return;b.disabled=true;b.textContent='Loading…';renderServerLeaderboard(await fetchServerLeaderboard());b.disabled=false;b.textContent='↻ Refresh'};
  renderServerLeaderboard(await fetchServerLeaderboard());
 }
 

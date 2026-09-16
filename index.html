@@ -421,18 +421,30 @@ c.addEventListener('click',e=>{
   }
 });
 
-(function setupMobileControls(){
+let mobileControlsReady=false;
+function setupMobileControls(){
+ if(mobileControlsReady)return;
  const controls=document.getElementById('mobileControls'),stick=document.getElementById('mobileStick'),knob=document.getElementById('mobileStickKnob');
  if(!controls||!stick||!knob)return;
- const setDir=(dx,dy)=>{for(const k of ['w','a','s','d'])keys[k]=false;const mag=Math.hypot(dx,dy);if(mag<12)return;const x=dx/mag,y=dy/mag;if(Math.abs(x)>.28){keys[x>0?'d':'a']=true;}if(Math.abs(y)>.28){keys[y>0?'s':'w']=true;}};
+ mobileControlsReady=true;
+ const setDir=(dx,dy)=>{for(const k of ['w','a','s','d'])keys[k]=false;const mag=Math.hypot(dx,dy);if(mag<12)return;const x=dx/mag,y=dy/mag;if(Math.abs(x)>.28)keys[x>0?'d':'a']=true;if(Math.abs(y)>.28)keys[y>0?'s':'w']=true;};
  const reset=()=>{for(const k of ['w','a','s','d'])keys[k]=false;knob.style.transform='translate(0px,0px)';};
  let active=null;
- stick.addEventListener('pointerdown',e=>{if(!game.running)return;active=e.pointerId;stick.setPointerCapture(e.pointerId);move(e);});
- const move=e=>{if(active!==null&&e.pointerId!==active)return;const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=e.clientX-cx,dy=e.clientY-cy;const max=r.width*.33;const len=Math.hypot(dx,dy)||1;if(len>max){dx=dx/len*max;dy=dy/len*max;}knob.style.transform=`translate(${dx}px,${dy}px)`;setDir(dx,dy)};
- stick.addEventListener('pointermove',move);stick.addEventListener('pointerup',e=>{if(e.pointerId===active){active=null;reset();}});stick.addEventListener('pointercancel',e=>{if(e.pointerId===active){active=null;reset();}});
- document.querySelectorAll('[data-mobile-action]').forEach(btn=>{const act=btn.dataset.mobileAction;const on=ev=>{ev.preventDefault();if(!game.running)return;btn.setPointerCapture?.(ev.pointerId);if(act==='dash')dash();else if(act==='skill')useActiveSkill();else if(act==='ult')useUltimate();};btn.addEventListener('pointerdown',on,{passive:false});});
-})();
-function syncMobileControls(){let active=false;try{active=!!game.running}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls)controls.setAttribute('aria-hidden',active?'false':'true')}
+ const pointId=e=>Number.isFinite(e.pointerId)?e.pointerId:'touch';
+ const move=e=>{if(active!==null&&pointId(e)!==active)return;const r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=(e.clientX||0)-cx,dy=(e.clientY||0)-cy;const max=r.width*.33;const len=Math.hypot(dx,dy)||1;if(len>max){dx=dx/len*max;dy=dy/len*max;}knob.style.transform=`translate(${dx}px,${dy}px)`;setDir(dx,dy);};
+ const down=e=>{if(!game.running)return;e.preventDefault();active=pointId(e);try{stick.setPointerCapture?.(e.pointerId)}catch(_){}move(e);};
+ const up=e=>{if(active===pointId(e)){active=null;reset();}};
+ if('PointerEvent' in window){stick.addEventListener('pointerdown',down,{passive:false});stick.addEventListener('pointermove',move,{passive:false});stick.addEventListener('pointerup',up,{passive:false});stick.addEventListener('pointercancel',up,{passive:false});}
+ else {
+   const touchPos=e=>{const t=e.touches[0]||e.changedTouches[0];return t?{clientX:t.clientX,clientY:t.clientY,pointerId:'touch'}:null;};
+   stick.addEventListener('touchstart',e=>{const t=touchPos(e);if(!t)return;down(t);},{passive:false});
+   stick.addEventListener('touchmove',e=>{const t=touchPos(e);if(t)move(t);},{passive:false});
+   stick.addEventListener('touchend',e=>{active=null;reset();},{passive:false});
+   stick.addEventListener('touchcancel',e=>{active=null;reset();},{passive:false});
+ }
+ document.querySelectorAll('[data-mobile-action]').forEach(btn=>{const act=btn.dataset.mobileAction;const on=ev=>{ev.preventDefault();ev.stopPropagation();if(!game.running||game.paused||game.upgradeOpen)return;try{if(act==='dash')dash();else if(act==='skill')useActiveSkill();else if(act==='ult')useUltimate();}catch(_){}};if('PointerEvent' in window)btn.addEventListener('pointerdown',on,{passive:false});else btn.addEventListener('touchstart',on,{passive:false});});
+}
+function syncMobileControls(){let active=false;try{active=!!game.running&&!game.over&&!fatalErrorShown}catch(_){active=false}document.body.classList.toggle('outlast-in-game',active);const controls=document.getElementById('mobileControls');if(controls){controls.style.display=active?'block':'none';controls.setAttribute('aria-hidden',active?'false':'true');}}
 
 
 const mapDefs={
@@ -945,7 +957,7 @@ document.getElementById('loginBtn')?.addEventListener('click',finishUsernameLogi
 document.getElementById('switchUserBtn')?.addEventListener('click',showUsernameLogin);
 
 const game={running:false,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,time:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,upgradeChoices:[],player:null,player2:null,stats:null,pvpWinner:null,pvp:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};
-syncMobileControls();
+setupMobileControls();syncMobileControls();
 function startGame(fromRoom=false){
  try{
   ensureMegaSave();
@@ -970,7 +982,17 @@ function startGame(fromRoom=false){
   }
   game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:save.challengeMode==='BossGauntlet'?45:m.bossEvery,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
   fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';syncExtractUI();c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
- }catch(err){fatalGameError=err?.message||String(err);game.running=false;game.paused=true;drawFatal();}
+ }catch(err){
+   fatalGameError=err?.message||String(err);
+   fatalErrorShown=true;
+   game.running=false;game.paused=false;game.over=true;
+   syncMobileControls();
+   hideGameOverActions();
+   try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';}catch(_){}
+   if(window.matchMedia?.('(max-width:760px)').matches){
+     toast('⚠️ Start failed safely. Please try again.');
+   }
+ }
 }
 function exitGame(){
   if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
@@ -1633,8 +1655,7 @@ function activateStartRun(ev){
   try{newRunStats();startGame();setTimeout(()=>c.focus(),0);}finally{setTimeout(()=>{startBtn.dataset.startLock='';},350);}
 }
 startBtn.onclick=activateStartRun;
-startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch')activateStartRun(e)},{passive:false});
-startBtn.addEventListener('touchend',e=>activateStartRun(e),{passive:false});
+startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')activateStartRun(e)},{passive:false});
 document.getElementById('mapBtn').onclick=()=>{openSub('🗺️ Choose Map','<div class="grid">'+Object.keys(mapDefs).map(x=>`<button class="option ${save.map===x?'selected':''}" data-action="map" data-value="${x}"><b>${x}</b></button>`).join('')+'</div>')};
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
@@ -2230,8 +2251,8 @@ function useActiveSkill(){
 }
 function dash(){if(!game.running||game.paused||game.upgradeOpen||!game.player)return;if((game.player.dashCooldown||0)>0)return;let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);if(!dx&&!dy)dy=-1;const len=Math.hypot(dx,dy)||1;const oldX=game.player.x,oldY=game.player.y;game.player.x=Math.max(30,Math.min(W-30,game.player.x+dx/len*220));game.player.y=Math.max(30,Math.min(H-30,game.player.y+dy/len*220));burst(oldX,oldY,'#9bdcff',12,110);ring(game.player.x,game.player.y,'#9bdcff',36,.25);game.shake=.18;game.player.dashCooldown=4;save.records.totalDodges=(save.records.totalDodges||0)+1;toast('💨 DASH!')}
 let last=performance.now(), fatalGameError='',fatalErrorShown=false;
-function drawFatal(){ctx.fillStyle='#10141a';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='42px Arial';ctx.fillText('RECOVERED FROM GAME ERROR',CW/2,235);ctx.font='20px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('The run was safely stopped.',CW/2,275);ctx.fillText('Return to the menu to keep playing.',CW/2,310);ctx.textAlign='left';showGameOverActions(false);const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');if(title)title.textContent='Game error recovered';if(stats)stats.innerHTML='<div class=\"game-over-stat\">The game was stopped safely so it could recover.</div>';}
-function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown){update(dt);}draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();document.getElementById('menu').style.display='none';drawFatal();}requestAnimationFrame(loop)}
+function drawFatal(){syncMobileControls();ctx.fillStyle='#10141a';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='42px Arial';ctx.fillText('RECOVERED FROM GAME ERROR',CW/2,235);ctx.font='20px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('The run was safely stopped.',CW/2,275);ctx.fillText('Return to the menu to keep playing.',CW/2,310);ctx.textAlign='left';showGameOverActions(false);const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');if(title)title.textContent='Game error recovered';if(stats)stats.innerHTML='<div class=\"game-over-stat\">The game was stopped safely so it could recover.</div>';}
+function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
 showUpdatePopup();
 requestAnimationFrame(loop);
 </script>

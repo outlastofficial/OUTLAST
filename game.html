@@ -2883,7 +2883,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     const a=b.dataset.action;
     if(a){
       const v=b.dataset.value; e.preventDefault();e.stopImmediatePropagation();
-      const map={map:()=>selectMap(v),difficulty:()=>selectDiff(v),mode:()=>selectMode(v),upgrade:()=>buyUpgrade(v,Number(b.dataset.base)),buyAffordable:()=>buyAllAffordable(),daily:()=>claimDaily(),char:()=>selectChar(v),weapon:()=>selectWeapon(v),skin:()=>selectSkin(v),case:()=>openSkinCase(),onlineConnect:()=>connectOutlastServer(),onlineDisconnect:()=>disconnectOutlastServer(),onlinePing:()=>sendOnlinePing(),weekly:()=>claimWeekly(),title:()=>selectTitle(v),modifier:()=>selectModifier(v),pet:()=>selectPet(v),relic:()=>selectRelic(v),charm:()=>selectCharm(v),forgeWeapon:()=>forgeWeapon(),buyCore:()=>buyForgeCore(),shop:()=>buyShop(v)};
+      const map={map:()=>selectMap(v),difficulty:()=>selectDiff(v),mode:()=>selectMode(v),upgrade:()=>buyUpgrade(v,Number(b.dataset.base)),buyAffordable:()=>buyAllAffordable(),daily:()=>claimDaily(),char:()=>selectChar(v),weapon:()=>selectWeapon(v),skin:()=>selectSkin(v),case:()=>openSkinCase(),onlineConnect:()=>connectOutlastServer(),onlineDisconnect:()=>disconnectOutlastServer(),onlinePing:()=>sendOnlinePing(),roomCreate:()=>createRoom(),roomJoin:()=>joinRoom(),roomLeave:()=>leaveRoom(),roomStart:()=>{broadcastRoomStart();if(!game.running)startGame(false)},weekly:()=>claimWeekly(),title:()=>selectTitle(v),modifier:()=>selectModifier(v),pet:()=>selectPet(v),relic:()=>selectRelic(v),charm:()=>selectCharm(v),forgeWeapon:()=>forgeWeapon(),buyCore:()=>buyForgeCore(),shop:()=>buyShop(v)};
       run(map[a]);
     }
   },true);

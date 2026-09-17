@@ -38,13 +38,88 @@ jobs:
               if '<meta http-equiv="Cache-Control"' not in s:
                   s = s.replace('<meta name="viewport" content="width=device-width,initial-scale=1">', '<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n<meta name="build-version" content="2.8.8">', 1)
 
-              # Put Online / Multiplayer first in the main menu card grid.
+              # Put Online / Multiplayer first in the main menu card grid when the exact card exists.
               online = '<div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div>'
               if online in s:
                   s = s.replace(online, '', 1)
                   first_card = s.find('<div class="menu-card">')
                   if first_card >= 0:
                       s = s[:first_card] + online + s[first_card:]
+
+              # Mobile admin-login fix. iOS Safari can fail to bring up the keyboard or let the
+              # dynamically-created password field receive input when touch/pointer handling on
+              # the game UI is active. Make the field explicitly interactive and isolate its events.
+              marker = 'id="outlast-mobile-admin-input-fix"'
+              if marker not in s:
+                  mobile_fix = r'''<style id="outlast-mobile-admin-input-fix">
+@media (max-width:760px){
+  #subPanel #adminPasswordInput{
+    display:block!important;
+    position:relative!important;
+    z-index:9999!important;
+    width:100%!important;
+    min-height:50px!important;
+    box-sizing:border-box!important;
+    -webkit-appearance:none!important;
+    appearance:none!important;
+    -webkit-user-select:text!important;
+    user-select:text!important;
+    -webkit-touch-callout:default!important;
+    touch-action:auto!important;
+    pointer-events:auto!important;
+    opacity:1!important;
+  }
+  #subPanel #adminPasswordInput:focus{
+    outline:2px solid #69c0ff!important;
+    outline-offset:1px!important;
+  }
+}
+</style>'''
+                  s = s.replace('</head>', mobile_fix + '\n</head>', 1)
+
+              mobile_script_marker = 'OUTLAST_MOBILE_ADMIN_INPUT_FIX'
+              if mobile_script_marker not in s:
+                  mobile_script = r'''<script>
+/* OUTLAST_MOBILE_ADMIN_INPUT_FIX */
+(function(){
+  function prepareAdminInput(){
+    var input=document.getElementById('adminPasswordInput');
+    if(!input)return;
+    input.setAttribute('inputmode','text');
+    input.setAttribute('autocomplete','current-password');
+    input.setAttribute('autocapitalize','none');
+    input.setAttribute('autocorrect','off');
+    input.setAttribute('spellcheck','false');
+    input.style.pointerEvents='auto';
+    input.style.touchAction='auto';
+    input.style.userSelect='text';
+  }
+  document.addEventListener('focusin',function(e){
+    if(e.target && e.target.id==='adminPasswordInput') prepareAdminInput();
+  },true);
+  document.addEventListener('touchend',function(e){
+    var t=e.target;
+    if(t && t.id==='adminPasswordInput'){
+      prepareAdminInput();
+      setTimeout(function(){try{t.focus();}catch(_){ }},50);
+    }
+  },true);
+  document.addEventListener('pointerdown',function(e){
+    if(e.target && e.target.id==='adminPasswordInput'){
+      prepareAdminInput();
+      e.stopPropagation();
+    }
+  },true);
+  document.addEventListener('keydown',function(e){
+    if(e.target && e.target.id==='adminPasswordInput') e.stopPropagation();
+  },true);
+  var observer=new MutationObserver(function(){
+    if(document.getElementById('adminPasswordInput')) prepareAdminInput();
+  });
+  if(document.body) observer.observe(document.body,{childList:true,subtree:true});
+})();
+</script>'''
+                  s = s.replace('</body>', mobile_script + '\n</body>', 1)
 
               if s != original:
                   p.write_text(s, encoding="utf-8")
@@ -59,5 +134,5 @@ jobs:
             echo "No playable-file changes were necessary."
             exit 0
           fi
-          git commit -m "Publish v2.8.8 with Online multiplayer first"
+          git commit -m "Fix mobile admin password input"
           git push

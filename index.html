@@ -363,6 +363,10 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
     const raw=e.target;
     const b=raw&&raw.closest?raw.closest('button'):null;
     if(!b||b.disabled)return;
+    // Settings/controls use their own direct handlers and delegated subPanel handler.
+    // Do not intercept them here; the old replay layer could swallow these clicks.
+    const settingsDirectIds=new Set(['settingsNewBtn','controlsBtn','devicePcBtn','deviceMobileBtn','joystickOnBtn','joystickOffBtn','deviceModeContinueBtn']);
+    if(settingsDirectIds.has(b.id) || b.closest('#subContent')) return;
     const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit');
     if(!hasRoute)return;
     e.preventDefault();

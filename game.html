@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="build-version" content="2.8.8">
 <title>OUTLAST v2.8.8</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
@@ -264,7 +266,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.7.0 • Gameplay & Systems Fixes</div>
+          <div class="menu-chip">v2.8.8 • Gameplay & Systems Fixes</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -352,7 +354,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 <div id="subPanel" class="panel"><div class="card"><div id="subContent"></div><div class="spacer"></div><div class="row"><button id="closeSub">← Back</button></div></div></div>
 
 <script>
-/* OUTLAST v2.6.0 universal button safety layer */
+/* OUTLAST v2.8.8 universal button safety layer */
 (function installUniversalButtonSafety(){
   let replaying=false;
   const settingActions=new Set(['toggleSetting','devicePc','deviceMobile','joystickOn','joystickOff','fullscreen','resetSettings']);
@@ -2225,13 +2227,13 @@ const updates=[
   ['v2.3.4 — Device Save & Username Identity','Progress is now saved to the device instead of being tied to the username. Usernames are used for leaderboard identity and moderation only.'],
   ['v2.3.7 — Mobile & Gameplay Polish','Improved mobile controls and avatar visibility, raised the movement speed cap, added more permanent upgrade variety, and made projectiles stop when they hit solid map objects.'],
   ['v2.6.0 — Rooms & Mobile','Added online co-op rooms for up to 4 players, room codes, synchronized player movement/shooting, mobile controls, and cumulative fixes from post-v2.5.7 work.'],
-  ['v2.7.0 — Gameplay & Systems Fixes','Fixed remaining buttons and menu routing, weapon damage and projectile upgrades, weapon selling, coin rounding, level-up pausing, World Event effects, zombie variants, enemy HUD counting, Settings/Controls consolidation, leaderboard placement, Quest/Challenge/Raid/Endgame actions, and Update Log synchronization.'],
+  ['v2.8.8 — Gameplay & Systems Fixes','Fixed remaining buttons and menu routing, weapon damage and projectile upgrades, weapon selling, coin rounding, level-up pausing, World Event effects, zombie variants, enemy HUD counting, Settings/Controls consolidation, leaderboard placement, Quest/Challenge/Raid/Endgame actions, and Update Log synchronization.'],
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 const CURRENT_UPDATE_VERSION='2.7.0';
 const CURRENT_UPDATE_INFO={
-  title:'v2.7.0 — Gameplay & Systems Fixes',
+  title:'v2.8.8 — Gameplay & Systems Fixes',
   summary:'A major gameplay and systems update fixes weapons, buttons, events, upgrades, menus, maps, leaderboard presentation, and more.',
   items:[
     'Weapons now reliably deal damage, support projectile-count upgrades, and can be sold for 50% of their purchase price.',
@@ -2240,7 +2242,7 @@ const CURRENT_UPDATE_INFO={
     'Collection, Active Skills, Skins, Settings/Controls, Raids, Endgame, Quests, Challenges, and other menu buttons are repaired.',
     'The leaderboard uses one location and displays the full player list available from the server.',
     'The in-run HUD now includes an enemy counter, and boss movement is capped for more readable dashes.',
-    'The Update Log is synchronized to v2.7.0.'
+    'The Update Log is synchronized to v2.8.8.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';
@@ -3005,7 +3007,7 @@ document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.ta
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v2.5.7 — universal button controller */
+/* OUTLAST v2.8.8 — universal button controller */
 (function(){
   const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
   const routes={
@@ -3039,7 +3041,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 </script>
 
 <script>
-/* OUTLAST v2.7.0 FINAL SETTINGS OVERRIDE
+/* OUTLAST v2.8.8 FINAL SETTINGS OVERRIDE
    This final block intentionally bypasses the older menu/button routers. */
 (function(){
   function safePersist(){try{if(typeof persist==='function')persist();}catch(_){}}

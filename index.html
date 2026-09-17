@@ -352,21 +352,57 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 <div id="subPanel" class="panel"><div class="card"><div id="subContent"></div><div class="spacer"></div><div class="row"><button id="closeSub">← Back</button></div></div></div>
 
 <script>
-/* OUTLAST v2.5.7 — safe storage bootstrap */
-/* OUTLAST v2.6.0 universal button safety layer
-   Replays button clicks through the normal DOM event path at capture-time.
-   This prevents one broken/missing button handler from making later buttons appear dead. */
+/* OUTLAST v2.6.0 universal button safety layer */
 (function installUniversalButtonSafety(){
   let replaying=false;
+  const settingActions=new Set(['toggleSetting','devicePc','deviceMobile','joystickOn','joystickOff','fullscreen','resetSettings']);
+  function runSettingButton(b){
+    const a=b.dataset.action, v=b.dataset.value;
+    try{
+      if(b.id==='settingsNewBtn'){
+        if(typeof openSettingsSafe==='function') openSettingsSafe();
+        return true;
+      }
+      if(a==='toggleSetting'){
+        save.settings=save.settings||{};
+        save.settings[v]=save.settings[v]===false;
+        persist(); settingsOpen(); return true;
+      }
+      if(a==='devicePc'){ setDeviceMode('pc'); settingsOpen(); return true; }
+      if(a==='deviceMobile'){ setDeviceMode('mobile'); settingsOpen(); return true; }
+      if(a==='joystickOn'){ setJoystickMode('on'); settingsOpen(); return true; }
+      if(a==='joystickOff'){ setJoystickMode('off'); settingsOpen(); return true; }
+      if(a==='fullscreen'){
+        if(document.fullscreenElement) document.exitFullscreen?.();
+        else document.documentElement.requestFullscreen?.();
+        return true;
+      }
+      if(a==='resetSettings'){
+        save.settings={shake:true,damageNumbers:true};
+        persist(); settingsOpen(); return true;
+      }
+    }catch(err){
+      console.error('OUTLAST settings button error:',err);
+      if(typeof toast==='function') toast('⚠️ Settings button error');
+      return true;
+    }
+    return false;
+  }
   document.addEventListener('click',e=>{
     if(replaying)return;
-    const raw=e.target;
-    const b=raw&&raw.closest?raw.closest('button'):null;
+    const b=e.target?.closest?.('button');
     if(!b||b.disabled)return;
-    // Settings/controls use their own direct handlers and delegated subPanel handler.
-    // Do not intercept them here; the old replay layer could swallow these clicks.
-    const settingsDirectIds=new Set(['settingsNewBtn','controlsBtn','devicePcBtn','deviceMobileBtn','joystickOnBtn','joystickOffBtn','deviceModeContinueBtn']);
-    if(settingsDirectIds.has(b.id) || b.closest('#subContent')) return;
+    /* Sub-panel buttons already have dedicated delegated handlers. Let their
+       click event reach #subContent instead of swallowing it here. */
+    if(b.closest?.('#subContent')) return;
+    /* Top-level settings button still needs capture-level protection because
+       older menu routers can otherwise intercept it before its direct handler. */
+    if(b.id==='settingsNewBtn' || settingActions.has(b.dataset.action)){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      runSettingButton(b);
+      return;
+    }
     const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit');
     if(!hasRoute)return;
     e.preventDefault();
@@ -374,8 +410,11 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
     replaying=true;
     try{
       b.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
-    }catch(err){console.error('OUTLAST button dispatch failed',err)}
-    finally{replaying=false}
+    }catch(err){
+      console.error('OUTLAST button dispatch failed',err);
+    }finally{
+      replaying=false;
+    }
   },true);
   document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('button:not([type])').forEach(b=>b.type='button');

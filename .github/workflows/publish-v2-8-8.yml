@@ -14,7 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Apply v2.8.8 boss timer
+      - name: Apply v2.8.8 public build
         shell: python
         run: |
           from pathlib import Path
@@ -26,10 +26,18 @@ jobs:
                   continue
               s = p.read_text(encoding="utf-8")
               original = s
+
               # Force the normal in-run boss interval to 90 seconds (1:30).
               s = re.sub(r'(spawnMult:[^\n]*?,bossEvery:)\s*[^,}]+', r'\g<1>90', s, count=1)
-              # Mark the public build as v2.8.8 without disturbing historical changelog entries.
-              s = re.sub(r'<title>OUTLAST v[0-9.]+</title>', '<title>OUTLAST v2.8.8</title>', s, count=1)
+
+              # Make every public version marker in the playable files agree on v2.8.8.
+              s = re.sub(r'OUTLAST v[0-9]+\.[0-9]+\.[0-9]+', 'OUTLAST v2.8.8', s)
+              s = re.sub(r'v2\.7\.0', 'v2.8.8', s)
+
+              # Prevent stale HTML caching from hiding the new public build.
+              if '<meta http-equiv="Cache-Control"' not in s:
+                  s = s.replace('<meta name="viewport" content="width=device-width,initial-scale=1">', '<meta name="viewport" content="width=device-width,initial-scale=1">\n<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n<meta name="build-version" content="2.8.8">', 1)
+
               if s != original:
                   p.write_text(s, encoding="utf-8")
 
@@ -43,5 +51,5 @@ jobs:
             echo "No playable-file changes were necessary."
             exit 0
           fi
-          git commit -m "Publish OUTLAST v2.8.8 - 90 second bosses"
+          git commit -m "Publish OUTLAST v2.8.8 public version refresh"
           git push

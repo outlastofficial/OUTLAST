@@ -3037,5 +3037,52 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   },true);
 })();
 </script>
+
+<script>
+/* OUTLAST v2.7.0 FINAL SETTINGS OVERRIDE
+   This final block intentionally bypasses the older menu/button routers. */
+(function(){
+  function safePersist(){try{if(typeof persist==='function')persist();}catch(_){}}
+  function currentDevice(){try{return typeof getDeviceMode==='function'?(getDeviceMode()||'not selected'):'not selected';}catch(_){return 'not selected';}}
+  function currentJoystick(){try{return typeof getJoystickMode==='function'?(getJoystickMode()||'not selected'):'not selected';}catch(_){return 'not selected';}}
+  function redrawSettings(){
+    const sub=document.getElementById('subContent');
+    const panel=document.getElementById('subPanel');
+    if(!sub||!panel)return;
+    const settings=(window.save&&save.settings)||{};
+    sub.innerHTML=''+
+      '<h2>⚙️ Settings</h2>'+
+      '<div class="grid">'+
+      '<button type="button" class="option" id="olSetShake">Screen Shake: '+(settings.shake!==false?'ON':'OFF')+'</button>'+
+      '<button type="button" class="option" id="olSetDamage">Damage Numbers: '+(settings.damageNumbers!==false?'ON':'OFF')+'</button>'+
+      '<button type="button" class="option" id="olSetPC">🖥️ PC Controls</button>'+
+      '<button type="button" class="option" id="olSetMobile">📱 Mobile Controls</button>'+
+      '<button type="button" class="option" id="olSetJoyOn">🕹️ Joystick: ON</button>'+
+      '<button type="button" class="option" id="olSetJoyOff">🚫 Joystick: OFF</button>'+
+      '<div class="option"><b>Current Controls</b><div class="small">'+String(currentDevice()).toUpperCase()+' • Joystick '+String(currentJoystick()).toUpperCase()+'</div></div>'+
+      '<button type="button" class="option" id="olSetFull">🖥️ Toggle Fullscreen</button>'+
+      '<button type="button" class="option" id="olSetReset">↩️ Reset Settings</button>'+
+      '</div>';
+    panel.style.display='flex';
+    const on=(id,fn)=>{const b=document.getElementById(id);if(b){b.onclick=function(e){e.preventDefault();e.stopPropagation();try{fn();}catch(err){console.error(err);}return false;};b.onpointerup=function(e){e.preventDefault();e.stopPropagation();};}};
+    on('olSetShake',()=>{if(!save.settings)save.settings={};save.settings.shake=save.settings.shake===false;safePersist();redrawSettings();});
+    on('olSetDamage',()=>{if(!save.settings)save.settings={};save.settings.damageNumbers=save.settings.damageNumbers===false;safePersist();redrawSettings();});
+    on('olSetPC',()=>{if(typeof setDeviceMode==='function')setDeviceMode('pc');redrawSettings();});
+    on('olSetMobile',()=>{if(typeof setDeviceMode==='function')setDeviceMode('mobile');redrawSettings();});
+    on('olSetJoyOn',()=>{if(typeof setJoystickMode==='function')setJoystickMode('on');redrawSettings();});
+    on('olSetJoyOff',()=>{if(typeof setJoystickMode==='function')setJoystickMode('off');redrawSettings();});
+    on('olSetFull',()=>{if(document.fullscreenElement){document.exitFullscreen?.();}else{document.documentElement.requestFullscreen?.();}});
+    on('olSetReset',()=>{save.settings={shake:true,damageNumbers:true};safePersist();redrawSettings();});
+  }
+  window.openSettingsSafe=redrawSettings;
+  window.openControlsSafe=redrawSettings;
+  function wire(){
+    const ids=['settingsNewBtn','settingsBtn','controlsBtn'];
+    ids.forEach(id=>{const b=document.getElementById(id);if(!b)return;b.onclick=function(e){e.preventDefault();e.stopPropagation();redrawSettings();};b.ondblclick=function(e){e.preventDefault();e.stopPropagation();redrawSettings();};});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
+  setTimeout(wire,50);setTimeout(wire,250);setTimeout(wire,1000);
+})();
+</script>
 </body>
 </html>

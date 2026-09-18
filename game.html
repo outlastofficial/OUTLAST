@@ -2692,7 +2692,7 @@ update=function(dt){
   specialEnemyTick(dt);
   if(game.player.god){game.player.hp=game.player.max;game.player.shield=999;}
   if(save.map==='Subway'&&Math.floor(game.time)%18===0&&Math.abs(game.time-Math.round(game.time))<dt){game.player.hp=Math.max(1,game.player.hp-8);toast('⚡ Subway hazard!');}
-  if(game.event==='BLACKOUT')game.player.blackout=1;else game.player.blackout=0;
+  game.player.blackout=0;
   /* Extraction unlocks at level 25. */
   if(game.level>=25&&!game.player.extraction){game.player.extraction={x:80+Math.random()*(W-160),y:80+Math.random()*(H-160),charge:0};toast('🚨 EXTRACTION UNLOCKED — Reach the extraction point!');}
   const ex=game.player.extraction;if(ex){const d=Math.hypot(ex.x-game.player.x,ex.y-game.player.y);if(d<75){ex.charge+=dt;if(ex.charge>=3){toast('🚁 EXTRACTION SUCCESSFUL!');endRun(true);}}else ex.charge=Math.max(0,ex.charge-dt*.5);}

@@ -3086,5 +3086,46 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   setTimeout(wire,50);setTimeout(wire,250);setTimeout(wire,1000);
 })();
 </script>
+
+<script id="outlast-admin-mobile-final-fix">
+(function(){
+  function setup(){
+    var btn=document.getElementById('adminBtn');
+    if(!btn || btn.dataset.mobileAdminFixed==='1') return;
+    btn.dataset.mobileAdminFixed='1';
+    btn.addEventListener('click',function(){
+      setTimeout(function(){
+        var input=document.getElementById('adminPasswordInput');
+        var unlock=document.querySelector('#subContent button[data-action="adminLogin"]');
+        if(!input) return;
+        input.type='text';
+        input.inputMode='text';
+        input.autocomplete='off';
+        input.removeAttribute('readonly');
+        input.disabled=false;
+        input.style.cssText+=';display:block!important;position:relative!important;z-index:10000!important;width:100%!important;min-height:54px!important;padding:14px!important;box-sizing:border-box!important;font-size:20px!important;line-height:1.2!important;color:#fff!important;background:#0f151c!important;pointer-events:auto!important;touch-action:manipulation!important;-webkit-user-select:text!important;user-select:text!important;-webkit-appearance:none!important;';
+        input.onpointerdown=function(e){e.stopPropagation();};
+        input.ontouchstart=function(e){e.stopPropagation();};
+        input.onclick=function(e){e.stopPropagation();};
+        input.onkeydown=function(e){e.stopPropagation();};
+        if(unlock){
+          unlock.type='button';
+          unlock.onclick=function(e){
+            e.preventDefault(); e.stopPropagation();
+            if(typeof window.adminLogin==='function'){
+              try{ window.adminLogin(); }catch(err){ console.error(err); }
+            }
+          };
+          unlock.ontouchend=function(e){e.preventDefault();e.stopPropagation();unlock.click();};
+        }
+      },0);
+    },true);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup);
+  else setup();
+  setTimeout(setup,100);
+  setTimeout(setup,500);
+})();
+</script>
 </body>
 </html>

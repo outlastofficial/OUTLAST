@@ -1376,7 +1376,7 @@ const tempUp=[
   ['Scavenger Luck',v=>`+${Math.round(8*v)} Loot Luck`,v=>{game.player.lootLuck=(game.player.lootLuck||0)+8*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}]
 ];
 function rollUpgradeRarity(){const luck=Math.max(0,Number(game.player?.upgradeLuck||0));const bonus=Math.min(.8,luck/100);const weights={Common:55*(1-bonus),Uncommon:25*(1-bonus*.65),Rare:12*(1+bonus*.75),Epic:6*(1+bonus*1.35),Legendary:2*(1+bonus*2.4)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name];if(r<=0)return name}return 'Common'}
-function makeChoices(){const a=[...tempUp],out=[];while(out.length<3){const i=Math.floor(Math.random()*a.length);if(out.some(u=>u[0]===a[i][0]))continue;const [name,desc,apply]=a.splice(i,1)[0],rarity=out.length===2?'Legendary':rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;out.push([name,desc(mult),()=>apply(mult),rarity])}return out}
+function makeChoices(){const a=[...tempUp],out=[];while(out.length<3){const i=Math.floor(Math.random()*a.length);if(out.some(u=>u[0]===a[i][0]))continue;const [name,desc,apply]=a.splice(i,1)[0],rarity=game.level===3&&out.length===0?'Legendary':rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;out.push([name,desc(mult),()=>apply(mult),rarity])}return out}
 function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[];game.paused=false;syncMobileControls?.();}
 function upg(name){return save.upgrades[name]||0}
 function syncGameAdminUI(){

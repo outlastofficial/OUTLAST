@@ -1611,7 +1611,7 @@ function drawPlayerAvatar(p,accent,isP2){
  if(style==='pyromancer'){ctx.fillStyle='#ff8a35';ctx.beginPath();ctx.arc(13,2,4+2*Math.sin(game.time*8),0,Math.PI*2);ctx.fill()}
  if(style==='warlord'){ctx.strokeStyle='#ffcead';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(14,-2);ctx.lineTo(22,5);ctx.stroke()}
  if(style==='assassin'){ctx.fillStyle='#f0d7ff';ctx.fillRect(-14,-1,4,3);ctx.fillRect(10,-1,4,3)}
- if(isP2){ctx.shadowColor='#ff4d5d';ctx.shadowBlur=14;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('P2',0,-34)}
+ if(isP2){ctx.shadowColor='#ff4d5d';ctx.shadowBlur=14;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('P2',0,-34)} const playerLabel=String(p===game.player?(currentUsername||'Player'):(p.username||p.name||'P2')).slice(0,18);if(playerLabel){ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(-64,-51,128,19);ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText(playerLabel,0,-36)}
  ctx.restore();
 }
 

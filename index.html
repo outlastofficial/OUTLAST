@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="2.8.8">
-<title>OUTLAST v2.8.8</title>
+<meta name="build-version" content="3.0.0">
+<title>OUTLAST v3.0.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -266,7 +266,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v2.8.8 • Gameplay & Systems Fixes</div>
+          <div class="menu-chip">v3.0.0 • Gameplay & Systems Fixes</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -341,7 +341,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>World Events</h3><button class="menu-btn" id="worldBtn">World Events</button></div>
             <div class="menu-card"><h3>World 2.0</h3><button class="menu-btn" id="world2Btn">World & Endgame</button></div>
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
-            <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div>
+            <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div><div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div><div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
             <div class="menu-card"><h3>Settings</h3><button class="menu-btn" id="settingsNewBtn">⚙️ Settings</button></div>
             <div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
             
@@ -354,7 +354,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 <div id="subPanel" class="panel"><div class="card"><div id="subContent"></div><div class="spacer"></div><div class="row"><button id="closeSub">← Back</button></div></div></div>
 
 <script>
-/* OUTLAST v2.8.8 universal button safety layer */
+/* OUTLAST v3.0.0 universal button safety layer */
 (function installUniversalButtonSafety(){
   let replaying=false;
   const settingActions=new Set(['toggleSetting','devicePc','deviceMobile','joystickOn','joystickOff','fullscreen','resetSettings']);
@@ -636,7 +636,8 @@ const worldZones={
   BlackLab:{map:'Laboratory',desc:'Experimental sector full of unstable tech.',bonus:'+5% skill power'},
   Underline:{map:'Subway',desc:'Tight tunnels with ambush routes.',bonus:'+5% fire rate'},
   Deadlock:{map:'Prison',desc:'Lockdown sector with fortified choke points.',bonus:'+5% armor'},
-  IronFront:{map:'MilitaryBase',desc:'Defense line with heavy obstacles.',bonus:'+5% max HP'}
+  IronFront:{map:'MilitaryBase',desc:'Defense line with heavy obstacles.',bonus:'+5% max HP'},
+  Wasteland:{map:'Wasteland',desc:'A shattered endgame zone with roaming elites, hazards, and hidden caches.',bonus:'+8% boss damage and +5% loot'}
 };
 const worldObjectives={
   'Zombie Hunt':{desc:'Defeat 100 zombies',type:'kills',target:100,reward:900},
@@ -758,8 +759,12 @@ const weapons={
   VoidLauncher:{cost:28000,desc:'Void projectiles with heavy damage'},
   StormBow:{cost:34000,desc:'Rapid electric arrows'},
   PulseCannon:{cost:42000,desc:'Bursting plasma cannon'},
-  OmegaBlade:{cost:55000,desc:'Ultimate melee orbit weapon'}
+  OmegaBlade:{cost:55000,desc:'Ultimate melee orbit weapon'},
+  WastelandBow:{cost:62000,desc:'Explosive arrows from the Wasteland'},
+  NovaCannon:{cost:75000,desc:'Starburst energy cannon'},
+  RiftBlade:{cost:90000,desc:'Void blade that tears through elites'}
 };
+const weaponEvolutionsV3={Lightning:{name:'Thunderstorm',requires:['Lightning','Chain Reaction'],level:8,desc:'Lightning projectiles gain a bright chain arc and +45% damage.'},Flame:{name:'Inferno',requires:['Flame','Explosion'],level:8,desc:'Fire projectiles burn longer.'},FrostNova:{name:'Glacier',requires:['FrostNova','Frost Aura'],level:8,desc:'Freezing attacks gain +40% area.'},Plasma:{name:'Plasma Overdrive',requires:['Plasma','Big Bullets'],level:8,desc:'Plasma shots deal +50% damage.'},Shuriken:{name:'Shadow Shuriken',requires:['Shuriken','Piercing'],level:8,desc:'Shurikens pierce +3 targets.'},RocketLauncher:{name:'Missile Barrage',requires:['RocketLauncher','Multi-Shot'],level:8,desc:'Rockets gain +1 projectile.'}};
 const extraPermanent=[['Executioner','+3% damage vs elites',900],['Treasure Sense','+10% chest chance',650],['Overdrive','+8% ultimate damage',750],['Pet Training','+10% pet bonuses',800],['Relic Mastery','+8% relic bonuses',850],['Charm Mastery','+8% charm bonuses',850],['Forge Mastery','-10% forge costs',700],['Lucky Case','Better skin-case odds',900],['Scavenger','More pickups',700],['Surgeon','More lifesteal',950],['Fleet Foot','+5% movement speed',1000],['Vital Flow','+4% regeneration',1050],['Shield Core','+4% shield efficiency',1100],['Ammo Recycler','+6% fire rate',1150],['Impact Training','+5% projectile damage',1200],['Wavebreaker','+4% wave reward',1250]];
 const permanent=[
   ['Iron Heart','Start +15 max HP',100],['Quick Step','Start +8% speed',150],['Sharpshooter','Start +3 damage',200],['Long Arm','Start +80 range',180],
@@ -903,8 +908,9 @@ const skillTreeDefs={
 const questDefs={
   'Swarm Breaker':{type:'kills',target:150,reward:4,desc:'Defeat 150 zombies.'},
   'Boss Chaser':{type:'bosses',target:2,reward:5,desc:'Defeat 2 bosses.'},
-  'Runner':{type:'time',target:300,reward:3,desc:'Survive for 300 total seconds in runs.'}
+  'Runner':{type:'time',target:300,reward:3,desc:'Survive for 300 total seconds in runs.'},'Wasteland Survivor':{type:'time',target:600,reward:8,desc:'Survive 10 minutes.'},'Boss Breaker':{type:'bosses',target:5,reward:10,desc:'Defeat 5 bosses.'},'Elite Cleanup':{type:'kills',target:500,reward:7,desc:'Defeat 500 zombies.'}
 };
+const dailyChallengesV3=[{name:'Lightning Storm',desc:'Use Lightning and reach level 12.',reward:1500,type:'level',target:12},{name:'Boss Rush',desc:'Defeat 3 bosses in one run.',reward:2200,type:'bosses',target:3},{name:'Wasteland Run',desc:'Survive 5 minutes.',reward:1800,type:'time',target:300},{name:'Zombie Cleanup',desc:'Defeat 250 enemies.',reward:1600,type:'kills',target:250}];
 function skillBonus(key){return (save.skillTree&&save.skillTree[key]||0)}
 function refreshQuests(){
  const day=todayKey();
@@ -921,7 +927,7 @@ function renderQuestBoard(){
  openSub('📜 Quest Board',`<p class="note">Complete daily quests for World Keys. Quests reset each day.</p><div class="grid">${rows}</div>`);
 }
 
-function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1}}
+function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1,dailyChallengeDay:'',dailyChallengeClaimed:false}}
 function ensureMegaSave(){
   if(!save||typeof save!=='object')return;
   if(!Array.isArray(save.builderMods))save.builderMods=[];
@@ -1154,7 +1160,7 @@ function triggerMapEvent(){
 }
 async function submitServerLeaderboard(entry){
  try{
-   const res=await fetch('/.netlify/functions/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+   const res=await fetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
    if(!res.ok) throw new Error('submit failed');
    const data=await res.json();
    return data;
@@ -1166,7 +1172,7 @@ async function submitServerLeaderboard(entry){
 }
 async function fetchServerLeaderboard(){
  try{
-   const res=await fetch('/.netlify/functions/leaderboard',{cache:'no-store'});
+   const res=await fetch('/api/leaderboard',{cache:'no-store'});
    if(!res.ok) throw new Error('load failed');
    const data=await res.json();
    return Array.isArray(data.entries)?data.entries:[];
@@ -1282,6 +1288,7 @@ function shoot(){
  const weaponLevel=Math.max(0,Math.floor(Number(save.weaponLevels?.[weapon])||0));
  count+=Math.floor(weaponLevel/2);
  mult*=1+((p.tempDamage||0)/Math.max(1,p.damage));
+ const evo=save.weaponEvolutions?.[weapon]; if(evo==='Thunderstorm')mult*=1.45; if(evo==='Inferno')mult*=1.35; if(evo==='Glacier')mult*=1.25; if(evo==='Plasma Overdrive')mult*=1.5; if(evo==='Shadow Shuriken')pierce+=3; if(evo==='Missile Barrage')count+=1;
  if(weapon==='TwinShot'){count=2}
  if(weapon==='Shotgun'){count=5;spread=.18;mult=.72}
  if(weapon==='Railgun'){speed=1100;size=9;mult=2.8;pierce=p.pierce+5}
@@ -1295,7 +1302,7 @@ function shoot(){
  if(!['Laser','FrostNova'].includes(weapon)){const shotsToFire=count+(p.doubleTap&&Math.random()<.20?1:0);for(let i=0;i<shotsToFire;i++){let a=ang+(i-(shotsToFire-1)/2)*spread;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult)?Math.max(1,p.damage*mult):Math.max(1,p.damage||1),hits:0,type:weapon,pierce});}} if(!['Laser','FrostNova'].includes(weapon)){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
  if(weapon==='Laser'){const targets=game.enemies.filter(e=>Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,4);targets.forEach(e=>{damageEnemy(e,p.damage*3.2);applyElement(e);game.effects.push({x:e.x,y:e.y,t:.35,r:18});if(e.hp<=0)killEnemy(e)});}
  if(weapon==='FrostNova'){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(e.x-p.x,e.y-p.y)<210){damageEnemy(e,p.damage*1.9);applyElement(e);e.burn=Math.max(e.burn||0,0);e.slowTimer=3;if(e.hp<=0)killEnemy(e)}}game.effects.push({x:p.x,y:p.y,t:.45,r:210})}
- if(weapon==='Lightning'){let targets=game.enemies.filter(e=>Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,5);targets.forEach((e,i)=>{damageEnemy(e,p.damage*1.35);applyElement(e);game.effects.push({type:'lightning',x1:p.x,y1:p.y,x2:e.x,y2:e.y,t:.28,color:'#8fe8ff'});game.effects.push({x:e.x,y:e.y,t:.25,r:30,color:'#8fe8ff'});if(e.hp<=0)killEnemy(e)});}
+ // Lightning is projectile-count driven; no extra chain shots are spawned here.
  if(weapon==='OrbitBlades'){for(let k=0;k<3;k++){let a=game.time*2+k*Math.PI*2/3;let x=p.x+Math.cos(a)*70,y=p.y+Math.sin(a)*70;game.effects.push({x,y,t:.15,r:22});for(let j=game.enemies.length-1;j>=0;j--){let e=game.enemies[j];if(Math.hypot(e.x-x,e.y-y)<e.r+22){damageEnemy(e,p.damage*.8);if(e.hp<=0)killEnemy(e)}}}}
  if(weapon==='Flame'){for(const e of game.enemies){let d=Math.hypot(e.x-p.x,e.y-p.y);let a=Math.atan2(e.y-p.y,e.x-p.x);let diff=Math.atan2(Math.sin(a-ang),Math.cos(a-ang));if(d<190&&Math.abs(diff)<.6){damageEnemy(e,p.damage*.55);e.burn=2}}}
 }
@@ -1735,6 +1742,8 @@ function drawEnd(v){const msg=save.mode==='1v1 Arena'?'1V1 '+(game.pvpWinner||'M
 addEventListener('keydown',e=>{if(!game.running && e.key==='Enter' && currentUsername){fatalGameError='';fatalErrorShown=false;game.endScreen=false;game.endVictory=false;game.paused=false;hideGameOverActions();syncMobileControls();document.getElementById('menu').style.display='flex';updateMenuSummary()} });
 function checkAchievements(){for(const a of achievements){if(!save.ach[a[0]]&&a[2]({...save.stats})){save.ach[a[0]]=true;toast('★ Achievement: '+a[0])}}}
 let subBackAction=null;
+function renderV3Archive(){const evo=Object.values(weaponEvolutionsV3).map(v=>'<div class="option"><b>⚔ '+v.name+'</b><div class="small">'+v.desc+'</div><div class="small">Requires weapon level '+v.level+'</div></div>').join('');openSub('📚 OUTLAST Archive','<div class="option"><b>Version 3.0.0</b><div class="small">New Wasteland zone, enemies, weapon evolutions, daily challenges, bosses, cosmetics, co-op improvements and rebuilt leaderboard.</div></div><h3>Weapon Evolutions</h3><div class="grid">'+evo+'</div>');}
+function openDailyChallengeV3(){const day=new Date().toISOString().slice(0,10);let idx=0;for(let i=0;i<day.length;i++)idx=(idx+day.charCodeAt(i))%dailyChallengesV3.length;const d=dailyChallengesV3[idx];const done=save.dailyChallengeDay===day&&save.dailyChallengeClaimed;const progress=d.type==='level'?game.level:d.type==='bosses'?save.stats.bosses:d.type==='kills'?save.stats.kills:save.stats.bestTime;openSub('🎯 Daily Challenge','<div class="option"><b>'+d.name+'</b><div class="small">'+d.desc+'</div><div class="small">Progress: '+Math.min(d.target,Math.floor(progress||0))+'/'+d.target+' • Reward: '+d.reward+' coins</div><button class="green" id="claimV3Daily" '+(done||progress<d.target?'disabled':'')+'>'+(done?'CLAIMED':progress>=d.target?'CLAIM REWARD':'LOCKED')+'</button></div>');const b=document.getElementById('claimV3Daily');if(b)b.onclick=()=>{save.dailyChallengeDay=day;save.dailyChallengeClaimed=true;save.coins+=d.reward;persist();toast('🎯 Daily Challenge complete! +'+d.reward+' coins');openDailyChallengeV3();};}
 function openSub(title,body,backAction=null){subBackAction=backAction;document.getElementById('subContent').innerHTML='<h2>'+title+'</h2>'+body;document.getElementById('subPanel').style.display='flex'}
 function closeSub(){subBackAction=null;document.getElementById('subPanel').style.display='none'}
 function showUsernameLogin(){
@@ -2256,13 +2265,13 @@ const updates=[
   ['v2.3.4 — Device Save & Username Identity','Progress is now saved to the device instead of being tied to the username. Usernames are used for leaderboard identity and moderation only.'],
   ['v2.3.7 — Mobile & Gameplay Polish','Improved mobile controls and avatar visibility, raised the movement speed cap, added more permanent upgrade variety, and made projectiles stop when they hit solid map objects.'],
   ['v2.6.0 — Rooms & Mobile','Added online co-op rooms for up to 4 players, room codes, synchronized player movement/shooting, mobile controls, and cumulative fixes from post-v2.5.7 work.'],
-  ['v2.8.8 — Gameplay & Systems Fixes','Fixed remaining buttons and menu routing, weapon damage and projectile upgrades, weapon selling, coin rounding, level-up pausing, World Event effects, zombie variants, enemy HUD counting, Settings/Controls consolidation, leaderboard placement, Quest/Challenge/Raid/Endgame actions, and Update Log synchronization.'],
+  ['v3.0.0 — Gameplay & Systems Fixes','Fixed remaining buttons and menu routing, weapon damage and projectile upgrades, weapon selling, coin rounding, level-up pausing, World Event effects, zombie variants, enemy HUD counting, Settings/Controls consolidation, leaderboard placement, Quest/Challenge/Raid/Endgame actions, and Update Log synchronization.'],
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 const CURRENT_UPDATE_VERSION='2.7.0';
 const CURRENT_UPDATE_INFO={
-  title:'v2.8.8 — Gameplay & Systems Fixes',
+  title:'v3.0.0 — Gameplay & Systems Fixes',
   summary:'A major gameplay and systems update fixes weapons, buttons, events, upgrades, menus, maps, leaderboard presentation, and more.',
   items:[
     'Weapons now reliably deal damage, support projectile-count upgrades, and can be sold for 50% of their purchase price.',
@@ -2271,7 +2280,7 @@ const CURRENT_UPDATE_INFO={
     'Collection, Active Skills, Skins, Settings/Controls, Raids, Endgame, Quests, Challenges, and other menu buttons are repaired.',
     'The leaderboard uses one location and displays the full player list available from the server.',
     'The in-run HUD now includes an enemy counter, and boss movement is capped for more readable dashes.',
-    'The Update Log is synchronized to v2.8.8.'
+    'The Update Log is synchronized to v3.0.0.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';
@@ -3036,7 +3045,7 @@ document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.ta
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v2.8.8 — universal button controller */
+/* OUTLAST v3.0.0 — universal button controller */
 (function(){
   const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
   const routes={
@@ -3070,7 +3079,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 </script>
 
 <script>
-/* OUTLAST v2.8.8 FINAL SETTINGS OVERRIDE
+/* OUTLAST v3.0.0 FINAL SETTINGS OVERRIDE
    This final block intentionally bypasses the older menu/button routers. */
 (function(){
   function safePersist(){try{if(typeof persist==='function')persist();}catch(_){}}

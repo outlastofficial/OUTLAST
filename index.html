@@ -536,7 +536,8 @@ const mapDefs={
   Harbor:{bg:'#172126',grid:'#2e4650',accent:'#6dd6e8'},
   Bunker:{bg:'#1b1d20',grid:'#3b3f45',accent:'#d9b66a'},
   Swamp:{bg:'#182019',grid:'#30442e',accent:'#82b56a'},
-  Skyscraper:{bg:'#141922',grid:'#2c3b50',accent:'#8db7ff'}
+  Skyscraper:{bg:'#141922',grid:'#2c3b50',accent:'#8db7ff'},
+  Wasteland:{bg:'#241d18',grid:'#4b382b',accent:'#e6a04f'}
 };
 
 const mapObstacles={
@@ -1251,10 +1252,10 @@ function spawnEnemy(type){
  const p=game.player,side=Math.floor(Math.random()*4);let x,y;if(side===0){x=Math.random()*W;y=-30}else if(side===1){x=W+30;y=Math.random()*H}else if(side===2){x=Math.random()*W;y=H+30}else{x=-30;y=Math.random()*H}
  const lvl=game.level, dm=game.stats.enemyMult;
  const roll=Math.random();let kind=type|| (lvl<4?'normal':roll<0.05?'runner':roll<0.09?'fast':roll<0.13?'tank':roll<0.17?'ranged':roll<0.21?'spitter':roll<0.24?'crawler':roll<0.27?'armored':roll<0.29?'golden':roll<0.32?'swarm':roll<0.35?'elite':roll<0.375?'leaper':roll<0.395?'brute':roll<0.415?'screamer':roll<0.435?'leech':roll<0.455?'toxic':roll<0.47?'phantom':roll<0.485?'juggernaut':roll<0.50?'frostbitten':roll<0.515?'volt':'normal');
- let base={normal:[22,70,15],fast:[16,120,11],runner:[12,175,9],tank:[70,48,20],ranged:[28,58,12],spitter:[30,48,18],crawler:[18,140,13],armored:[140,54,28],golden:[80,88,22],swarm:[7,165,5],elite:[95,82,23],leaper:[42,165,20],brute:[220,46,38],screamer:[55,65,14],leech:[70,95,16],toxic:[60,78,19],phantom:[48,130,24],juggernaut:[360,38,45],frostbitten:[95,72,22],volt:[75,74,21]}[kind]||[22,70,15];
+ let base={normal:[22,70,15],fast:[16,120,11],runner:[12,175,9],tank:[70,48,20],ranged:[28,58,12],spitter:[30,48,18],crawler:[18,140,13],armored:[140,54,28],golden:[80,88,22],swarm:[7,165,5],elite:[95,82,23],leaper:[42,165,20],brute:[220,46,38],screamer:[55,65,14],leech:[70,95,16],toxic:[60,78,19],phantom:[48,130,24],juggernaut:[360,38,45],frostbitten:[95,72,22],volt:[75,74,21],splitter:[110,72,20],LeechKing:[180,88,24],WastelandStalker:[260,155,32],RiftBrute:[520,52,48]}[kind]||[22,70,15];
  const levelHP=1+Math.pow(Math.max(0,lvl-1),1.18)*0.062;const levelSpeed=1+Math.max(0,lvl-1)*0.026;const levelDamage=1+Math.pow(Math.max(0,lvl-1),1.12)*0.034;
  let scale=levelHP*dm;let xp=Math.max(1,Math.floor(1+(lvl-1)*0.24));
- if(game.enemies.length<MAX_ENEMIES){game.enemies.push({x,y,kind,hp:base[0]*scale,max:base[0]*scale,speed:base[1]*levelSpeed,r:['tank','armored','brute','juggernaut'].includes(kind)?24:['elite','golden','phantom'].includes(kind)?20:['crawler','swarm'].includes(kind)?12:15,damage:base[2]*levelDamage,xp:kind==='golden'?xp*5:xp,shoot:['ranged','spitter','volt'].includes(kind)?1.5:99,golden:kind==='golden'});if(save.codex)save.codex[kind]=true}
+ if(game.enemies.length<MAX_ENEMIES){game.enemies.push({x,y,kind,hp:base[0]*scale,max:base[0]*scale,speed:base[1]*levelSpeed,r:['tank','armored','brute','juggernaut'].includes(kind)?24:['elite','golden','phantom','LeechKing','WastelandStalker','RiftBrute'].includes(kind)?20:['crawler','swarm'].includes(kind)?12:15,damage:base[2]*levelDamage,xp:kind==='golden'?xp*5:xp,shoot:['ranged','spitter','volt'].includes(kind)?1.5:99,golden:kind==='golden'});if(save.codex)save.codex[kind]=true;if(kind==='splitter'){game.enemies.push({x:x+12,y:y+12,kind:'runner',hp:12*scale,max:12*scale,speed:175*levelSpeed,r:9,damage:9*levelDamage,xp:2,shoot:99})}}
 }
 function spawnShrine(){
  const types=[['Berserk Shrine','#ff5f68'],['Haste Shrine','#67c7ff'],['Magnet Shrine','#b48cff'],['XP Shrine','#59e0c3']];

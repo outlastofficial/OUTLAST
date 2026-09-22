@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.0.0">
-<title>OUTLAST v3.0.0</title>
+<meta name="build-version" content="3.1.0">
+<title>OUTLAST v3.1.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -330,7 +330,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Daily Reward</h3><button class="menu-btn" id="dailyBtn">Claim Daily Reward</button></div>
             <div class="menu-card"><h3>Titles</h3><button class="menu-btn" id="titleBtn">Manage Titles</button></div>
             <div class="menu-card"><h3>Records</h3><button class="menu-btn" id="recordsBtn">View Records</button></div>
-            <div class="menu-card"><h3>Collection</h3><button class="menu-btn" id="extrasBtn">Collection</button></div>
+            <div class="menu-card"><h3>Collection</h3><button class="menu-btn" id="extrasBtn">Collection</button></div><div class="menu-card"><h3>Player Hub</h3><button class="menu-btn gold" id="playerHubBtn">🎯 Player Hub</button></div>
           </div>
         </section>
 
@@ -354,7 +354,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 <div id="subPanel" class="panel"><div class="card"><div id="subContent"></div><div class="spacer"></div><div class="row"><button id="closeSub">← Back</button></div></div></div>
 
 <script>
-/* OUTLAST v3.0.0 universal button safety layer */
+/* OUTLAST v3.1.0 universal button safety layer */
 (function installUniversalButtonSafety(){
   let replaying=false;
   const settingActions=new Set(['toggleSetting','devicePc','deviceMobile','joystickOn','joystickOff','fullscreen','resetSettings']);
@@ -928,7 +928,7 @@ function renderQuestBoard(){
  openSub('📜 Quest Board',`<p class="note">Complete daily quests for World Keys. Quests reset each day.</p><div class="grid">${rows}</div>`);
 }
 
-function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1,dailyChallengeDay:'',dailyChallengeClaimed:false}}
+function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',pvpStats:{p1Wins:0,p2Wins:0,rounds:0,bestStreak:0,currentStreak:0,losses:0},selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,pvpSeason:1,dailyChallengeDay:'',dailyChallengeClaimed:false,weeklyGoalWeek:'',weeklyGoalClaimed:false,weeklyGoalProgress:{kills:0,bosses:0,time:0,games:0},buildHistory:[]}}
 function ensureMegaSave(){
   if(!save||typeof save!=='object')return;
   if(!Array.isArray(save.builderMods))save.builderMods=[];
@@ -957,6 +957,11 @@ function ensureMegaSave(){
   if(typeof save.worldEventWins!=='number')save.worldEventWins=0;
   if(typeof save.caseCredits!=='number')save.caseCredits=0;
   save.records={bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0,...(save.records||{})};
+  if(typeof save.weeklyGoalWeek!=='string')save.weeklyGoalWeek='';
+  if(typeof save.weeklyGoalClaimed!=='boolean')save.weeklyGoalClaimed=false;
+  save.weeklyGoalProgress={kills:0,bosses:0,time:0,games:0,...(save.weeklyGoalProgress||{})};
+  if(!Array.isArray(save.buildHistory))save.buildHistory=[];
+  save.buildHistory=save.buildHistory.slice(-10);
 }
 
 let save;
@@ -1220,6 +1225,15 @@ function endRun(victory,recordScore=true,showEnd=true){
  if(!game.running)return; game.running=false;syncMobileControls();
  save.stats.games++;save.stats.highScore=Math.max(save.stats.highScore,Math.floor(game.score));save.stats.kills+=run.kills;save.stats.totalCoins+=run.coins;save.stats.bestLevel=Math.max(save.stats.bestLevel,game.level);save.stats.bestTime=Math.max(save.stats.bestTime,game.time);save.stats.bosses+=run.bosses; save.records.bestRunTime=Math.max(save.records.bestRunTime,game.time);
  save.coins+=run.coins;
+ const runBuild=buildRunSnapshot();
+ game.lastBuildSnapshot=runBuild;
+ save.buildHistory=Array.isArray(save.buildHistory)?save.buildHistory.slice(-9):[];
+ save.buildHistory.push({...runBuild,score:Math.floor(game.score),level:game.level,kills:run.kills,coins:run.coins,time:game.time,date:new Date().toLocaleDateString()});
+ refreshPlayerHubWeekly();
+ save.weeklyGoalProgress.kills+=(run.kills||0);
+ save.weeklyGoalProgress.bosses+=(run.bosses||0);
+ save.weeklyGoalProgress.time+=(game.time||0);
+ save.weeklyGoalProgress.games+=1;
  if(victory){let keyReward=1;if(game.objectiveComplete)keyReward+=2;if(game.raidBoss)keyReward+=3;save.worldKeys=(save.worldKeys||0)+keyReward;toast('🔑 +'+keyReward+' World Keys');}
  if(game.raidBoss && victory){const rd=raidBossDefs[game.raidBoss];save.coins+=rd?rd.reward:0;save.raidClears=(save.raidClears||0)+1;toast('♛ Raid cleared! +'+(rd?rd.reward:0)+' bonus coins');}
  if(recordScore && game.score>0 && currentUsername!==ADMIN_TEST_USERNAME){
@@ -1750,16 +1764,74 @@ function draw(){
  if(game.upgradeOpen){ctx.fillStyle='rgba(0,0,0,.94)';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',445,92);ctx.font='20px Arial';ctx.fillText('Choose 1, 2, or 3',450,128);ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0),330,153);game.upgradeChoices.forEach((u,i)=>{let x=45+i*350;const rarity=u[3],rdef=upgradeRarities[rarity];ctx.fillStyle='#23303b';ctx.fillRect(x,180,325,285);ctx.strokeStyle=rarity==='Legendary'?'#ffd84d':rarity==='Epic'?'#d28cff':rarity==='Rare'?'#72a8ff':rarity==='Uncommon'?'#71d68a':'#9aa5ad';ctx.lineWidth=4;ctx.strokeRect(x,180,325,285);ctx.fillStyle=ctx.strokeStyle;ctx.font='16px Arial';ctx.fillText(rdef.label, x+18,210);ctx.fillStyle='#ffe56d';ctx.font='30px Arial';ctx.fillText(String(i+1),x+145,245);ctx.fillStyle='#fff';ctx.font='22px Arial';ctx.fillText(u[0],x+18,300);ctx.fillStyle='#c4ced8';ctx.font='17px Arial';ctx.fillText(u[1],x+18,340);ctx.fillStyle='#98a7b6';ctx.font='14px Arial';ctx.fillText('Rarity affects the power of this upgrade',x+18,380);})}
  drawMinimap();
 }
-function showGameOverActions(v){let p=document.getElementById('gameOverActions');if(!p){p=document.createElement('div');p.id='gameOverActions';p.className='game-over-actions';p.innerHTML='<div class=\"game-over-card\"><div id=\"gameOverTitle\" class=\"game-over-title\"></div><div id=\"gameOverStats\"></div><div class=\"game-over-actions-row\"><button id=\"gameOverMenuBtn\" class=\"green\" type=\"button\">RETURN TO MENU</button><button id=\"gameOverReplayBtn\" type=\"button\">PLAY AGAIN</button></div></div>';document.body.appendChild(p);document.getElementById('gameOverMenuBtn').onclick=()=>{game.endScreen=false;game.endVictory=false;game.over=false;game.running=false;syncMobileControls();p.style.display='none';document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';updateMenuSummary();};document.getElementById('gameOverReplayBtn').onclick=()=>{p.style.display='none';game.endScreen=false;game.endVictory=false;game.over=false;game.running=false;syncMobileControls();startGame(false);};}const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');title.textContent=save.mode==='1v1 Arena'?'1V1 '+(game.pvpWinner||'MATCH OVER'):v?'VICTORY!':'GAME OVER';stats.innerHTML='<div class=\"game-over-stat\">Score: '+Math.floor(game.score)+'</div><div class=\"game-over-stat\">Level: '+game.level+'</div><div class=\"game-over-stat\">Kills: '+run.kills+'</div><div class=\"game-over-stat\">Coins: '+run.coins+'</div>';p.style.display='flex';}
+function showGameOverActions(v){
+ let p=document.getElementById('gameOverActions');
+ if(!p){
+  p=document.createElement('div');p.id='gameOverActions';p.className='game-over-actions';
+  p.innerHTML='<div class="game-over-card"><div id="gameOverTitle" class="game-over-title"></div><div id="gameOverStats"></div><div id="gameOverBuild"></div><div class="game-over-actions-row"><button id="gameOverSaveBuildBtn" type="button">💾 SAVE BUILD</button><button id="gameOverMenuBtn" class="green" type="button">RETURN TO MENU</button><button id="gameOverReplayBtn" type="button">PLAY AGAIN</button></div></div>';
+  document.body.appendChild(p);
+  document.getElementById('gameOverMenuBtn').onclick=()=>{game.endScreen=false;game.endVictory=false;game.over=false;game.running=false;syncMobileControls();p.style.display='none';document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';updateMenuSummary();};
+  document.getElementById('gameOverReplayBtn').onclick=()=>{p.style.display='none';game.endScreen=false;game.endVictory=false;game.over=false;game.running=false;syncMobileControls();startGame(false);};
+  document.getElementById('gameOverSaveBuildBtn').onclick=()=>{const b=game.lastBuildSnapshot;if(!b)return toast('No build snapshot available');save.buildPresets=save.buildPresets||{};save.buildPresets.RUN={...b};persist();toast('💾 Run build saved!');};
+ }
+ const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats'),build=document.getElementById('gameOverBuild');
+ title.textContent=save.mode==='1v1 Arena'?'1V1 '+(game.pvpWinner||'MATCH OVER'):v?'VICTORY!':'GAME OVER';
+ stats.innerHTML='<div class="game-over-stat">Score: '+Math.floor(game.score)+'</div><div class="game-over-stat">Level: '+game.level+'</div><div class="game-over-stat">Kills: '+run.kills+'</div><div class="game-over-stat">Coins: '+run.coins+'</div>';
+ const b=game.lastBuildSnapshot;
+ if(build&&b)build.innerHTML='<div class="option" style="margin:10px 0;text-align:left"><b>🔥 BUILD OF THE RUN</b><div class="small">'+String(b.char)+' • '+String(b.weapon)+(b.evolution&&b.evolution!=='None'?' → '+String(b.evolution):'')+' • '+String(b.element)+'</div><div class="small">'+String(b.relic)+' • '+String(b.charm)+' • '+String(b.skill)+'</div><div class="small">'+(b.tags||[]).slice(0,8).map(String).join(' • ')+'</div></div>';
+ p.style.display='flex';
+}
 function hideGameOverActions(){const p=document.getElementById('gameOverActions');if(p)p.style.display='none'}
 function drawEnd(v){const msg=save.mode==='1v1 Arena'?'1V1 '+(game.pvpWinner||'MATCH OVER'):v?'VICTORY!':'GAME OVER';ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.font='52px Arial';ctx.textAlign='center';ctx.fillText(msg,CW/2,240);ctx.font='22px Arial';ctx.fillText('Score: '+Math.floor(game.score),CW/2,285);ctx.fillText('Level: '+game.level,CW/2,315);ctx.fillText('Kills: '+run.kills,CW/2,345);ctx.fillText('Coins: '+run.coins,CW/2,375);ctx.font='16px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('Use the buttons to continue',CW/2,430);ctx.textAlign='left';showGameOverActions(v);const exit=document.getElementById('exitGameBtn');if(exit)exit.style.display='none';syncGameAdminUI();}
 addEventListener('keydown',e=>{if(!game.running && e.key==='Enter' && currentUsername){fatalGameError='';fatalErrorShown=false;game.endScreen=false;game.endVictory=false;game.paused=false;hideGameOverActions();syncMobileControls();document.getElementById('menu').style.display='flex';updateMenuSummary()} });
 function checkAchievements(){for(const a of achievements){if(!save.ach[a[0]]&&a[2]({...save.stats})){save.ach[a[0]]=true;toast('★ Achievement: '+a[0])}}}
 let subBackAction=null;
-function renderV3Archive(){const evo=Object.values(weaponEvolutionsV3).map(v=>'<div class="option"><b>⚔ '+v.name+'</b><div class="small">'+v.desc+'</div><div class="small">Requires weapon level '+v.level+'</div></div>').join('');openSub('📚 OUTLAST Archive','<div class="option"><b>Version 3.0.0</b><div class="small">New Wasteland zone, enemies, weapon evolutions, daily challenges, bosses, cosmetics, co-op improvements and rebuilt leaderboard.</div></div><h3>Weapon Evolutions</h3><div class="grid">'+evo+'</div>');}
+function renderV3Archive(){const evo=Object.values(weaponEvolutionsV3).map(v=>'<div class="option"><b>⚔ '+v.name+'</b><div class="small">'+v.desc+'</div><div class="small">Requires weapon level '+v.level+'</div></div>').join('');openSub('📚 OUTLAST Archive','<div class="option"><b>Version 3.1.0</b><div class="small">Player Hub goals, Build of the Run, weekly goals, saved run builds, and expanded progression tracking.</div></div><h3>Weapon Evolutions</h3><div class="grid">'+evo+'</div>');}
 function openDailyChallengeV3(){const day=new Date().toISOString().slice(0,10);let idx=0;for(let i=0;i<day.length;i++)idx=(idx+day.charCodeAt(i))%dailyChallengesV3.length;const d=dailyChallengesV3[idx];const done=save.dailyChallengeDay===day&&save.dailyChallengeClaimed;const stats=save.stats||{};const progress=d.type==='level'?Number(game.level||1):d.type==='bosses'?Number(stats.bosses||0):d.type==='kills'?Number(stats.kills||0):Number(stats.bestTime||0);openSub('🎯 Daily Challenge','<div class="option"><b>'+d.name+'</b><div class="small">'+d.desc+'</div><div class="small">Progress: '+Math.min(d.target,Math.floor(progress||0))+'/'+d.target+' • Reward: '+d.reward+' coins</div><button class="green" id="claimV3Daily" '+(done||progress<d.target?'disabled':'')+'>'+(done?'CLAIMED':progress>=d.target?'CLAIM REWARD':'LOCKED')+'</button></div>');const b=document.getElementById('claimV3Daily');if(b)b.onclick=()=>{save.dailyChallengeDay=day;save.dailyChallengeClaimed=true;save.coins+=d.reward;persist();toast('🎯 Daily Challenge complete! +'+d.reward+' coins');openDailyChallengeV3();};}
 function bindV3MenuButtons(){document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#archiveBtn');var d=e.target.closest&&e.target.closest('#dailyChallengeBtn');if(a){e.preventDefault();e.stopPropagation();if(typeof renderV3Archive==='function')renderV3Archive();return}if(d){e.preventDefault();e.stopPropagation();if(typeof openDailyChallengeV3==='function')openDailyChallengeV3();return}},true);}
 setTimeout(bindV3MenuButtons,0);
+
+const playerHubWeeklyGoals=[
+ {name:'Weekly Hunter',desc:'Defeat 500 enemies this week.',type:'kills',target:500,reward:3000},
+ {name:'Weekly Boss Breaker',desc:'Defeat 8 bosses this week.',type:'bosses',target:8,reward:4500},
+ {name:'Weekly Endurer',desc:'Survive 45 minutes across runs this week.',type:'time',target:2700,reward:4000},
+ {name:'Weekly Grinder',desc:'Complete 10 runs this week.',type:'games',target:10,reward:3500}
+];
+function hubWeekKey(){const d=new Date();const start=new Date(Date.UTC(d.getUTCFullYear(),0,1));const day=Math.floor((Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate())-start)/86400000);return d.getUTCFullYear()+'-W'+Math.floor(day/7);}
+function refreshPlayerHubWeekly(){
+ const key=hubWeekKey();
+ if(save.weeklyGoalWeek!==key){save.weeklyGoalWeek=key;save.weeklyGoalClaimed=false;save.weeklyGoalProgress={kills:0,bosses:0,time:0,games:0};}
+}
+function buildRunSnapshot(){
+ const tags=Array.from(new Set(game.buildTags||[])).slice(-8);
+ const weapon=save.selectedWeapon||'Blaster';
+ return {char:save.selectedChar||'Survivor',weapon,skin:save.selectedSkin||'Classic',pet:save.selectedPet||'None',relic:save.selectedRelic||'None',charm:save.selectedCharm||'None',element:save.element||'Fire',skill:save.activeSkill||'Nova',modifier:save.selectedModifier||'None',mode:save.mode||'Classic',map:save.map||'Forest',evolution:save.weaponEvolutions?.[weapon]||'None',tags};
+}
+function renderPlayerHub(){
+ refreshPlayerHubWeekly();
+ const gp=save.weeklyGoalProgress||{};
+ const idx=Math.abs(hubWeekKey().split('').reduce((a,c)=>a+c.charCodeAt(0),0))%playerHubWeeklyGoals.length,goal=playerHubWeeklyGoals[idx];
+ const progress=Math.min(goal.target,Number(gp[goal.type]||0)),pct=Math.floor(progress/goal.target*100);
+ const achDone=Object.keys(save.ach||{}).filter(k=>save.ach[k]).length;
+ const weaponOwned=Object.keys(save.unlockedWeapons||{}).filter(k=>save.unlockedWeapons[k]).length;
+ const evoOwned=Object.keys(save.weaponEvolutions||{}).length;
+ const skinOwned=Object.keys(save.skins||{}).filter(k=>save.skins[k]).length;
+ const titleOwned=Object.keys(save.titles||{}).filter(k=>save.titles[k]).length;
+ const latest=(save.buildHistory||[]).slice().reverse()[0];
+ const latestHtml=latest?'<div class="option"><b>🔥 Last Build</b><div class="small">'+String(latest.char)+' • '+String(latest.weapon)+(latest.evolution&&latest.evolution!=='None'?' → '+String(latest.evolution):'')+' • '+String(latest.element)+'</div><div class="small">'+(latest.tags||[]).slice(0,6).join(' • ')+'</div></div>':'<div class="option"><b>🔥 Build of the Run</b><div class="small">Finish a run to record your build.</div></div>';
+ const presets=['A','B','C'].map(n=>{const p=save.buildPresets&&save.buildPresets[n];return '<div class="option"><b>Preset '+n+'</b><div class="small">'+(p?String(p.char)+' • '+String(p.weapon)+' • '+String(p.element):'Empty')+'</div></div>'}).join('');
+ openSub('🎯 Player Hub','<div class="grid">'+
+ '<div class="option"><b>🏆 Achievements</b><div class="small">'+achDone+'/'+achievements.length+' unlocked</div></div>'+
+ '<div class="option"><b>🔫 Weapons & Evolutions</b><div class="small">'+weaponOwned+'/'+Object.keys(weapons).length+' owned • '+evoOwned+'/'+Object.keys(weaponEvolutionsV3).length+' tracked</div></div>'+
+ '<div class="option"><b>🎨 Cosmetics</b><div class="small">'+skinOwned+'/'+Object.keys(skins).length+' skins • '+titleOwned+' titles</div></div>'+
+ '<div class="option"><b>🗺️ World</b><div class="small">'+Object.keys(mapDefs).length+' maps • Endless • Bosses • Raids</div></div>'+
+ '<div class="option"><b>🌐 Multiplayer</b><div class="small">Co-op rooms up to 4 players • 1v1 Arena</div></div>'+
+ '<div class="option"><b>📅 Weekly Goal</b><div class="small">'+goal.name+' • '+progress+'/'+goal.target+' ('+pct+'%) • Reward '+goal.reward+' coins</div><button class="gold" id="hubClaimWeekly" '+(save.weeklyGoalClaimed||progress<goal.target?'disabled':'')+'>'+(save.weeklyGoalClaimed?'CLAIMED':progress>=goal.target?'CLAIM WEEKLY REWARD':'IN PROGRESS')+'</button></div>'+
+ '</div><h3>Saved Builds</h3><div class="grid">'+presets+'</div><h3>Recent Build</h3>'+latestHtml+'<p class="note">Builds, achievements, cosmetics, challenges, maps, bosses, Endless mode, co-op and 1v1 all contribute to your long-term progression.</p>');
+ const b=document.getElementById('hubClaimWeekly');if(b)b.onclick=()=>{if(save.weeklyGoalClaimed||progress<goal.target)return;save.weeklyGoalClaimed=true;save.coins+=goal.reward;persist();toast('🏆 Weekly goal complete! +'+goal.reward+' coins');renderPlayerHub();};
+}
+setTimeout(()=>{document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#playerHubBtn');if(b){e.preventDefault();e.stopPropagation();renderPlayerHub();}},true)},0);
+
 function openSub(title,body,backAction=null){subBackAction=backAction;document.getElementById('subContent').innerHTML='<h2>'+title+'</h2>'+body;document.getElementById('subPanel').style.display='flex'}
 function closeSub(){subBackAction=null;document.getElementById('subPanel').style.display='none'}
 function showUsernameLogin(){
@@ -2285,18 +2357,16 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='2.7.0';
+const CURRENT_UPDATE_VERSION='3.1.0';
 const CURRENT_UPDATE_INFO={
-  title:'v3.0.0 — Gameplay & Systems Fixes',
-  summary:'A major gameplay and systems update fixes weapons, buttons, events, upgrades, menus, maps, leaderboard presentation, and more.',
+  title:'v3.1.0 — Player Progression Update',
+  summary:'Adds a stronger player progression loop with Build of the Run, Player Hub goals, weekly goals, saved builds, and clearer progression tracking.',
   items:[
-    'Weapons now reliably deal damage, support projectile-count upgrades, and can be sold for 50% of their purchase price.',
-    'Coins display as whole numbers, upgrade choices pause the run, and the game resumes after a choice.',
-    'Maps have more environmental details, World Events have real gameplay effects, and zombie variants are expanded.',
-    'Collection, Active Skills, Skins, Settings/Controls, Raids, Endgame, Quests, Challenges, and other menu buttons are repaired.',
-    'The leaderboard uses one location and displays the full player list available from the server.',
-    'The in-run HUD now includes an enemy counter, and boss movement is capped for more readable dashes.',
-    'The Update Log is synchronized to v3.0.0.'
+    'Build of the Run now summarizes the weapon, evolution, element, modifiers, character, and upgrade picks from each run.',
+    'Added a Player Hub that tracks achievements, weapons, evolutions, cosmetics, maps, Endless mode, co-op, and build presets.',
+    'Added a persistent weekly goal alongside the existing weekly challenge and daily challenge systems.',
+    'Run builds can be saved directly into the existing build preset system after a run.',
+    'The Update Log, Archive, build marker, and update popup are synchronized to v3.1.0.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';
@@ -2488,7 +2558,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.0.0';
+const OUTLAST_BUILD='3.1.0';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;

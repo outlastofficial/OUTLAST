@@ -1311,11 +1311,12 @@ function shoot(){
  if(weapon==='Flame'){for(const e of game.enemies){let d=Math.hypot(e.x-p.x,e.y-p.y);let a=Math.atan2(e.y-p.y,e.x-p.x);let diff=Math.atan2(Math.sin(a-ang),Math.cos(a-ang));if(d<190&&Math.abs(diff)<.6){damageEnemy(e,p.damage*.55);e.burn=2}}}
 }
 function shootPvP(owner){
- const p=owner===1?game.player:game.player2, target=owner===1?game.player2:game.player;
+ const p=owner===1?game.player:game.player2,target=owner===1?game.player2:game.player;
  if(!p||!target)return;
- const ang=Math.atan2(target.y-p.y,target.x-p.x), weapon=owner===1?save.selectedWeapon:'TwinShot';
- let count=1+(p.multiShot||0),spread=.16,speed=720,size=6,mult=1,pierce=p.pierce||0;
- if(weapon==='TwinShot'){count=2}
+ const ang=Math.atan2(target.y-p.y,target.x-p.x),weapon=save.selectedWeapon;
+ let count=1,spread=.16,speed=720,size=6,mult=1,pierce=p.pierce||0;
+ count+=Math.max(0,Number(p.multiShot)||0);
+ if(weapon==='TwinShot')count=Math.max(count,2);
  if(weapon==='Shotgun'){count=5;spread=.18;mult=.72}
  if(weapon==='Railgun'){speed=1100;size=9;mult=2.8;pierce+=5}
  if(weapon==='Plasma'){speed=600;size=12;mult=1.6}
@@ -1325,8 +1326,16 @@ function shootPvP(owner){
  if(weapon==='RocketLauncher'){speed=520;size=11;mult=3.8}
  if(weapon==='ChainGun'){count=3;spread=.10;speed=900;size=4;mult=.72}
  if(weapon==='GravityOrb'){speed=460;size=15;mult=2.1}
- count+=(p.doubleTap&&Math.random()<.20?1:0);
- for(let i=0;i<count;i++){const a=ang+(i-(count-1)/2)*spread;if(game.bullets.length<MAX_BULLETS)game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:p.damage*mult,hits:0,type:weapon,pierce:pierce,pvp:true,owner:owner});}
+ if(p.doubleTap&&Math.random()<.20)count++;
+ for(let i=0;i<count;i++){
+   const a=ang+(i-(count-1)/2)*spread;
+   if(game.bullets.length<MAX_BULLETS)game.bullets.push({
+     x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,
+     r:size*(p.bulletSize||1),dmg:Math.max(1,p.damage*mult),hits:0,
+     type:weapon,pierce:pierce,pvp:true,owner:owner
+   });
+ }
+ game.gunfireAlert=1.1;
 }
 function useUltimate(){const p=game.player;if(!p||p.ult<100)return;p.ult=0;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];damageEnemy(e,120*(p.ultDamage||1));if(e.hp<=0)killEnemy(e)}game.effects.push({x:p.x,y:p.y,t:.7,r:180})}
 function damageEnemy(e,dmg){if(!e||!game.player||!Number.isFinite(dmg))return;let crit=Math.random()<Math.min(.95,game.player.crit);if(crit)dmg*=game.player.critMult;if(e.boss)dmg*=game.player.bossMult;if(e.kind==='elite')dmg*=1+.03*(save.upgrades.Executioner||0);if(game.player.armorPierce)dmg*=1+game.player.armorPierce;e.hp-=Math.max(0,dmg);e.hitFlash=.12;burst(e.x,e.y,crit?'#fff08a':'#ff7b6e',crit?8:2,crit?80:55);if(crit)ring(e.x,e.y,'#fff08a',24,.22);if(game.player&&game.player===game.player2){}if(dmg>(save.records.bestDamage||0))save.records.bestDamage=dmg;game.shots.push({x:e.x,y:e.y,text:Math.floor(dmg),t:.5,crit})}

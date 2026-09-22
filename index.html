@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.8">
-<title>OUTLAST v3.1.8</title>
+<meta name="build-version" content="3.1.9">
+<title>OUTLAST v3.1.9</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -925,6 +925,13 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
       runSettingButton(b);
       return;
     }
+    if(b.id==='loginBtn'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      try{ if(typeof finishUsernameLogin==='function') finishUsernameLogin(); }
+      catch(err){ console.error('OUTLAST login button error:',err); if(typeof toast==='function') toast('⚠️ Login error'); }
+      return;
+    }
     const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit');
     if(!hasRoute)return;
     e.preventDefault();
@@ -1527,12 +1534,15 @@ function loadDeviceSave(username){
 }
 
 function persist(){
-  ensureMegaSave();
+  try{ensureMegaSave();}catch(err){
+    console.error('OUTLAST save preparation failed:',err);
+    try{if(!save||typeof save!=='object')save=freshSave();}catch(_){}
+  }
   try{
     outlastStorage.setItem(DEVICE_SAVE_KEY,JSON.stringify(save));
     if(currentUsername) outlastStorage.setItem(USERNAME_KEY,currentUsername);
-  }catch(_){console.warn('Save failed')}
-  updateMenuSummary();
+  }catch(err){console.warn('Save failed',err)}
+  try{updateMenuSummary();}catch(err){console.warn('Menu summary update failed',err)}
 }
 save=freshSave();
 try{currentUsername=outlastStorage.getItem(USERNAME_KEY)||'';}catch(_){currentUsername='';}
@@ -1552,26 +1562,44 @@ function finishUsernameLogin(){
   const input=document.getElementById('usernameInput');
   const err=document.getElementById('usernameError');
   const name=sanitizeUsername(input?.value);
-  if(!/^[A-Za-z0-9 _-]{2,18}$/.test(name)){ if(err) err.textContent='Use 2–18 letters, numbers, spaces, _ or -.'; return false; }
-  currentUsername=name;
-  if(!outlastStorage.getItem(DEVICE_SAVE_KEY)) save=loadDeviceSave(currentUsername);
-  ensureMegaSave();
-  persist();
-  document.getElementById('loginPopup').style.display='none';
-  updateMenuSummary();
-  const mode=getDeviceMode();
-  if(!mode){
-    document.getElementById('deviceModePopup').style.display='flex';
-  }else{
-    document.getElementById('deviceModePopup').style.display='none';
+  if(!/^[A-Za-z0-9 _-]{1,18}$/.test(name)){
+    if(err) err.textContent='Use 1–18 letters, numbers, spaces, _ or -.';
+    return false;
   }
-  syncMobileControls();
+  currentUsername=name;
+  try{
+    if(!outlastStorage.getItem(DEVICE_SAVE_KEY)) save=loadDeviceSave(currentUsername);
+  }catch(loadErr){
+    console.warn('OUTLAST login save load failed:',loadErr);
+  }
+  try{ensureMegaSave();}catch(err2){
+    console.error('OUTLAST login save setup failed:',err2);
+    try{if(!save||typeof save!=='object')save=freshSave();}catch(_){}
+  }
+  try{persist();}catch(saveErr){console.warn('OUTLAST login persist failed:',saveErr)}
+  const login=document.getElementById('loginPopup');
+  if(login) login.style.display='none';
+  try{updateMenuSummary();}catch(err3){console.warn('OUTLAST login summary update failed:',err3)}
+  try{
+    const mode=getDeviceMode();
+    const popup=document.getElementById('deviceModePopup');
+    if(popup) popup.style.display=mode?'none':'flex';
+  }catch(deviceErr){
+    console.warn('OUTLAST device setup skipped:',deviceErr);
+  }
+  try{syncMobileControls();}catch(syncErr){console.warn('OUTLAST mobile sync skipped:',syncErr)}
   return true;
 }
 
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',1500)}
-function updateMenuSummary(){const adminLabel=(isAdmin()&&currentUsername===ADMIN_TEST_USERNAME)?' • TESTING ACCOUNT':'';document.getElementById('menuSummary').textContent=`Player: ${currentUsername}${adminLabel}  •  Coins: ● ${Math.round(Number(save.coins)||0)}  •  Keys: 🔑 ${save.worldKeys||0}  •  High Score: ${save.stats.highScore}  •  Best Level: ${save.stats.bestLevel}  •  Skin: ${save.selectedSkin}`}
+function updateMenuSummary(){
+  const el=document.getElementById('menuSummary');
+  if(!el) return;
+  const stats=(save&&save.stats)||{};
+  const adminLabel=(isAdmin()&&currentUsername===ADMIN_TEST_USERNAME)?' • TESTING ACCOUNT':'';
+  el.textContent=`Player: ${currentUsername||'Player'}${adminLabel}  •  Coins: ● ${Math.round(Number(save?.coins)||0)}  •  Keys: 🔑 ${save?.worldKeys||0}  •  High Score: ${stats.highScore||0}  •  Best Level: ${stats.bestLevel||0}  •  Skin: ${save?.selectedSkin||'Classic'}`;
+}
 
 
 updateMenuSummary();
@@ -2964,8 +2992,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.8';
-const CURRENT_UPDATE_INFO={title:'v3.1.8 — Complete Weapon Rework',summary:'Every OUTLAST weapon now uses a unified weapon system with real weapon-specific behavior, reliable Multi-Shot scaling, and working special attacks.',items:['Reworked all 30 weapons so every gun has dedicated firing behavior instead of falling back to a generic projectile.','Multi-Shot now increases actual attack count for projectile, blade, mine, chain, cone, and target-based weapons.','Fixed Boomerang and Chakram returning, explosive weapon impacts, Gravity Orb slowing, and high-tier weapon behaviors.','Added working Drone Swarm, Mine Layer, Arc Blade, Thunder Staff, Soul Cannon, Storm Bow, Wasteland Bow, Nova Cannon, and Rift Blade behavior.','Laser, Frost Nova, Orbit Blades, Arc Blade, Omega Blade, Thunder Staff, and other special weapons now scale from the same weapon profile system.','Updated the build marker and update popup to v3.1.8.']};
+const CURRENT_UPDATE_VERSION='3.1.9';
+const CURRENT_UPDATE_INFO={title:'v3.1.9 — Login Reliability Fix',summary:'Fixed the username login flow so the Continue button reliably completes login even when save or optional UI refresh steps fail.',items:['The Continue button now has a direct protected login path instead of relying on the older replay-based button router.','Username validation now accepts 1–18 characters using letters, numbers, spaces, underscores, and hyphens.','Login saving and menu-summary updates are isolated so a nonessential UI or storage error cannot leave the login popup stuck open.','The username login and device setup flows are now hardened against recoverable runtime errors.','Updated the build marker and update popup to v3.1.9.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.0">
-<title>OUTLAST v3.1.0</title>
+<meta name="build-version" content="3.1.1">
+<title>OUTLAST v3.1.1</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -2357,16 +2357,16 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.0';
+const CURRENT_UPDATE_VERSION='3.1.1';
 const CURRENT_UPDATE_INFO={
-  title:'v3.1.0 — Player Progression Update',
-  summary:'Adds a stronger player progression loop with Build of the Run, Player Hub goals, weekly goals, saved builds, and clearer progression tracking.',
+  title:'v3.1.1 — Admin Panel Lock Fix',
+  summary:'Fixes the admin panel lock button so temporary admin testing changes can be discarded and admin mode can be closed reliably.',
   items:[
-    'Build of the Run now summarizes the weapon, evolution, element, modifiers, character, and upgrade picks from each run.',
-    'Added a Player Hub that tracks achievements, weapons, evolutions, cosmetics, maps, Endless mode, co-op, and build presets.',
-    'Added a persistent weekly goal alongside the existing weekly challenge and daily challenge systems.',
-    'Run builds can be saved directly into the existing build preset system after a run.',
-    'The Update Log, Archive, build marker, and update popup are synchronized to v3.1.0.'
+    'Admin controls are now routed correctly even when the universal button controller intercepts data-action buttons.',
+    'The LOCK & DISCARD TEST CHANGES button now calls the real admin lock handler.',
+    'Locking admin exits temporary test mode, discards unsaved admin changes, and returns to the normal player login screen.',
+    'Admin button routing is now future-proof for any data-action beginning with admin.',
+    'The build marker, update popup, and current version are synchronized to v3.1.1.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';
@@ -2558,7 +2558,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.1.0';
+const OUTLAST_BUILD='3.1.1';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;
@@ -3131,7 +3131,7 @@ document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.ta
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v3.0.0 — universal button controller */
+/* OUTLAST v3.1.1 — universal button controller */
 (function(){
   const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
   const routes={
@@ -3158,7 +3158,8 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(a){
       const v=b.dataset.value; e.preventDefault();e.stopImmediatePropagation();
       const map={map:()=>selectMap(v),difficulty:()=>selectDiff(v),mode:()=>selectMode(v),upgrade:()=>buyUpgrade(v,Number(b.dataset.base)),buyAffordable:()=>buyAllAffordable(),daily:()=>claimDaily(),char:()=>selectChar(v),weapon:()=>selectWeapon(v),sellWeapon:()=>sellWeapon(v),skin:()=>selectSkin(v),case:()=>openSkinCase(),onlineConnect:()=>connectOutlastServer(),onlineDisconnect:()=>disconnectOutlastServer(),onlinePing:()=>sendOnlinePing(),roomCreate:()=>createRoom(),roomJoin:()=>joinRoom(),roomLeave:()=>leaveRoom(),roomStart:()=>{coopLaunchActive=true;closeAllOverlays?.();roomStarted=true;broadcastRoomStart();if(!game.running)startGame(false);const sp=document.getElementById('subPanel');if(sp)sp.style.display='none';setTimeout(()=>{const sp2=document.getElementById('subPanel');if(sp2)sp2.style.display='none';const menu=document.getElementById('menu');if(menu&&game.running)menu.style.display='none';},50)},weekly:()=>claimWeekly(),title:()=>selectTitle(v),modifier:()=>selectModifier(v),pet:()=>selectPet(v),relic:()=>selectRelic(v),charm:()=>selectCharm(v),forgeWeapon:()=>forgeWeapon(),buyCore:()=>buyForgeCore(),shop:()=>buyShop(v),inventoryTab:()=>renderInventoryTab(v),inventoryCharacter:()=>renderInventoryTab('character'),inventoryWeapon:()=>{renderInventoryTab('weapon')},inventorySkin:()=>renderInventoryTab('skin'),inventoryPet:()=>renderInventoryTab('pet'),inventoryRelic:()=>renderInventoryTab('relic'),inventoryCharm:()=>renderInventoryTab('charm'),builder:()=>{const set=new Set(save.builderMods||[]);if(set.has(v))set.delete(v);else{if(set.size>=2){toast('Choose at most 2 modifiers');return;}set.add(v);}save.builderMods=[...set];persist();renderRunBuilder();},builderClear:()=>{save.builderMods=[];persist();renderRunBuilder();},builderSave:()=>{persist();closeSub();toast('🧩 Run build saved!')},craft:()=>craftRecipes[v]&&craftItem(v),skill:()=>selectSkill(v),element:()=>{save.element=v;persist();renderElements();},challenge:()=>{save.challengeMode=v;persist();renderChallenges();},worldZone:()=>{const z=worldZones[v];if(z){save.selectedZone=v;save.map=z.map;persist();renderWorld2();}},objective:()=>{if(worldObjectives[v]){save.currentObjective=v;persist();renderWorld2();}},raid:()=>startWorldRaid(v),presetSave:()=>{save.buildPresets=save.buildPresets||{};save.buildPresets[v]={char:save.selectedChar,weapon:save.selectedWeapon,skin:save.selectedSkin,pet:save.selectedPet,relic:save.selectedRelic,charm:save.selectedCharm,element:save.element,skill:save.activeSkill};persist();renderWorld2();toast('💾 Build '+v+' saved!')},presetLoad:()=>{const bp=save.buildPresets&&save.buildPresets[v];if(!bp)return toast('Build preset is empty');save.selectedChar=bp.char||save.selectedChar;save.selectedWeapon=bp.weapon||save.selectedWeapon;save.selectedSkin=bp.skin||save.selectedSkin;save.selectedPet=bp.pet||save.selectedPet;save.selectedRelic=bp.relic||save.selectedRelic;save.selectedCharm=bp.charm||save.selectedCharm;save.element=bp.element||save.element;save.activeSkill=bp.skill||save.activeSkill;persist();renderWorld2();toast('✅ Build '+v+' equipped!')},endgameDifficulty:()=>{if(diffDefs[v]){save.difficulty=v;persist();renderWorld2();toast('☠ Difficulty set to '+v)}},pvpSeason:()=>openSub('⚔ PvP Season '+(save.pvpSeason||1),'<div class="option">Ranked season stats are tracked here.</div>'),codex:()=>renderCodex(),weaponTree:()=>renderWeaponTree(),petTree:()=>renderPetTree(),sets:()=>renderSets(),battlePass:()=>renderBattlePass(),prestigeInfo:()=>renderPrestige(),challengePlus:()=>renderChallengePlus(),rooms:()=>renderRooms(),worldBosses:()=>renderWorldBosses(),rarities:()=>renderRarities(),evolveWeaponNode:()=>{const w=v,lv=save.weaponLevels[w]||0;if(lv<5)return toast('Weapon must be level 5');if(save.forgeCores<5)return toast('Need 5 Forge Cores');save.forgeCores-=5;save.weaponEvolutions[w]=true;save.weaponLevels[w]=6;persist();toast('⚔ '+(weaponEvolutions[w]||w)+' unlocked!');renderWeaponTree()},petLevel:()=>{const n=save.selectedPet;if(n==='None')return toast('Equip a pet first');save.petLevels=save.petLevels||{};const lv=save.petLevels[n]||1;const cost=250*lv;if(lv>=5)return toast('Pet ability is maxed');if(save.coins<cost)return toast('Not enough coins');save.coins-=cost;save.petLevels[n]=lv+1;persist();toast('🐾 Pet ability upgraded!');renderPetTree()},doPrestige:()=>{if(game.running)return toast('Finish current run first');if((save.stats.bestLevel||1)<25)return toast('Reach Best Level 25 first');save.prestige=(save.prestige||0)+1;save.season=(save.season||1)+1;save.coins=500;persist();toast('★ Prestige reached!');renderPrestige()},challengePlusSelect:()=>toast('▣ '+v+' selected for your next challenge'),toggleSetting:()=>{save.settings=save.settings||{};save.settings[v]=save.settings[v]===false?true:false;persist();settingsOpen();},fullscreen:()=>{try{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();}catch(_){}},devicePc:()=>{setDeviceMode('pc');settingsOpen();},deviceMobile:()=>{setDeviceMode('mobile');settingsOpen();},joystickOn:()=>{setJoystickMode('on');settingsOpen();},joystickOff:()=>{setJoystickMode('off');settingsOpen();},resetSettings:()=>{save.settings={shake:true,damageNumbers:true};persist();settingsOpen();},challengePlusSelect:()=>toast('▣ '+v+' selected for your next challenge'),buySkillNode:()=>{const def=skillTreeDefs[v];const lv=save.skillTree[v]||0;if(!def)return;if(lv>=5)return toast('Skill is maxed');const cost=def.cost[lv];if((save.worldKeys||0)<cost)return toast('Need more World Keys');save.worldKeys-=cost;save.skillTree[v]=lv+1;persist();toast('🔑 '+def.name+' upgraded!');renderProgression()},claimQuest:()=>{const q=questDefs[v];if(!q||save.quests[v])return;let prog=0;if(q.type==='kills')prog=save.stats.kills||0;if(q.type==='bosses')prog=save.stats.bosses||0;if(q.type==='time')prog=save.stats.bestTime||0;if(prog<q.target)return toast('Quest not complete');save.quests[v]=true;save.worldKeys=(save.worldKeys||0)+q.reward;persist();toast('📜 Quest complete! +'+q.reward+' Keys');renderQuestBoard()}};
-      run(map[a]);
+      const adminHandler = a.startsWith('admin') && typeof window[a]==='function' ? ()=>window[a](v) : null;
+      run(adminHandler || map[a]);
     }
   },true);
 })();

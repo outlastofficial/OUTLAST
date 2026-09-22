@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.3">
-<title>OUTLAST v3.1.3</title>
+<meta name="build-version" content="3.1.4">
+<title>OUTLAST v3.1.4</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -171,7 +171,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 <style id="feedback-button-hotfix">.feedback-choice-btn{position:relative;z-index:5;pointer-events:auto!important;touch-action:manipulation;cursor:pointer}.feedback-submit-btn{position:relative;z-index:5;pointer-events:auto!important;touch-action:manipulation;cursor:pointer}.feedback-choice-btn *, .feedback-submit-btn *{pointer-events:none!important}</style>
 
 <style id="outlast-v313-blacksite-ui">
-/* OUTLAST v3.1.3 — BLACKSITE UI OVERHAUL */
+/* OUTLAST v3.1.4 — BLACKSITE UI OVERHAUL */
 #menu{
   background:
     radial-gradient(circle at 15% 20%,rgba(43,108,255,.10),transparent 30%),
@@ -315,6 +315,378 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
   #menu .menu-nav-btn{min-width:96px;padding:11px 10px;font-size:11px}
 }
 </style>
+
+<style id="menu-redesign-v314">
+/* OUTLAST v3.1.4 — SURVIVOR HUB UI
+   A fresh dashboard layout focused on fast navigation, a stronger start panel,
+   clearer hierarchy, and touch-friendly controls. No gameplay logic changed. */
+#menu{
+  padding:18px!important;
+  box-sizing:border-box!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),
+    radial-gradient(circle at 15% 20%,rgba(53,214,177,.13),transparent 28%),
+    radial-gradient(circle at 88% 78%,rgba(78,135,255,.12),transparent 30%),
+    #05080c!important;
+  background-size:32px 32px,32px 32px,auto,auto,auto!important;
+}
+#menu .main-menu-card{
+  width:min(1240px,96vw)!important;
+  height:min(900px,94vh)!important;
+  max-height:94vh!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:linear-gradient(145deg,#0c141b 0%,#071017 55%,#091018 100%)!important;
+  border:1px solid #294354!important;
+  border-radius:24px!important;
+  box-shadow:0 32px 100px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#menu .menu-shell{
+  display:grid!important;
+  grid-template-columns:214px minmax(0,1fr)!important;
+  gap:0!important;
+  height:100%!important;
+  min-height:0!important;
+}
+#menu .menu-side{
+  order:0!important;
+  padding:18px 13px!important;
+  background:linear-gradient(180deg,#0a131a,#071017)!important;
+  border:0!important;
+  border-right:1px solid #20323e!important;
+  border-radius:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  overflow:hidden!important;
+}
+#menu .menu-side:before{
+  content:"SURVIVOR HUB";
+  display:block;
+  padding:4px 9px 12px;
+  color:#69d7bd;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+#menu .menu-side-title{display:none!important}
+#menu .menu-nav{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:7px!important;
+  min-width:0!important;
+}
+#menu .menu-nav-btn{
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:13px 12px 13px 42px!important;
+  border-radius:12px!important;
+  text-align:left!important;
+  background:#0d1820!important;
+  border:1px solid transparent!important;
+  color:#8096a5!important;
+  font-size:13px!important;
+  font-weight:900!important;
+  box-shadow:none!important;
+  transition:.16s ease!important;
+}
+#menu .menu-nav-btn:before{
+  position:absolute;
+  left:13px;
+  top:50%;
+  transform:translateY(-50%);
+  width:18px;
+  text-align:center;
+  opacity:.8;
+}
+#menu .menu-nav-btn[data-page="play"]:before{content:"▶"}
+#menu .menu-nav-btn[data-page="loadout"]:before{content:"⚔"}
+#menu .menu-nav-btn[data-page="systems"]:before{content:"◆"}
+#menu .menu-nav-btn[data-page="progress"]:before{content:"★"}
+#menu .menu-nav-btn[data-page="more"]:before{content:"•••";font-size:16px;letter-spacing:-2px}
+#menu .menu-nav-btn:hover{
+  background:#12222b!important;
+  border-color:#294553!important;
+  transform:translateX(2px)!important;
+}
+#menu .menu-nav-btn.active{
+  color:#f3fffc!important;
+  background:linear-gradient(90deg,#17483f,#12312f)!important;
+  border-color:#2d776b!important;
+  box-shadow:inset 3px 0 #58d2b9,0 8px 22px rgba(45,164,143,.12)!important;
+}
+#menu .menu-side-bottom{
+  margin-top:auto!important;
+  padding:12px 8px 2px!important;
+  border-top:1px solid #1d303b!important;
+  color:#5f7685!important;
+  font-size:10px!important;
+  line-height:1.55!important;
+}
+#menu .menu-side-bottom:before{
+  content:"CONTROLS";
+  display:block;
+  color:#7892a1;
+  font-weight:900;
+  letter-spacing:.12em;
+  margin-bottom:4px;
+}
+#menu .menu-main{
+  order:1!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  scrollbar-width:thin!important;
+  scrollbar-color:#315a67 #081017!important;
+}
+#menu .menu-topbar{
+  position:sticky!important;
+  top:0!important;
+  z-index:3!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+  padding:19px 24px 17px!important;
+  background:rgba(8,16,23,.94)!important;
+  backdrop-filter:blur(12px)!important;
+  border-bottom:1px solid #20333f!important;
+  align-items:center!important;
+}
+#menu .menu-topbar .title{
+  font-size:42px!important;
+  letter-spacing:.1em!important;
+  line-height:1!important;
+  text-shadow:0 8px 30px rgba(68,221,190,.1)!important;
+}
+#menu .menu-topbar .subtitle{
+  margin:5px 0 0!important;
+  color:#6f8796!important;
+  font-size:10px!important;
+  letter-spacing:.16em!important;
+}
+#menu .menu-chip{
+  background:#0b171d!important;
+  border:1px solid #28434d!important;
+  color:#77cbb9!important;
+  border-radius:10px!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.06em!important;
+}
+#menu #menuSummary{
+  margin:14px 22px 8px!important;
+  padding:10px 13px!important;
+  background:#0a151b!important;
+  border:1px solid #203842!important;
+  border-radius:11px!important;
+  color:#8299a7!important;
+  font-size:11px!important;
+}
+#menu #switchUserBtn{
+  margin:0 22px 10px!important;
+  border-radius:9px!important;
+  color:#8fa5b1!important;
+}
+#menu .menu-page{
+  padding:4px 22px 26px!important;
+  animation:survivorPage .18s ease!important;
+}
+#menu .menu-page-title{
+  margin:4px 0 3px!important;
+  font-size:29px!important;
+  letter-spacing:-.035em!important;
+}
+#menu .menu-page-sub{
+  margin:0 0 14px!important;
+  color:#708794!important;
+  font-size:11px!important;
+}
+#menu .quick-card{
+  position:relative!important;
+  overflow:hidden!important;
+  min-height:122px!important;
+  margin-bottom:13px!important;
+  padding:18px 20px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:18px!important;
+  background:
+    radial-gradient(circle at 88% 50%,rgba(67,220,188,.16),transparent 27%),
+    linear-gradient(125deg,#102923,#0e1c23 55%,#101922)!important;
+  border:1px solid #2c6259!important;
+  border-radius:18px!important;
+  box-shadow:0 16px 35px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+#menu .quick-card:before{
+  content:"RUN READY";
+  position:absolute;
+  right:18px;
+  top:12px;
+  color:#58c9b1;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+#menu .quick-card h3{
+  font-size:18px!important;
+  margin:0 0 5px!important;
+  letter-spacing:.08em!important;
+}
+#menu .quick-card p{
+  margin:0!important;
+  color:#829b99!important;
+  font-size:11px!important;
+}
+#menu .quick-card > div:last-child{
+  margin-top:0!important;
+}
+#menu .hero-btn{
+  width:auto!important;
+  min-width:190px!important;
+  margin:0!important;
+  padding:14px 22px!important;
+  border-radius:12px!important;
+  font-size:17px!important;
+  letter-spacing:.04em!important;
+  box-shadow:0 8px 20px rgba(40,170,139,.18)!important;
+}
+#menu .menu-cards{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+#menu .menu-card{
+  position:relative!important;
+  min-height:100px!important;
+  padding:13px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  background:linear-gradient(145deg,#0e1921,#0a1218)!important;
+  border:1px solid #203743!important;
+  border-radius:14px!important;
+  transition:transform .15s ease,border-color .15s ease,background .15s ease!important;
+}
+#menu .menu-card:hover{
+  transform:translateY(-2px)!important;
+  background:linear-gradient(145deg,#112029,#0b151b)!important;
+  border-color:#356171!important;
+}
+#menu .menu-card h3{
+  margin:0 0 10px!important;
+  color:#a9bfca!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.12em!important;
+  text-transform:uppercase!important;
+}
+#menu .menu-card .menu-btn{
+  position:relative!important;
+  margin:0!important;
+  padding:9px 10px!important;
+  border-radius:9px!important;
+  background:#111f28!important;
+  border:1px solid #29414d!important;
+  color:#d7e5e9!important;
+  box-shadow:none!important;
+  font-size:12px!important;
+  text-align:left!important;
+}
+#menu .menu-card .menu-btn:hover{
+  background:#18303a!important;
+  border-color:#3d6977!important;
+}
+#menu .menu-card .menu-btn:after{
+  content:"›";
+  position:absolute;
+  right:10px;
+  opacity:.5;
+  font-size:17px;
+  line-height:12px;
+}
+#menu #startBtn:after{content:"→";opacity:.85}
+#menu #onlineBtn{border-color:#315b69}
+#menu #startBtn{background:linear-gradient(135deg,#287d6b,#2f9a81)!important;border-color:#57cdb3!important;color:#fff!important}
+#menu #dailyChallengeBtn,#menu #adminBtn{border-color:#68572b!important;background:#1e1b12!important;color:#e5cb70!important}
+#menu #switchUserBtn:after{content:"↻"}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(1) .menu-btn:before{content:"◎";margin-right:7px;color:#67d7c0}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(2) .menu-btn:before{content:"◈";margin-right:7px;color:#6fb6ff}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(3) .menu-btn:before{content:"◇";margin-right:7px;color:#a6c9ff}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(4) .menu-btn:before{content:"◆";margin-right:7px;color:#c69cff}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(5) .menu-btn:before{content:"⚙";margin-right:7px;color:#79d6c1}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(6) .menu-btn:before{content:"★";margin-right:7px;color:#f0c96b}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(7) .menu-btn:before{content:"✦";margin-right:7px;color:#e9a7ff}
+#menu .menu-page[data-page-content="play"] .menu-card:nth-child(8) .menu-btn:before{content:"□";margin-right:7px;color:#9eb4c2}
+@keyframes survivorPage{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(max-width:900px){
+  #menu{padding:10px!important}
+  #menu .main-menu-card{width:100%!important;height:calc(100vh - 20px)!important;max-height:none!important}
+  #menu .menu-shell{grid-template-columns:174px minmax(0,1fr)!important}
+  #menu .menu-page{padding-left:16px!important;padding-right:16px!important}
+  #menu .menu-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #menu .menu-topbar{padding-left:17px!important;padding-right:17px!important}
+  #menu #menuSummary,#menu #switchUserBtn{margin-left:16px!important;margin-right:16px!important}
+}
+@media(max-width:680px){
+  #menu{padding:0!important}
+  #menu .main-menu-card{height:100dvh!important;border-radius:0!important;border-left:0!important;border-right:0!important}
+  #menu .menu-shell{display:flex!important;flex-direction:column!important}
+  #menu .menu-side{
+    order:1!important;
+    flex:0 0 auto!important;
+    flex-direction:row!important;
+    padding:8px 10px!important;
+    border-right:0!important;
+    border-bottom:1px solid #20323e!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+  }
+  #menu .menu-side:before{display:none!important}
+  #menu .menu-nav{flex-direction:row!important;min-width:max-content!important}
+  #menu .menu-nav-btn{
+    width:auto!important;
+    min-width:94px!important;
+    padding:9px 12px 9px 31px!important;
+    text-align:center!important;
+    font-size:11px!important;
+  }
+  #menu .menu-nav-btn:before{left:10px!important}
+  #menu .menu-side-bottom{display:none!important}
+  #menu .menu-main{order:0!important}
+  #menu .menu-topbar{padding:13px 14px!important}
+  #menu .menu-topbar .title{font-size:31px!important}
+  #menu .menu-chip{font-size:9px!important}
+  #menu #menuSummary{margin:10px 13px 7px!important}
+  #menu #switchUserBtn{margin:0 13px 8px!important}
+  #menu .menu-page{padding:4px 13px 24px!important}
+  #menu .menu-page-title{font-size:25px!important}
+  #menu .quick-card{
+    grid-template-columns:1fr!important;
+    gap:11px!important;
+    min-height:0!important;
+    padding:16px!important;
+  }
+  #menu .quick-card:before{display:none!important}
+  #menu .hero-btn{width:100%!important;min-width:0!important}
+  #menu .menu-cards{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  #menu .menu-card{min-height:88px!important;padding:10px!important}
+  #menu .menu-card h3{font-size:9px!important;margin-bottom:7px!important}
+  #menu .menu-card .menu-btn{font-size:11px!important;padding:9px 8px!important}
+}
+@media(max-width:390px){
+  #menu .menu-nav-btn{min-width:84px!important;font-size:10px!important}
+  #menu .menu-cards{grid-template-columns:1fr!important}
+}
+</style>
+
 </head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
@@ -412,7 +784,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.1.3 • BLACKSITE UI</div>
+          <div class="menu-chip">v3.1.4 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -2411,7 +2783,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.1.3 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
+  ['v3.1.4 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
   ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],
   ['Version Display','Added the current game version to the main menu and Update Log.'],
   ['Menu Categories','Reorganized buttons into Play, Loadout, Systems, Progress, and More so features are easier to find.'],
@@ -2504,9 +2876,9 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.3';
+const CURRENT_UPDATE_VERSION='3.1.4';
 const CURRENT_UPDATE_INFO={
-  title:'v3.1.3 — BLACKSITE UI Overhaul',
+  title:'v3.1.4 — BLACKSITE UI Overhaul',
   summary:'OUTLAST now has a completely refreshed Blacksite command UI with a new menu layout, visual hierarchy, and responsive mobile presentation.',
   items:[
     'Rebuilt the main menu into a new Blacksite command interface instead of the previous card-heavy layout.',
@@ -2514,7 +2886,7 @@ const CURRENT_UPDATE_INFO={
     'Refreshed the Play screen with a dedicated run-deployment panel and denser mission-control styling.',
     'Redesigned menu cards, buttons, status elements, spacing, typography, borders, and transitions.',
     'Added a responsive mobile presentation so the new interface remains usable on touch screens.',
-    'The build marker, update popup, and current version are synchronized to v3.1.3.'
+    'The build marker, update popup, and current version are synchronized to v3.1.4.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';
@@ -3279,7 +3651,7 @@ document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.ta
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v3.1.3 — universal button controller */
+/* OUTLAST v3.1.4 — universal button controller */
 (function(){
   const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
   const routes={

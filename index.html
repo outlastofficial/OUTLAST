@@ -1191,7 +1191,7 @@ function renderServerLeaderboard(entries){
  const host=document.getElementById('leaderboardRows');
  if(!host)return;
  if(entries===null){host.innerHTML='<p class="small dangerText">Could not reach the leaderboard server. Try Refresh.</p>';return;}
- const rows=entries.length?entries.map((r,i)=>`<div class="option"><b>#${i+1} ${String(r.name||'Player')}</b><div class="small">Score ${Number(r.score||0).toLocaleString()} • Level ${Number(r.level||1)} • Kills ${Number(r.kills||0)}</div><div class="small">${String(r.mode||'Classic')} • ${String(r.difficulty||'Normal')} • ${String(r.date||'')}</div></div>`).join(''):'<p>No scores yet. Play Global Mode and set a high score!</p>';
+ const rows=entries.length?entries.map((r,i)=>`<div class="option"><b>#${i+1} ${String(r.name||'Player')} ${r.badge?'<span class="statpill">'+String(r.badge)+'</span>':''}</b><div class="small">Score ${Number(r.score||0).toLocaleString()} • Level ${Number(r.level||1)} • Kills ${Number(r.kills||0)}</div><div class="small">${String(r.mode||'Classic')} • ${String(r.difficulty||'Normal')} • ${String(r.date||'')}</div></div>`).join(''):'<p>No scores yet. Play Global Mode and set a high score!</p>';
  host.innerHTML=rows;
 }
 async function openServerLeaderboard(){
@@ -1830,7 +1830,7 @@ function renderPlayerHub(){
  '</div><h3>Saved Builds</h3><div class="grid">'+presets+'</div><h3>Recent Build</h3>'+latestHtml+'<p class="note">Builds, achievements, cosmetics, challenges, maps, bosses, Endless mode, co-op and 1v1 all contribute to your long-term progression.</p>');
  const b=document.getElementById('hubClaimWeekly');if(b)b.onclick=()=>{if(save.weeklyGoalClaimed||progress<goal.target)return;save.weeklyGoalClaimed=true;save.coins+=goal.reward;persist();toast('🏆 Weekly goal complete! +'+goal.reward+' coins');renderPlayerHub();};
 }
-setTimeout(()=>{document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#playerHubBtn');if(b){e.preventDefault();e.stopPropagation();renderPlayerHub();}},true)},0);
+setTimeout(()=>{const b=document.getElementById('playerHubBtn');if(b)b.onclick=()=>renderPlayerHub();},0);
 
 function openSub(title,body,backAction=null){subBackAction=backAction;document.getElementById('subContent').innerHTML='<h2>'+title+'</h2>'+body;document.getElementById('subPanel').style.display='flex'}
 function closeSub(){subBackAction=null;document.getElementById('subPanel').style.display='none'}

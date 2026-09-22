@@ -3355,20 +3355,27 @@ killEnemy=function(target){
 };
 
 /* ---------- Coin economy / daily shop ---------- */
-function dailySeed(){return todayKey().split('-').join('').split('').reduce((a,c)=>((a*31)+c.charCodeAt(0))>>>0,7);}
+function dailySeed(){
+  const key=String(todayKey());
+  let seed=2166136261;
+  for(let i=0;i<key.length;i++)seed=Math.imul(seed^key.charCodeAt(i),16777619)>>>0;
+  return seed>>>0;
+}
 const shopPool=[
- ['core','Forge Core Pack',350,'+3 Forge Cores'],['case','Case Credit',600,'+1 case opening credit'],['xp','XP Token',400,'+1 Forge Core + run XP utility'],
- ['shield','Shield Cell',450,'+1 temporary shield item'],['luck','Lucky Cache',800,'+25 Luck for your next run'],['upgrade','Upgrade Voucher',1200,'+1 level on a random permanent upgrade']
+ ['core','Forge Core Pack',350,'+3 Forge Cores'],['case','Case Credit',600,'+1 case opening credit'],['xp','XP Token',400,'+1 Forge Core'],
+ ['shield','Shield Cell',450,'+1 Shield charge'],['luck','Lucky Cache',800,'+25 Luck for your next run'],['upgrade','Upgrade Voucher',1200,'+1 level on a random permanent upgrade'],
+ ['parts','Material Crate',500,'+10 crafting materials'],['keys','Key Pack',900,'+2 progression keys'],['dust','Mythic Dust',1100,'+5 Mythic Dust'],['forge','Forge Bundle',1500,'+8 Forge Cores']
 ];
-function getDailyShop(){let seed=dailySeed(),arr=shopPool.slice(),out=[];while(out.length<4&&arr.length){seed=(seed*1664525+1013904223)>>>0;out.push(arr.splice(seed%arr.length,1)[0]);}return out;}
+function getDailyShop(){let seed=dailySeed(),arr=shopPool.slice(),out=[];while(out.length<5&&arr.length){seed=(Math.imul(seed,1664525)+1013904223)>>>0;out.push(arr.splice(seed%arr.length,1)[0]);}return out;}
 function nextShopTime(){const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()+1,0,0,0).getTime();}
 function shopOpen(){
-  const key=todayKey();if(save.shopDay!==key){save.shopDay=key;save.shopPurchases={};}
+  const key=todayKey();if(save.shopDay!==key){save.shopDay=key;save.shopPurchases={};persist();}
   const items=getDailyShop();
-  openSub('🛒 Daily Shop — '+key,'<p class="note">These offers rotate once per day. Next rotation: <b id="shopCountdown">calculating...</b></p><div class="grid">'+items.map(x=>{const bought=!!save.shopPurchases[x[0]];return '<button class="option" data-action="shop" data-value="'+x[0]+'" '+(bought?'disabled':'')+'><b>'+x[1]+'</b><div class="small">'+x[3]+'</div><div class="small">'+(bought?'✅ Purchased today':'🪙 '+x[2])+'</div></button>';}).join('')+'</div>');
-  const c=document.getElementById('shopCountdown');if(c){const ms=Math.max(0,nextShopTime()-Date.now()),h=Math.floor(ms/3600000),m=Math.floor(ms/60000)%60;c.textContent=h+'h '+m+'m';}
+  openSub('🛒 Daily Shop','<p class="note"><b>New offers every day.</b> Today: '+key+' • Next refresh: <b id="shopCountdown">calculating...</b></p><div class="grid">'+items.map(x=>{const bought=!!(save.shopPurchases&&save.shopPurchases[x[0]]);return '<button class="option" data-action="shop" data-value="'+x[0]+'" '+(bought?'disabled':'')+'><b>'+x[1]+'</b><div class="small">'+x[3]+'</div><div class="small">'+(bought?'✅ Purchased today':'🪙 '+x[2]+' coins')+'</div></button>';}).join('')+'</div>');
+  updateShopCountdown();
 }
-window.buyShop=function(k){const item=getDailyShop().find(x=>x[0]===k);if(!item)return;if(save.shopDay!==todayKey()){save.shopDay=todayKey();save.shopPurchases={};}if(save.shopPurchases[k])return toast('Already purchased today');if(save.coins<item[2])return toast('Not enough coins');save.coins-=item[2];if(k==='core')save.forgeCores+=3;if(k==='case')save.keys++;if(k==='xp')save.forgeCores++;if(k==='shield')save.keys++;if(k==='luck')save.nextRunLuck=(save.nextRunLuck||0)+25;if(k==='upgrade'){const names=permanent.filter(x=>(save.upgrades[x[0]]||0)<5);if(names.length){const n=names[Math.floor(Math.random()*names.length)][0];save.upgrades[n]=(save.upgrades[n]||0)+1;toast('📈 '+n+' upgraded!');}}save.shopPurchases[k]=true;persist();toast('🛒 Purchased '+item[1]+'!');shopOpen();};
+function updateShopCountdown(){const c=document.getElementById('shopCountdown');if(!c)return;const ms=Math.max(0,nextShopTime()-Date.now()),h=Math.floor(ms/3600000),m=Math.floor(ms/60000)%60,s=Math.floor(ms/1000)%60;c.textContent=h+'h '+m+'m '+s+'s';}
+window.buyShop=function(k){const item=getDailyShop().find(x=>x[0]===k);if(!item)return;const key=todayKey();if(save.shopDay!==key){save.shopDay=key;save.shopPurchases={};}if(save.shopPurchases[k])return toast('Already purchased today');if(save.coins<item[2])return toast('Not enough coins');save.coins-=item[2];if(k==='core')save.forgeCores+=3;if(k==='case')save.keys++;if(k==='xp')save.forgeCores++;if(k==='shield')save.keys++;if(k==='luck')save.nextRunLuck=(save.nextRunLuck||0)+25;if(k==='parts')save.materials=(save.materials||0)+10;if(k==='keys')save.keys=(save.keys||0)+2;if(k==='dust')save.mythicDust=(save.mythicDust||0)+5;if(k==='forge')save.forgeCores=(save.forgeCores||0)+8;if(k==='upgrade'){const names=permanent.filter(x=>(save.upgrades[x[0]]||0)<5);if(names.length){const n=names[Math.floor(Math.random()*names.length)][0];save.upgrades[n]=(save.upgrades[n]||0)+1;toast('📈 '+n+' upgraded!');}}save.shopPurchases[k]=true;persist();toast('🛒 Purchased '+item[1]+'!');shopOpen();};
 
 /* ---------- Meaningful coin store ---------- */
 function openCoinStore(){

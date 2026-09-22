@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.2.0">
-<title>OUTLAST v3.2.0</title>
+<meta name="build-version" content="3.3.0">
+<title>OUTLAST v3.3.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -911,7 +911,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
     return false;
   }
   document.addEventListener('click',e=>{
-    if(replaying)return;
+    if(replaying||window.__outlastButtonDispatching)return;
     const b=e.target?.closest?.('button');
     if(!b||b.disabled)return;
     /* Sub-panel buttons already have dedicated delegated handlers. Let their
@@ -937,12 +937,14 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
     e.preventDefault();
     e.stopImmediatePropagation();
     replaying=true;
+    window.__outlastButtonDispatching=true;
     try{
       b.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,view:window}));
     }catch(err){
       console.error('OUTLAST button dispatch failed',err);
     }finally{
       replaying=false;
+      window.__outlastButtonDispatching=false;
     }
   },true);
   document.addEventListener('DOMContentLoaded',()=>{
@@ -1940,7 +1942,7 @@ function spawnBoss(){
  ring(x,y,'#ffd86b',50,.8);burst(x,y,'#ffd86b',18,120);game.enemies.push({x,y,kind:'boss',hp,max:hp,speed:(42+game.level*1.7)*Math.pow(bossLevel,.22),r:42,damage:30*game.player.bossMult*Math.pow(bossLevel,1.08),xp:30+Math.floor(game.level*.8),shoot:Math.max(.7,2.2-game.level*.012),boss:true,phase:1,bossEmoji,summonTimer:7,summonCount:0});
  toast((raidDef?'♛ RAID: '+game.raidBoss+' — ':'')+bossEmoji+' BOSS INCOMING!');
 }
-const WEAPON_PROFILES={"Blaster":{"count":1,"speed":720,"size":6,"mult":1,"pierce":0},"TwinShot":{"count":2,"speed":740,"size":6,"mult":0.95,"pierce":0,"spread":0.08},"Lightning":{"count":1,"speed":820,"size":5,"mult":1.25,"pierce":1,"chain":3,"chainRadius":135,"chainMult":0.55},"OrbitBlades":{"count":3,"mode":"orbit","size":22,"mult":0.9,"orbitRadius":72},"Flame":{"count":1,"mode":"cone","mult":0.6,"cone":0.62,"range":195},"Boomerang":{"count":1,"speed":780,"size":8,"mult":1.15,"pierce":2,"returning":true,"returnDelay":0.42,"homing":0.05},"Shotgun":{"count":5,"speed":680,"size":6,"mult":0.72,"pierce":0,"spread":0.24},"Railgun":{"count":1,"speed":1220,"size":9,"mult":3,"pierce":7},"Plasma":{"count":1,"speed":660,"size":12,"mult":1.8,"pierce":1,"aoe":85,"aoeMult":0.7},"Chakram":{"count":1,"speed":900,"size":8,"mult":1.25,"pierce":3,"returning":true,"returnDelay":0.55,"homing":0.06},"Meteor":{"count":1,"speed":430,"size":17,"mult":4,"pierce":1,"aoe":110,"aoeMult":0.82,"homing":0.02},"Shuriken":{"count":6,"speed":1040,"size":5,"mult":0.82,"pierce":2,"spread":0.3},"RocketLauncher":{"count":1,"speed":540,"size":11,"mult":4,"pierce":0,"aoe":100,"aoeMult":0.78},"Laser":{"count":4,"mode":"instantTargets","mult":3.2},"FrostNova":{"count":1,"mode":"nova","mult":1.9,"range":215},"ChainGun":{"count":3,"speed":950,"size":4,"mult":0.74,"pierce":1,"spread":0.11},"GravityOrb":{"count":1,"speed":480,"size":15,"mult":2.2,"pierce":2,"slow":3,"aoe":38,"aoeMult":0.3},"DroneSwarm":{"count":2,"speed":430,"size":7,"mult":0.7,"pierce":1,"homing":0.07,"ttl":5.5,"drone":true},"MineLayer":{"count":2,"mode":"mine","size":14,"mult":2.8,"aoe":105,"aoeMult":0.9,"ttl":10,"trigger":64},"ArcBlade":{"count":4,"mode":"orbit","size":24,"mult":1,"orbitRadius":88},"ThunderStaff":{"count":5,"mode":"chain","mult":2.35,"chain":5,"chainRadius":155,"chainMult":0.62},"SoulCannon":{"count":1,"speed":650,"size":12,"mult":2.6,"pierce":4,"lifesteal":0.1,"aoe":55,"aoeMult":0.45},"StarRifle":{"count":1,"speed":1250,"size":7,"mult":2.35,"pierce":6},"VoidLauncher":{"count":1,"speed":700,"size":13,"mult":2.8,"pierce":2,"aoe":125,"aoeMult":0.72},"StormBow":{"count":2,"speed":1050,"size":6,"mult":1.15,"pierce":2,"spread":0.1,"chain":2,"chainRadius":145,"chainMult":0.5},"PulseCannon":{"count":1,"speed":830,"size":14,"mult":4.3,"pierce":1,"aoe":115,"aoeMult":1.35},"OmegaBlade":{"count":5,"mode":"orbit","size":27,"mult":1.45,"orbitRadius":96},"WastelandBow":{"count":2,"speed":760,"size":8,"mult":2.35,"pierce":2,"spread":0.12,"aoe":95,"aoeMult":0.72},"NovaCannon":{"count":1,"speed":570,"size":19,"mult":5.2,"pierce":1,"aoe":145,"aoeMult":1.1},"RiftBlade":{"count":1,"speed":1080,"size":10,"mult":3,"pierce":10,"bossMult":1.6}};
+const WEAPON_PROFILES={"Blaster":{"count":1,"speed":720,"size":6,"mult":1,"pierce":0},"TwinShot":{"count":2,"speed":740,"size":6,"mult":0.95,"pierce":0,"spread":0.08},"Lightning":{"count":1,"speed":820,"size":5,"mult":1.25,"pierce":1,"chain":3,"chainRadius":135,"chainMult":0.55},"OrbitBlades":{"count":3,"mode":"orbit","size":22,"mult":0.9,"orbitRadius":72},"Flame":{"count":1,"mode":"cone","mult":0.6,"cone":0.62,"range":195},"Boomerang":{"count":1,"speed":780,"size":8,"mult":1.15,"pierce":2,"returning":true,"returnDelay":0.42,"homing":0.05},"Shotgun":{"count":5,"speed":680,"size":6,"mult":0.72,"pierce":0,"spread":0.24},"Railgun":{"count":1,"speed":1220,"size":9,"mult":3,"pierce":7},"Plasma":{"count":1,"speed":660,"size":12,"mult":1.8,"pierce":1,"aoe":85,"aoeMult":0.7},"Chakram":{"count":1,"speed":900,"size":8,"mult":1.25,"pierce":3,"returning":true,"returnDelay":0.55,"homing":0.06},"Meteor":{"count":1,"speed":430,"size":17,"mult":4,"pierce":1,"aoe":110,"aoeMult":0.82,"homing":0.02},"Shuriken":{"count":6,"speed":1040,"size":5,"mult":0.82,"pierce":2,"spread":0.3},"RocketLauncher":{"count":1,"speed":540,"size":11,"mult":4,"pierce":0,"aoe":100,"aoeMult":0.78},"Laser":{"count":4,"mode":"instantTargets","mult":3.2},"FrostNova":{"count":1,"mode":"nova","mult":1.9,"range":215},"ChainGun":{"count":3,"speed":950,"size":4,"mult":0.74,"pierce":1,"spread":0.11},"GravityOrb":{"count":1,"speed":480,"size":15,"mult":2.2,"pierce":2,"slow":3,"aoe":38,"aoeMult":0.3},"DroneSwarm":{"count":2,"speed":430,"size":7,"mult":0.7,"pierce":1,"homing":0.07,"ttl":5.5,"drone":true},"MineLayer":{"count":2,"mode":"mine","size":14,"mult":2.8,"aoe":105,"aoeMult":0.9,"ttl":10,"trigger":64},"ArcBlade":{"count":4,"mode":"orbit","size":24,"mult":1,"orbitRadius":88},"ThunderStaff":{"count":5,"mode":"chain","mult":2.35,"chain":5,"chainRadius":155,"chainMult":0.62},"SoulCannon":{"count":1,"speed":650,"size":12,"mult":2.6,"pierce":4,"lifesteal":0.1,"aoe":55,"aoeMult":0.45},"StarRifle":{"count":1,"speed":1250,"size":7,"mult":2.35,"pierce":6},"VoidLauncher":{"count":1,"speed":700,"size":13,"mult":2.8,"pierce":2,"aoe":125,"aoeMult":0.72},"StormBow":{"count":2,"speed":1050,"size":6,"mult":1.15,"pierce":2,"spread":0.1,"chain":2,"chainRadius":145,"chainMult":0.5},"PulseCannon":{"count":1,"speed":0,"size":18,"mult":3.6,"pierce":0,"pulseRadius":420,"pulseWaves":3},"OmegaBlade":{"count":5,"mode":"orbit","size":27,"mult":1.45,"orbitRadius":96},"WastelandBow":{"count":2,"speed":760,"size":8,"mult":2.35,"pierce":2,"spread":0.12,"aoe":95,"aoeMult":0.72},"NovaCannon":{"count":1,"speed":570,"size":19,"mult":5.2,"pierce":1,"aoe":145,"aoeMult":1.1},"RiftBlade":{"count":1,"speed":1080,"size":10,"mult":3,"pierce":10,"bossMult":1.6}};
 function weaponCount(p,profile,weapon){
   const base=Math.max(1,Number(profile.count)||1),multi=Math.max(0,Math.floor(Number(p.multiShot)||0)),level=Math.max(0,Math.floor(Number(save.weaponLevels?.[weapon])||0));
   return Math.max(1,base+multi+Math.floor(level/2)+(save.weaponEvolutions?.[weapon]?1:0));
@@ -3185,8 +3187,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.2.0';
-const CURRENT_UPDATE_INFO={title:'v3.2.0 — Persistent Leaderboard Save',summary:'Leaderboard records now survive game updates and server redeploys through a separate local vault, retry queue, and persistent server storage support.',items:['Leaderboard records are stored separately from the normal game save so save-schema changes do not wipe them.','Unsent leaderboard records are queued and automatically retried when the server becomes available again.','The leaderboard view merges saved local records with the server records instead of replacing one with the other.','The server storage path can now point to a Render persistent disk so leaderboard data survives redeploys and restarts.','Updated the build marker and update popup to v3.2.0.']};
+const CURRENT_UPDATE_VERSION='3.3.0';
+const CURRENT_UPDATE_INFO={title:'v3.3.0 — Pulse Cannon & Button Fix',summary:'Pulse Cannon has been rebuilt as a real expanding shockwave weapon, and the duplicated button routers now share one protected dispatch guard so clicks no longer loop or get swallowed.',items:['Rebuilt Pulse Cannon as a multi-wave radial shockwave that damages enemies without needing a target in range.','Pulse Cannon waves scale with weapon level and Multi-Shot and deal increased damage to bosses.','Shockwaves visibly expand from the player, push enemies back, and trigger elemental effects.','Fixed the duplicated universal button controllers so generated and normal buttons receive exactly one click dispatch.','Updated the build marker and update popup to v3.3.0.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3565,7 +3567,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}
@@ -5562,7 +5564,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}
@@ -7568,7 +7570,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}
@@ -9565,7 +9567,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}
@@ -11568,7 +11570,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}
@@ -13565,7 +13567,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}
@@ -15571,7 +15573,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}
@@ -17568,7 +17570,7 @@ Object.assign(weapons,{
 });
 function uniqueWeaponShoot(){
  const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
- if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
+ if(!target&&w!=='PulseCannon')return true;const a=target?Math.atan2(target.y-p.y,target.x-p.x):0;
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
  if(w==='MineLayer'){game.bullets.push({x:p.x,y:p.y,a:0,vx:0,vy:0,r:12,dmg:p.damage*3,type:'Mine',life:8,mine:true});return true;}

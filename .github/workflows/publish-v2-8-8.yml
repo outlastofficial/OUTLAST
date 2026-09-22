@@ -1,4 +1,4 @@
-name: Publish OUTLAST v3.0.0
+name: Validate OUTLAST v3.1.0
 
 on:
   push:
@@ -13,14 +13,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Validate v3 build markers
+
+      - name: Validate v3.1.0 markers and JavaScript
         shell: python
         run: |
           from pathlib import Path
+          import re, subprocess
+
           for name in ("index.html", "game.html"):
-              s=Path(name).read_text(encoding="utf-8")
-              assert "OUTLAST v3.0.0" in s, f"{name}: missing v3.0.0 marker"
-              assert 'content="3.0.0"' in s, f"{name}: missing build version"
-              assert "weaponEvolutionsV3" in s, f"{name}: missing v3 evolution system"
-              assert "dailyChallengesV3" in s, f"{name}: missing v3 daily challenge system"
-          print("OUTLAST v3.0.0 build validation passed.")
+              html = Path(name).read_text(encoding="utf-8")
+              assert "OUTLAST v3.1.0" in html, f"{name}: missing v3.1.0 marker"
+              assert 'content="3.1.0"' in html, f"{name}: missing build version"
+              assert "function renderPlayerHub()" in html, f"{name}: missing Player Hub"
+              assert "function buildRunSnapshot()" in html, f"{name}: missing Build of the Run"
+              scripts = re.findall(r"<script(?:\s[^>]*)?>([\s\S]*?)</script>", html, flags=re.I)
+              assert scripts, f"{name}: no script blocks found"
+              for i, code in enumerate(scripts, 1):
+                  p = Path(f"/tmp/{name}-{i}.js")
+                  p.write_text(code, encoding="utf-8")
+                  subprocess.run(["node", "--check", str(p)], check=True)
+
+          print("OUTLAST v3.1.0 validation passed.")

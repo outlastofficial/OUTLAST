@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.9">
-<title>OUTLAST v3.1.9</title>
+<meta name="build-version" content="3.2.0">
+<title>OUTLAST v3.2.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -1487,6 +1487,7 @@ function ensureMegaSave(){
   if(typeof save.weeklyGoalWeek!=='string')save.weeklyGoalWeek='';
   if(typeof save.weeklyGoalClaimed!=='boolean')save.weeklyGoalClaimed=false;
   save.weeklyGoalProgress={kills:0,bosses:0,time:0,games:0,...(save.weeklyGoalProgress||{})};
+  save.leaderboard=mergeLeaderboardRecords(readLeaderboardVault(),save.leaderboard);
   if(!Array.isArray(save.buildHistory))save.buildHistory=[];
   save.buildHistory=save.buildHistory.slice(-10);
 }
@@ -1496,6 +1497,89 @@ const DEVICE_SAVE_KEY='outlastDeviceSave';
 const USERNAME_KEY='outlastUsername';
 const localAccountKey=username=>`outlastSave:${String(username||'').trim().toLowerCase()}`;
 let currentUsername='Player';
+
+const LEADERBOARD_VAULT_KEY='outlastLeaderboardVaultV1';
+const LEADERBOARD_PENDING_KEY='outlastLeaderboardPendingV1';
+function normalizeLeaderboardEntry(raw){
+  if(!raw||typeof raw!=='object')return null;
+  const name=String(raw.name||'Player').trim().replace(/\s+/g,' ').slice(0,18);
+  if(!name)return null;
+  return {
+    name,
+    score:Math.max(0,Math.floor(Number(raw.score)||0)),
+    level:Math.max(1,Math.floor(Number(raw.level)||1)),
+    kills:Math.max(0,Math.floor(Number(raw.kills)||0)),
+    mode:String(raw.mode||'Classic').slice(0,30),
+    difficulty:String(raw.difficulty||'Normal').slice(0,30),
+    date:String(raw.date||new Date().toLocaleDateString()).slice(0,40),
+    badge:String(raw.badge||'').slice(0,30)
+  };
+}
+function readLeaderboardVault(){
+  try{
+    const parsed=JSON.parse(outlastStorage.getItem(LEADERBOARD_VAULT_KEY)||'[]');
+    return Array.isArray(parsed)?parsed.map(normalizeLeaderboardEntry).filter(Boolean):[];
+  }catch(_){return []}
+}
+function mergeLeaderboardRecords(...sources){
+  const byName=new Map();
+  for(const source of sources){
+    if(!Array.isArray(source))continue;
+    for(const raw of source){
+      const entry=normalizeLeaderboardEntry(raw);
+      if(!entry)continue;
+      const key=entry.name.toLowerCase();
+      const old=byName.get(key);
+      if(!old||entry.score>old.score)byName.set(key,entry);
+      else if(old&&entry.badge&&!old.badge)byName.set(key,{...old,badge:entry.badge});
+    }
+  }
+  return [...byName.values()].sort((a,b)=>Number(b.score||0)-Number(a.score||0)).slice(0,100);
+}
+function writeLeaderboardVault(records){
+  try{outlastStorage.setItem(LEADERBOARD_VAULT_KEY,JSON.stringify(mergeLeaderboardRecords(records)));}catch(err){console.warn('Leaderboard vault save failed',err)}
+}
+function hydrateLeaderboardVault(){
+  const vault=readLeaderboardVault();
+  const merged=mergeLeaderboardRecords(vault,save&&save.leaderboard);
+  writeLeaderboardVault(merged);
+  if(save)save.leaderboard=merged;
+  return merged;
+}
+function queueLeaderboardSync(records){
+  try{
+    const existing=JSON.parse(outlastStorage.getItem(LEADERBOARD_PENDING_KEY)||'[]');
+    const merged=mergeLeaderboardRecords(existing,records);
+    outlastStorage.setItem(LEADERBOARD_PENDING_KEY,JSON.stringify(merged));
+    return merged;
+  }catch(_){return Array.isArray(records)?records:[]}
+}
+async function syncLeaderboardToServer(){
+  const pending=queueLeaderboardSync(hydrateLeaderboardVault());
+  if(!pending.length)return;
+  const survivors=[];
+  for(const entry of pending){
+    try{
+      const res=await fetch('https://outlast-server.onrender.com/api/leaderboard',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(entry)
+      });
+      if(!res.ok){survivors.push(entry);continue;}
+    }catch(_){survivors.push(entry);break;}
+  }
+  try{
+    outlastStorage.setItem(LEADERBOARD_PENDING_KEY,JSON.stringify(mergeLeaderboardRecords(survivors)));
+  }catch(_){}
+}
+function saveLeaderboardRecords(records){
+  const merged=mergeLeaderboardRecords(readLeaderboardVault(),records);
+  writeLeaderboardVault(merged);
+  if(save)save.leaderboard=merged;
+  queueLeaderboardSync(merged);
+  return merged;
+}
+
 function migrateSave(data){
   const base=freshSave();
   if(!data||typeof data!=='object')return base;
@@ -1524,7 +1608,6 @@ function loadDeviceSave(username){
   try{
     const deviceSaved=outlastStorage.getItem(DEVICE_SAVE_KEY);
     if(deviceSaved) return migrateSave(JSON.parse(deviceSaved));
-    // Backward compatibility: migrate the old username-keyed save once, then use device-wide storage.
     const oldUserSaved=outlastStorage.getItem(localAccountKey(username));
     if(oldUserSaved) return migrateSave(JSON.parse(oldUserSaved));
     const legacy=outlastStorage.getItem('survivorStyleSave');
@@ -1548,6 +1631,8 @@ save=freshSave();
 try{currentUsername=outlastStorage.getItem(USERNAME_KEY)||'';}catch(_){currentUsername='';}
 save=currentUsername?loadDeviceSave(currentUsername):freshSave();
 ensureMegaSave();
+hydrateLeaderboardVault();
+setTimeout(syncLeaderboardToServer,0);
 if(currentUsername){
   const login=document.getElementById('loginPopup');
   const input=document.getElementById('usernameInput');
@@ -1714,13 +1799,18 @@ function triggerMapEvent(){
 }
 async function submitServerLeaderboard(entry){
  try{
-   const res=await fetch('https://outlast-server.onrender.com/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+   const res=await fetch('https://outlast-server.onrender.com/api/leaderboard',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify(entry)
+   });
    if(!res.ok) throw new Error('submit failed');
    const data=await res.json();
    return data;
  }catch(err){
+   queueLeaderboardSync([entry]);
    console.warn('Server leaderboard unavailable',err);
-   toast('Leaderboard server unavailable — score kept locally.');
+   toast('Leaderboard server unavailable — score saved locally and will retry.');
    return null;
  }
 }
@@ -1729,10 +1819,14 @@ async function fetchServerLeaderboard(){
    const res=await fetch('https://outlast-server.onrender.com/api/leaderboard',{cache:'no-store'});
    if(!res.ok) throw new Error('load failed');
    const data=await res.json();
-   return Array.isArray(data.entries)?data.entries:[];
+   const remote=Array.isArray(data.entries)?data.entries:[];
+   const merged=saveLeaderboardRecords([...remote,...readLeaderboardVault()]);
+   setTimeout(syncLeaderboardToServer,0);
+   return merged;
  }catch(err){
+   const local=hydrateLeaderboardVault();
    console.warn('Server leaderboard unavailable',err);
-   return null;
+   return local.length?local:null;
  }
 }
 function renderServerLeaderboard(entries){
@@ -1802,11 +1896,12 @@ function endRun(victory,recordScore=true,showEnd=true){
      shouldSubmit=true;
      toast('Leaderboard record added!');
    }
-   save.leaderboard.sort((a,b)=>b.score-a.score);
-   save.leaderboard=save.leaderboard.slice(0,100);
+   save.leaderboard=saveLeaderboardRecords(save.leaderboard);
+   queueLeaderboardSync([entry]);
    submitServerLeaderboard(entry);
  }
  checkAchievements();persist();
+ if(recordScore && currentUsername!==ADMIN_TEST_USERNAME) setTimeout(syncLeaderboardToServer,0);
  game.endScreen=!!showEnd; game.endVictory=!!victory;
  if(showEnd)drawEnd(victory);
 }
@@ -3090,8 +3185,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.9';
-const CURRENT_UPDATE_INFO={title:'v3.1.9 — Login Reliability Fix',summary:'Fixed the username login flow so the Continue button reliably completes login even when save or optional UI refresh steps fail.',items:['The Continue button now has a direct protected login path instead of relying on the older replay-based button router.','Username validation now accepts 1–18 characters using letters, numbers, spaces, underscores, and hyphens.','Login saving and menu-summary updates are isolated so a nonessential UI or storage error cannot leave the login popup stuck open.','The username login and device setup flows are now hardened against recoverable runtime errors.','Updated the build marker and update popup to v3.1.9.']};
+const CURRENT_UPDATE_VERSION='3.2.0';
+const CURRENT_UPDATE_INFO={title:'v3.2.0 — Persistent Leaderboard Save',summary:'Leaderboard records now survive game updates and server redeploys through a separate local vault, retry queue, and persistent server storage support.',items:['Leaderboard records are stored separately from the normal game save so save-schema changes do not wipe them.','Unsent leaderboard records are queued and automatically retried when the server becomes available again.','The leaderboard view merges saved local records with the server records instead of replacing one with the other.','The server storage path can now point to a Render persistent disk so leaderboard data survives redeploys and restarts.','Updated the build marker and update popup to v3.2.0.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

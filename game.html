@@ -1881,18 +1881,116 @@ function shootPvP(owner){
 function useUltimate(){const p=game.player;if(!p||p.ult<100)return;p.ult=0;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];damageEnemy(e,120*(p.ultDamage||1));if(e.hp<=0)killEnemy(e)}game.effects.push({x:p.x,y:p.y,t:.7,r:180})}
 function damageEnemy(e,dmg){if(!e||!game.player||!Number.isFinite(dmg))return;let crit=Math.random()<Math.min(.95,game.player.crit);if(crit)dmg*=game.player.critMult;if(e.boss)dmg*=game.player.bossMult;if(e.kind==='elite')dmg*=1+.03*(save.upgrades.Executioner||0);if(game.player.armorPierce)dmg*=1+game.player.armorPierce;e.hp-=Math.max(0,dmg);e.hitFlash=.12;burst(e.x,e.y,crit?'#fff08a':'#ff7b6e',crit?8:2,crit?80:55);if(crit)ring(e.x,e.y,'#fff08a',24,.22);if(game.player&&game.player===game.player2){}if(dmg>(save.records.bestDamage||0))save.records.bestDamage=dmg;game.shots.push({x:e.x,y:e.y,text:Math.floor(dmg),t:.5,crit})}
 function applyElement(e){if(!game.player)return;const el=game.player.element;if(el==='Fire')e.burn=3;if(el==='Ice')e.slowTimer=Math.max(e.slowTimer||0,3);if(el==='Shock')e.chainTimer=.5;if(el==='Poison')e.poison=4;if(el==='Void'&&(e.boss||e.kind==='elite'))e.hp-=game.player.damage*.35}
-function killEnemy(target){const e=typeof target==='number'?game.enemies[target]:target;const i=e?game.enemies.indexOf(e):-1;if(!e||i<0||e.__dead)return;e.__dead=true;burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);run.kills++;save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);game.combo=Math.min(50,game.combo+1);if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;if(Math.random()<.12)save.materials++;game.comboTimer=4;const comboMult=1+Math.min(20,game.combo)*0.03;game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
- const val=e.boss?Math.max(1,game.xpNeed-game.xp):Math.max(1,Math.floor(e.xp*game.stats.rewardMult*1.06));game.gems.push({x:e.x,y:e.y,value:val,icon:'◆'});
- if(e.boss){
-   const lootTypes=['shield','heal','speed','damage'];
-   const guaranteed=2+(e.phase===2?1:0);
-   for(let li=0;li<guaranteed;li++){const la=Math.random()*Math.PI*2,lr=28+Math.random()*55;game.powerups.push({x:e.x+Math.cos(la)*lr,y:e.y+Math.sin(la)*lr,type:lootTypes[Math.floor(Math.random()*lootTypes.length)],bossDrop:true});}
-   if(Math.random()<0.35){const la=Math.random()*Math.PI*2,lr=55+Math.random()*30;game.coins.push({x:e.x+Math.cos(la)*lr,y:e.y+Math.sin(la)*lr,value:75*game.stats.rewardMult,icon:'
- if(e.boss){
-   const bossCoins=5+Math.floor(Math.random()*6);
-   const bossGems=2+Math.floor(Math.random()*3);
-   for(let li=0;li<bossCoins;li++){const a=Math.random()*Math.PI*2,r=35+Math.random()*65;game.coins.push({x:e.x+Math.cos(a)*r,y:e.y+Math.sin(a)*r,value:Math.max(10,Math.floor((25+Math.random()*50)*game.stats.rewardMult)),icon:' {ring(e.x,e.y,'#ffd84d',34,.55);burst(e.x,e.y,'#ffd84d',12,100);} if(e.kind==='golden')game.coins.push({x:e.x+8,y:e.y+8,value:25*game.player.coinMult,icon:'$'}); const lootLuck=Math.max(0,Number(game.player.lootLuck||0)); if(e.kind==='elite'||e.boss||Math.random()<Math.min(.18,.025*game.player.coinMult+lootLuck*.002))game.coins.push({x:e.x+5,y:e.y+5,value:(e.boss?30:e.kind==='elite'?6:2)*game.player.coinMult,icon:'$'}); if(e.boss){run.bosses++;const bonusCoins=3+Math.floor(Math.random()*4),bonusPowerups=2+(Math.random()<.5?1:0);for(let bi=0;bi<bonusCoins;bi++){const ba=Math.random()*Math.PI*2,br=35+Math.random()*45;game.coins.push({x:e.x+Math.cos(ba)*br,y:e.y+Math.sin(ba)*br,value:15*game.player.coinMult,icon:' if(run.kills%35===0){save.keys++;save.records.totalChests++;game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});toast('□ Treasure cache found!');}
- const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));const radarMult=game.player.treasure?3:1;const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult); if(Math.random()<powerupChance)game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]}); if(game.player.shockwave && run.kills%12===0){for(let j=game.enemies.length-1;j>=0;j--){const q=game.enemies[j];if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){damageEnemy(q,game.player.damage*.8);if(q.hp<=0)killEnemy(j)}}game.effects.push({x:e.x,y:e.y,t:.3,r:150})} if(game.player.vampire){game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire)} game.enemies.splice(i,1);
+function killEnemy(target){
+  const e=typeof target==='number'?game.enemies[target]:target;
+  const i=e?game.enemies.indexOf(e):-1;
+  if(!e||i<0||e.__dead)return;
+  e.__dead=true;
+  burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);
+  ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);
+  run.kills++;
+  save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);
+  game.combo=Math.min(50,game.combo+1);
+  if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;
+  if(Math.random()<.12)save.materials++;
+  game.comboTimer=4;
+  const comboMult=1+Math.min(20,game.combo)*.03;
+  game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;
+  game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
+  const val=e.boss?Math.max(1,game.xpNeed-game.xp):Math.max(1,Math.floor(e.xp*game.stats.rewardMult*1.06));
+  game.gems.push({x:e.x,y:e.y,value:val,icon:'◆'});
+
+  if(e.boss){
+    const lootTypes=['shield','heal','speed','damage'];
+    const guaranteed=2+(e.phase===2?1:0);
+    for(let li=0;li<guaranteed;li++){
+      const la=Math.random()*Math.PI*2,lr=28+Math.random()*55;
+      game.powerups.push({
+        x:e.x+Math.cos(la)*lr,
+        y:e.y+Math.sin(la)*lr,
+        type:lootTypes[Math.floor(Math.random()*lootTypes.length)],
+        bossDrop:true
+      });
+    }
+    if(Math.random()<.35){
+      const la=Math.random()*Math.PI*2,lr=55+Math.random()*30;
+      game.coins.push({
+        x:e.x+Math.cos(la)*lr,
+        y:e.y+Math.sin(la)*lr,
+        value:75*game.stats.rewardMult,
+        icon:'$'
+      });
+    }
+    const bossCoins=5+Math.floor(Math.random()*6);
+    const bossGems=2+Math.floor(Math.random()*3);
+    for(let li=0;li<bossCoins;li++){
+      const a=Math.random()*Math.PI*2,r=35+Math.random()*65;
+      game.coins.push({
+        x:e.x+Math.cos(a)*r,
+        y:e.y+Math.sin(a)*r,
+        value:Math.max(10,Math.floor((25+Math.random()*50)*game.stats.rewardMult)),
+        icon:'$'
+      });
+    }
+    for(let gi=0;gi<bossGems;gi++){
+      const a=Math.random()*Math.PI*2,r=25+Math.random()*50;
+      game.gems.push({
+        x:e.x+Math.cos(a)*r,
+        y:e.y+Math.sin(a)*r,
+        value:Math.max(2,Math.floor(3*game.stats.rewardMult)),
+        icon:'◆'
+      });
+    }
+    ring(e.x,e.y,'#ffd84d',34,.55);
+    burst(e.x,e.y,'#ffd84d',12,100);
+  }
+
+  if(e.kind==='golden'){
+    game.coins.push({x:e.x+8,y:e.y+8,value:25*game.player.coinMult,icon:'$'});
+  }
+
+  const lootLuck=Math.max(0,Number(game.player.lootLuck||0));
+  if(e.kind==='elite'||e.boss||Math.random()<Math.min(.18,.025*game.player.coinMult+lootLuck*.002)){
+    game.coins.push({
+      x:e.x+5,y:e.y+5,
+      value:(e.boss?30:e.kind==='elite'?6:2)*game.player.coinMult,
+      icon:'$'
+    });
+  }
+
+  if(run.kills%35===0){
+    save.keys++;
+    save.records.totalChests++;
+    game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});
+    toast('□ Treasure cache found!');
+  }
+
+  const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));
+  const radarMult=game.player.treasure?3:1;
+  const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult);
+  if(Math.random()<powerupChance){
+    game.powerups.push({
+      x:e.x,y:e.y,
+      type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]
+    });
+  }
+
+  if(game.player.shockwave&&run.kills%12===0){
+    for(let j=game.enemies.length-1;j>=0;j--){
+      const q=game.enemies[j];
+      if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){
+        damageEnemy(q,game.player.damage*.8);
+        if(q.hp<=0)killEnemy(j);
+      }
+    }
+    game.effects.push({x:e.x,y:e.y,t:.3,r:150});
+  }
+
+  if(game.player.vampire){
+    game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire);
+  }
+
+  game.enemies.splice(i,1);
 }
 function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices()}
 const upgradeRarities={

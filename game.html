@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.1">
-<title>OUTLAST v3.1.1</title>
+<meta name="build-version" content="3.1.2">
+<title>OUTLAST v3.1.2</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -1236,7 +1236,7 @@ function endRun(victory,recordScore=true,showEnd=true){
  save.weeklyGoalProgress.games+=1;
  if(victory){let keyReward=1;if(game.objectiveComplete)keyReward+=2;if(game.raidBoss)keyReward+=3;save.worldKeys=(save.worldKeys||0)+keyReward;toast('🔑 +'+keyReward+' World Keys');}
  if(game.raidBoss && victory){const rd=raidBossDefs[game.raidBoss];save.coins+=rd?rd.reward:0;save.raidClears=(save.raidClears||0)+1;toast('♛ Raid cleared! +'+(rd?rd.reward:0)+' bonus coins');}
- if(recordScore && game.score>0 && currentUsername!==ADMIN_TEST_USERNAME){
+ if(recordScore && currentUsername!==ADMIN_TEST_USERNAME){
    const name=currentUsername.slice(0,18);
    const entry={name,score:Math.floor(game.score),level:game.level,kills:run.kills,mode:save.mode,difficulty:save.difficulty,date:new Date().toLocaleDateString()};
    const existingIndex=save.leaderboard.findIndex(r=>String(r.name||'').trim().toLowerCase()===name.toLowerCase());
@@ -1256,7 +1256,7 @@ function endRun(victory,recordScore=true,showEnd=true){
    }
    save.leaderboard.sort((a,b)=>b.score-a.score);
    save.leaderboard=save.leaderboard.slice(0,100);
-   if(shouldSubmit)submitServerLeaderboard(entry);
+   submitServerLeaderboard(entry);
  }
  checkAchievements();persist();
  game.endScreen=!!showEnd; game.endVictory=!!victory;
@@ -2357,16 +2357,16 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.1';
+const CURRENT_UPDATE_VERSION='3.1.2';
 const CURRENT_UPDATE_INFO={
-  title:'v3.1.1 — Admin Panel Lock Fix',
-  summary:'Fixes the admin panel lock button so temporary admin testing changes can be discarded and admin mode can be closed reliably.',
+  title:'v3.1.2 — Low-Level Run Leaderboard',
+  summary:'Leaderboard submission now runs for every normal run exit, including very early runs such as Level 2.',
   items:[
-    'Admin controls are now routed correctly even when the universal button controller intercepts data-action buttons.',
-    'The LOCK & DISCARD TEST CHANGES button now calls the real admin lock handler.',
-    'Locking admin exits temporary test mode, discards unsaved admin changes, and returns to the normal player login screen.',
-    'Admin button routing is now future-proof for any data-action beginning with admin.',
-    'The build marker, update popup, and current version are synchronized to v3.1.1.'
+    'Leaderboard submission is now attempted when a player exits any normal run, even at low levels such as Level 2.',
+    'A run is still kept from replacing a player’s existing higher score, but the server is now contacted every time.',
+    'Very early runs with zero score are also accepted by the leaderboard server.',
+    'The admin panel lock routing fix from v3.1.1 remains included.',
+    'The build marker, update popup, and current version are synchronized to v3.1.2.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';
@@ -3131,7 +3131,7 @@ document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.ta
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v3.1.1 — universal button controller */
+/* OUTLAST v3.1.2 — universal button controller */
 (function(){
   const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
   const routes={

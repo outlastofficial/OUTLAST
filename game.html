@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.4">
-<title>OUTLAST v3.1.4</title>
+<meta name="build-version" content="3.1.5">
+<title>OUTLAST v3.1.5</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -316,7 +316,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 }
 </style>
 
-<style id="menu-redesign-v314">
+<style id="menu-redesign-v315">
 /* OUTLAST v3.1.4 — SURVIVOR HUB UI
    A fresh dashboard layout focused on fast navigation, a stronger start panel,
    clearer hierarchy, and touch-friendly controls. No gameplay logic changed. */
@@ -784,7 +784,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.1.4 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.1.5 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -2876,17 +2876,17 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.4';
+const CURRENT_UPDATE_VERSION='3.1.5';
 const CURRENT_UPDATE_INFO={
-  title:'v3.1.4 — BLACKSITE UI Overhaul',
-  summary:'OUTLAST now has a completely refreshed Blacksite command UI with a new menu layout, visual hierarchy, and responsive mobile presentation.',
+  title:'v3.1.5 — Daily Shop Refresh',
+  summary:'OUTLAST now has a working Daily Shop that rotates its offers every calendar day, tracks purchases correctly, and shows the next refresh countdown.',
   items:[
-    'Rebuilt the main menu into a new Blacksite command interface instead of the previous card-heavy layout.',
-    'Introduced a new command-rail navigation system with clearer Play, Loadout, Systems, Progress, and More sections.',
-    'Refreshed the Play screen with a dedicated run-deployment panel and denser mission-control styling.',
-    'Redesigned menu cards, buttons, status elements, spacing, typography, borders, and transitions.',
-    'Added a responsive mobile presentation so the new interface remains usable on touch screens.',
-    'The build marker, update popup, and current version are synchronized to v3.1.4.'
+    'Fixed the Daily Shop so opening it always shows the current daily offers.',
+    'Daily offers now rotate automatically at local midnight instead of staying stuck on one set.',
+    'Expanded the shop pool and increased the daily selection to five rotating offers.',
+    'Purchases are tracked per day and automatically reset when the shop rotates.',
+    'Added a live countdown showing exactly how long remains until the next shop refresh.',
+    'The build marker, update popup, and current version are synchronized to v3.1.5.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';

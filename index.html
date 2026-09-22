@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.5">
-<title>OUTLAST v3.1.5</title>
+<meta name="build-version" content="3.1.6">
+<title>OUTLAST v3.1.6</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -687,7 +687,9 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 }
 </style>
 
-</head>
+<style id="daily-shop-v316">
+.daily-shop-wrap{display:grid;gap:12px}.daily-shop-banner{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px;border:1px solid #3b5265;border-radius:14px;background:linear-gradient(135deg,#132433,#0c141c)}.daily-shop-banner b{letter-spacing:.06em}.daily-shop-timer{text-align:right;font-size:10px;color:#8197a8;white-space:nowrap}.daily-shop-timer strong{font-size:17px;color:#8fe0b0}.daily-shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.daily-shop-card{min-height:135px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:13px!important;background:linear-gradient(150deg,#14212b,#0e151d)!important;border:1px solid #304758!important;text-align:left!important}.daily-shop-card:hover:not(:disabled){border-color:#5aa9c7!important;transform:translateY(-2px)}.daily-shop-card:disabled{opacity:.58}.daily-shop-top{display:flex;justify-content:space-between;align-items:center}.daily-shop-rank{font-size:10px;color:#6f8798}.daily-shop-tag{font-size:9px;padding:3px 6px;border:1px solid #36556a;border-radius:999px;color:#8fc8e4}.daily-shop-price{font-weight:800;color:#e8c85a;margin-top:7px}.daily-shop-bought .daily-shop-price{color:#7ee7a0}.daily-shop-footer{text-align:center;padding:8px;color:#718695}@media(max-width:700px){.daily-shop-grid{grid-template-columns:1fr 1fr}.daily-shop-banner{align-items:flex-start}.daily-shop-timer{font-size:9px}}@media(max-width:460px){.daily-shop-grid{grid-template-columns:1fr}.daily-shop-banner{flex-direction:column}.daily-shop-timer{text-align:left}}
+</style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
 <div id="mobileAvatarPreview"><canvas id="mobileAvatarCanvas" width="62" height="74"></canvas></div>
@@ -2485,8 +2487,91 @@ window.forgeWeapon=()=>{const w=save.selectedWeapon,lv=save.weaponLevels[w]||0,c
 window.buyForgeCore=()=>{if(save.coins<150)return toast('Not enough coins');save.coins-=150;save.forgeCores++;persist();toast('◇ Forge Core purchased');forgeOpen()};
 window.buyForgeBundle=()=>{if(save.coins<400)return toast('Not enough coins');save.coins-=400;save.forgeCores+=3;persist();toast('+3 Forge Cores');forgeOpen()};
 window.refineForge=()=>{if(save.coins<250||save.forgeCores<2)return toast('Need 250 coins and 2 Forge Cores');save.coins-=250;save.forgeCores-=2;const gain=3+Math.floor(Math.random()*5);save.materials+=gain;persist();toast('✦ Refined into +'+gain+' Parts');forgeOpen()};
-function shopOpen(){const items=[['core','Forge Core Pack','350 coins • +3 cores'],['coins','Coin Cache','700 coins • +900 coins'],['case','Skin Case Voucher','600 coins • +1 voucher'],['xp','XP Token','400 coins • +1 forge core'],['parts','Material Crate','450 coins • +8 parts'],['key','Key Pack','900 coins • +2 keys'],['dust','Mythic Dust','1200 coins • +5 dust'],['megaCore','Mega Core Pack','1500 coins • +8 cores']];openSub('🛒 Daily Shop','<p class="small">More daily choices with useful materials, cores, keys, dust, and case vouchers.</p><div class="grid">'+items.map(x=>`<button class="option" data-action="shop" data-value="${x[0]}"><b>${x[1]}</b><div class="small">${x[2]}</div></button>`).join('')+'</div>')}
-window.buyShop=k=>{const d={core:350,coins:700,case:600,xp:400,parts:450,key:900,dust:1200,megaCore:1500};if(!d[k]||save.coins<d[k])return toast('Not enough coins');save.coins-=d[k];if(k==='core')save.forgeCores+=3;if(k==='coins')save.coins+=900;if(k==='case')save.caseCredits=(save.caseCredits||0)+1;if(k==='xp')save.forgeCores+=1;if(k==='parts')save.materials+=8;if(k==='key')save.keys+=2;if(k==='dust')save.mythicDust+=5;if(k==='megaCore')save.forgeCores+=8;persist();toast('🛒 Purchase complete!');shopOpen()};
+/* ---------- Daily Shop v3.1.6 ---------- */
+const DAILY_SHOP_POOL=[
+  {id:'core',name:'Forge Core Cache',price:350,tag:'FORGE',desc:'+3 Forge Cores'},
+  {id:'coins',name:'Coin Rebate',price:700,tag:'ECONOMY',desc:'+900 coins after purchase'},
+  {id:'case',name:'Skin Case Voucher',price:600,tag:'COSMETIC',desc:'+1 Skin Case Voucher'},
+  {id:'xp',name:'XP Surge',price:500,tag:'PROGRESSION',desc:'+1 Forge Core + bonus XP'},
+  {id:'parts',name:'Material Crate',price:450,tag:'CRAFT',desc:'+10 crafting materials'},
+  {id:'key',name:'World Key Pack',price:900,tag:'WORLD',desc:'+2 World Keys'},
+  {id:'dust',name:'Mythic Dust',price:1200,tag:'RARE',desc:'+5 Mythic Dust'},
+  {id:'megaCore',name:'Overcharged Core',price:1500,tag:'FORGE',desc:'+8 Forge Cores'},
+  {id:'shield',name:'Shield Cell',price:650,tag:'SURVIVAL',desc:'+2 Shield charges'},
+  {id:'luck',name:'Lucky Cache',price:1000,tag:'LUCK',desc:'+25 Luck for your next run'},
+  {id:'upgrade',name:'Upgrade Voucher',price:1800,tag:'UPGRADE',desc:'+1 random permanent upgrade'},
+  {id:'materials2',name:'Mega Material Box',price:1000,tag:'CRAFT',desc:'+25 crafting materials'}
+];
+function dailyShopSeed(){
+  const k=String(todayKey());let h=2166136261;
+  for(let i=0;i<k.length;i++)h=Math.imul(h^k.charCodeAt(i),16777619)>>>0;
+  return h>>>0;
+}
+function getDailyShopItems(){
+  let seed=dailyShopSeed(),pool=DAILY_SHOP_POOL.slice(),out=[];
+  while(out.length<6&&pool.length){
+    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
+    out.push(pool.splice(seed%pool.length,1)[0]);
+  }
+  return out;
+}
+function dailyShopNextRefresh(){
+  const d=new Date();
+  return new Date(d.getFullYear(),d.getMonth(),d.getDate()+1,0,0,0,0).getTime();
+}
+function dailyShopCountdownText(){
+  const ms=Math.max(0,dailyShopNextRefresh()-Date.now());
+  const h=Math.floor(ms/3600000),m=Math.floor(ms/60000)%60,s=Math.floor(ms/1000)%60;
+  return h+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
+}
+function dailyShopOpen(){
+  const day=todayKey();
+  if(save.shopDay!==day){save.shopDay=day;save.shopPurchases={};persist();}
+  const items=getDailyShopItems(),purchases=save.shopPurchases||{};
+  const cards=items.map((x,i)=>{
+    const bought=!!purchases[x.id];
+    return '<button class="option daily-shop-card '+(bought?'daily-shop-bought':'')+'" data-action="shop" data-value="'+x.id+'" '+(bought?'disabled':'')+'>'+
+      '<div class="daily-shop-top"><span class="daily-shop-rank">0'+(i+1)+'</span><span class="daily-shop-tag">'+x.tag+'</span></div>'+
+      '<b>'+x.name+'</b><div class="small">'+x.desc+'</div>'+
+      '<div class="daily-shop-price">'+(bought?'✓ CLAIMED TODAY':'🪙 '+x.price.toLocaleString()+' coins')+'</div></button>';
+  }).join('');
+  openSub('🛒 DAILY SHOP',
+    '<div class="daily-shop-wrap">'+
+    '<div class="daily-shop-banner"><div><b>NEW STOCK • '+day+'</b><div class="small">Six offers selected for today. They stay fixed until the next daily reset.</div></div><div class="daily-shop-timer">NEXT RESET<br><strong id="dailyShopCountdown">'+dailyShopCountdownText()+'</strong></div></div>'+
+    '<div class="daily-shop-grid">'+cards+'</div>'+
+    '<div class="small daily-shop-footer">Purchases are limited to one of each offer per day. Tomorrow brings a completely new selection.</div>'+
+    '</div>');
+  if(window.dailyShopTimer)clearInterval(window.dailyShopTimer);
+  window.dailyShopTimer=setInterval(()=>{const el=document.getElementById('dailyShopCountdown');if(el)el.textContent=dailyShopCountdownText();else{clearInterval(window.dailyShopTimer);window.dailyShopTimer=null;}},1000);
+}
+function shopOpen(){dailyShopOpen();}
+window.buyShop=function(k){
+  const item=getDailyShopItems().find(x=>x.id===k);if(!item)return;
+  const day=todayKey();
+  if(save.shopDay!==day){save.shopDay=day;save.shopPurchases={};}
+  save.shopPurchases=save.shopPurchases||{};
+  if(save.shopPurchases[k])return toast('Already purchased today');
+  if((save.coins||0)<item.price)return toast('Not enough coins');
+  save.coins-=item.price;
+  if(k==='core')save.forgeCores=(save.forgeCores||0)+3;
+  if(k==='coins')save.coins=(save.coins||0)+900;
+  if(k==='case')save.caseCredits=(save.caseCredits||0)+1;
+  if(k==='xp'){save.forgeCores=(save.forgeCores||0)+1;save.nextRunXP=(save.nextRunXP||0)+10;}
+  if(k==='parts')save.materials=(save.materials||0)+10;
+  if(k==='key')save.worldKeys=(save.worldKeys||0)+2;
+  if(k==='dust')save.mythicDust=(save.mythicDust||0)+5;
+  if(k==='megaCore')save.forgeCores=(save.forgeCores||0)+8;
+  if(k==='shield')save.shieldCharges=(save.shieldCharges||0)+2;
+  if(k==='luck')save.nextRunLuck=(save.nextRunLuck||0)+25;
+  if(k==='upgrade'){
+    const names=typeof permanent!=='undefined'?permanent.filter(x=>(save.upgrades[x[0]]||0)<5):[];
+    if(names.length){const n=names[Math.floor(Math.random()*names.length)][0];save.upgrades[n]=(save.upgrades[n]||0)+1;toast('📈 '+n+' upgraded!');}
+  }
+  if(k==='materials2')save.materials=(save.materials||0)+25;
+  save.shopPurchases[k]=true;save.shopDay=day;persist();
+  toast('🛒 '+item.name+' purchased!');
+  dailyShopOpen();
+}
 function weeklyKey(){const d=new Date(),start=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-W'+Math.ceil((((d-start)/86400000)+start.getDay()+1)/7)}
 function challengeOpen(){
  const ks=Object.keys(weeklyChallenges),idx=Math.abs(weeklyKey().split('').reduce((a,c)=>a+c.charCodeAt(0),0))%ks.length,k=ks[idx],q=weeklyChallenges[k],claimed=save.weeklyKey===weeklyKey();
@@ -2876,18 +2961,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.5';
-const CURRENT_UPDATE_INFO={
-  title:'v3.1.5 — Daily Shop Refresh',
-  summary:'OUTLAST now has a working Daily Shop that rotates its offers every calendar day, tracks purchases correctly, and shows the next refresh countdown.',
-  items:[
-    'Fixed the Daily Shop so opening it always shows the current daily offers.',
-    'Daily offers now rotate automatically at local midnight instead of staying stuck on one set.',
-    'Expanded the shop pool and increased the daily selection to five rotating offers.',
-    'Purchases are tracked per day and automatically reset when the shop rotates.',
-    'Added a live countdown showing exactly how long remains until the next shop refresh.',
-    'The build marker, update popup, and current version are synchronized to v3.1.5.'
-  ]};
+const CURRENT_UPDATE_VERSION='3.1.6';
+const CURRENT_UPDATE_INFO={title:'v3.1.6 — Daily Shop Rework',summary:'The Daily Shop has been rebuilt with a new rotating stock system, clearer offers, daily purchase tracking, and a live reset timer.',items:['Rebuilt the Daily Shop interface from scratch.','Six offers are selected deterministically for each calendar day and remain stable until the next reset.','Expanded the offer pool so the daily selection can actually change from day to day.','Each offer can only be purchased once per day, with purchases resetting on the next daily refresh.','Added category tags, offer numbering, clearer rewards, and a live countdown to the next reset.','Updated the build marker and update popup to v3.1.6.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

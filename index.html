@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.2">
-<title>OUTLAST v3.1.2</title>
+<meta name="build-version" content="3.1.3">
+<title>OUTLAST v3.1.3</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -169,6 +169,152 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 @media(max-width:760px){#mobileAvatarPreview{display:block}}
 </style>
 <style id="feedback-button-hotfix">.feedback-choice-btn{position:relative;z-index:5;pointer-events:auto!important;touch-action:manipulation;cursor:pointer}.feedback-submit-btn{position:relative;z-index:5;pointer-events:auto!important;touch-action:manipulation;cursor:pointer}.feedback-choice-btn *, .feedback-submit-btn *{pointer-events:none!important}</style>
+
+<style id="outlast-v313-blacksite-ui">
+/* OUTLAST v3.1.3 — BLACKSITE UI OVERHAUL */
+#menu{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(43,108,255,.10),transparent 30%),
+    radial-gradient(circle at 90% 75%,rgba(0,220,180,.07),transparent 28%),
+    linear-gradient(135deg,#05080c 0%,#0a1017 48%,#05080c 100%) !important;
+}
+#menu .main-menu-card{
+  width:min(1220px,97vw);max-width:none;max-height:94vh;padding:0;overflow:hidden;
+  background:linear-gradient(145deg,rgba(10,16,23,.98),rgba(5,9,14,.98));
+  border:1px solid #26384a;border-radius:18px;
+  box-shadow:0 30px 100px rgba(0,0,0,.65);
+}
+#menu .menu-shell{
+  display:grid;grid-template-columns:218px minmax(0,1fr);gap:0;min-height:680px;
+}
+#menu .menu-side{
+  padding:18px 12px;background:linear-gradient(180deg,#0b141d,#070d13);
+  border:0;border-right:1px solid #243545;border-radius:0;
+  display:flex;flex-direction:column;gap:12px;
+}
+#menu .menu-side-title{
+  display:block;padding:4px 10px 16px;font-size:17px;font-weight:900;
+  letter-spacing:.22em;color:#e8f5ff;
+  border-bottom:1px solid #203140;
+}
+#menu .menu-side-title:after{
+  content:"BLACKSITE // COMMAND";display:block;margin-top:7px;
+  font-size:8px;letter-spacing:.18em;color:#5f8199;font-weight:700;
+}
+#menu .menu-nav{display:flex;flex-direction:column;gap:6px}
+#menu .menu-nav-btn{
+  width:100%;min-width:0;margin:0;text-align:left;padding:13px 12px;
+  border-radius:8px;border:1px solid transparent;background:transparent;
+  color:#8197a9;box-shadow:none;font-size:13px;letter-spacing:.06em;
+  text-transform:uppercase;transition:.16s ease;
+}
+#menu .menu-nav-btn:before{content:"// ";color:#3f6279}
+#menu .menu-nav-btn:hover{background:#101d28;border-color:#263d4f;color:#dcecf8;transform:none}
+#menu .menu-nav-btn.active{
+  color:#fff;background:linear-gradient(90deg,#163b58,#102330);
+  border-color:#2e6c94;box-shadow:inset 3px 0 #64c7ff,0 8px 20px rgba(0,0,0,.18);
+}
+#menu .menu-side-bottom{
+  margin-top:auto;padding:12px 8px 0;border-top:1px solid #203140;
+  color:#526b7d;font-size:9px;line-height:1.6;
+}
+#menu .menu-main{padding:0;min-width:0;overflow:auto}
+#menu .menu-topbar{
+  position:relative;margin:0;padding:22px 26px 18px;
+  border-bottom:1px solid #243545;background:#09121a;
+  align-items:center;
+}
+#menu .menu-topbar:before{
+  content:"SYSTEM ONLINE";position:absolute;right:26px;bottom:7px;
+  font-size:8px;letter-spacing:.18em;color:#49c59d;
+}
+#menu .menu-topbar .title{
+  font-size:48px;letter-spacing:.13em;line-height:.95;
+  text-shadow:0 0 28px rgba(70,170,255,.18);
+}
+#menu .menu-topbar .subtitle{
+  margin-top:7px!important;font-size:11px;letter-spacing:.16em;color:#6e899d;
+}
+#menu .menu-chip{
+  border-radius:6px;background:#0d1821;border:1px solid #294255;
+  color:#9db5c7;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+}
+#menu #menuSummary{
+  margin:0;padding:11px 26px;border-bottom:1px solid #172834;
+  background:#071018;color:#71899b;font-size:11px;
+}
+#menu .menu-page{padding:25px 26px 30px;animation:blacksiteIn .2s ease}
+@keyframes blacksiteIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+#menu .menu-page-title{
+  display:flex;align-items:center;gap:10px;font-size:27px;letter-spacing:.01em;
+  margin:0 0 5px;text-transform:uppercase;
+}
+#menu .menu-page-title:before{
+  content:"";width:4px;height:24px;background:#54c4ff;display:inline-block;
+}
+#menu .menu-page-sub{font-size:11px;letter-spacing:.05em;color:#61798b;margin-bottom:20px}
+#menu .quick-card{
+  position:relative;overflow:hidden;padding:24px;
+  background:linear-gradient(120deg,#0e202d,#0a151e);
+  border:1px solid #28506b;border-radius:10px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);
+}
+#menu .quick-card:after{
+  content:"RUN SEQUENCE // READY";
+  position:absolute;right:16px;top:12px;font-size:8px;letter-spacing:.15em;color:#4f748a;
+}
+#menu .hero-btn{
+  width:min(420px,100%);font-size:18px;padding:16px;border-radius:7px;
+  letter-spacing:.08em;text-transform:uppercase;
+}
+#menu .menu-cards{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;
+}
+#menu .menu-card{
+  position:relative;min-height:112px;padding:14px;
+  background:linear-gradient(145deg,#0d1720,#091119);
+  border:1px solid #213544;border-radius:8px;
+  overflow:hidden;
+}
+#menu .menu-card:before{
+  content:"";position:absolute;left:0;top:0;width:2px;height:100%;background:#294a60;
+}
+#menu .menu-card:hover{border-color:#31576f;background:#0f1c26}
+#menu .menu-card h3{
+  margin:0 0 10px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:#7893a6;
+}
+#menu .menu-card .menu-btn{
+  border-radius:6px;border:1px solid #2a4558;background:#101e28;
+  box-shadow:none;color:#d8e8f2;font-size:13px;padding:10px 11px;
+}
+#menu .menu-card .menu-btn:hover{background:#162a38;border-color:#3a6985;filter:none}
+#menu .menu-card .menu-btn.green,#menu .menu-card .menu-btn.gold{
+  border-color:#32745f;background:#10251f;
+}
+#menu .row[style*="margin:0 0 10px"]{padding:0 26px;margin:0!important;background:#071018}
+#menu #switchUserBtn{border-radius:6px!important;font-size:10px!important;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:900px){
+  #menu .menu-shell{grid-template-columns:1fr;min-height:0}
+  #menu .menu-side{border-right:0;border-bottom:1px solid #243545;padding:10px 12px;overflow:auto}
+  #menu .menu-side-title{display:none}
+  #menu .menu-nav{flex-direction:row;min-width:max-content}
+  #menu .menu-nav-btn{width:auto;min-width:108px;text-align:center}
+  #menu .menu-side-bottom{display:none}
+  #menu .menu-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  #menu .main-menu-card{width:100vw;max-width:100vw;max-height:100vh;border-radius:0;border-left:0;border-right:0}
+  #menu .menu-topbar{padding:18px 16px 20px}
+  #menu .menu-topbar .title{font-size:37px}
+  #menu .menu-chip{font-size:9px}
+  #menu .menu-page{padding:20px 16px 26px}
+  #menu .menu-cards{grid-template-columns:1fr}
+  #menu .quick-card{padding:20px 16px}
+  #menu .row[style*="margin:0 0 10px"]{padding:0 16px}
+  #menu .menu-nav-btn{min-width:96px;padding:11px 10px;font-size:11px}
+}
+</style>
 </head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
@@ -266,7 +412,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.0.0 • Gameplay & Systems Fixes</div>
+          <div class="menu-chip">v3.1.3 • BLACKSITE UI</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -2265,6 +2411,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.1.3 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
   ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],
   ['Version Display','Added the current game version to the main menu and Update Log.'],
   ['Menu Categories','Reorganized buttons into Play, Loadout, Systems, Progress, and More so features are easier to find.'],
@@ -2357,16 +2504,17 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.2';
+const CURRENT_UPDATE_VERSION='3.1.3';
 const CURRENT_UPDATE_INFO={
-  title:'v3.1.2 — Low-Level Run Leaderboard',
-  summary:'Leaderboard submission now runs for every normal run exit, including very early runs such as Level 2.',
+  title:'v3.1.3 — BLACKSITE UI Overhaul',
+  summary:'OUTLAST now has a completely refreshed Blacksite command UI with a new menu layout, visual hierarchy, and responsive mobile presentation.',
   items:[
-    'Leaderboard submission is now attempted when a player exits any normal run, even at low levels such as Level 2.',
-    'A run is still kept from replacing a player’s existing higher score, but the server is now contacted every time.',
-    'Very early runs with zero score are also accepted by the leaderboard server.',
-    'The admin panel lock routing fix from v3.1.1 remains included.',
-    'The build marker, update popup, and current version are synchronized to v3.1.2.'
+    'Rebuilt the main menu into a new Blacksite command interface instead of the previous card-heavy layout.',
+    'Introduced a new command-rail navigation system with clearer Play, Loadout, Systems, Progress, and More sections.',
+    'Refreshed the Play screen with a dedicated run-deployment panel and denser mission-control styling.',
+    'Redesigned menu cards, buttons, status elements, spacing, typography, borders, and transitions.',
+    'Added a responsive mobile presentation so the new interface remains usable on touch screens.',
+    'The build marker, update popup, and current version are synchronized to v3.1.3.'
   ]};
 function showUpdatePopup(force=false){
   let seen='';
@@ -3131,7 +3279,7 @@ document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.ta
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
-/* OUTLAST v3.1.2 — universal button controller */
+/* OUTLAST v3.1.3 — universal button controller */
 (function(){
   const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
   const routes={

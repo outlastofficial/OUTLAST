@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.7">
-<title>OUTLAST v3.1.7</title>
+<meta name="build-version" content="3.1.8">
+<title>OUTLAST v3.1.8</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -1817,64 +1817,38 @@ function spawnBoss(){
  ring(x,y,'#ffd86b',50,.8);burst(x,y,'#ffd86b',18,120);game.enemies.push({x,y,kind:'boss',hp,max:hp,speed:(42+game.level*1.7)*Math.pow(bossLevel,.22),r:42,damage:30*game.player.bossMult*Math.pow(bossLevel,1.08),xp:30+Math.floor(game.level*.8),shoot:Math.max(.7,2.2-game.level*.012),boss:true,phase:1,bossEmoji,summonTimer:7,summonCount:0});
  toast((raidDef?'♛ RAID: '+game.raidBoss+' — ':'')+bossEmoji+' BOSS INCOMING!');
 }
+const WEAPON_PROFILES={"Blaster":{"count":1,"speed":720,"size":6,"mult":1,"pierce":0},"TwinShot":{"count":2,"speed":740,"size":6,"mult":0.95,"pierce":0,"spread":0.08},"Lightning":{"count":1,"speed":820,"size":5,"mult":1.25,"pierce":1,"chain":3,"chainRadius":135,"chainMult":0.55},"OrbitBlades":{"count":3,"mode":"orbit","size":22,"mult":0.9,"orbitRadius":72},"Flame":{"count":1,"mode":"cone","mult":0.6,"cone":0.62,"range":195},"Boomerang":{"count":1,"speed":780,"size":8,"mult":1.15,"pierce":2,"returning":true,"returnDelay":0.42,"homing":0.05},"Shotgun":{"count":5,"speed":680,"size":6,"mult":0.72,"pierce":0,"spread":0.24},"Railgun":{"count":1,"speed":1220,"size":9,"mult":3,"pierce":7},"Plasma":{"count":1,"speed":660,"size":12,"mult":1.8,"pierce":1,"aoe":85,"aoeMult":0.7},"Chakram":{"count":1,"speed":900,"size":8,"mult":1.25,"pierce":3,"returning":true,"returnDelay":0.55,"homing":0.06},"Meteor":{"count":1,"speed":430,"size":17,"mult":4,"pierce":1,"aoe":110,"aoeMult":0.82,"homing":0.02},"Shuriken":{"count":6,"speed":1040,"size":5,"mult":0.82,"pierce":2,"spread":0.3},"RocketLauncher":{"count":1,"speed":540,"size":11,"mult":4,"pierce":0,"aoe":100,"aoeMult":0.78},"Laser":{"count":4,"mode":"instantTargets","mult":3.2},"FrostNova":{"count":1,"mode":"nova","mult":1.9,"range":215},"ChainGun":{"count":3,"speed":950,"size":4,"mult":0.74,"pierce":1,"spread":0.11},"GravityOrb":{"count":1,"speed":480,"size":15,"mult":2.2,"pierce":2,"slow":3,"aoe":38,"aoeMult":0.3},"DroneSwarm":{"count":2,"speed":430,"size":7,"mult":0.7,"pierce":1,"homing":0.07,"ttl":5.5,"drone":true},"MineLayer":{"count":2,"mode":"mine","size":14,"mult":2.8,"aoe":105,"aoeMult":0.9,"ttl":10,"trigger":64},"ArcBlade":{"count":4,"mode":"orbit","size":24,"mult":1,"orbitRadius":88},"ThunderStaff":{"count":5,"mode":"chain","mult":2.35,"chain":5,"chainRadius":155,"chainMult":0.62},"SoulCannon":{"count":1,"speed":650,"size":12,"mult":2.6,"pierce":4,"lifesteal":0.1,"aoe":55,"aoeMult":0.45},"StarRifle":{"count":1,"speed":1250,"size":7,"mult":2.35,"pierce":6},"VoidLauncher":{"count":1,"speed":700,"size":13,"mult":2.8,"pierce":2,"aoe":125,"aoeMult":0.72},"StormBow":{"count":2,"speed":1050,"size":6,"mult":1.15,"pierce":2,"spread":0.1,"chain":2,"chainRadius":145,"chainMult":0.5},"PulseCannon":{"count":1,"speed":830,"size":14,"mult":4.3,"pierce":1,"aoe":115,"aoeMult":1.35},"OmegaBlade":{"count":5,"mode":"orbit","size":27,"mult":1.45,"orbitRadius":96},"WastelandBow":{"count":2,"speed":760,"size":8,"mult":2.35,"pierce":2,"spread":0.12,"aoe":95,"aoeMult":0.72},"NovaCannon":{"count":1,"speed":570,"size":19,"mult":5.2,"pierce":1,"aoe":145,"aoeMult":1.1},"RiftBlade":{"count":1,"speed":1080,"size":10,"mult":3,"pierce":10,"bossMult":1.6}};
+function weaponCount(p,profile,weapon){
+  const base=Math.max(1,Number(profile.count)||1),multi=Math.max(0,Math.floor(Number(p.multiShot)||0)),level=Math.max(0,Math.floor(Number(save.weaponLevels?.[weapon])||0));
+  return Math.max(1,base+multi+Math.floor(level/2)+(save.weaponEvolutions?.[weapon]?1:0));
+}
+function weaponDamage(p,profile){
+  let mult=Number(profile.mult)||1;const evo=save.weaponEvolutions?.[save.selectedWeapon];
+  if(evo==='Thunderstorm')mult*=1.45;if(evo==='Inferno')mult*=1.35;if(evo==='Glacier')mult*=1.25;if(evo==='Plasma Overdrive')mult*=1.5;if(evo==='Shadow Shuriken')mult*=1.15;if(evo==='Missile Barrage')mult*=1.2;
+  return Math.max(1,p.damage*mult*(1+(p.tempDamage||0)/Math.max(1,p.damage)));
+}
+function fireProjectile(p,ang,weapon,profile){
+  if(game.bullets.length>=MAX_BULLETS)return;
+  game.bullets.push({x:p.x,y:p.y,a:ang,vx:Math.cos(ang)*(profile.speed||720),vy:Math.sin(ang)*(profile.speed||720),r:(profile.size||6)*(p.bulletSize||1),dmg:weaponDamage(p,profile),hits:0,type:weapon,pierce:(Number(p.pierce)||0)+(profile.pierce||0),aoe:profile.aoe||0,aoeMult:profile.aoeMult||0,chain:profile.chain||0,chainRadius:profile.chainRadius||0,chainMult:profile.chainMult||0,slow:profile.slow||0,lifesteal:profile.lifesteal||0,homing:profile.homing||0,returning:!!profile.returning,returnDelay:profile.returnDelay||0,ttl:profile.ttl||0,drone:!!profile.drone,bossMult:profile.bossMult||0,spawnTime:game.time,returningNow:false});
+}
+function runWeaponSpecial(p,ang,weapon,profile,count){
+  if(profile.mode==='orbit'){for(let k=0;k<count;k++){const a=game.time*2.2+k*Math.PI*2/count,radius=profile.orbitRadius||80,x=p.x+Math.cos(a)*radius,y=p.y+Math.sin(a)*radius;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(!e||e.__dead)continue;if(Math.hypot(e.x-x,e.y-y)<e.r+(profile.size||20)){damageEnemy(e,p.damage*(profile.mult||1));applyElement(e);if(e.hp<=0)killEnemy(e);}}game.effects.push({x,y,t:.13,r:profile.size||20});}return;}
+  if(profile.mode==='cone'){for(let c=0;c<count;c++){const ca=ang+(c-(count-1)/2)*.13;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(!e||e.__dead)continue;const d=Math.hypot(e.x-p.x,e.y-p.y),ea=Math.atan2(e.y-p.y,e.x-p.x),diff=Math.atan2(Math.sin(ea-ca),Math.cos(ea-ca));if(d<(profile.range||190)&&Math.abs(diff)<(profile.cone||.6)){damageEnemy(e,p.damage*(profile.mult||.6));e.burn=Math.max(e.burn||0,2);applyElement(e);if(e.hp<=0)killEnemy(e);}}}return;}
+  if(profile.mode==='instantTargets'){const targets=game.enemies.filter(e=>!e.__dead&&Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,Math.max(1,count));targets.forEach(e=>{damageEnemy(e,weaponDamage(p,profile));applyElement(e);game.effects.push({x:e.x,y:e.y,t:.28,r:18});if(e.hp<=0)killEnemy(e);});return;}
+  if(profile.mode==='nova'){const radius=(profile.range||215)+Math.min(120,Math.max(0,count-1)*12);for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(!e||e.__dead)continue;if(Math.hypot(e.x-p.x,e.y-p.y)<radius){damageEnemy(e,p.damage*(profile.mult||1.9));applyElement(e);e.slowTimer=Math.max(e.slowTimer||0,3);if(e.hp<=0)killEnemy(e);}}game.effects.push({x:p.x,y:p.y,t:.48,r:radius});return;}
+  if(profile.mode==='chain'){const pool=game.enemies.filter(e=>!e.__dead&&Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y));pool.slice(0,Math.max(1,count)).forEach((e,idx)=>{damageEnemy(e,p.damage*(profile.mult||2.2)*Math.pow(profile.chainMult||.62,idx*.22));applyElement(e);game.effects.push({x:e.x,y:e.y,t:.24,r:18});if(e.hp<=0)killEnemy(e);});return;}
+  if(profile.mode==='mine'){for(let k=0;k<count;k++){const off=k-(count-1)/2,mx=Math.max(24,Math.min(W-24,p.x+Math.cos(ang)*40+Math.cos(ang+Math.PI/2)*off*22)),my=Math.max(24,Math.min(H-24,p.y+Math.sin(ang)*40+Math.sin(ang+Math.PI/2)*off*22));if(game.bullets.length<MAX_BULLETS)game.bullets.push({x:mx,y:my,vx:0,vy:0,a:0,r:profile.size||14,dmg:weaponDamage(p,profile),hits:0,type:weapon,pierce:99,mine:true,ttl:profile.ttl||10,trigger:profile.trigger||64,aoe:profile.aoe||105,aoeMult:profile.aoeMult||.9});}}
+}
 function shoot(){
- const p=game.player;game.gunfireAlert=1.1;if(!p)return;
- if(save.mode==='1v1 Arena'&&game.player2){return shootPvP(1)}let best=null,bd=p.range;for(const e of game.enemies){let d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;best=e}}
- if(!best)return;const ang=Math.atan2(best.y-p.y,best.x-p.x),weapon=save.selectedWeapon;
- sendRoomPlayerShoot(p.x,p.y,ang,weapon);
- let count=1+(p.multiShot||0),spread=.16,speed=720,size=6,mult=1,pierce=p.pierce;
- const weaponLevel=Math.max(0,Math.floor(Number(save.weaponLevels?.[weapon])||0));
- count+=Math.floor(weaponLevel/2);
- mult*=1+((p.tempDamage||0)/Math.max(1,p.damage));
- const evo=save.weaponEvolutions?.[weapon]; if(evo==='Thunderstorm')mult*=1.45; if(evo==='Inferno')mult*=1.35; if(evo==='Glacier')mult*=1.25; if(evo==='Plasma Overdrive')mult*=1.5; if(evo==='Shadow Shuriken')pierce+=3; if(evo==='Missile Barrage')count+=1;
- if(weapon==='TwinShot'){count=Math.max(count,2)}
- if(weapon==='Shotgun'){count=Math.max(count,5);spread=.18;mult=.72}
- if(weapon==='PulseCannon'){count=Math.max(count,1);spread=.12;speed=820;size=14;mult=4.2}
- if(weapon==='Railgun'){speed=1100;size=9;mult=2.8;pierce=p.pierce+5}
- if(weapon==='Plasma'){speed=600;size=12;mult=1.6}
- if(weapon==='Chakram'){speed=900;size=8;mult=1.15}
- if(weapon==='Meteor'){speed=380;size=18;mult=3.5}
- if(weapon==='Shuriken'){count=Math.max(count,6);spread=.30;speed=980;size=5;mult=.82;pierce=p.pierce+1}
- if(weapon==='RocketLauncher'){speed=520;size=11;mult=3.8}
- if(weapon==='ChainGun'){count=Math.max(count,3);spread=.10;speed=900;size=4;mult=.72}
- if(weapon==='GravityOrb'){speed=460;size=15;mult=2.1}
- if(weapon==='PulseCannon'){speed=820;size=14;mult=4.2;spread=.12}
- // Special weapons also respect every Multi-Shot level instead of ignoring it.
- const multiBonus=Math.max(0,Number(p.multiShot)||0);
- if(weapon==='OrbitBlades'){}
- if(!['Laser','FrostNova'].includes(weapon)){const shotsToFire=count+(p.doubleTap&&Math.random()<.20?1:0);for(let i=0;i<shotsToFire;i++){let a=ang+(i-(shotsToFire-1)/2)*spread;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult)?Math.max(1,p.damage*mult):Math.max(1,p.damage||1),hits:0,type:weapon,pierce});}} if(!['Laser','FrostNova'].includes(weapon)){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
- if(weapon==='Laser'){const targets=game.enemies.filter(e=>Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,Math.min(game.enemies.length,4+Math.max(0,Math.floor(p.multiShot||0))));targets.forEach(e=>{damageEnemy(e,p.damage*3.2);applyElement(e);game.effects.push({x:e.x,y:e.y,t:.35,r:18});if(e.hp<=0)killEnemy(e)});}
- if(weapon==='FrostNova'){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(e.x-p.x,e.y-p.y)<210){damageEnemy(e,p.damage*1.9);applyElement(e);e.burn=Math.max(e.burn||0,0);e.slowTimer=3;if(e.hp<=0)killEnemy(e)}}game.effects.push({x:p.x,y:p.y,t:.45,r:210})}
- // Lightning is projectile-count driven; no extra chain shots are spawned here.
- if(weapon==='OrbitBlades'){for(let k=0;k<3+Math.max(0,Number(p.multiShot)||0);k++){let a=game.time*2+k*Math.PI*2/3;let x=p.x+Math.cos(a)*70,y=p.y+Math.sin(a)*70;game.effects.push({x,y,t:.15,r:22});for(let j=game.enemies.length-1;j>=0;j--){let e=game.enemies[j];if(Math.hypot(e.x-x,e.y-y)<e.r+22){damageEnemy(e,p.damage*.8);if(e.hp<=0)killEnemy(e)}}}}
- if(weapon==='Flame'){const flameBursts=1+Math.floor((Math.max(0,Number(p.multiShot)||0))/2);for(let fb=0;fb<flameBursts;fb++){const fa=ang+(fb-(flameBursts-1)/2)*.12;for(const e of game.enemies){let d=Math.hypot(e.x-p.x,e.y-p.y);let a=Math.atan2(e.y-p.y,e.x-p.x);let diff=Math.atan2(Math.sin(a-ang),Math.cos(a-ang));if(d<190&&Math.abs(diff)<.6){damageEnemy(e,p.damage*.55);e.burn=2}}}}
+ const p=game.player;game.gunfireAlert=1.1;if(!p)return;if(save.mode==='1v1 Arena'&&game.player2)return shootPvP(1);
+ let best=null,bd=p.range;for(const e of game.enemies){if(e.__dead)continue;const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;best=e}}if(!best)return;
+ const ang=Math.atan2(best.y-p.y,best.x-p.x),weapon=save.selectedWeapon,profile=WEAPON_PROFILES[weapon]||WEAPON_PROFILES.Blaster,count=weaponCount(p,profile,weapon);sendRoomPlayerShoot(p.x,p.y,ang,weapon);
+ if(profile.mode)runWeaponSpecial(p,ang,weapon,profile,count);else{const spread=profile.spread||0;for(let i=0;i<count;i++)fireProjectile(p,ang+(i-(count-1)/2)*spread,weapon,profile);}
+ const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22,wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff',PulseCannon:'#d65cff',NovaCannon:'#ffe49c',RiftBlade:'#7f7bff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5+Math.min(8,count),70);
 }
 function shootPvP(owner){
- const p=owner===1?game.player:game.player2,target=owner===1?game.player2:game.player;
- if(!p||!target)return;
- const ang=Math.atan2(target.y-p.y,target.x-p.x),weapon=save.selectedWeapon;
- let count=1,spread=.16,speed=720,size=6,mult=1,pierce=p.pierce||0;
- count+=Math.max(0,Number(p.multiShot)||0);
- if(weapon==='TwinShot')count=Math.max(count,2);
- if(weapon==='Shotgun'){count=Math.max(count,5);spread=.18;mult=.72}
- if(weapon==='Railgun'){speed=1100;size=9;mult=2.8;pierce+=5}
- if(weapon==='Plasma'){speed=600;size=12;mult=1.6}
- if(weapon==='Chakram'){speed=900;size=8;mult=1.15}
- if(weapon==='Meteor'){speed=380;size=18;mult=3.5}
- if(weapon==='Shuriken'){count=Math.max(count,6);spread=.30;speed=980;size=5;mult=.82;pierce+=1}
- if(weapon==='RocketLauncher'){speed=520;size=11;mult=3.8}
- if(weapon==='ChainGun'){count=Math.max(count,3);spread=.10;speed=900;size=4;mult=.72}
- if(weapon==='GravityOrb'){speed=460;size=15;mult=2.1}
- if(p.doubleTap&&Math.random()<.20)count++;
- for(let i=0;i<count;i++){
-   const a=ang+(i-(count-1)/2)*spread;
-   if(game.bullets.length<MAX_BULLETS)game.bullets.push({
-     x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,
-     r:size*(p.bulletSize||1),dmg:Math.max(1,p.damage*mult),hits:0,
-     type:weapon,pierce:pierce,pvp:true,owner:owner
-   });
- }
- game.gunfireAlert=1.1;
+ const p=owner===1?game.player:game.player2,target=owner===1?game.player2:game.player;if(!p||!target)return;const weapon=save.selectedWeapon,profile=WEAPON_PROFILES[weapon]||WEAPON_PROFILES.Blaster;if(profile.mode)return;
+ const ang=Math.atan2(target.y-p.y,target.x-p.x),count=weaponCount(p,profile,weapon);for(let i=0;i<count;i++){if(game.bullets.length>=MAX_BULLETS)break;const a=ang+(i-(count-1)/2)*(profile.spread||0);game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*(profile.speed||720),vy:Math.sin(a)*(profile.speed||720),r:(profile.size||6)*(p.bulletSize||1),dmg:Math.max(1,p.damage*(profile.mult||1)),hits:0,type:weapon,pierce:(p.pierce||0)+(profile.pierce||0),pvp:true,owner});}game.gunfireAlert=1.1;
 }
 function useUltimate(){const p=game.player;if(!p||p.ult<100)return;p.ult=0;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];damageEnemy(e,120*(p.ultDamage||1));if(e.hp<=0)killEnemy(e)}game.effects.push({x:p.x,y:p.y,t:.7,r:180})}
 function damageEnemy(e,dmg){if(!e||!game.player||!Number.isFinite(dmg))return;let crit=Math.random()<Math.min(.95,game.player.crit);if(crit)dmg*=game.player.critMult;if(e.boss)dmg*=game.player.bossMult;if(e.kind==='elite')dmg*=1+.03*(save.upgrades.Executioner||0);if(game.player.armorPierce)dmg*=1+game.player.armorPierce;e.hp-=Math.max(0,dmg);e.hitFlash=.12;burst(e.x,e.y,crit?'#fff08a':'#ff7b6e',crit?8:2,crit?80:55);if(crit)ring(e.x,e.y,'#fff08a',24,.22);if(game.player&&game.player===game.player2){}if(dmg>(save.records.bestDamage||0))save.records.bestDamage=dmg;game.shots.push({x:e.x,y:e.y,text:Math.floor(dmg),t:.5,crit})}
@@ -2022,8 +1996,23 @@ if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game
  if(save.mode!=='1v1 Arena'&&game.bossClock>=game.stats.bossEvery){game.bossClock=0;spawnBoss()}
  // Power-ups no longer spawn randomly in the world; they come from enemy drops/events.
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
- for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.pvp){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.pvpWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
-for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.lootLuck||0)*.003))e.slowTimer=1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='PulseCannon'){for(let pi=game.enemies.length-1;pi>=0;pi--){if(pi===j)continue;const q=game.enemies[pi];if(Math.hypot(q.x-b.x,q.y-b.y)<115){damageEnemy(q,p.damage*1.35);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.42,r:115});burst(b.x,b.y,'#d65cff',14,130);}if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>p.pierce)break}}if((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
+ for(let i=game.bullets.length-1;i>=0;i--){
+  const b=game.bullets[i];if(!b||b.enemy)continue;if(b.ttl){b.ttl-=dt;if(b.ttl<=0){game.bullets.splice(i,1);continue;}}
+  if(b.mine){let trigger=false;for(const e of game.enemies){if(!e.__dead&&Math.hypot(e.x-b.x,e.y-b.y)<(b.trigger||64)){trigger=true;break;}}if(trigger){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(!e||e.__dead)continue;if(Math.hypot(e.x-b.x,e.y-b.y)<(b.aoe||105)){damageEnemy(e,b.dmg*(b.aoeMult||.9));applyElement(e);if(e.hp<=0)killEnemy(e);}}game.effects.push({x:b.x,y:b.y,t:.4,r:b.aoe||105});burst(b.x,b.y,'#ffb347',16,130);game.bullets.splice(i,1);}continue;}
+  if(b.returning&&!b.returningNow&&game.time-b.spawnTime>(b.returnDelay||.5))b.returningNow=true;
+  if(b.returningNow&&game.player){const dx=game.player.x-b.x,dy=game.player.y-b.y,d=Math.hypot(dx,dy)||1,sp=Math.max(520,Math.hypot(b.vx,b.vy));b.vx+=(dx/d*sp-b.vx)*Math.min(1,dt*4.5);b.vy+=(dy/d*sp-b.vy)*Math.min(1,dt*4.5);if(d<26){game.bullets.splice(i,1);continue;}}
+  else if(b.homing&&game.enemies.length){let target=null,td=260;for(const e of game.enemies){if(e.__dead)continue;const d=Math.hypot(e.x-b.x,e.y-b.y);if(d<td){td=d;target=e}}if(target){const dx=target.x-b.x,dy=target.y-b.y,d=Math.hypot(dx,dy)||1,sp=Math.hypot(b.vx,b.vy);b.vx+=(dx/d*sp-b.vx)*Math.min(1,b.homing*60*dt);b.vy+=(dy/d*sp-b.vy)*Math.min(1,b.homing*60*dt);b.a=Math.atan2(b.vy,b.vx);}}
+  b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){if(b.returning&&!b.returningNow)b.returningNow=true;else game.bullets.splice(i,1);continue;}
+  if(save.mode==='1v1 Arena'&&game.player2&&b.pvp){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.pvpWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue;}}
+  let hit=false;
+  for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(!e||e.__dead)continue;if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){
+    let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.lootLuck||0)*.003))e.slowTimer=1.5;if(b.slow)e.slowTimer=Math.max(e.slowTimer||0,b.slow);if(b.lifesteal)p.hp=Math.min(p.max,p.hp+Math.max(.2,dmg*b.lifesteal));
+    if(b.aoe){for(let k=game.enemies.length-1;k>=0;k--){const q=game.enemies[k];if(!q||q===e||q.__dead)continue;if(Math.hypot(q.x-b.x,q.y-b.y)<b.aoe){damageEnemy(q,p.damage*(b.aoeMult||.5));applyElement(q);if(q.hp<=0)killEnemy(q);}}game.effects.push({x:b.x,y:b.y,t:.4,r:b.aoe});burst(b.x,b.y,'#d65cff',12,120);}
+    if(b.chain){let source=e,used=[e];for(let ci=0;ci<b.chain;ci++){let next=null,nd=b.chainRadius||140;for(const q of game.enemies){if(!q||q.__dead||used.includes(q))continue;const d=Math.hypot(q.x-source.x,q.y-source.y);if(d<nd){nd=d;next=q}}if(!next)break;damageEnemy(next,p.damage*(b.chainMult||.55));applyElement(next);game.effects.push({x:next.x,y:next.y,t:.18,r:14});used.push(next);source=next;if(next.hp<=0)killEnemy(next);}}
+    b.hits++;hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>(b.pierce||0)&&!b.returning)break;
+  }}
+  if((hit&&b.hits>(b.pierce||0)&&!b.returning)||b.x<-140||b.x>W+140||b.y<-140||b.y>H+140){if(b.returning&&!b.returningNow)b.returningNow=true;else game.bullets.splice(i,1);}
+}
  for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1,slow=p.frost&&d<130?.5:1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}const nearby=game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const enx=e.x+ex/d*e.speed*slow*squadBoost*dt,eny=e.y+ey/d*e.speed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if(e.kind==='boss'){e.summonTimer=(e.summonTimer||7)-dt;if(e.summonTimer<=0){e.summonTimer=e.phase===2?5.5:8;const count=e.phase===2?4:3;for(let si=0;si<count;si++){const ang=Math.random()*Math.PI*2,rad=55+Math.random()*35;spawnEnemy(Math.random()<.35?'runner':(Math.random()<.5?'ranged':'zombie'));const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){m.x=Math.max(24,Math.min(W-24,e.x+Math.cos(ang)*rad));m.y=Math.max(24,Math.min(H-24,e.y+Math.sin(ang)*rad));m.summoned=true;}}burst(e.x,e.y,'#ff8a5b',12,130);toast('⚠ BOSS SUMMONED '+count+' MINIONS!');}}if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*(p.shield>0?Math.max(.05,.15/p.shieldEfficiency):1)*p.damageTakenMult;p.hp-=actual*dt;p.shield=Math.max(0,p.shield-dt)}}
  // Safety cleanup: never render or process an enemy that has already been killed.
  for(let i=game.enemies.length-1;i>=0;i--){const e=game.enemies[i];if(!e||e.__dead||e.hp<=0){if(e&&!e.__dead)killEnemy(e);else game.enemies.splice(i,1);}}
@@ -2975,8 +2964,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.7';
-const CURRENT_UPDATE_INFO={title:'v3.1.7 — Boss Loot & Weapon Fixes',summary:'Bosses now drop reward loot, Multi-Shot works across special weapons, and Pulse Cannon has been rebuilt with reliable projectile and impact behavior.',items:['Bosses now drop a guaranteed bundle of power-ups when defeated.','Bosses can also drop a bonus coin cache.','Multi-Shot upgrades now affect special weapon attacks instead of being ignored by certain guns.','Pulse Cannon now fires as a dedicated high-speed plasma projectile with higher impact damage and an area blast.','Pulse Cannon impacts now have a visible purple explosion effect and damage nearby enemies.','Updated the build marker and update popup to v3.1.7.']};
+const CURRENT_UPDATE_VERSION='3.1.8';
+const CURRENT_UPDATE_INFO={title:'v3.1.8 — Complete Weapon Rework',summary:'Every OUTLAST weapon now uses a unified weapon system with real weapon-specific behavior, reliable Multi-Shot scaling, and working special attacks.',items:['Reworked all 30 weapons so every gun has dedicated firing behavior instead of falling back to a generic projectile.','Multi-Shot now increases actual attack count for projectile, blade, mine, chain, cone, and target-based weapons.','Fixed Boomerang and Chakram returning, explosive weapon impacts, Gravity Orb slowing, and high-tier weapon behaviors.','Added working Drone Swarm, Mine Layer, Arc Blade, Thunder Staff, Soul Cannon, Storm Bow, Wasteland Bow, Nova Cannon, and Rift Blade behavior.','Laser, Frost Nova, Orbit Blades, Arc Blade, Omega Blade, Thunder Staff, and other special weapons now scale from the same weapon profile system.','Updated the build marker and update popup to v3.1.8.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

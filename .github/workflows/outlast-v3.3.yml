@@ -24,7 +24,7 @@ jobs:
               if marker in s: s=s.replace(marker,tag+'\n'+marker,1)
               else: s += '\n'+tag+'\n'
           import re
-          s=re.sub(r'(<meta[^>]+name=["\']build-version["\'][^>]+content=["\'])[^"\']+(["\'])',r'\\g<1>3.3.0\\g<2>',s,count=1)
+          s=re.sub(r'(<meta[^>]+name=["\']build-version["\'][^>]+content=["\'])[^"\']+(["\'])',r'\g<1>3.3.0\g<2>',s,count=1)
           s=re.sub(r'<title>OUTLAST v[^<]+</title>', '<title>OUTLAST v3.3.0</title>', s,count=1)
           p.write_text(s,encoding='utf-8')
           PY

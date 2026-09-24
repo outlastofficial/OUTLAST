@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.9">
-<title>OUTLAST v3.1.9</title>
+<meta name="build-version" content="3.2.0">
+<title>OUTLAST v3.2.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -863,7 +863,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div><div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div><div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
             <div class="menu-card"><h3>Settings</h3><button class="menu-btn" id="settingsNewBtn">⚙️ Settings</button></div>
-            <div class="menu-card"><h3>Discord</h3><button class="menu-btn" id="discordBtn" type="button">💬 Join the OUTLAST Discord</button></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
+            <div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
             
           </div>
         </section>
@@ -1286,6 +1286,21 @@ const weapons={
   NovaCannon:{cost:75000,desc:'Starburst energy cannon'},
   RiftBlade:{cost:90000,desc:'Void blade that tears through elites'}
 };
+const DAMAGE_WEAPON_NAMES=new Set(['Blaster','TwinShot','Lightning','OrbitBlades','Flame','Boomerang','Shotgun','Railgun','Plasma','Chakram','Meteor','Shuriken','RocketLauncher','Laser','FrostNova','ChainGun','GravityOrb','DroneSwarm','MineLayer','ArcBlade','ThunderStaff','SoulCannon','StarRifle','VoidLauncher','StormBow','PulseCannon','OmegaBlade','WastelandBow','NovaCannon','RiftBlade']);
+for(const n of Object.keys(weapons)){
+  if(!DAMAGE_WEAPON_NAMES.has(n))delete weapons[n];
+}
+function sanitizeWeaponState(){
+  if(!save||typeof save!=='object')return;
+  save.unlockedWeapons=save.unlockedWeapons&&typeof save.unlockedWeapons==='object'?save.unlockedWeapons:{};
+  save.weaponLevels=save.weaponLevels&&typeof save.weaponLevels==='object'?save.weaponLevels:{};
+  save.weaponEvolutions=save.weaponEvolutions&&typeof save.weaponEvolutions==='object'?save.weaponEvolutions:{};
+  for(const n of Object.keys(save.unlockedWeapons))if(!DAMAGE_WEAPON_NAMES.has(n))delete save.unlockedWeapons[n];
+  for(const n of Object.keys(save.weaponLevels))if(!DAMAGE_WEAPON_NAMES.has(n))delete save.weaponLevels[n];
+  for(const n of Object.keys(save.weaponEvolutions))if(!DAMAGE_WEAPON_NAMES.has(n))delete save.weaponEvolutions[n];
+  if(!DAMAGE_WEAPON_NAMES.has(save.selectedWeapon)||!weapons[save.selectedWeapon])save.selectedWeapon='Blaster';
+  save.unlockedWeapons.Blaster=true;
+}
 const weaponEvolutionsV3={Lightning:{name:'Thunderstorm',requires:['Lightning','Chain Reaction'],level:8,desc:'Lightning projectiles gain a bright chain arc and +45% damage.'},Flame:{name:'Inferno',requires:['Flame','Explosion'],level:8,desc:'Fire projectiles burn longer.'},FrostNova:{name:'Glacier',requires:['FrostNova','Frost Aura'],level:8,desc:'Freezing attacks gain +40% area.'},Plasma:{name:'Plasma Overdrive',requires:['Plasma','Big Bullets'],level:8,desc:'Plasma shots deal +50% damage.'},Shuriken:{name:'Shadow Shuriken',requires:['Shuriken','Piercing'],level:8,desc:'Shurikens pierce +3 targets.'},RocketLauncher:{name:'Missile Barrage',requires:['RocketLauncher','Multi-Shot'],level:8,desc:'Rockets gain +1 projectile.'}};
 const extraPermanent=[['Executioner','+3% damage vs elites',900],['Treasure Sense','+10% chest chance',650],['Overdrive','+8% ultimate damage',750],['Pet Training','+10% pet bonuses',800],['Relic Mastery','+8% relic bonuses',850],['Charm Mastery','+8% charm bonuses',850],['Forge Mastery','-10% forge costs',700],['Lucky Case','Better skin-case odds',900],['Scavenger','More pickups',700],['Surgeon','More lifesteal',950],['Fleet Foot','+5% movement speed',1000],['Vital Flow','+4% regeneration',1050],['Shield Core','+4% shield efficiency',1100],['Ammo Recycler','+6% fire rate',1150],['Impact Training','+5% projectile damage',1200],['Wavebreaker','+4% wave reward',1250]];
 const permanent=[
@@ -1529,6 +1544,7 @@ function loadDeviceSave(username){
 
 function persist(){
   ensureMegaSave();
+  try{sanitizeWeaponState();}catch(_){}
   try{
     outlastStorage.setItem(DEVICE_SAVE_KEY,JSON.stringify(save));
     if(currentUsername) outlastStorage.setItem(USERNAME_KEY,currentUsername);
@@ -1539,6 +1555,7 @@ save=freshSave();
 try{currentUsername=outlastStorage.getItem(USERNAME_KEY)||'';}catch(_){currentUsername='';}
 save=currentUsername?loadDeviceSave(currentUsername):freshSave();
 ensureMegaSave();
+sanitizeWeaponState();
 if(currentUsername){
   const login=document.getElementById('loginPopup');
   const input=document.getElementById('usernameInput');
@@ -3036,8 +3053,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.9';
-const CURRENT_UPDATE_INFO={title:'v3.1.9 — Weapon Cleanup & Discord',summary:'Removed obsolete/non-damage weapons and hardened the weapon system so only damage-capable weapons can be selected.',items:['Removed the obsolete Plus Cannon from old saves and weapon state.','Only the current damage-capable weapon catalog can appear in the weapon menu.','Old saves automatically fall back to the Blaster if they reference a removed or invalid weapon.','Kept the OUTLAST Discord button in the More menu with the current invite link.','Fixed two pre-existing JavaScript errors that could prevent game systems from initializing.','Updated the build marker and update popup to v3.1.9.']};
+const CURRENT_UPDATE_VERSION='3.2.0';
+const CURRENT_UPDATE_INFO={title:'v3.2.0 — Damage-Only Weapons',summary:'Removed non-damage weapons from saved weapon state and kept the weapon catalog damage-focused. The OUTLAST Discord link is now a direct link button.',items:['Removed Plus Cannon and any unknown/non-damage weapon IDs from saved weapon unlocks, levels, and evolutions.','Only the approved damage-dealing weapon catalog can remain equipped or unlocked.','Old saves automatically fall back to Blaster if they reference a removed weapon.','The OUTLAST Discord button is now a direct link to https://discord.gg/bCMdZfggQ.','Updated the build marker and update popup to v3.2.0.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.1.8">
-<title>OUTLAST v3.1.8</title>
+<meta name="build-version" content="3.1.9">
+<title>OUTLAST v3.1.9</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -863,7 +863,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div><div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div><div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
             <div class="menu-card"><h3>Settings</h3><button class="menu-btn" id="settingsNewBtn">⚙️ Settings</button></div>
-            <div class="menu-card"><h3>Discord</h3><button class="menu-btn" id="discordBtn">💬 Join the OUTLAST Discord</button></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
+            <div class="menu-card"><h3>Discord</h3><button class="menu-btn" id="discordBtn" type="button">💬 Join the OUTLAST Discord</button></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
             
           </div>
         </section>
@@ -1881,18 +1881,77 @@ function shootPvP(owner){
 function useUltimate(){const p=game.player;if(!p||p.ult<100)return;p.ult=0;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];damageEnemy(e,120*(p.ultDamage||1));if(e.hp<=0)killEnemy(e)}game.effects.push({x:p.x,y:p.y,t:.7,r:180})}
 function damageEnemy(e,dmg){if(!e||!game.player||!Number.isFinite(dmg))return;let crit=Math.random()<Math.min(.95,game.player.crit);if(crit)dmg*=game.player.critMult;if(e.boss)dmg*=game.player.bossMult;if(e.kind==='elite')dmg*=1+.03*(save.upgrades.Executioner||0);if(game.player.armorPierce)dmg*=1+game.player.armorPierce;e.hp-=Math.max(0,dmg);e.hitFlash=.12;burst(e.x,e.y,crit?'#fff08a':'#ff7b6e',crit?8:2,crit?80:55);if(crit)ring(e.x,e.y,'#fff08a',24,.22);if(game.player&&game.player===game.player2){}if(dmg>(save.records.bestDamage||0))save.records.bestDamage=dmg;game.shots.push({x:e.x,y:e.y,text:Math.floor(dmg),t:.5,crit})}
 function applyElement(e){if(!game.player)return;const el=game.player.element;if(el==='Fire')e.burn=3;if(el==='Ice')e.slowTimer=Math.max(e.slowTimer||0,3);if(el==='Shock')e.chainTimer=.5;if(el==='Poison')e.poison=4;if(el==='Void'&&(e.boss||e.kind==='elite'))e.hp-=game.player.damage*.35}
-function killEnemy(target){const e=typeof target==='number'?game.enemies[target]:target;const i=e?game.enemies.indexOf(e):-1;if(!e||i<0||e.__dead)return;e.__dead=true;burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);run.kills++;save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);game.combo=Math.min(50,game.combo+1);if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;if(Math.random()<.12)save.materials++;game.comboTimer=4;const comboMult=1+Math.min(20,game.combo)*0.03;game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
- const val=e.boss?Math.max(1,game.xpNeed-game.xp):Math.max(1,Math.floor(e.xp*game.stats.rewardMult*1.06));game.gems.push({x:e.x,y:e.y,value:val,icon:'◆'});
- if(e.boss){
-   const lootTypes=['shield','heal','speed','damage'];
-   const guaranteed=2+(e.phase===2?1:0);
-   for(let li=0;li<guaranteed;li++){const la=Math.random()*Math.PI*2,lr=28+Math.random()*55;game.powerups.push({x:e.x+Math.cos(la)*lr,y:e.y+Math.sin(la)*lr,type:lootTypes[Math.floor(Math.random()*lootTypes.length)],bossDrop:true});}
-   if(Math.random()<0.35){const la=Math.random()*Math.PI*2,lr=55+Math.random()*30;game.coins.push({x:e.x+Math.cos(la)*lr,y:e.y+Math.sin(la)*lr,value:75*game.stats.rewardMult,icon:'
- if(e.boss){
-   const bossCoins=5+Math.floor(Math.random()*6);
-   const bossGems=2+Math.floor(Math.random()*3);
-   for(let li=0;li<bossCoins;li++){const a=Math.random()*Math.PI*2,r=35+Math.random()*65;game.coins.push({x:e.x+Math.cos(a)*r,y:e.y+Math.sin(a)*r,value:Math.max(10,Math.floor((25+Math.random()*50)*game.stats.rewardMult)),icon:' {ring(e.x,e.y,'#ffd84d',34,.55);burst(e.x,e.y,'#ffd84d',12,100);} if(e.kind==='golden')game.coins.push({x:e.x+8,y:e.y+8,value:25*game.player.coinMult,icon:'$'}); const lootLuck=Math.max(0,Number(game.player.lootLuck||0)); if(e.kind==='elite'||e.boss||Math.random()<Math.min(.18,.025*game.player.coinMult+lootLuck*.002))game.coins.push({x:e.x+5,y:e.y+5,value:(e.boss?30:e.kind==='elite'?6:2)*game.player.coinMult,icon:'$'}); if(e.boss){run.bosses++;const bonusCoins=3+Math.floor(Math.random()*4),bonusPowerups=2+(Math.random()<.5?1:0);for(let bi=0;bi<bonusCoins;bi++){const ba=Math.random()*Math.PI*2,br=35+Math.random()*45;game.coins.push({x:e.x+Math.cos(ba)*br,y:e.y+Math.sin(ba)*br,value:15*game.player.coinMult,icon:' if(run.kills%35===0){save.keys++;save.records.totalChests++;game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});toast('□ Treasure cache found!');}
- const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));const radarMult=game.player.treasure?3:1;const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult); if(Math.random()<powerupChance)game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]}); if(game.player.shockwave && run.kills%12===0){for(let j=game.enemies.length-1;j>=0;j--){const q=game.enemies[j];if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){damageEnemy(q,game.player.damage*.8);if(q.hp<=0)killEnemy(j)}}game.effects.push({x:e.x,y:e.y,t:.3,r:150})} if(game.player.vampire){game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire)} game.enemies.splice(i,1);
+function killEnemy(target){
+  const e=typeof target==='number'?game.enemies[target]:target;
+  const i=e?game.enemies.indexOf(e):-1;
+  if(!e||i<0||e.__dead)return;
+  e.__dead=true;
+  burst(e.x,e.y,e.boss?'#ffd86b':e.kind==='golden'?'#ffe58a':'#7ee6a7',e.boss?24:10,e.boss?180:95);
+  ring(e.x,e.y,e.boss?'#ffd86b':'#7ee6a7',e.boss?60:24,e.boss?.7:.28);
+  run.kills++;
+  save.battlePassXP=(save.battlePassXP||0)+(e.boss?25:1);
+  game.combo=Math.min(50,game.combo+1);
+  if(game.combo>(save.records.bestCombo||0))save.records.bestCombo=game.combo;
+  if(Math.random()<.12)save.materials++;
+  game.comboTimer=4;
+  const comboMult=1+Math.min(20,game.combo)*.03;
+  game.score+=(e.boss?1000:e.kind==='elite'?60:10)*game.stats.scoreMult*comboMult;
+  game.player.ult=Math.min(100,game.player.ult+(e.boss?25:1)*game.player.ultGain);
+  const val=e.boss?Math.max(1,game.xpNeed-game.xp):Math.max(1,Math.floor(e.xp*game.stats.rewardMult*1.06));
+  game.gems.push({x:e.x,y:e.y,value:val,icon:'◆'});
+  if(e.boss){
+    const lootTypes=['shield','heal','speed','damage'];
+    const guaranteed=2+(e.phase===2?1:0);
+    for(let li=0;li<guaranteed;li++){
+      const la=Math.random()*Math.PI*2,lr=28+Math.random()*55;
+      game.powerups.push({x:e.x+Math.cos(la)*lr,y:e.y+Math.sin(la)*lr,type:lootTypes[Math.floor(Math.random()*lootTypes.length)],bossDrop:true});
+    }
+    if(Math.random()<.35){
+      const la=Math.random()*Math.PI*2,lr=55+Math.random()*30;
+      game.coins.push({x:e.x+Math.cos(la)*lr,y:e.y+Math.sin(la)*lr,value:75*game.stats.rewardMult,icon:'$'});
+    }
+    const bossCoins=5+Math.floor(Math.random()*6);
+    const bossGems=2+Math.floor(Math.random()*3);
+    for(let li=0;li<bossCoins;li++){
+      const a=Math.random()*Math.PI*2,r=35+Math.random()*65;
+      game.coins.push({x:e.x+Math.cos(a)*r,y:e.y+Math.sin(a)*r,value:Math.max(10,Math.floor((25+Math.random()*50)*game.stats.rewardMult)),icon:'$'});
+    }
+    for(let gi=0;gi<bossGems;gi++){
+      const a=Math.random()*Math.PI*2,r=25+Math.random()*50;
+      game.gems.push({x:e.x+Math.cos(a)*r,y:e.y+Math.sin(a)*r,value:Math.max(2,Math.floor(3*game.stats.rewardMult)),icon:'◆'});
+    }
+    ring(e.x,e.y,'#ffd84d',34,.55);
+    burst(e.x,e.y,'#ffd84d',12,100);
+  }
+  if(e.kind==='golden')game.coins.push({x:e.x+8,y:e.y+8,value:25*game.player.coinMult,icon:'$'});
+  const lootLuck=Math.max(0,Number(game.player.lootLuck||0));
+  if(e.kind==='elite'||e.boss||Math.random()<Math.min(.18,.025*game.player.coinMult+lootLuck*.002)){
+    game.coins.push({x:e.x+5,y:e.y+5,value:(e.boss?30:e.kind==='elite'?6:2)*game.player.coinMult,icon:'$'});
+  }
+  if(run.kills%35===0){
+    save.keys++;
+    save.records.totalChests++;
+    game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});
+    toast('□ Treasure cache found!');
+  }
+  const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));
+  const radarMult=game.player.treasure?3:1;
+  const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult);
+  if(Math.random()<powerupChance){
+    game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]});
+  }
+  if(game.player.shockwave&&run.kills%12===0){
+    for(let j=game.enemies.length-1;j>=0;j--){
+      const q=game.enemies[j];
+      if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){
+        damageEnemy(q,game.player.damage*.8);
+        if(q.hp<=0)killEnemy(j);
+      }
+    }
+    game.effects.push({x:e.x,y:e.y,t:.3,r:150});
+  }
+  if(game.player.vampire)game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire);
+  game.enemies.splice(i,1);
 }
 function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices()}
 const upgradeRarities={
@@ -2977,8 +3036,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.1.8';
-const CURRENT_UPDATE_INFO={title:'v3.1.8 — Weapon System & Discord',summary:'Weapon firing now has a universal safety layer so every gun has a reliable damaging attack and Multi-Shot support, and the main menu has a dedicated OUTLAST Discord spot.',items:['Added a universal compatibility layer covering every current weapon.','Fixed invalid or missing projectile counts so guns cannot silently fire nothing.','Normalized Multi-Shot and applied it to fallback attacks for compatible weapons.','Added reliable heavy-weapon fallback profiles for Pulse Cannon, Soul Cannon, Nova Cannon, Rift Blade, and others.','Added a dedicated Join OUTLAST Discord button in the More menu.','Updated the build marker and update popup to v3.1.8.']};
+const CURRENT_UPDATE_VERSION='3.1.9';
+const CURRENT_UPDATE_INFO={title:'v3.1.9 — Weapon Cleanup & Discord',summary:'Removed obsolete/non-damage weapons and hardened the weapon system so only damage-capable weapons can be selected.',items:['Removed the obsolete Plus Cannon from old saves and weapon state.','Only the current damage-capable weapon catalog can appear in the weapon menu.','Old saves automatically fall back to the Blaster if they reference a removed or invalid weapon.','Kept the OUTLAST Discord button in the More menu with the current invite link.','Fixed two pre-existing JavaScript errors that could prevent game systems from initializing.','Updated the build marker and update popup to v3.1.9.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3871,7 +3930,93 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   setTimeout(setup,500);
 })();
 </script>
-<script id="weapon-compat-v318">(function(){const W=['Blaster','TwinShot','Lightning','OrbitBlades','Flame','Boomerang','Shotgun','Railgun','Plasma','Chakram','Meteor','Shuriken','RocketLauncher','Laser','FrostNova','ChainGun','GravityOrb','DroneSwarm','MineLayer','ArcBlade','ThunderStaff','SoulCannon','StarRifle','VoidLauncher','StormBow','PulseCannon','OmegaBlade','WastelandBow','NovaCannon','RiftBlade'];const old=window.shoot;window.shoot=function(){const p=game&&game.player;if(!p)return;const w=save&&save.selectedWeapon;if(!W.includes(w))return old.apply(this,arguments);p.multiShot=Math.max(0,Number(p.multiShot)||0);p.damage=Math.max(1,Number(p.damage)||1);p.range=Math.max(80,Number(p.range)||80);const before=game.bullets.length;old.apply(this,arguments);const instant=['Laser','FrostNova','OrbitBlades','ArcBlade','OmegaBlade','DroneSwarm','MineLayer'];if(game.bullets.length===before&&!instant.includes(w)){let best=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;best=e}}if(best){const ang=Math.atan2(best.y-p.y,best.x-p.x),count=Math.max(1,1+Math.floor(p.multiShot)),speed=w==='PulseCannon'?820:w==='Railgun'?1100:720,radius=w==='PulseCannon'?14:w==='Meteor'?18:6,mult=w==='PulseCannon'?4.2:w==='SoulCannon'?3.2:w==='NovaCannon'?4.5:w==='RiftBlade'?3.8:1;for(let i=0;i<count;i++){const a=ang+(i-(count-1)/2)*.12;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:radius*(p.bulletSize||1),dmg:Math.max(1,p.damage*mult),hits:0,type:w,pierce:p.pierce||0})}}}}};})();</script></body>
+<script id="weapon-compat-v319">
+(function(){
+  'use strict';
+  const DAMAGE_WEAPONS=new Set(["Blaster","TwinShot","Lightning","OrbitBlades","Flame","Boomerang","Shotgun","Railgun","Plasma","Chakram","Meteor","Shuriken","RocketLauncher","Laser","FrostNova","ChainGun","GravityOrb","DroneSwarm","MineLayer","ArcBlade","ThunderStaff","SoulCannon","StarRifle","VoidLauncher","StormBow","PulseCannon","OmegaBlade","WastelandBow","NovaCannon","RiftBlade"]);
+  const REMOVED_NON_DAMAGE_WEAPONS=new Set(['Plus Cannon']);
+
+  // Purge obsolete/non-damage weapons from the live catalog and old saves.
+  if(typeof weapons==='object'&&weapons){
+    for(const name of Object.keys(weapons)){
+      if(!DAMAGE_WEAPONS.has(name)) delete weapons[name];
+    }
+    for(const name of REMOVED_NON_DAMAGE_WEAPONS) delete weapons[name];
+  }
+  function cleanRemovedWeaponState(){
+    if(typeof save!=='object'||!save)return;
+    if(save.unlockedWeapons&&typeof save.unlockedWeapons==='object'){
+      for(const name of REMOVED_NON_DAMAGE_WEAPONS) delete save.unlockedWeapons[name];
+    }
+    if(save.weaponLevels&&typeof save.weaponLevels==='object'){
+      for(const name of REMOVED_NON_DAMAGE_WEAPONS) delete save.weaponLevels[name];
+    }
+    if(save.weaponEvolutions&&typeof save.weaponEvolutions==='object'){
+      for(const name of REMOVED_NON_DAMAGE_WEAPONS) delete save.weaponEvolutions[name];
+    }
+    if(!DAMAGE_WEAPONS.has(save.selectedWeapon)) save.selectedWeapon='Blaster';
+    if(typeof persist==='function'){
+      try{
+        const key='outlastWeaponCleanupV319';
+        if(!outlastStorage.getItem(key)){ persist(); outlastStorage.setItem(key,'1'); }
+      }catch(_){}
+    }
+  }
+  cleanRemovedWeaponState();
+
+  const oldShoot=window.shoot;
+  const FALLBACK_WEAPONS=DAMAGE_WEAPONS;
+  const INSTANT_WEAPONS=new Set(['Laser','FrostNova','OrbitBlades','ArcBlade','OmegaBlade','DroneSwarm','MineLayer']);
+
+  window.shoot=function(){
+    const p=game&&game.player;
+    if(!p)return;
+    const w=save&&save.selectedWeapon;
+    if(!FALLBACK_WEAPONS.has(w)){
+      save.selectedWeapon='Blaster';
+      return typeof oldShoot==='function'?oldShoot.apply(this,arguments):undefined;
+    }
+
+    p.multiShot=Math.max(0,Number(p.multiShot)||0);
+    p.damage=Math.max(1,Number(p.damage)||1);
+    p.range=Math.max(80,Number(p.range)||80);
+
+    const before=game.bullets.length;
+    if(typeof oldShoot==='function') oldShoot.apply(this,arguments);
+
+    // Weapons with their own direct damage logic are already handled.
+    if(game.bullets.length===before&&!INSTANT_WEAPONS.has(w)){
+      let best=null,bd=p.range;
+      for(const e of game.enemies){
+        const d=Math.hypot(e.x-p.x,e.y-p.y);
+        if(d<bd){bd=d;best=e;}
+      }
+      if(best){
+        const ang=Math.atan2(best.y-p.y,best.x-p.x);
+        const count=Math.max(1,1+Math.floor(p.multiShot));
+        const speed=w==='PulseCannon'?820:w==='Railgun'?1100:720;
+        const radius=w==='PulseCannon'?14:w==='Meteor'?18:6;
+        const mult=w==='PulseCannon'?4.2:
+          w==='SoulCannon'?3.2:
+          w==='NovaCannon'?4.5:
+          w==='RiftBlade'?3.8:1;
+        for(let i=0;i<count;i++){
+          const a=ang+(i-(count-1)/2)*.12;
+          if(game.bullets.length<MAX_BULLETS){
+            game.bullets.push({
+              x:p.x,y:p.y,a,
+              vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,
+              r:radius*(p.bulletSize||1),
+              dmg:Math.max(1,p.damage*mult),
+              hits:0,type:w,pierce:p.pierce||0
+            });
+          }
+        }
+      }
+    }
+  };
+})();
+</script></body>
 </html>
 });}for(let pi=0;pi<bonusPowerups;pi++){const pa=Math.random()*Math.PI*2,pr=25+Math.random()*55;game.powerups.push({x:e.x+Math.cos(pa)*pr,y:e.y+Math.sin(pa)*pr,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]});}if(Math.random()<.5)spawnShrine();toast('👑 BOSS LOOT DROPPED!');} if(run.kills%35===0){save.keys++;save.records.totalChests++;game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});toast('□ Treasure cache found!');}
  const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));const radarMult=game.player.treasure?3:1;const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult); if(Math.random()<powerupChance)game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]}); if(game.player.shockwave && run.kills%12===0){for(let j=game.enemies.length-1;j>=0;j--){const q=game.enemies[j];if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){damageEnemy(q,game.player.damage*.8);if(q.hp<=0)killEnemy(j)}}game.effects.push({x:e.x,y:e.y,t:.3,r:150})} if(game.player.vampire){game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire)} game.enemies.splice(i,1);

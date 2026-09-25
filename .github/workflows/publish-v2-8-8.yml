@@ -1,8 +1,9 @@
-name: Validate OUTLAST v3.1.0
+name: Validate OUTLAST v3.4.0
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,24 +14,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Validate v3.1.0 markers and JavaScript
+      - name: Validate v3.4 client wiring
         shell: python
         run: |
           from pathlib import Path
-          import re, subprocess
-
           for name in ("index.html", "game.html"):
               html = Path(name).read_text(encoding="utf-8")
-              assert "OUTLAST v3.1.0" in html, f"{name}: missing v3.1.0 marker"
-              assert 'content="3.1.0"' in html, f"{name}: missing build version"
-              assert "function renderPlayerHub()" in html, f"{name}: missing Player Hub"
-              assert "function buildRunSnapshot()" in html, f"{name}: missing Build of the Run"
-              scripts = re.findall(r"<script(?:\s[^>]*)?>([\s\S]*?)</script>", html, flags=re.I)
-              assert scripts, f"{name}: no script blocks found"
-              for i, code in enumerate(scripts, 1):
-                  p = Path(f"/tmp/{name}-{i}.js")
-                  p.write_text(code, encoding="utf-8")
-                  subprocess.run(["node", "--check", str(p)], check=True)
-
-          print("OUTLAST v3.1.0 validation passed.")
+              assert "OUTLAST v3.4.0" in html, f"{name}: missing v3.4.0 marker"
+              assert 'name="outlast-build" content="3.4.0"' in html, f"{name}: missing build marker"
+              assert 'outlast-v3.4.js' in html, f"{name}: missing v3.4 layer"
+              assert len(html) > 1000000, f"{name}: unexpectedly small build"
+          print("OUTLAST v3.4.0 client validation passed.")

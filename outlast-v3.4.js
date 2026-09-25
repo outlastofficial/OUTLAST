@@ -70,6 +70,7 @@
     if (!s.runHistory) s.runHistory = [];
     if (!s.recovery) s.recovery = {};
     if (!s.week.key) s.week.key = weekKey();
+    if (!s.week.claimed || typeof s.week.claimed !== 'object') s.week.claimed = {};
     if (s.week.key !== weekKey()) s.week = {key:weekKey(),kills:0,bosses:0,time:0,runs:0,claimed:{}};
     return s;
   }
@@ -484,7 +485,7 @@
     const rec={...runSnapshot,kills,bosses,time,level,score,date:Date.now()};
     s.runHistory.unshift(rec);s.runHistory=s.runHistory.slice(0,20);
     if(level>=25) s.extractionMilestone=Math.max(1,Number(s.extractionMilestone||0));
-    s.runSeed=null;s.__lastRunKills=0;s.__lastRunTime=0;
+    s.runSeed=null;s.__lastRunKills=0;s.__lastRunTime=0;lastEvent=0;
     persistSafe(); writeRecovery(); checkAchievements();
     notify(kills?'Run saved — '+kills+' kills recorded.':'Run saved.');
   }
@@ -526,7 +527,7 @@
     const p=game.player;if(!p)return;
     const roll=Math.random();
     if(roll<0.45 && Array.isArray(game.coins)){
-      for(let i=0;i<3;i++) game.coins.push({x:Math.max(40,Math.min(W-40,p.x+(Math.random()*180-90))),y:Math.max(40,Math.min(H-40,p.y+(Math.random()*180-90))),value:5*(p.coinMult||1),icon:'$'});
+      for(let i=0;i<3;i++) game.coins.push({x:Math.max(40,Math.min(worldW-40,p.x+(Math.random()*180-90))),y:Math.max(40,Math.min(worldH-40,p.y+(Math.random()*180-90))),value:5*(p.coinMult||1),icon:'$'});
       notify('📦 Supply Drop!');
     } else if(roll<0.78 && typeof spawnEnemy==='function'){
       safe(()=>spawnEnemy('elite')); safe(()=>spawnEnemy('fast')); notify('⚠ Elite Surge!');
@@ -554,7 +555,7 @@
     document.head.appendChild(st);
   }
 
-  function removeOldMalformedVersion() {
+  function removeOldMalformedVersion_unused() {
     document.documentElement.innerHTML = document.documentElement.innerHTML.replace(/\\\\g<1>3\\.3\\.0\\\\g<2>>/g,'<meta name="outlast-build" content="'+VERSION+'">');
   }
 

@@ -4095,7 +4095,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 <script src="outlast-v3.4.js"></script>
 <script>
 (function installDiscordRewards(){
-  const API_BASE=location.protocol+'//'+location.host;
+  const API_BASE='https://outlast-server.onrender.com';
   async function discordFetch(path,options){
     const r=await fetch(API_BASE+path,options);
     const data=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));

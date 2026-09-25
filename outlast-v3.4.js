@@ -525,6 +525,9 @@
   function extraMapEvent() {
     if(!gameReady()||!game.running||save.mode==='1v1 Arena')return;
     const p=game.player;if(!p)return;
+    const canvas=document.querySelector('canvas');
+    const worldW=(typeof W!=='undefined'?W:(canvas?.width||900));
+    const worldH=(typeof H!=='undefined'?H:(canvas?.height||600));
     const roll=Math.random();
     if(roll<0.45 && Array.isArray(game.coins)){
       for(let i=0;i<3;i++) game.coins.push({x:Math.max(40,Math.min(worldW-40,p.x+(Math.random()*180-90))),y:Math.max(40,Math.min(worldH-40,p.y+(Math.random()*180-90))),value:5*(p.coinMult||1),icon:'$'});
@@ -553,10 +556,6 @@
       '.v34-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v34-grid.two button{min-height:64px}.v34-grid label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:#b9c6d4}.v34-grid select,.v34-grid input{box-sizing:border-box;width:100%;padding:12px;border-radius:10px;border:1px solid #405468;background:#0b1117;color:#fff;font:600 15px Arial}'+
       '.v34-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.v34-actions button{flex:1 1 180px}.v34-note{margin-top:12px;padding:10px 12px;background:#0d151d;border:1px solid #263847;border-radius:10px;color:#94a8ba;font-size:13px}.v34-run-card{margin-top:12px;padding:14px;border:1px solid #2b445a;background:#111a23;border-radius:12px}.v34-list-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 12px;margin:8px 0;border:1px solid #273a4c;background:#111a23;border-radius:12px}.v34-pill{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;border:1px solid #405468;color:#9fb1c2;white-space:nowrap}.v34-pill.good{border-color:#3f9b69;color:#9bf0bb}.v34-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.v34-stat{padding:14px;background:#111a23;border:1px solid #273a4c;border-radius:12px}.v34-stat b{display:block;font-size:22px;margin-bottom:4px}.v34-stat span{font-size:12px;color:#91a4b5}.v34-bar{height:7px;background:#0b1117;border-radius:99px;overflow:hidden;margin-top:7px}.v34-bar i{display:block;height:100%;background:#58a6ff}.v34-extract{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:50000;background:#2b6cff;color:#fff;border:2px solid #7cb4ff;box-shadow:0 8px 24px rgba(0,0,0,.45);display:none}@media(max-width:760px){.v34-grid,.v34-grid.two{grid-template-columns:1fr}.v34-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v34-modal{padding:8px}.v34-modal-card{max-height:95vh;padding:14px}.v34-modal-head{font-size:20px}}';
     document.head.appendChild(st);
-  }
-
-  function removeOldMalformedVersion_unused() {
-    document.documentElement.innerHTML = document.documentElement.innerHTML.replace(/\\\\g<1>3\\.3\\.0\\\\g<2>>/g,'<meta name="outlast-build" content="'+VERSION+'">');
   }
 
   function init() {

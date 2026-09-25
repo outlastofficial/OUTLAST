@@ -122,7 +122,7 @@
     if (typeof runModifiers === 'undefined') return Object.keys(MODS);
     return Object.keys(runModifiers).filter(k=>k!=='None' && k!=='TinyEnemies' && (Number(runModifiers[k]?.enemy||1)>=1 || k==='BloodMoon'));
   }
-  function challengeModes() {
+  function getChallengeModes() {
     if (typeof challengeModes === 'undefined') return Object.keys(CHALLENGES);
     return Object.keys(challengeModes).filter(k=>k && Number(challengeModes[k]?.enemy||1)>=1);
   }
@@ -142,7 +142,7 @@
     const diffs = typeof diffDefs!=='undefined' ? Object.keys(diffDefs) : ['Normal'];
     const modes = typeof modeDefs!=='undefined' ? Object.keys(modeDefs) : ['Classic'];
     const mods = hardModifiers();
-    const challenges = challengeModes();
+    const challenges = getChallengeModes();
     const s=state();
     const seed = s.builderSeed || (new Date().toISOString().slice(0,10)+'-'+Math.floor(Math.random()*999999));
     modal('🎲 Run Builder',
@@ -187,7 +187,7 @@
     const maps=typeof mapDefs!=='undefined'?Object.keys(mapDefs):['Forest'];
     const diffs=typeof diffDefs!=='undefined'?Object.keys(diffDefs):['Normal'];
     const modes=typeof modeDefs!=='undefined'?Object.keys(modeDefs):['Classic'];
-    const mods=hardModifiers(),chs=challengeModes(),rng=seedRng(String($('v34Seed')?.value||Date.now()));
+    const mods=hardModifiers(),chs=getChallengeModes(),rng=seedRng(String($('v34Seed')?.value||Date.now()));
     const pick=a=>a[Math.floor(rng()*a.length)]||a[0];
     $('v34Map').value=pick(maps); $('v34Diff').value=pick(diffs); $('v34Mode').value=pick(modes);
     $('v34Mod').value=pick(['None'].concat(mods)); $('v34Challenge').value=pick(['None'].concat(chs));
@@ -277,7 +277,7 @@
 
   function openModifiers() {
     const mods=hardModifiers().map(k=>'<div class="v34-list-item"><div><b>'+esc(k)+'</b><div class="small">'+esc(MODS[k]||'Hard run modifier.')+'</div></div><span class="v34-pill">HARDER</span></div>');
-    const chs=challengeModes().map(k=>'<div class="v34-list-item"><div><b>'+esc(k)+'</b><div class="small">'+esc(CHALLENGES[k]||'Challenge mode.')+'</div></div><span class="v34-pill">CHALLENGE</span></div>');
+    const chs=getChallengeModes().map(k=>'<div class="v34-list-item"><div><b>'+esc(k)+'</b><div class="small">'+esc(CHALLENGES[k]||'Challenge mode.')+'</div></div><span class="v34-pill">CHALLENGE</span></div>');
     modal('☠️ Run Modifiers', '<h3>Hard Modifiers</h3>'+mods.join('')+'<h3>Challenge Modes</h3>'+chs.join('')+'<div class="v34-note">Modifiers in the v3.4 builder are limited to modes intended to increase difficulty or pressure.</div>');
   }
 

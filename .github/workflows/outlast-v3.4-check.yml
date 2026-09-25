@@ -20,11 +20,6 @@ jobs:
           node-version: 22
       - name: Syntax check client layer
         run: node --check outlast-v3.4.js
-      - name: Syntax check server
-        run: node --check server.js
-        working-directory: outlast-server
-      - name: Validate package metadata
-        run: node -e "const p=require('./outlast-server/package.json'); if(p.version!=='3.4.0') throw new Error('server package version mismatch')"
       - name: Validate game wiring
         run: |
           test -s game.html

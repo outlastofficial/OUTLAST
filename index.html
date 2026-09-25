@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.4.0">
+<meta name="outlast-build" content="3.5.0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.4.0">
-<title>OUTLAST v3.4.0</title>
+<meta name="build-version" content="3.5.0">
+<title>OUTLAST v3.5.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -787,7 +787,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.4.0 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.5.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -864,7 +864,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div><div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div><div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
             <div class="menu-card"><h3>Settings</h3><button class="menu-btn" id="settingsNewBtn">⚙️ Settings</button></div>
-            <div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
+            <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div><div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
             
           </div>
         </section>
@@ -1252,7 +1252,9 @@ const skins={
   Starlight:{cost:42000,rarity:'Celestial',color:'#b9f3ff',bonus:'+25% XP and +15% coins',hp:0,damage:0,speed:0,crit:0,xp:.25,coins:.15},
   VoidEmperor:{cost:60000,rarity:'Transcendent',color:'#ff5fe5',bonus:'+28% damage and +15% boss damage',hp:0,damage:.28,speed:0,crit:.05,boss:.15},
   DawnEternal:{cost:80000,rarity:'Eternal',color:'#ffe6b3',bonus:'+30% HP and +25% XP',hp:.30,damage:0,speed:0,crit:0,xp:.25},
-  OmegaReaper:{cost:120000,rarity:'Omega',color:'#ff2f5f',bonus:'+40% damage and +15% crit',hp:0,damage:.40,speed:0,crit:.15}
+  OmegaReaper:{cost:120000,rarity:'Omega',color:'#ff2f5f',bonus:'+40% damage and +15% crit',hp:0,damage:.40,speed:0,crit:.15},
+  DiscordScout:{cost:0,rarity:'Special',color:'#7289da',bonus:'+5% damage and +5% speed',hp:0,damage:.05,speed:.05,crit:0},
+  DiscordChampion:{cost:0,rarity:'Special',color:'#5865f2',bonus:'+10% damage and +10% coins',hp:0,damage:.10,speed:0,crit:0,coins:.10}
 };
 const skinCaseOdds=[['Common',.36],['Uncommon',.21],['Rare',.16],['Epic',.10],['Legendary',.07],['Mythic',.045],['Divine',.03],['Celestial',.015],['Transcendent',.007],['Eternal',.002],['Omega',.001]];
 const weapons={
@@ -1391,7 +1393,9 @@ const titles={
  ScoreLegend:{desc:'Reach 100,000 high score',req:s=>s.highScore>=100000},
  Veteran:{desc:'Complete 10 runs',req:s=>s.games>=10},
  EliteVeteran:{desc:'Complete 25 runs',req:s=>s.games>=25},
- OutlastLegend:{desc:'Complete 50 runs',req:s=>s.games>=50}
+ OutlastLegend:{desc:'Complete 50 runs',req:s=>s.games>=50},
+ DiscordInviter:{desc:'Discord invite reward',req:s=>save.titles&&save.titles.DiscordInviter===true},
+ DiscordChampion:{desc:'25+ verified Discord invites',req:s=>save.titles&&save.titles.DiscordChampion===true}
 };
 const runModifiers={None:{desc:'Normal run',spawn:1,reward:1,enemy:1},DoubleTrouble:{desc:'2x enemy spawns, 1.8x rewards',spawn:.52,reward:1.8,enemy:1.1},GlassWorld:{desc:'Enemies +35%, rewards 2x',spawn:1,reward:2,enemy:1.35},TreasureRush:{desc:'More coins and loot',spawn:.9,reward:1.75,enemy:1},BloodMoon:{desc:'Bosses often, 2.25x score',spawn:.8,reward:1.5,enemy:1.2},TinyEnemies:{desc:'Smaller/weaker enemies, 1.5x rewards',spawn:.85,reward:1.5,enemy:.9}};
 const elements={Fire:{desc:'Burns enemies over time',color:'#ff6a3d'},Ice:{desc:'Slows enemies heavily',color:'#8de6ff'},Shock:{desc:'Can chain to nearby enemies',color:'#ffe66d'},Poison:{desc:'Damage over time',color:'#8be85c'},Void:{desc:'Bonus damage to elites/bosses',color:'#d28cff'}};
@@ -4035,7 +4039,68 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   };
 })();
 </script><script src="outlast-v3.4.js"></script>
-</body>
+<script>
+(function installDiscordRewards(){
+  const API_BASE=location.protocol+'//'+location.host;
+  async function discordFetch(path,options){
+    const r=await fetch(API_BASE+path,options);
+    const data=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));
+    if(!r.ok||data.ok===false) throw new Error(data.error||'Discord service error');
+    return data;
+  }
+  function showDiscordRewards(){
+    const panel=document.getElementById('subPanel');
+    const content=document.getElementById('subContent');
+    if(!panel||!content)return;
+    panel.style.display='flex';
+    content.innerHTML='<h2>🎁 Discord Rewards</h2><p>Checking your verified Discord invites...</p>';
+    loadRewards();
+  }
+  function rewardRows(data){
+    return data.milestones.map(m=>{
+      const state=m.claimed?'CLAIMED':(m.unlocked?'UNLOCK':'LOCKED');
+      const button=m.unlocked&&!m.claimed?'<button type="button" class="menu-btn gold" data-discord-claim="'+m.invites+'">Claim</button>':'';
+      return '<div class="option" style="margin:8px 0"><b>'+m.invites+' Invites</b> • '+m.label+'<div class="small">'+state+'</div>'+button+'</div>';
+    }).join('');
+  }
+  async function loadRewards(){
+    const content=document.getElementById('subContent');
+    try{
+      const data=await discordFetch('/api/discord/rewards?username='+encodeURIComponent(currentUsername));
+      content.innerHTML='<h2>🎁 Discord Rewards</h2><p>Verified invites: <b>'+data.invites+'</b></p>'+
+        (data.linked?'<p class="small">Linked as '+String(data.discordTag||'Discord account')+'</p>':'<p>Link your Discord account to start earning rewards.</p>'+
+        '<button type="button" class="menu-btn green" id="discordLinkBtn">🔗 Generate Link Code</button>')+
+        '<div style="margin-top:12px">'+rewardRows(data)+'</div>'+
+        '<p class="small">Invite your friends with <a href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener">the OUTLAST Discord invite</a>. Only verified server joins count.</p>';
+    }catch(error){
+      content.innerHTML='<h2>🎁 Discord Rewards</h2><p>Discord rewards are not available yet.</p><p class="small">'+String(error.message)+'</p><button type="button" class="menu-btn" id="discordRetryBtn">Retry</button>';
+    }
+    content.querySelector('#discordLinkBtn')?.addEventListener('click',async()=>{
+      try{
+        const data=await discordFetch('/api/discord/link-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:currentUsername})});
+        content.innerHTML='<h2>🔗 Link Discord</h2><p>In your OUTLAST Discord server, run:</p><div class="option"><b>/link '+data.code+'</b></div><p class="small">This code expires in 10 minutes and can only be used once.</p><button type="button" class="menu-btn" id="discordRefreshBtn">I Linked It — Refresh</button>';
+        content.querySelector('#discordRefreshBtn').addEventListener('click',loadRewards);
+      }catch(error){toast('❌ '+error.message);}
+    });
+    content.querySelector('#discordRetryBtn')?.addEventListener('click',loadRewards);
+    content.querySelectorAll('[data-discord-claim]').forEach(btn=>btn.addEventListener('click',async()=>{
+      btn.disabled=true;
+      try{
+        await discordFetch('/api/discord/rewards/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:currentUsername,invites:Number(btn.dataset.discordClaim)})});
+        const redeemed=await discordFetch('/api/discord/redeem-pending',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:currentUsername})});
+        for(const reward of (redeemed.rewards||[])){
+          if(reward.type==='coins') save.coins=Math.round((Number(save.coins)||0)+Number(reward.amount||0));
+          if(reward.type==='skin'){save.skins=save.skins||{};save.skins[reward.rewardId==='discord-scout'?'DiscordScout':'DiscordChampion']=true;}
+          if(reward.type==='title'){save.titles=save.titles||{};save.titles[reward.rewardId==='discord-inviter'?'DiscordInviter':'DiscordChampion']=true;}
+        }
+        persist(); updateMenuSummary(); toast('🎁 Discord reward claimed!');
+        await loadRewards();
+      }catch(error){btn.disabled=false;toast('❌ '+error.message);}
+    }));
+  }
+  document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
+})();
+</script></body>
 </html>
 });}for(let pi=0;pi<bonusPowerups;pi++){const pa=Math.random()*Math.PI*2,pr=25+Math.random()*55;game.powerups.push({x:e.x+Math.cos(pa)*pr,y:e.y+Math.sin(pa)*pr,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]});}if(Math.random()<.5)spawnShrine();toast('👑 BOSS LOOT DROPPED!');} if(run.kills%35===0){save.keys++;save.records.totalChests++;game.coins.push({x:e.x+10,y:e.y-10,value:10*game.stats.rewardMult,icon:'◆'});toast('□ Treasure cache found!');}
  const treasureLuck=Math.max(0,Number(game.player.treasureLuck||0));const radarMult=game.player.treasure?3:1;const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult); if(Math.random()<powerupChance)game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]}); if(game.player.shockwave && run.kills%12===0){for(let j=game.enemies.length-1;j>=0;j--){const q=game.enemies[j];if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150){damageEnemy(q,game.player.damage*.8);if(q.hp<=0)killEnemy(j)}}game.effects.push({x:e.x,y:e.y,t:.3,r:150})} if(game.player.vampire){game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire)} game.enemies.splice(i,1);

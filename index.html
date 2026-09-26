@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.7.0">
+<meta name="outlast-build" content="3.8.0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.7.0">
-<title>OUTLAST v3.7.0</title>
+<meta name="build-version" content="3.8.0">
+<title>OUTLAST v3.8.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -921,6 +921,7 @@ document.addEventListener('click',e=>{const b=e.target?.closest?.('#discordBtn')
     if(b.closest?.('#subContent')) return;
     /* Top-level settings button still needs capture-level protection because
        older menu routers can otherwise intercept it before its direct handler. */
+    if(b.id==='gameOverMenuBtn') return;
     if(b.id==='settingsNewBtn' || settingActions.has(b.dataset.action)){
       e.preventDefault();
       e.stopImmediatePropagation();

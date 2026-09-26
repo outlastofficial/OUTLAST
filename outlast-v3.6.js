@@ -615,28 +615,27 @@
 })();
 
 
-/* OUTLAST v3.7.0 — Owner coin gifting + player gift claim */
+/* OUTLAST v3.8.0 — Password-protected owner coin gifting */
 (() => {
   'use strict';
   const API='https://outlast-server.onrender.com';
   const OWNER='BestGamer';
+  const VERSION='3.8.0';
   const clean=v=>String(v||'').trim().slice(0,18);
   const saveObj=()=>window.save&&typeof window.save==='object'?window.save:null;
 
   async function giftCoins(){
-    const s=saveObj();
-    const owner=clean(s?.username||s?.name);
-    if(owner.toLowerCase()!==OWNER.toLowerCase()){ alert('Owner access required.'); return; }
-    const password=prompt('Owner password:');
+    const password=prompt('Enter owner gifting password:');
     if(password===null)return;
+    if(!String(password).trim())return alert('Enter the owner gifting password.');
     const target=clean(prompt('Player username to receive coins:'));
-    if(!target){alert('Enter a player username.');return;}
+    if(!target)return alert('Enter a player username.');
     const raw=prompt('How many coins?');
     if(raw===null)return;
     const amount=Number(raw);
-    if(!Number.isSafeInteger(amount)||amount<1){alert('Enter a whole number greater than 0.');return;}
+    if(!Number.isSafeInteger(amount)||amount<1||amount>10000000){return alert('Enter a whole number from 1 to 10,000,000.');}
     try{
-      const r=await fetch(API+'/api/owner/gift-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ownerUsername:owner,password,targetUsername:target,amount})});
+      const r=await fetch(API+'/api/owner/gift-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ownerUsername:OWNER,password:String(password),targetUsername:target,amount})});
       const data=await r.json().catch(()=>({}));
       if(!r.ok||!data.ok)throw new Error(data.error||('Server error '+r.status));
       alert('Gift sent: '+amount.toLocaleString()+' coins to '+target+'.');
@@ -659,25 +658,27 @@
     }catch(_){}
   }
 
+  function ensureGiftCard(){
+    const more=document.querySelector('[data-page-content="more"]');
+    const cards=more?.querySelector('.menu-cards')||more;
+    if(!cards||document.getElementById('outlastOwnerGiftCard'))return;
+    const card=document.createElement('div');
+    card.className='menu-card';
+    card.id='outlastOwnerGiftCard';
+    card.innerHTML='<h3>Owner Tools</h3><p>Password-protected coin gifting.</p><button class="menu-btn gold" id="outlastOwnerGiftCoins" type="button">Gift Coins</button>';
+    cards.appendChild(card);
+    const btn=document.getElementById('outlastOwnerGiftCoins');
+    if(btn)btn.addEventListener('click',giftCoins);
+  }
+
   function install(){
     window.OUTLAST_GIFT_COINS=giftCoins;
     window.OUTLAST_CLAIM_GIFTS=claimGifts;
-    const s=saveObj();
-    const loggedInName=clean((typeof currentUsername!=='undefined'?currentUsername:'')||s?.username||s?.name);
-    const isOwner=loggedInName.toLowerCase()===OWNER.toLowerCase();
-    if(isOwner){
-      const more=document.querySelector('[data-page-content="more"]');
-      const cards=more?.querySelector('.menu-cards')||more;
-      if(cards && !document.getElementById('outlastOwnerGiftCard')){
-        const card=document.createElement('div');
-        card.className='menu-card';
-        card.id='outlastOwnerGiftCard';
-        card.innerHTML='<h3>Owner Tools</h3><p>Private owner controls.</p><button class="menu-btn gold" id="outlastOwnerGiftCoins" type="button">Gift Coins</button>';
-        cards.appendChild(card);
-        document.getElementById('outlastOwnerGiftCoins').onclick=giftCoins;
-      }
-    }
-    setTimeout(claimGifts,1200);
+    ensureGiftCard();
+    setInterval(ensureGiftCard,1000);
+    setTimeout(claimGifts,1500);
+    setInterval(claimGifts,15000);
+    document.title='OUTLAST v'+VERSION;
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else setTimeout(install,0);
 })();

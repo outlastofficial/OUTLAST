@@ -663,14 +663,19 @@
     window.OUTLAST_GIFT_COINS=giftCoins;
     window.OUTLAST_CLAIM_GIFTS=claimGifts;
     const s=saveObj();
-    if(s?.username?.toLowerCase()===OWNER.toLowerCase()){
-      const b=document.createElement('button');
-      b.textContent='Gift Coins';
-      b.title='Owner: give coins to a player';
-      b.id='outlastOwnerGiftCoins';
-      Object.assign(b.style,{position:'fixed',right:'14px',bottom:'14px',zIndex:'99999',padding:'10px 14px',fontWeight:'700',cursor:'pointer'});
-      b.onclick=giftCoins;
-      document.body.appendChild(b);
+    const loggedInName=clean((typeof currentUsername!=='undefined'?currentUsername:'')||s?.username||s?.name);
+    const isOwner=loggedInName.toLowerCase()===OWNER.toLowerCase();
+    if(isOwner){
+      const more=document.querySelector('[data-page-content="more"]');
+      const cards=more?.querySelector('.menu-cards')||more;
+      if(cards && !document.getElementById('outlastOwnerGiftCard')){
+        const card=document.createElement('div');
+        card.className='menu-card';
+        card.id='outlastOwnerGiftCard';
+        card.innerHTML='<h3>Owner Tools</h3><p>Private owner controls.</p><button class="menu-btn gold" id="outlastOwnerGiftCoins" type="button">Gift Coins</button>';
+        cards.appendChild(card);
+        document.getElementById('outlastOwnerGiftCoins').onclick=giftCoins;
+      }
     }
     setTimeout(claimGifts,1200);
   }

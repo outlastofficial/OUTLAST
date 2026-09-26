@@ -592,10 +592,10 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
 })();
 
-/* OUTLAST v3.6.0 — Stability, Save Recovery, Leaderboard Queue, Luck/Chain, UI/Co-op hardening */
+/* OUTLAST v3.7.0 — Coin gifting and claim fix */
 (() => {
   'use strict';
-  const VERSION='3.6.0', MIRROR_KEY='outlastV36SaveMirror', QUEUE_KEY='outlastV36LeaderboardQueue';
+  const VERSION='3.7.0', MIRROR_KEY='outlastV36SaveMirror', QUEUE_KEY='outlastV36LeaderboardQueue';
   const safe=fn=>{try{return fn()}catch(e){console.warn('[OUTLAST v3.6]',e);return null}};
   const getSave=()=>window.save&&typeof window.save==='object'?window.save:null;
   const persistSafe=()=>safe(()=>typeof persist==='function'&&persist());
@@ -612,4 +612,67 @@
   function installOutsideClose(){document.addEventListener('pointerup',e=>{const sp=document.getElementById('subPanel');if(sp&&sp.style.display!=='none'&&e.target===sp&&typeof closeSub==='function')safe(closeSub);const modal=document.getElementById('v34Modal');if(modal&&e.target===modal)modal.style.display='none'},true)}
   function init(){repairSave();installLeaderboardQueue();installChain();installRuntimeFixes();installOutsideClose();if(!localStorage.getItem(MIRROR_KEY))mirror();window.OUTLAST_V36={version:VERSION,repairSave,mirror,restoreMirror,flushLeaderboardQueue:flushQueue};document.title='OUTLAST v'+VERSION;document.querySelectorAll('meta[name="outlast-build"],meta[name="build-version"]').forEach(m=>m.setAttribute('content',VERSION))}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else setTimeout(init,0);
+})();
+
+
+/* OUTLAST v3.7.0 — Owner coin gifting + player gift claim */
+(() => {
+  'use strict';
+  const API='https://outlast-server.onrender.com';
+  const OWNER='BestGamer';
+  const clean=v=>String(v||'').trim().slice(0,18);
+  const saveObj=()=>window.save&&typeof window.save==='object'?window.save:null;
+
+  async function giftCoins(){
+    const s=saveObj();
+    const owner=clean(s?.username||s?.name);
+    if(owner.toLowerCase()!==OWNER.toLowerCase()){ alert('Owner access required.'); return; }
+    const password=prompt('Owner password:');
+    if(password===null)return;
+    const target=clean(prompt('Player username to receive coins:'));
+    if(!target){alert('Enter a player username.');return;}
+    const raw=prompt('How many coins?');
+    if(raw===null)return;
+    const amount=Number(raw);
+    if(!Number.isSafeInteger(amount)||amount<1){alert('Enter a whole number greater than 0.');return;}
+    try{
+      const r=await fetch(API+'/api/owner/gift-coins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ownerUsername:owner,password,targetUsername:target,amount})});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok||!data.ok)throw new Error(data.error||('Server error '+r.status));
+      alert('Gift sent: '+amount.toLocaleString()+' coins to '+target+'.');
+    }catch(e){alert('Coin gift failed: '+(e?.message||'Network error'));}
+  }
+
+  async function claimGifts(){
+    const s=saveObj();
+    const username=clean(s?.username||s?.name);
+    if(!username)return;
+    try{
+      const r=await fetch(API+'/api/coins/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok||!data.ok||!Number(data.coins))return;
+      const amount=Math.floor(Number(data.coins));
+      s.coins=Math.max(0,Math.floor(Number(s.coins)||0)+amount);
+      if(typeof persist==='function')persist();
+      if(typeof updateUI==='function')updateUI();
+      alert('You received '+amount.toLocaleString()+' gifted coins!');
+    }catch(_){}
+  }
+
+  function install(){
+    window.OUTLAST_GIFT_COINS=giftCoins;
+    window.OUTLAST_CLAIM_GIFTS=claimGifts;
+    const s=saveObj();
+    if(s?.username?.toLowerCase()===OWNER.toLowerCase()){
+      const b=document.createElement('button');
+      b.textContent='Gift Coins';
+      b.title='Owner: give coins to a player';
+      b.id='outlastOwnerGiftCoins';
+      Object.assign(b.style,{position:'fixed',right:'14px',bottom:'14px',zIndex:'99999',padding:'10px 14px',fontWeight:'700',cursor:'pointer'});
+      b.onclick=giftCoins;
+      document.body.appendChild(b);
+    }
+    setTimeout(claimGifts,1200);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else setTimeout(install,0);
 })();

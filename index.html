@@ -2713,6 +2713,7 @@ document.getElementById('adminBtn').onclick=()=>{
     <button class="option" data-action="adminShrine">✦ Spawn Shrine (Run)</button>
     <button class="option" data-action="adminHazard">⚠ Trigger Map Hazard (Run)</button>
     <button class="option" data-action="adminEvent">🌎 Trigger World Event (Run)</button>
+    <button class="option gold" data-action="adminEventPreview">👁️ Preview Upcoming Event</button>
     <button class="option" data-action="adminObjective">🎯 Complete Objective (Run)</button>
     <button class="option" data-action="adminRaidBoss">♛ Spawn Raid Boss (Run)</button>
     <button class="option" data-action="adminFullHeal">♥ Full Heal Current Run</button>
@@ -2786,6 +2787,18 @@ window.adminXP=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a 
 window.adminRareLoot=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.gems.push({x:game.player.x+55,y:game.player.y,value:game.xpNeed*8,icon:'✦'});game.coins.push({x:game.player.x-55,y:game.player.y,value:500,icon:'✦'});toast('✦ Rare loot spawned!');document.getElementById('adminBtn').click()};
 window.adminShrine=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');spawnShrine();document.getElementById('adminBtn').click()};
 window.adminHazard=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');triggerMapEvent();toast('⚠ Map hazard triggered!');document.getElementById('adminBtn').click()};
+window.adminEventPreview=()=>{
+ if(!isAdmin())return;
+ const entries=Object.entries(worldEvents);
+ const cards=entries.map(([name,desc])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+name+'"><b>🌎 '+name+'</b><div class="small">'+desc+'</div><div class="small" style="margin-top:5px;color:#f2d06b">PREVIEW ONLY • Does not trigger the event</div></button>').join('');
+ openSub('👁️ Event Preview','<div class="option"><b>ADMIN EVENT PREVIEW</b><div class="small">Choose an event to preview its upcoming-event card. This does not start, trigger, or save anything.</div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');
+ const panel=document.getElementById('subContent');
+ panel?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{
+   const name=btn.dataset.adminPreviewEvent,desc=worldEvents[name]||'No description available.';
+   const result=document.getElementById('adminEventPreviewResult');
+   if(result)result.innerHTML='<div style="font-size:28px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged. This is only an admin preview.</div></div>';
+ }));
+};
 window.adminEvent=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;toast('🌎 '+game.worldEvent+' triggered!');document.getElementById('adminBtn').click()};
 window.adminObjective=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.objectiveComplete=true;toast('🎯 Objective completed!');document.getElementById('adminBtn').click()};
 window.adminRaidBoss=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.raidBoss=save.raidBoss||Object.keys(raidBossDefs)[0];spawnBoss();toast('♛ Raid boss spawned!');document.getElementById('adminBtn').click()};

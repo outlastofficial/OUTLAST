@@ -4,14 +4,14 @@
 
   const VERSION = '3.7.0';
   const API_BASE = 'https://outlast-server.onrender.com';
-  const OWNER_USERNAME = 'BestGamer';
+  const OWNER_USERNAMES = ['BestGamer', 'Landon'];
 
   const cleanUsername = value => String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 18);
   const isOwnerAdmin = () =>
     typeof adminUnlocked !== 'undefined' &&
     adminUnlocked === true &&
     typeof currentUsername !== 'undefined' &&
-    String(currentUsername).trim().toLowerCase() === OWNER_USERNAME.toLowerCase();
+    OWNER_USERNAMES.some(name => String(currentUsername).trim().toLowerCase() === name.toLowerCase());
 
   async function claimPendingCoins(username) {
     const name = cleanUsername(username);
@@ -96,7 +96,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            ownerUsername: OWNER_USERNAME,
+            ownerUsername: String(currentUsername).trim(),
             password: ADMIN_PASSWORD,
             targetUsername,
             amount

@@ -1,7 +1,7 @@
-/* OUTLAST v3.8.0 — Owner panel: coin gifting + player directory */
+/* OUTLAST v3.9.0 — October Event countdown + Owner panel */
 (() => {
   'use strict';
-  const VERSION = '3.8.0';
+  const VERSION = '3.9.0';
   const API_BASE = 'https://outlast-server.onrender.com';
   const OWNER_USERNAMES = ['BestGamer', 'Landon'];
   const cleanUsername = value => String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 18);
@@ -76,6 +76,13 @@
   }
   function wrapAdminPanel(){if(typeof window.openSub!=='function'||window.openSub.__outlastOwnerWrapped)return;const original=window.openSub;const wrapped=function(title,html){const result=original.apply(this,arguments);if(/Admin Panel/i.test(String(title)))setTimeout(installOwnerButton,0);return result;};wrapped.__outlastOwnerWrapped=true;window.openSub=wrapped;}
   function wrapLogin(){if(typeof window.finishUsernameLogin!=='function'||window.finishUsernameLogin.__outlastGiftWrapped)return;const original=window.finishUsernameLogin;const wrapped=function(){const result=original.apply(this,arguments);if(result&&typeof currentUsername!=='undefined')setTimeout(()=>claimPendingCoins(currentUsername),120);return result;};wrapped.__outlastGiftWrapped=true;window.finishUsernameLogin=wrapped;}
-  function init(){wrapAdminPanel();wrapLogin();if(typeof currentUsername!=='undefined'&&currentUsername)setTimeout(()=>claimPendingCoins(currentUsername),500);setInterval(()=>{wrapAdminPanel();wrapLogin();installOwnerButton();},1000);}
+  function installEventCountdown(){
+    if(document.getElementById('outlastEventCountdown')) return;
+    const box=document.createElement('div'); box.id='outlastEventCountdown';
+    box.style.cssText='position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:9998;background:rgba(10,14,20,.94);border:2px solid #d6a84f;border-radius:12px;padding:8px 14px;color:#fff;font:700 14px Arial,sans-serif;text-align:center;box-shadow:0 5px 22px rgba(0,0,0,.45);pointer-events:none;min-width:210px';
+    box.innerHTML='<div style="color:#d6a84f;font-size:11px;letter-spacing:1px">OUTLAST OCTOBER EVENT</div><div id="outlastEventTime" style="font-size:18px;margin-top:2px">Loading…</div>';
+    document.body.appendChild(box);
+    const update=()=>{const now=new Date();const target=new Date(now.getFullYear(),9,1,0,0,0,0);if(now>=target){box.innerHTML='<div style="color:#d6a84f;font-size:11px;letter-spacing:1px">OUTLAST OCTOBER EVENT</div><div style="font-size:18px;margin-top:2px">🎃 LIVE NOW!</div>';return;}const ms=target-now;const d=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,s=Math.floor(ms/1000)%60;const el=document.getElementById('outlastEventTime');if(el)el.textContent=d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';};update();setInterval(update,1000);};
+  function init(){installEventCountdown();wrapAdminPanel();wrapLogin();if(typeof currentUsername!=='undefined'&&currentUsername)setTimeout(()=>claimPendingCoins(currentUsername),500);setInterval(()=>{wrapAdminPanel();wrapLogin();installOwnerButton();},1000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

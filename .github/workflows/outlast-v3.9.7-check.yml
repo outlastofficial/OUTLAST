@@ -1,0 +1,37 @@
+name: OUTLAST v3.9.7 checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'game.html'
+      - 'index.html'
+      - 'outlast-v3.9.7.js'
+      - '.github/workflows/outlast-v3.9.7-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check Nightfall countdown JavaScript
+        run: node --check outlast-v3.9.7.js
+      - name: Check both game entry files
+        run: |
+          test -s game.html
+          test -s index.html
+          grep -q '<title>OUTLAST v3.9.7</title>' game.html
+          grep -q '<title>OUTLAST v3.9.7</title>' index.html
+          grep -q 'name="outlast-build" content="3.9.7"' game.html
+          grep -q 'name="outlast-build" content="3.9.7"' index.html
+          grep -q 'outlast-v3.9.7.js' game.html
+          grep -q 'outlast-v3.9.7.js' index.html
+      - name: Check Nightfall date
+        run: |
+          grep -q 'TARGET_YEAR = 2026' outlast-v3.9.7.js
+          grep -q 'TARGET_MONTH = 9' outlast-v3.9.7.js
+          grep -q 'TARGET_DAY = 1' outlast-v3.9.7.js

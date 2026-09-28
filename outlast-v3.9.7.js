@@ -1,7 +1,7 @@
-/* OUTLAST v3.11.0 — Owner Control Center (live build) */
+/* OUTLAST v3.12.0 — Unified Owner Control Center */
 (() => {
   'use strict';
-  const VERSION = '3.11.0';
+  const VERSION = '3.12.0';
   const API_BASE = 'https://outlast-server.onrender.com';
   const OWNER_USERNAMES = ['BestGamer', 'Landon'];
   const cleanUsername = value => String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 18);
@@ -134,12 +134,8 @@
 
   function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
-  function installOwnerButton(){
-    if(!isOwnerAdmin())return; const container=document.getElementById('subContent'); if(!container)return;
-    if(!/TEMPORARY TEST MODE|Admin Panel/i.test(container.textContent||''))return; if(container.querySelector('#ownerPanelBtn'))return;
-    const button=document.createElement('button'); button.id='ownerPanelBtn';button.type='button';button.className='option gold';button.textContent='👑 OWNER PANEL';button.addEventListener('click',ownerPanel);
-    const grid=container.querySelector('.grid'); if(grid)grid.insertBefore(button,grid.firstChild);else container.appendChild(button);
-  }
+  function installOwnerButton(){}
+
   function wrapAdminPanel(){if(typeof window.openSub!=='function'||window.openSub.__outlastOwnerWrapped)return;const original=window.openSub;const wrapped=function(title,html){const result=original.apply(this,arguments);if(/Admin Panel/i.test(String(title)))setTimeout(installOwnerButton,0);return result;};wrapped.__outlastOwnerWrapped=true;window.openSub=wrapped;}
   function wrapLogin(){if(typeof window.finishUsernameLogin!=='function'||window.finishUsernameLogin.__outlastGiftWrapped)return;const original=window.finishUsernameLogin;const wrapped=function(){const result=original.apply(this,arguments);if(result&&typeof currentUsername!=='undefined')setTimeout(()=>claimPendingCoins(currentUsername),120);return result;};wrapped.__outlastGiftWrapped=true;window.finishUsernameLogin=wrapped;}
   window.ownerPanel = ownerPanel;

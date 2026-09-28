@@ -919,9 +919,15 @@ document.addEventListener('click',e=>{const b=e.target?.closest?.('#discordBtn')
     /* Sub-panel buttons already have dedicated delegated handlers. Let their
        click event reach #subContent instead of swallowing it here. */
     if(b.closest?.('#subContent')) return;
+    /* Game Over return must be handled at capture phase so older routers cannot swallow it. */
+    if(b.id==='gameOverMenuBtn'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if(typeof window.__outlastReturnToMenu==='function') window.__outlastReturnToMenu();
+      return;
+    }
     /* Top-level settings button still needs capture-level protection because
        older menu routers can otherwise intercept it before its direct handler. */
-    if(b.id==='gameOverMenuBtn') return;
     if(b.id==='settingsNewBtn' || settingActions.has(b.dataset.action)){
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -2389,7 +2395,19 @@ function showGameOverActions(v){
   p=document.createElement('div');p.id='gameOverActions';p.className='game-over-actions';
   p.innerHTML='<div class="game-over-card"><div id="gameOverTitle" class="game-over-title"></div><div id="gameOverStats"></div><div id="gameOverBuild"></div><div class="game-over-actions-row"><button id="gameOverSaveBuildBtn" type="button">💾 SAVE BUILD</button><button id="gameOverMenuBtn" class="green" type="button">RETURN TO MENU</button><button id="gameOverReplayBtn" type="button">PLAY AGAIN</button></div></div>';
   document.body.appendChild(p);
-  document.getElementById('gameOverMenuBtn').onclick=()=>{game.endScreen=false;game.endVictory=false;game.over=false;game.running=false;syncMobileControls();p.style.display='none';document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';updateMenuSummary();};
+  window.__outlastReturnToMenu=()=>{
+ game.endScreen=false;game.endVictory=false;game.over=false;game.running=false;game.paused=false;game.upgradeOpen=false;fatalGameError='';fatalErrorShown=false;
+ keys.w=keys.a=keys.s=keys.d=false;for(const k of Object.keys(keyCodes))keyCodes[k]=false;
+ hideGameOverActions();syncMobileControls();
+ document.getElementById('subPanel').style.display='none';
+ document.getElementById('updatePopup')?.style && (document.getElementById('updatePopup').style.display='none');
+ document.getElementById('menu').style.display='flex';
+ document.getElementById('gameOverActions')?.style && (document.getElementById('gameOverActions').style.display='none');
+ updateMenuSummary();
+ window.scrollTo?.(0,0);
+};
+document.getElementById('gameOverMenuBtn').onclick=window.__outlastReturnToMenu;
+document.getElementById('gameOverMenuBtn').addEventListener('pointerup',window.__outlastReturnToMenu,{passive:false});
   document.getElementById('gameOverReplayBtn').onclick=()=>{p.style.display='none';game.endScreen=false;game.endVictory=false;game.over=false;game.running=false;syncMobileControls();startGame(false);};
   document.getElementById('gameOverSaveBuildBtn').onclick=()=>{const b=game.lastBuildSnapshot;if(!b)return toast('No build snapshot available');save.buildPresets=save.buildPresets||{};save.buildPresets.RUN={...b};persist();toast('💾 Run build saved!');};
  }

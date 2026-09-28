@@ -1,7 +1,7 @@
-/* OUTLAST v3.12.1 — Unified Owner Control Center */
+/* OUTLAST v3.13.0 — Unified Owner Control Center */
 (() => {
   'use strict';
-  const VERSION = '3.12.1';
+  const VERSION = '3.13.0';
   const API_BASE = 'https://outlast-server.onrender.com';
   const OWNER_USERNAMES = ['BestGamer', 'Landon'];
   const cleanUsername = value => String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 18);
@@ -25,7 +25,7 @@
 
   function ownerPanel() {
     if (!isOwnerAdmin()) { if(typeof toast==='function') toast('Owner access required.'); return; }
-    openSub('👑 OWNER PANEL',
+    openSub('👑 OWNER TOOLS & PANEL',
       '<div class="option"><b>OWNER CONTROL CENTER</b><div class="small">Owner-only controls for OUTLAST. Event Preview remains in the Admin Panel.</div></div>' +
       '<div class="grid" style="margin-top:12px">' +
       '<button id="ownerStatusOpen" class="option" type="button">👑 Owner Status</button>' +
@@ -40,7 +40,7 @@
       '<div id="ownerPanelStatus" class="option" style="margin-top:12px"><b>Owner Control Center Ready</b><div class="small">Choose a tool above.</div></div>' +
       '<button id="ownerPanelBack" type="button" style="margin-top:12px">← BACK</button>');
     document.getElementById('ownerStatusOpen')?.addEventListener('click',()=>{const el=document.getElementById('ownerPanelStatus');if(el)el.innerHTML='<b>👑 Owner Access Active</b><div class="small">Owner-only controls are active for '+escapeHtml(String(currentUsername||'')) +'.</div>';});
-    document.getElementById('ownerPanelBack')?.addEventListener('click',()=>document.getElementById('adminBtn')?.click());
+    document.getElementById('ownerPanelBack')?.addEventListener('click',()=>{closeSub();document.getElementById('menu').style.display='flex';if(typeof updateMenuSummary==='function')updateMenuSummary();});
     document.getElementById('ownerGiftOpen')?.addEventListener('click', ownerGiftPanel);
     document.getElementById('ownerPlayersOpen')?.addEventListener('click', ownerPlayersPanel);
     document.getElementById('ownerEventsOpen')?.addEventListener('click', ownerGlobalEventsPanel);
@@ -134,9 +134,6 @@
 
   function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 
-  function installOwnerButton(){}
-
-  function wrapAdminPanel(){if(typeof window.openSub!=='function'||window.openSub.__outlastOwnerWrapped)return;const original=window.openSub;const wrapped=function(title,html){const result=original.apply(this,arguments);if(/Admin Panel/i.test(String(title)))setTimeout(installOwnerButton,0);return result;};wrapped.__outlastOwnerWrapped=true;window.openSub=wrapped;}
   function wrapLogin(){if(typeof window.finishUsernameLogin!=='function'||window.finishUsernameLogin.__outlastGiftWrapped)return;const original=window.finishUsernameLogin;const wrapped=function(){const result=original.apply(this,arguments);if(result&&typeof currentUsername!=='undefined')setTimeout(()=>claimPendingCoins(currentUsername),120);return result;};wrapped.__outlastGiftWrapped=true;window.finishUsernameLogin=wrapped;}
   window.ownerPanel = ownerPanel;
   function installOwnerRealtimeBridge(){
@@ -152,11 +149,11 @@
     const update=()=>{const now=new Date();const target=new Date(now.getFullYear(),9,1,0,0,0,0);if(now>=target){box.innerHTML='<div style="color:#d6a84f;font-size:11px;letter-spacing:1px">OUTLAST OCTOBER EVENT</div><div style="font-size:18px;margin-top:2px">🎃 LIVE NOW!</div>';return;}const ms=target-now;const d=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,s=Math.floor(ms/1000)%60;const el=document.getElementById('outlastEventTime');if(el)el.textContent=d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';};update();setInterval(update,1000);};
   function bindOwnerButton(){
     const btn=document.getElementById('ownerBtn');
-    if(!btn||btn.__outlastOwnerBound)return;
-    btn.__outlastOwnerBound=true;
+    if(!btn)return;
+    if(btn.__outlastOwnerBound===VERSION)return;
+    btn.__outlastOwnerBound=VERSION;
     btn.onclick=(event)=>{event.preventDefault();event.stopPropagation();ownerPanel();};
-    btn.onpointerup=(event)=>{event.preventDefault();event.stopPropagation();ownerPanel();};
   }
-  function init(){installEventCountdown();installOwnerRealtimeBridge();wrapAdminPanel();wrapLogin();bindOwnerButton();if(typeof currentUsername!=='undefined'&&currentUsername)setTimeout(()=>claimPendingCoins(currentUsername),500);setInterval(()=>{wrapAdminPanel();wrapLogin();bindOwnerButton();installOwnerButton();},1000);}
+  function init(){document.title='OUTLAST v'+VERSION;installEventCountdown();installOwnerRealtimeBridge();wrapLogin();bindOwnerButton();if(typeof currentUsername!=='undefined'&&currentUsername)setTimeout(()=>claimPendingCoins(currentUsername),500);setInterval(()=>{wrapLogin();bindOwnerButton();},1000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

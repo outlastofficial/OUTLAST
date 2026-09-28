@@ -658,24 +658,12 @@
     }catch(_){}
   }
 
-  function ensureGiftCard(){
-    const more=document.querySelector('[data-page-content="more"]');
-    const cards=more?.querySelector('.menu-cards')||more;
-    if(!cards||document.getElementById('outlastOwnerGiftCard'))return;
-    const card=document.createElement('div');
-    card.className='menu-card';
-    card.id='outlastOwnerGiftCard';
-    card.innerHTML='<h3>Owner Tools</h3><p>Password-protected coin gifting.</p><button class="menu-btn gold" id="outlastOwnerGiftCoins" type="button">Gift Coins</button>';
-    cards.appendChild(card);
-    const btn=document.getElementById('outlastOwnerGiftCoins');
-    if(btn)btn.addEventListener('click',giftCoins);
-  }
+  function ensureGiftCard(){ return; }
 
   function install(){
     window.OUTLAST_GIFT_COINS=giftCoins;
     window.OUTLAST_CLAIM_GIFTS=claimGifts;
-    ensureGiftCard();
-    setInterval(ensureGiftCard,1000);
+    // Owner coin gifting is now inside the unified Owner Panel. Do not inject a separate Owner Tools card.
     setTimeout(claimGifts,1500);
     setInterval(claimGifts,15000);
     document.title='OUTLAST v'+VERSION;

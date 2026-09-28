@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.9.7">
+<meta name="outlast-build" content="3.11.0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.9.7">
-<title>OUTLAST v3.9.7</title>
+<meta name="build-version" content="3.11.0">
+<title>OUTLAST v3.11.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -968,7 +968,7 @@ let adminRole=outlastStorage.getItem('outlastAdminRole')|| (outlastStorage.getIt
 let adminUnlocked=adminRole==='tester'||adminRole==='full';
 function isAdmin(){return adminUnlocked}
 function isFullAdmin(){return adminUnlocked&&adminRole==='full'}
-function isOwner(){return String(currentUsername||'').trim().toLowerCase()==='bestgamer'}
+function isOwner(){const name=String(currentUsername||'').trim().toLowerCase();return name==='bestgamer'||name==='landon'}
 
 function setMenuPage(page){
   document.querySelectorAll('.menu-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.page===page));

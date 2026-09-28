@@ -1,4 +1,4 @@
-name: Validate OUTLAST v3.4.0
+name: Validate OUTLAST v3.9.7
 
 on:
   push:
@@ -12,16 +12,15 @@ jobs:
   validate-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Validate v3.4 client wiring
+      - uses: actions/checkout@v4
+      - name: Validate current OUTLAST build
         shell: python
         run: |
           from pathlib import Path
           for name in ("index.html", "game.html"):
               html = Path(name).read_text(encoding="utf-8")
-              assert "OUTLAST v3.4.0" in html, f"{name}: missing v3.4.0 marker"
-              assert 'name="outlast-build" content="3.4.0"' in html, f"{name}: missing build marker"
-              assert 'outlast-v3.4.js' in html, f"{name}: missing v3.4 layer"
+              assert "OUTLAST v3.9.7" in html, f"{name}: missing v3.9.7 marker"
+              assert 'name="outlast-build" content="3.9.7"' in html, f"{name}: missing build marker"
+              assert 'outlast-v3.9.7.js' in html, f"{name}: missing v3.9.7 layer"
               assert len(html) > 1000000, f"{name}: unexpectedly small build"
-          print("OUTLAST v3.4.0 client validation passed.")
+          print("OUTLAST v3.9.7 validation passed.")

@@ -1,7 +1,7 @@
-/* OUTLAST v3.9.0 — October Event countdown + Owner panel */
+/* OUTLAST v3.10.0 — Unified Owner Tools & Panel */
 (() => {
   'use strict';
-  const VERSION = '3.9.0';
+  const VERSION = '3.10.0';
   const API_BASE = 'https://outlast-server.onrender.com';
   const OWNER_USERNAMES = ['BestGamer', 'Landon'];
   const cleanUsername = value => String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 18);
@@ -25,11 +25,11 @@
 
   function ownerPanel() {
     if (!isOwnerAdmin()) { if(typeof toast==='function') toast('Owner access required.'); return; }
-    openSub('👑 OWNER PANEL', '<div class="option"><b>OWNER-ONLY CONTROLS</b><div class="small">Only BestGamer and Landon can access these controls.</div></div>' +
-      '<button id="ownerGiftOpen" class="option gold" type="button">👑 Give Coins to Player</button>' +
-      '<button id="ownerPlayersOpen" class="option" type="button">👥 All Online / Offline Players</button>' +
-      '<div id="ownerPanelStatus" class="small" style="min-height:20px;margin-top:8px"></div>' +
+    openSub('👑 OWNER TOOLS & PANEL', '<div class="option"><b>OWNER-ONLY CONTROLS</b><div class="small">All owner tools are together here. Only BestGamer and Landon can access them.</div></div>' +
+      '<div class="grid" style="margin-top:12px"><button id="ownerStatusOpen" class="option" type="button">👑 Owner Status</button><button id="ownerGiftOpen" class="option gold" type="button">👑 Give Coins to Player</button><button id="ownerPlayersOpen" class="option" type="button">👥 All Online / Offline Players</button></div>' +
+      '<div id="ownerPanelStatus" class="option" style="margin-top:12px"><b>Owner Tools Ready</b><div class="small">Select an owner tool above.</div></div>' +
       '<button id="ownerPanelBack" type="button" style="margin-top:12px">← BACK</button>');
+    document.getElementById('ownerStatusOpen')?.addEventListener('click',()=>{const el=document.getElementById('ownerPanelStatus');if(el)el.innerHTML='<b>👑 Owner Access Active</b><div class="small">All owner tools are contained in this panel.</div>';});
     document.getElementById('ownerPanelBack')?.addEventListener('click',()=>document.getElementById('adminBtn')?.click());
     document.getElementById('ownerGiftOpen')?.addEventListener('click', ownerGiftPanel);
     document.getElementById('ownerPlayersOpen')?.addEventListener('click', ownerPlayersPanel);

@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.9.5">
-<title>OUTLAST v3.9.5</title>
+<meta name="outlast-build" content="3.9.6">
+<title>OUTLAST v3.9.6</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -863,7 +863,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div><div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div><div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
             <div class="menu-card"><h3>Settings</h3><button class="menu-btn" id="settingsNewBtn">⚙️ Settings</button></div>
-            <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div><div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div><div class="menu-card" id="ownerPanelCard"><h3>Owner</h3><button class="menu-btn gold" id="ownerBtn">👑 Owner Panel</button></div>
+            <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div><div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div><div class="menu-card" id="ownerPanelCard"><h3>Owner Tools</h3><button class="menu-btn gold" id="ownerBtn">👑 Owner Panel</button></div>
             
           </div>
         </section>
@@ -2788,7 +2788,7 @@ window.adminShrine=()=>{if(!isAdmin())return;if(!game.running)return toast('Star
 window.adminHazard=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');triggerMapEvent();toast('⚠ Map hazard triggered!');document.getElementById('adminBtn').click()};
 window.ownerPanel=()=>{
  if(!isOwner())return toast('Owner access only');
- openSub('👑 Owner Panel',`
+ openSub('👑 Owner Tools & Panel',`
    <div class="option"><b>OWNER CONTROLS</b><div class="small">All owner-only tools are kept together in this panel. These controls are separate from the Admin Panel.</div></div>
    <div class="grid" style="margin-top:12px"><button class="option" data-owner-action="status">👑 Owner Status</button></div>
    <div id="ownerStatusResult" class="option" style="margin-top:12px"><b>Owner Panel Ready</b><div class="small">Owner-only tools will appear here.</div></div>`);

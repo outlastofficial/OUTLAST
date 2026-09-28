@@ -2805,7 +2805,7 @@ window.adminXP=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a 
 window.adminRareLoot=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.gems.push({x:game.player.x+55,y:game.player.y,value:game.xpNeed*8,icon:'✦'});game.coins.push({x:game.player.x-55,y:game.player.y,value:500,icon:'✦'});toast('✦ Rare loot spawned!');document.getElementById('adminBtn').click()};
 window.adminShrine=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');spawnShrine();document.getElementById('adminBtn').click()};
 window.adminHazard=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');triggerMapEvent();toast('⚠ Map hazard triggered!');document.getElementById('adminBtn').click()};
-window.ownerPanelFallback=()=>{if(!isOwner())return toast('Owner access only');toast('Owner Panel is loading…')};document.getElementById('ownerBtn')?.addEventListener('click',()=>{if(typeof window.ownerPanel==='function')window.ownerPanel();else if(typeof window.ownerPanelFallback==='function')window.ownerPanelFallback();});
+/* Owner Panel is bound by the live unified owner-control script. */
 window.adminEventPreview=()=>{if(!isAdmin())return;const entries=Object.entries(worldEvents);const cards=entries.map(([name,desc])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+name+'"><b>🌎 '+name+'</b><div class="small">'+desc+'</div><div class="small" style="margin-top:5px;color:#f2d06b">PREVIEW ONLY • Does not trigger the event</div></button>').join('');openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT PREVIEW</b><div class="small">Preview an event without starting or saving it.</div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');const panel=document.getElementById('subContent');panel?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{const name=btn.dataset.adminPreviewEvent,desc=worldEvents[name]||'No description available.',result=document.getElementById('adminEventPreviewResult');if(result)result.innerHTML='<div style="font-size:28px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged.</div></div>';}));};
 window.adminEvent=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;toast('🌎 '+game.worldEvent+' triggered!');document.getElementById('adminBtn').click()};
 window.adminObjective=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.objectiveComplete=true;toast('🎯 Objective completed!');document.getElementById('adminBtn').click()};
@@ -2987,6 +2987,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.12.1 — Owner Panel Fix','Fixed the live Owner Panel routing and consolidated the owner tools into one working owner control center.'],
   ['v3.12.0 — Unified Owner Panel','Removed the duplicate Owner Tools path and made the Owner Panel the single owner control center.'],
   ['v3.11.0 — Global Events','Added the synchronized global-event system, including timed global events that can be started and stopped for connected players.'],
   ['v3.9.7 — Nightfall Event Countdown','Added a live in-game countdown to the Nightfall Event, scheduled for October 1, 2026 at 12:00 AM local time. The countdown switches to NIGHTFALL IS LIVE when the event begins.'],
@@ -3083,8 +3084,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.12.0';
-const CURRENT_UPDATE_INFO={title:'v3.12.0 — Unified Owner Panel',summary:'Unified the owner controls into one Owner Panel and removed the duplicate owner-tools path.',items:['The main Owner Panel now opens the full Owner Control Center.','Removed the separate Owner Panel button from the Admin Panel.','Owner controls remain restricted to BestGamer and Landon.','Updated the game version marker and Update Log to v3.12.0.']};
+const CURRENT_UPDATE_VERSION='3.12.1';
+const CURRENT_UPDATE_INFO={title:'v3.12.1 — Owner Panel Fix',summary:'Fixed the live Owner Panel routing and consolidated the owner tools into one working control center.',items:['The Owner Panel is now the only owner-control entry point.','Owner Tools, Global Events, Admin Abuse, Rewards, Announcements, Players, and Server Status are all inside the same panel.','BestGamer and Landon keep owner access.','Updated the game version marker and Update Log to v3.12.1.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

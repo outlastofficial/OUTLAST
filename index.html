@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.11.0">
+<meta name="outlast-build" content="3.12.0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.11.0">
-<title>OUTLAST v3.11.0</title>
+<meta name="build-version" content="3.12.0">
+<title>OUTLAST v3.12.0</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -864,7 +864,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
             <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div><div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div><div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
             <div class="menu-card"><h3>Settings</h3><button class="menu-btn" id="settingsNewBtn">⚙️ Settings</button></div>
-            <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div><div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div><div class="menu-card" id="ownerPanelCard"><h3>Owner Tools</h3><button class="menu-btn gold" id="ownerBtn">👑 Owner Panel</button></div>
+            <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div><div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div><div class="menu-card" id="ownerPanelCard"><h3>Owner Panel</h3><button class="menu-btn gold" id="ownerBtn">👑 Open Owner Panel</button></div>
             
           </div>
         </section>
@@ -2805,7 +2805,7 @@ window.adminXP=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a 
 window.adminRareLoot=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.gems.push({x:game.player.x+55,y:game.player.y,value:game.xpNeed*8,icon:'✦'});game.coins.push({x:game.player.x-55,y:game.player.y,value:500,icon:'✦'});toast('✦ Rare loot spawned!');document.getElementById('adminBtn').click()};
 window.adminShrine=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');spawnShrine();document.getElementById('adminBtn').click()};
 window.adminHazard=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');triggerMapEvent();toast('⚠ Map hazard triggered!');document.getElementById('adminBtn').click()};
-window.ownerPanel=()=>{if(!isOwner())return toast('Owner access only');openSub('👑 Owner Tools & Panel',`<div class="option"><b>OWNER CONTROLS</b><div class="small">All owner-only tools are combined here and kept separate from the Admin Panel.</div></div><div class="grid" style="margin-top:12px"><button class="option" data-owner-action="status">👑 Owner Status</button></div><div id="ownerStatusResult" class="option" style="margin-top:12px"><b>Owner Panel Ready</b><div class="small">Owner-only tools are contained in this panel.</div></div>`);document.querySelector('[data-owner-action="status"]')?.addEventListener('click',()=>{const r=document.getElementById('ownerStatusResult');if(r)r.innerHTML='<b>👑 Owner Access Active</b><div class="small">Owner controls are contained in this panel.</div>';});};document.getElementById('ownerBtn')?.addEventListener('click',()=>ownerPanel());
+window.ownerPanelFallback=()=>{if(!isOwner())return toast('Owner access only');toast('Owner Panel is loading…')};document.getElementById('ownerBtn')?.addEventListener('click',()=>{if(typeof window.ownerPanel==='function')window.ownerPanel();else if(typeof window.ownerPanelFallback==='function')window.ownerPanelFallback();});
 window.adminEventPreview=()=>{if(!isAdmin())return;const entries=Object.entries(worldEvents);const cards=entries.map(([name,desc])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+name+'"><b>🌎 '+name+'</b><div class="small">'+desc+'</div><div class="small" style="margin-top:5px;color:#f2d06b">PREVIEW ONLY • Does not trigger the event</div></button>').join('');openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT PREVIEW</b><div class="small">Preview an event without starting or saving it.</div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');const panel=document.getElementById('subContent');panel?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{const name=btn.dataset.adminPreviewEvent,desc=worldEvents[name]||'No description available.',result=document.getElementById('adminEventPreviewResult');if(result)result.innerHTML='<div style="font-size:28px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged.</div></div>';}));};
 window.adminEvent=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;toast('🌎 '+game.worldEvent+' triggered!');document.getElementById('adminBtn').click()};
 window.adminObjective=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.objectiveComplete=true;toast('🎯 Objective completed!');document.getElementById('adminBtn').click()};
@@ -2987,6 +2987,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.12.0 — Unified Owner Panel','Removed the duplicate Owner Tools path and made the Owner Panel the single owner control center.'],
   ['v3.11.0 — Global Events','Added the synchronized global-event system, including timed global events that can be started and stopped for connected players.'],
   ['v3.9.7 — Nightfall Event Countdown','Added a live in-game countdown to the Nightfall Event, scheduled for October 1, 2026 at 12:00 AM local time. The countdown switches to NIGHTFALL IS LIVE when the event begins.'],
   ['v3.1.4 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
@@ -3082,8 +3083,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.11.0';
-const CURRENT_UPDATE_INFO={title:'v3.11.0 — Global Events',summary:'Added synchronized global events and updated the game to the current v3.11.0 release.',items:['Added a synchronized Global Events system for connected players.','Added timed event start/stop controls for the October and other global event types.','Updated the public Update Log to the current release.','Updated the in-game update popup to v3.11.0.']};
+const CURRENT_UPDATE_VERSION='3.12.0';
+const CURRENT_UPDATE_INFO={title:'v3.12.0 — Unified Owner Panel',summary:'Unified the owner controls into one Owner Panel and removed the duplicate owner-tools path.',items:['The main Owner Panel now opens the full Owner Control Center.','Removed the separate Owner Panel button from the Admin Panel.','Owner controls remain restricted to BestGamer and Landon.','Updated the game version marker and Update Log to v3.12.0.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

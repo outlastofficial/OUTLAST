@@ -145,7 +145,7 @@
   window.ownerPanel = ownerPanel;
   function installOwnerRealtimeBridge(){
     if(window.__outlastOwnerRealtimeBridge)return; window.__outlastOwnerRealtimeBridge=true;
-    try{const wsProto=API_BASE.startsWith('https:')?'wss:':'ws:'; const ws=new WebSocket(wsProto+'//'+API_BASE.replace(/^https?:\\/\\/,'') ); ws.addEventListener('message',event=>{try{const msg=JSON.parse(event.data);if(msg.type==='owner_announcement'&&typeof toast==='function')toast('📢 '+msg.message);if(msg.type==='owner_global_event'&&typeof window.dispatchEvent==='function')window.dispatchEvent(new CustomEvent('outlast:global-event',{detail:msg}));if(msg.type==='owner_admin_abuse'&&typeof window.dispatchEvent==='function')window.dispatchEvent(new CustomEvent('outlast:admin-abuse',{detail:msg}));}catch(_){}});}catch(_){}
+    try{const wsProto=API_BASE.startsWith('https:')?'wss:':'ws:'; const ws=new WebSocket(wsProto+'//'+API_BASE.replace(/^https?:\/\//,'') ); ws.addEventListener('message',event=>{try{const msg=JSON.parse(event.data);if(msg.type==='owner_announcement'&&typeof toast==='function')toast('📢 '+msg.message);if(msg.type==='owner_global_event'&&typeof window.dispatchEvent==='function')window.dispatchEvent(new CustomEvent('outlast:global-event',{detail:msg}));if(msg.type==='owner_admin_abuse'&&typeof window.dispatchEvent==='function')window.dispatchEvent(new CustomEvent('outlast:admin-abuse',{detail:msg}));}catch(_){}});}catch(_){}
   }
   function installEventCountdown(){
     if(document.getElementById('outlastEventCountdown')) return;

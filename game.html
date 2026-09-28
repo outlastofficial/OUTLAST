@@ -2991,6 +2991,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.9.7 — Nightfall Event Countdown','Added a live in-game countdown to the Nightfall Event, scheduled for October 1, 2026 at 12:00 AM local time. The countdown switches to NIGHTFALL IS LIVE when the event begins.'],
   ['v3.1.4 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
   ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],
   ['Version Display','Added the current game version to the main menu and Update Log.'],
@@ -3084,8 +3085,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.2.0';
-const CURRENT_UPDATE_INFO={title:'v3.2.0 — Damage-Only Weapons',summary:'Removed non-damage weapons from saved weapon state and kept the weapon catalog damage-focused. The OUTLAST Discord link is now a direct link button.',items:['Removed Plus Cannon and any unknown/non-damage weapon IDs from saved weapon unlocks, levels, and evolutions.','Only the approved damage-dealing weapon catalog can remain equipped or unlocked.','Old saves automatically fall back to Blaster if they reference a removed weapon.','The OUTLAST Discord button is now a direct link to https://discord.gg/bCMdZfggQ.','Updated the build marker and update popup to v3.2.0.']};
+const CURRENT_UPDATE_VERSION='3.9.7';
+const CURRENT_UPDATE_INFO={title:'v3.9.7 — Nightfall Countdown',summary:'Added the in-game countdown for the Nightfall Event, scheduled to open October 1, 2026.',items:['Added a live Nightfall Event countdown to the main Play menu.','Countdown uses each player’s local time and reaches zero at October 1, 2026 at 12:00 AM.','The timer switches to NIGHTFALL IS LIVE when the event start time is reached.','Updated the game version marker and update popup to v3.9.7.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

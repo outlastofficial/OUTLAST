@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.9.7">
-<title>OUTLAST v3.9.7</title>
+<meta name="outlast-build" content="3.12.1">
+<title>OUTLAST v3.12.1</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -966,7 +966,7 @@ let adminRole=outlastStorage.getItem('outlastAdminRole')|| (outlastStorage.getIt
 let adminUnlocked=adminRole==='tester'||adminRole==='full';
 function isAdmin(){return adminUnlocked}
 function isFullAdmin(){return adminUnlocked&&adminRole==='full'}
-function isOwner(){return String(currentUsername||'').trim().toLowerCase()==='bestgamer'}
+function isOwner(){const name=String(currentUsername||'').trim().toLowerCase();return name==='bestgamer'||name==='landon'}
 
 function setMenuPage(page){
   document.querySelectorAll('.menu-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.page===page));
@@ -2786,19 +2786,6 @@ window.adminXP=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a 
 window.adminRareLoot=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.gems.push({x:game.player.x+55,y:game.player.y,value:game.xpNeed*8,icon:'✦'});game.coins.push({x:game.player.x-55,y:game.player.y,value:500,icon:'✦'});toast('✦ Rare loot spawned!');document.getElementById('adminBtn').click()};
 window.adminShrine=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');spawnShrine();document.getElementById('adminBtn').click()};
 window.adminHazard=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');triggerMapEvent();toast('⚠ Map hazard triggered!');document.getElementById('adminBtn').click()};
-window.ownerPanel=()=>{
- if(!isOwner())return toast('Owner access only');
- openSub('👑 Owner Tools & Panel',`
-   <div class="option"><b>OWNER CONTROLS</b><div class="small">All owner-only tools are kept together in this panel. These controls are separate from the Admin Panel.</div></div>
-   <div class="grid" style="margin-top:12px"><button class="option" data-owner-action="status">👑 Owner Status</button></div>
-   <div id="ownerStatusResult" class="option" style="margin-top:12px"><b>Owner Panel Ready</b><div class="small">Owner-only tools will appear here.</div></div>`);
- const panel=document.getElementById('subContent');
- panel?.querySelector('[data-owner-action="status"]')?.addEventListener('click',()=>{
-   const r=document.getElementById('ownerStatusResult');
-   if(r)r.innerHTML='<b>👑 Owner Access Active</b><div class="small">Owner controls are contained in this panel and are not part of the Admin Panel.</div>';
- });
-};
-document.getElementById('ownerBtn')?.addEventListener('click',()=>{if(!isOwner())return toast('Owner access only');ownerPanel()});
 window.adminEventPreview=()=>{
  if(!isAdmin())return;
  const entries=Object.entries(worldEvents);
@@ -3085,8 +3072,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.9.7';
-const CURRENT_UPDATE_INFO={title:'v3.9.7 — Nightfall Countdown',summary:'Added the in-game countdown for the Nightfall Event, scheduled to open October 1, 2026.',items:['Added a live Nightfall Event countdown to the main Play menu.','Countdown uses each player’s local time and reaches zero at October 1, 2026 at 12:00 AM.','The timer switches to NIGHTFALL IS LIVE when the event start time is reached.','Updated the game version marker and update popup to v3.9.7.']};
+const CURRENT_UPDATE_VERSION='3.12.1';
+const CURRENT_UPDATE_INFO={title:'v3.12.1 — Maintenance Update',summary:'Routine release maintenance and control-routing updates.',items:['Updated the current build marker to v3.12.1.','Improved internal release routing and reliability.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

@@ -1,7 +1,7 @@
-/* OUTLAST v3.12.0 — Unified Owner Control Center */
+/* OUTLAST v3.12.1 — Unified Owner Control Center */
 (() => {
   'use strict';
-  const VERSION = '3.12.0';
+  const VERSION = '3.12.1';
   const API_BASE = 'https://outlast-server.onrender.com';
   const OWNER_USERNAMES = ['BestGamer', 'Landon'];
   const cleanUsername = value => String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 18);
@@ -25,7 +25,7 @@
 
   function ownerPanel() {
     if (!isOwnerAdmin()) { if(typeof toast==='function') toast('Owner access required.'); return; }
-    openSub('👑 OWNER TOOLS & PANEL',
+    openSub('👑 OWNER PANEL',
       '<div class="option"><b>OWNER CONTROL CENTER</b><div class="small">Owner-only controls for OUTLAST. Event Preview remains in the Admin Panel.</div></div>' +
       '<div class="grid" style="margin-top:12px">' +
       '<button id="ownerStatusOpen" class="option" type="button">👑 Owner Status</button>' +
@@ -150,6 +150,13 @@
     box.innerHTML='<div style="color:#d6a84f;font-size:11px;letter-spacing:1px">OUTLAST OCTOBER EVENT</div><div id="outlastEventTime" style="font-size:18px;margin-top:2px">Loading…</div>';
     document.body.appendChild(box);
     const update=()=>{const now=new Date();const target=new Date(now.getFullYear(),9,1,0,0,0,0);if(now>=target){box.innerHTML='<div style="color:#d6a84f;font-size:11px;letter-spacing:1px">OUTLAST OCTOBER EVENT</div><div style="font-size:18px;margin-top:2px">🎃 LIVE NOW!</div>';return;}const ms=target-now;const d=Math.floor(ms/86400000),h=Math.floor(ms/3600000)%24,m=Math.floor(ms/60000)%60,s=Math.floor(ms/1000)%60;const el=document.getElementById('outlastEventTime');if(el)el.textContent=d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';};update();setInterval(update,1000);};
-  function init(){installEventCountdown();installOwnerRealtimeBridge();wrapAdminPanel();wrapLogin();if(typeof currentUsername!=='undefined'&&currentUsername)setTimeout(()=>claimPendingCoins(currentUsername),500);setInterval(()=>{wrapAdminPanel();wrapLogin();installOwnerButton();},1000);}
+  function bindOwnerButton(){
+    const btn=document.getElementById('ownerBtn');
+    if(!btn||btn.__outlastOwnerBound)return;
+    btn.__outlastOwnerBound=true;
+    btn.onclick=(event)=>{event.preventDefault();event.stopPropagation();ownerPanel();};
+    btn.onpointerup=(event)=>{event.preventDefault();event.stopPropagation();ownerPanel();};
+  }
+  function init(){installEventCountdown();installOwnerRealtimeBridge();wrapAdminPanel();wrapLogin();bindOwnerButton();if(typeof currentUsername!=='undefined'&&currentUsername)setTimeout(()=>claimPendingCoins(currentUsername),500);setInterval(()=>{wrapAdminPanel();wrapLogin();bindOwnerButton();installOwnerButton();},1000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

@@ -280,37 +280,55 @@ function v314AdminPreview(){
   }));
 }
 
-function v314EnsureAdminPreview(){
-  const sc=document.getElementById('subContent');if(!sc)return;
-  try{if(typeof isAdmin==='function'&&!isAdmin())return;}catch(_){return;}
-  const text=(sc.textContent||'').toLowerCase();
-  const looksLikeAdmin=/admin panel|administrator|admin tools|admin controls|admin abuse|event preview/.test(text);
-  const ownerOnly=/owner panel|owner tools|owner control center/.test(text)&&!looksLikeAdmin;
-  if(!looksLikeAdmin||ownerOnly)return;
-  if(sc.querySelector('[data-action="v314AdminEventPreview"]'))return;
-  const grid=sc.querySelector('.grid');
-  const button='<button type="button" class="option" data-action="v314AdminEventPreview" style="margin-top:10px;text-align:left">👁️ Preview Upcoming Event<div class="small">Admin-only preview • does not start the event.</div></button>';
-  if(grid)grid.insertAdjacentHTML('beforeend',button);else sc.insertAdjacentHTML('beforeend',button);
+function v314AdminUnlocked(){
+  try{return typeof isAdmin==='function'&&isAdmin();}catch(_){return false;}
 }
-
+function v314AdminPanelOpen(){
+  const sc=document.getElementById('subContent');if(!sc)return false;
+  const title=(sc.querySelector('h2,h3')?.textContent||'').toLowerCase();
+  const text=(sc.textContent||'').toLowerCase();
+  return /admin panel|administrator|admin tools|admin controls|admin abuse/.test(title)||/admin panel|administrator|admin tools|admin controls|admin abuse/.test(text);
+}
+function v314EnsureAdminPreview(){
+  const sc=document.getElementById('subContent');if(!sc||!v314AdminUnlocked()||!v314AdminPanelOpen())return;
+  if(sc.querySelector('[data-v314-admin-preview-launch]'))return;
+  const wrap=document.createElement('div');
+  wrap.setAttribute('data-v314-admin-preview-launch','1');
+  wrap.className='option';
+  wrap.style.cssText='margin-top:12px;border:1px solid #8a6a19;background:#17130a;text-align:left';
+  wrap.innerHTML='<b>👁️ EVENT PREVIEW</b><div class="small" style="margin-top:5px">Admin-only. Inspect an event without starting or changing it.</div><button type="button" class="gold" data-action="v314AdminEventPreview" style="margin-top:9px;width:100%">OPEN EVENT PREVIEW</button>';
+  sc.appendChild(wrap);
+}
 function v314PatchAdmin(){
   window.adminEventPreview=v314AdminPreview;
-  const scan=()=>v314EnsureAdminPreview();
-  scan();
+  const bind=()=>{
+    const sc=document.getElementById('subContent');
+    if(sc&&!sc.dataset.v314PreviewBound){
+      sc.dataset.v314PreviewBound='1';
+      sc.addEventListener('click',e=>{
+        const b=e.target?.closest?.('[data-action="v314AdminEventPreview"]');
+        if(!b)return;
+        e.preventDefault();e.stopPropagation();
+        v314AdminPreview();
+      });
+    }
+    v314EnsureAdminPreview();
+  };
+  bind();
   if(!document.body.dataset.v314AdminObserver){
     document.body.dataset.v314AdminObserver='1';
-    const observer=new MutationObserver(()=>setTimeout(scan,50));
-    observer.observe(document.body,{childList:true,subtree:true});
+    new MutationObserver(()=>setTimeout(bind,30)).observe(document.body,{childList:true,subtree:true});
   }
-  if(!document.body.dataset.v314PreviewClickBound){
-    document.body.dataset.v314PreviewClickBound='1';
-    document.addEventListener('click',e=>{
-      const b=e.target?.closest?.('[data-action="v314AdminEventPreview"],[data-action="adminEventPreview"]');
-      if(!b)return;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      v314AdminPreview();
-    },true);
+  if(!window.__v314OpenSubWrapped&&typeof window.openSub==='function'){
+    const original=window.openSub;
+    window.openSub=function(title,body){
+      const result=original.apply(this,arguments);
+      setTimeout(()=>{
+        if(/admin panel|administrator|admin tools|admin controls|admin abuse/i.test(String(title||'')))v314EnsureAdminPreview();
+      },0);
+      return result;
+    };
+    window.__v314OpenSubWrapped=true;
   }
 }
 function v314UpdatePopup(){

@@ -2987,6 +2987,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.13.2 — Countdown Fix','Restored the Nightfall/October event countdown, fixed a multiplayer UI script syntax error that could stop later UI systems from running, and removed the duplicate owner script load.'],
   ['v3.12.1 — Maintenance Update','Routine release maintenance and control-routing updates.'],
   ['v3.11.0 — Global Events','Added the synchronized global-event system, including timed global events that can be started and stopped for connected players.'],
   ['v3.9.7 — Nightfall Event Countdown','Added a live in-game countdown to the Nightfall Event, scheduled for October 1, 2026 at 12:00 AM local time. The countdown switches to NIGHTFALL IS LIVE when the event begins.'],
@@ -3084,7 +3085,7 @@ const updates=[
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 const CURRENT_UPDATE_VERSION='3.12.1';
-const CURRENT_UPDATE_INFO={title:'v3.12.1 — Maintenance Update',summary:'Routine release maintenance and control-routing updates.',items:['Updated the current build marker to v3.12.1.','Improved internal release routing and reliability.']};
+const CURRENT_UPDATE_INFO={title:'v3.13.2 — Countdown Fix',summary:'Restored the Nightfall Event countdown and fixed the UI syntax issue that could prevent later game systems from loading.',items:['Restored the countdown to October 1, 2026 at 12:00 AM local time.','Added a persistent countdown card to the main menu plus the floating timer fallback.','Fixed the multiplayer UI script syntax error that could stop later features from initializing.','Removed the duplicate Owner Panel script load.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

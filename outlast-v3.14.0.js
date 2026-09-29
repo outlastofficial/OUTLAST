@@ -282,27 +282,26 @@ function v314AdminPreview(){
 
 function v314EnsureAdminPreview(){
   const sc=document.getElementById('subContent');if(!sc)return;
-  const hasPreview=!!sc.querySelector('[data-action="adminEventPreview"],[data-action="v314AdminEventPreview"]');
-  if(hasPreview)return;
+  try{if(typeof isAdmin==='function'&&!isAdmin())return;}catch(_){return;}
+  const text=(sc.textContent||'').toLowerCase();
+  const looksLikeAdmin=/admin panel|administrator|admin tools|admin controls|admin abuse|event preview/.test(text);
+  const ownerOnly=/owner panel|owner tools|owner control center/.test(text)&&!looksLikeAdmin;
+  if(!looksLikeAdmin||ownerOnly)return;
+  if(sc.querySelector('[data-action="v314AdminEventPreview"]'))return;
   const grid=sc.querySelector('.grid');
   const button='<button type="button" class="option" data-action="v314AdminEventPreview" style="margin-top:10px;text-align:left">👁️ Preview Upcoming Event<div class="small">Admin-only preview • does not start the event.</div></button>';
-  if(grid)grid.insertAdjacentHTML('beforeend',button);
-  else sc.insertAdjacentHTML('beforeend',button);
+  if(grid)grid.insertAdjacentHTML('beforeend',button);else sc.insertAdjacentHTML('beforeend',button);
 }
 
 function v314PatchAdmin(){
   window.adminEventPreview=v314AdminPreview;
-  const bindAdminPreview=()=>{
-    const b=document.getElementById('adminBtn');
-    if(!b||b.dataset.v314AdminBound)return;
-    b.dataset.v314AdminBound='1';
-    b.addEventListener('click',()=>{
-      setTimeout(v314EnsureAdminPreview,150);
-      setTimeout(v314EnsureAdminPreview,500);
-    },true);
-  };
-  bindAdminPreview();
-  setInterval(bindAdminPreview,1000);
+  const scan=()=>v314EnsureAdminPreview();
+  scan();
+  if(!document.body.dataset.v314AdminObserver){
+    document.body.dataset.v314AdminObserver='1';
+    const observer=new MutationObserver(()=>setTimeout(scan,50));
+    observer.observe(document.body,{childList:true,subtree:true});
+  }
   if(!document.body.dataset.v314PreviewClickBound){
     document.body.dataset.v314PreviewClickBound='1';
     document.addEventListener('click',e=>{

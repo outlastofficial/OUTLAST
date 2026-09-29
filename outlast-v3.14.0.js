@@ -2,8 +2,7 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.4';
-/* Rebuilt Nightfall timer: fixed U.S. Eastern noon target, independent of browser timezone. */
+const V314='3.14.5';
 const NIGHTFALL_TIMER_TARGET=Date.UTC(2026,9,1,16,0,0,0);
 const OPS_KEY='v314Ops';
 const DAILY_POOL=[
@@ -34,8 +33,8 @@ const PROTOCOLS=[
 const UPDATE_ITEMS=[
   'New Operations Center with rotating daily contracts and a weekly operation.',
   'New level milestone rewards at Levels 5, 10, 15, 20, and 25.',
-  'Live Nightfall Event Center restored with the October 1, 2026 countdown.',
-  'Nightfall Event becomes a live in-game state after the countdown reaches zero.',
+  'Live Nightfall Event Center restored for the October 1, 2026 event.',
+  'Nightfall Event becomes a live in-game state at the scheduled start time.',
   'New automatic Supply Drops during long runs, with faster drops during Nightfall.',
   'Added an in-run Threat Scanner showing live enemy pressure and boss danger.',
   'Added Deployment Protocol shortcuts for several existing high-intensity run setups.',
@@ -89,16 +88,6 @@ function v314DailyOps(){
   return list;
 }
 function v314WeeklyOp(){return WEEKLY_POOL[v314Hash(v314WeekKey())%WEEKLY_POOL.length];}
-function v314TimerParts(ms){
-  const total=Math.max(0,Math.floor(ms/1000));
-  return {d:Math.floor(total/86400),h:Math.floor((total%86400)/3600),m:Math.floor((total%3600)/60),s:total%60};
-}
-function v314NewTimerText(ms){
-  const p=v314TimerParts(ms);
-  return p.d+'d '+String(p.h).padStart(2,'0')+'h '+String(p.m).padStart(2,'0')+'m '+String(p.s).padStart(2,'0')+'s';
-}
-function v314NightfallTimerMs(){return Math.max(0,NIGHTFALL_TIMER_TARGET-Date.now());}
-function v314NightfallTimerMs(){return v314NightfallTimerMs();}
 function v314EventLive(){return Date.now()>=NIGHTFALL_TIMER_TARGET;}
 function v314NightfallClaim(){
   const o=v314Storage();
@@ -156,10 +145,10 @@ function renderV314Operations(){
 }
 
 function renderV314EventCenter(){
-  const live=v314EventLive(),left=v314NightfallTimerMs(),o=v314Storage(),claimed=!!o?.nightfallClaimed;
+  const live=v314EventLive(),o=v314Storage(),claimed=!!o?.nightfallClaimed;
   v314Open('🌑 Nightfall Event Center',
     '<div class="quick-card"><h3>'+ (live?'🌑 NIGHTFALL IS LIVE':'🌑 NIGHTFALL DEPLOYS OCTOBER 1') +'</h3><p>'+(live?'The event is active. Supply Drops are boosted during Nightfall.':'The event activates at 12:00 PM (noon) U.S. Eastern Time on October 1, 2026.')+'</p></div>'+
-    '<div class="option" style="text-align:center"><div class="small">EVENT COUNTDOWN</div><div id="v314EventBigCountdown" style="font-size:38px;font-weight:900;margin:8px 0">'+(live?'LIVE':'T− '+v314NewTimerText(left))+'</div><div class="small">October 1, 2026 • 12:00 PM (NOON) U.S. Eastern Time</div></div>'+
+    '<div class="option" style="text-align:center"><div class="small">SCHEDULED EVENT</div><div style="font-size:24px;font-weight:900;margin:8px 0">October 1, 2026</div><div class="small">12:00 PM (NOON) U.S. Eastern Time</div></div>'+
     '<div class="grid" style="margin-top:12px"><div class="option"><b>📦 Supply Drop Boost</b><div class="small">Nightfall supply drops arrive every 45 seconds and contain extra rewards.</div></div><div class="option"><b>🌑 Event Status</b><div class="small">'+(live?'ACTIVE':'SCHEDULED')+'</div></div><div class="option"><b>🎁 Event Reward</b><div class="small">Live players can claim one permanent event reward: 1,000 coins + 5 World Keys.</div><button class="'+(live&&!claimed?'gold':'menu-btn')+'" data-action="v314ClaimNightfall" '+(!live||claimed?'disabled':'')+' style="margin-top:8px;width:100%">'+(claimed?'✓ REWARD CLAIMED':live?'CLAIM NIGHTFALL REWARD':'LOCKED UNTIL LIVE')+'</button></div></div>'+
     ''
   );
@@ -172,7 +161,7 @@ function v314EnsureCards(){
   }
   const play=document.querySelector('.menu-page[data-page-content="play"] .menu-cards');
   if(play&&!document.getElementById('v314EventBtn')){
-    play.insertAdjacentHTML('beforeend','<div class="menu-card" id="v314NightfallCard"><h3>Nightfall Event</h3><button class="menu-btn" id="v314EventBtn">🌑 Event Center</button><div class="small" id="v314CountdownMini">Calculating countdown…</div></div>');
+    play.insertAdjacentHTML('beforeend','<div class="menu-card" id="v314NightfallCard"><h3>Nightfall Event</h3><button class="menu-btn" id="v314EventBtn">🌑 Event Center</button><div class="small">Scheduled for October 1, 2026.</div></div>');
   }
   const ob=document.getElementById('v314OperationsBtn');if(ob&&!ob.dataset.bound){ob.dataset.bound='1';ob.addEventListener('click',renderV314Operations);}
   const eb=document.getElementById('v314EventBtn');if(eb&&!eb.dataset.bound){eb.dataset.bound='1';eb.addEventListener('click',renderV314EventCenter);}
@@ -390,10 +379,6 @@ function v314UpdateLog(){
 function v314Tick(){
   try{
     v314EnsureCards();v314TrackProgress();v314MilestoneTick();v314SupplyTick();v314ThreatTick();v314NightfallHUD();
-    const mini=document.getElementById('v314CountdownMini');
-    if(mini)mini.textContent=v314EventLive()?'🌑 NIGHTFALL IS LIVE':'🌑 STARTS IN '+v314NewTimerText(v314NightfallTimerMs());
-    const big=document.getElementById('v314EventBigCountdown');
-    if(big)big.textContent=v314EventLive()?'LIVE':'STARTS IN '+v314NewTimerText(v314NightfallTimerMs());
     if(v314TrackProgress.dirty&&Date.now()-(v314Tick.lastPersist||0)>5000){v314SafePersist();v314TrackProgress.dirty=false;v314Tick.lastPersist=Date.now();}
   }catch(err){/* v3.14 systems never stop the base game */}
 }

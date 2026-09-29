@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.3">
-<title>OUTLAST v3.14.3</title>
+<meta name="outlast-build" content="3.14.4">
+<title>OUTLAST v3.14.4</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.3 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.4 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -2610,7 +2610,7 @@ function seededShopNumber(seed){
 }
 function ensureDailyShopStock(){
   const day=todayKey();
-  if(save.shopStockDay===day&&Array.isArray(save.shopStockIds)&&save.shopStockIds.length===6)return;
+  if(save.shopStockDay===day&&save.shopStockRotation==='3.14.4'&&Array.isArray(save.shopStockIds)&&save.shopStockIds.length===6)return;
   let seed=dailyShopSeedFor(day),pool=DAILY_SHOP_POOL.slice(),ids=[];
   while(ids.length<6&&pool.length){
     seed=seededShopNumber(seed);
@@ -2618,6 +2618,7 @@ function ensureDailyShopStock(){
     ids.push(pool.splice(index,1)[0].id);
   }
   save.shopStockDay=day;
+  save.shopStockRotation='3.14.4';
   save.shopStockIds=ids;
   if(save.shopDay!==day){save.shopDay=day;save.shopPurchases={};}
   persist();
@@ -3048,7 +3049,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.9.7 — Nightfall Event Countdown','Added a live in-game countdown to the Nightfall Event, scheduled for October 1, 2026 at 12:00 AM local time. The countdown switches to NIGHTFALL IS LIVE when the event begins.'],
+  ['v3.14.4 — Nightfall & Hub Polish','Rebuilt the current build from the v3.14.3 Survivor Hub baseline. Nightfall now targets October 1, 2026 at 12:00 PM local time, Daily Shop stock gets a fresh rotation seed for the new build, and the existing Admin Event Preview and Skin button fixes are preserved.'],
   ['v3.1.4 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
   ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],
   ['Version Display','Added the current game version to the main menu and Update Log.'],
@@ -4239,7 +4240,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
 </script><script src="outlast-v3.9.7.js"></script>
-<script src="outlast-v3.14.0.js?v=3.14.0"></script>
+<script src="outlast-v3.14.0.js?v=3.14.4"></script>
 
 <script id="outlast-v3143-skin-button-fix">
 (function(){

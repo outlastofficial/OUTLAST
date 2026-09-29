@@ -2,7 +2,7 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.5';
+const V314='3.14.6';
 const NIGHTFALL_TIMER_TARGET=Date.UTC(2026,9,1,16,0,0,0);
 const OPS_KEY='v314Ops';
 const DAILY_POOL=[
@@ -310,8 +310,8 @@ function v314EnsureAdminPreview(){
   if(!sc)return;
   const title=(sc.querySelector('h2,h3')?.textContent||'').trim().toLowerCase();
   const text=(sc.textContent||'').toLowerCase();
-  const owner=/owner panel|owner tools|owner control center/.test(title);
-  const admin=/admin panel|administrator|admin tools|admin controls|admin abuse/.test(title);
+  const owner=/owner panel|owner tools|owner control center/.test(title+' '+text);
+  const admin=/admin panel|administrator|admin tools|admin controls|admin abuse/.test(title+' '+text);
   const wrappers=[...sc.querySelectorAll('[data-v314-admin-preview-launch]')];
   wrappers.slice(1).forEach(el=>el.remove());
   if(!v314AdminUnlocked()||owner||!admin){

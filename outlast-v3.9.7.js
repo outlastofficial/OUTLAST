@@ -208,13 +208,13 @@ function renderPlayerList(){const box=$('coopPlayers');if(!box)return;const play
 function updateRoomUI(){const code=$('coopRoomCodeDisplay'),state=$('coopRoomState'),create=$('coopCreateBtn'),join=$('coopJoinBtn'),leave=$('coopLeaveBtn'),start=$('coopStartBtn');if(code)code.textContent=room?.code||'----';if(state)state.textContent=room?(room.started?'RUN STARTED':'ROOM READY'):'CREATE OR JOIN A ROOM';if(create)create.style.display=room?'none':'inline-flex';if(join)join.style.display=room?'none':'inline-flex';if(leave)leave.style.display=room?'inline-flex':'none';if(start)start.style.display=room&&!room.started?'inline-flex':'none';renderPlayerList()}
 function renderOnlinePanel(){
  connectOutlastServer();
- const body=\`
+ const body=`
 <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h2 style="margin:0">🌐 MULTIPLAYER</h2><div class="small">Create a room or join another player with a 4-character code.</div></div><div id="coopConnectionStatus" style="font-weight:900;color:#ffb36b">CONNECTING…</div></div>
 <div class="option" style="margin-top:12px;text-align:center"><div class="small">ROOM CODE</div><div id="coopRoomCodeDisplay" style="font-size:30px;letter-spacing:.18em;font-weight:900;margin:5px 0 12px">----</div><div id="coopRoomState" class="small">CREATE OR JOIN A ROOM</div></div>
 <div class="grid" style="margin-top:12px"><button id="coopCreateBtn" type="button">CREATE ROOM</button><button id="coopJoinBtn" type="button">JOIN ROOM</button></div>
 <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap"><input id="coopRoomCode" maxlength="4" autocomplete="off" placeholder="ROOM CODE" style="flex:1;min-width:130px;text-transform:uppercase"><button id="coopLeaveBtn" type="button" style="display:none">LEAVE</button><button id="coopStartBtn" type="button" style="display:none">START RUN</button></div>
 <div style="margin-top:12px"><h3 style="margin:0 0 7px">PLAYERS</h3><div id="coopPlayers"><div class="small">No room members yet.</div></div></div>
-<div class="small" style="margin-top:12px">Up to 4 players can share a room. Room membership, start state, and player positions are synchronized through the OUTLAST server.</div>\`;
+<div class="small" style="margin-top:12px">Up to 4 players can share a room. Room membership, start state, and player positions are synchronized through the OUTLAST server.</div>`;
  if(typeof window.openSub==='function')window.openSub('🌐 MULTIPLAYER',body);else{const p=$('subContent');if(p)p.innerHTML=body;const panel=$('subPanel');if(panel)panel.style.display='flex'}
  setTimeout(()=>{$('coopCreateBtn')?.addEventListener('click',createRoom);$('coopJoinBtn')?.addEventListener('click',joinRoom);$('coopLeaveBtn')?.addEventListener('click',leaveRoom);$('coopStartBtn')?.addEventListener('click',startRoom);$('coopRoomCode')?.addEventListener('input',e=>e.target.value=e.target.value.replace(/[^A-Za-z0-9]/g,'').slice(0,4).toUpperCase());updateRoomUI()},0)
 }

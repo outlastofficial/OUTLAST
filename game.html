@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.9">
-<title>OUTLAST v3.14.9</title>
+<meta name="outlast-build" content="3.14.10">
+<title>OUTLAST v3.14.10</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.9 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.10 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3203,8 +3203,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.14.9';
-const CURRENT_UPDATE_INFO={title:'v3.14.9 — Upgrade Choice Visibility Fix',summary:'Fixed the upgrade expansion so the new choices are actually added to the live pool and strengthened the rarity presentation.',items:['Fixed the new upgrade pool so all 19 added choices can actually appear.','Rare, Epic, Legendary, and Mythic cards now have stronger animated halos and orbiting particles.','Legendary and Mythic choices get extra rotating energy rings and a prominent rarity badge.','Mythic choices get a pulsing center beacon and MYTHIC DROP label.','Upgrade choice effects remain synced with the existing pause and selection flow.']};
+const CURRENT_UPDATE_VERSION='3.14.10';
+const CURRENT_UPDATE_INFO={title:'v3.14.10 — Upgrade Choice Visibility Fix',summary:'Fixed the upgrade expansion so the new choices are actually added to the live pool and strengthened the rarity presentation.',items:['Fixed the new upgrade pool so all 19 added choices can actually appear.','Rare, Epic, Legendary, and Mythic cards now have stronger animated halos and orbiting particles.','Legendary and Mythic choices get extra rotating energy rings and a prominent rarity badge.','Mythic choices get a pulsing center beacon and MYTHIC DROP label.','Upgrade choice effects remain synced with the existing pause and selection flow.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4300,7 +4300,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
 </script><script src="outlast-v3.9.7.js"></script>
-<script src="outlast-v3.14.0.js?v=3.14.7"></script>
+<script src="outlast-v3.14.0.js?v=3.14.10"></script>
 
 <script id="outlast-v3143-skin-button-fix">
 (function(){

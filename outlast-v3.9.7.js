@@ -157,3 +157,64 @@
   function init(){document.title='OUTLAST v'+VERSION;installEventCountdown();installOwnerRealtimeBridge();wrapLogin();bindOwnerButton();if(typeof currentUsername!=='undefined'&&currentUsername)setTimeout(()=>claimPendingCoins(currentUsername),500);setInterval(()=>{wrapLogin();bindOwnerButton();},1000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
+
+
+/* OUTLAST v3.12.2 — safe UI restores. Intentionally does not replace existing button handlers. */
+(function installSafeUIRestores(){
+  'use strict';
+  function el(id){return document.getElementById(id)}
+  function status(){
+    const menu=el('menu'); if(!menu)return;
+    let bar=el('playerStatusBar');
+    if(!bar){
+      bar=document.createElement('div'); bar.id='playerStatusBar'; bar.setAttribute('aria-label','Player status');
+      bar.innerHTML='<div class="status-cell status-player"><span class="status-label">USERNAME</span><span id="statusUsername" class="status-value">Player</span></div><div class="status-cell status-coins"><span class="status-label">COINS</span><span id="statusCoins" class="status-value">● 0</span></div><div class="status-cell status-level"><span class="status-label">LEVEL</span><span id="statusLevel" class="status-value">LV 1</span></div><div class="status-cell"><span class="status-label">HIGH SCORE</span><span id="statusHighScore" class="status-value">0</span></div><div class="status-cell"><span class="status-label">SKIN</span><span id="statusSkin" class="status-value">Classic</span></div>';
+      const summary=el('menuSummary'); if(summary)summary.parentNode.insertBefore(bar,summary); else menu.querySelector('.menu-main')?.prepend(bar);
+    }
+    const set=(id,v)=>{const x=el(id);if(x)x.textContent=v};
+    try{
+      set('statusUsername',window.currentUsername||'Player');
+      set('statusCoins','● '+Math.round(Number(window.save?.coins)||0));
+      set('statusLevel','LV '+Math.max(1,Number(window.save?.stats?.bestLevel)||1));
+      set('statusHighScore',Number(window.save?.stats?.highScore||window.save?.highScore||0)||0);
+      set('statusSkin',window.save?.selectedSkin||'Classic');
+    }catch(_){ }
+  }
+  function exitControl(){
+    let b=el('exitGameBtn');
+    if(!b){
+      b=document.createElement('button'); b.id='exitGameBtn'; b.type='button'; b.className='danger'; b.textContent='✕ EXIT GAME';
+      Object.assign(b.style,{position:'fixed',right:'18px',top:'18px',display:'none',zIndex:'70',pointerEvents:'auto',touchAction:'manipulation'});
+      b.setAttribute('aria-label','Exit current run');
+      document.body.appendChild(b);
+      b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{if(typeof window.exitGame==='function')window.exitGame();else if(typeof window.__outlastReturnToMenu==='function')window.__outlastReturnToMenu();}catch(err){console.error(err)}});
+    }
+    return b;
+  }
+  function version(){
+    const v='3.12.2';
+    const meta=document.querySelector('meta[name="outlast-build"]'); if(meta)meta.content=v;
+    const meta2=document.querySelector('meta[name="build-version"]'); if(meta2)meta2.content=v;
+    document.title='OUTLAST v'+v;
+    document.querySelectorAll('.menu-chip').forEach(x=>{if(/SURVIVOR HUB/i.test(x.textContent))x.textContent='v'+v+' • SURVIVOR HUB'});
+  }
+  function start(){
+    status(); const b=exitControl(); version();
+    const oldStart=window.startGame;
+    if(typeof oldStart==='function' && !oldStart.__safeExitWrapped){
+      const wrapped=function(){const out=oldStart.apply(this,arguments);try{exitControl().style.display='block'}catch(_){}status();return out};
+      wrapped.__safeExitWrapped=true; window.startGame=wrapped;
+    }
+    const oldExit=window.exitGame;
+    if(typeof oldExit==='function' && !oldExit.__safeExitWrapped){
+      const wrappedExit=function(){try{exitControl().style.display='none'}catch(_){}return oldExit.apply(this,arguments)};
+      wrappedExit.__safeExitWrapped=true; window.exitGame=wrappedExit;
+      b.onclick=function(e){e.preventDefault();e.stopPropagation();wrappedExit()};
+    }
+  }
+  const style=document.createElement('style');
+  style.textContent='#playerStatusBar{display:grid;grid-template-columns:1.35fr repeat(4,minmax(105px,1fr));gap:8px;margin:0 22px 10px}#playerStatusBar .status-cell{min-width:0;padding:9px 11px;background:linear-gradient(145deg,#0c1821,#081119);border:1px solid #244050;border-radius:10px;box-sizing:border-box}#playerStatusBar .status-label{display:block;margin-bottom:3px;color:#678296;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}#playerStatusBar .status-value{display:block;color:#eff8ff;font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#playerStatusBar .status-player .status-value{color:#69d7bd}#playerStatusBar .status-coins .status-value{color:#ffd85a}#playerStatusBar .status-level .status-value{color:#71c9ff}#exitGameBtn{min-width:132px;min-height:46px;padding:10px 14px;font:900 14px Arial,sans-serif;border-radius:10px;cursor:pointer}@media(max-width:760px){#playerStatusBar{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 13px 9px}#playerStatusBar .status-player{grid-column:1/-1}#playerStatusBar .status-value{font-size:14px}#exitGameBtn{right:10px!important;top:10px!important;min-width:118px;min-height:48px;font-size:13px}}';
+  document.head.appendChild(style);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+  setInterval(()=>{try{status();const b=el('exitGameBtn');if(b&&window.game)b.style.display=window.game.running?'block':'none'}catch(_){ }},500);
+})();

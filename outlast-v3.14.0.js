@@ -2,8 +2,8 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.1';
-const NIGHTFALL_TARGET_UTC=Date.UTC(2026,9,1,16,0,0,0);
+const V314='3.14.2';
+const NIGHTFALL_TARGET=Date.parse('2026-10-01T12:00:00-04:00');
 const OPS_KEY='v314Ops';
 const DAILY_POOL=[
   {id:'sweep',name:'Zombie Sweep',desc:'Defeat 75 zombies across your runs today.',type:'kills',target:75,reward:125},
@@ -89,13 +89,15 @@ function v314DailyOps(){
 }
 function v314WeeklyOp(){return WEEKLY_POOL[v314Hash(v314WeekKey())%WEEKLY_POOL.length];}
 function v314Fmt(ms){
-  const s=Math.max(0,Math.floor(ms/1000));
-  const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),ss=s%60;
-  if(d)return d+'d '+h+'h '+m+'m';
-  if(h)return h+'h '+m+'m '+ss+'s';
-  return m+'m '+String(ss).padStart(2,'0')+'s';
+  const total=Math.max(0,Math.floor(ms/1000));
+  const d=Math.floor(total/86400);
+  const h=Math.floor((total%86400)/3600);
+  const m=Math.floor((total%3600)/60);
+  const s=total%60;
+  return d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
 }
-function v314EventLive(){return Date.now()>=NIGHTFALL_TARGET_UTC;}
+function v314CountdownMs(){return Math.max(0,NIGHTFALL_TARGET-Date.now());}
+function v314EventLive(){return Date.now()>=NIGHTFALL_TARGET;}
 function v314NightfallClaim(){
   const o=v314Storage();
   if(!o||!v314EventLive())return v314Toast('🌑 Nightfall is not live yet');
@@ -152,7 +154,7 @@ function renderV314Operations(){
 }
 
 function renderV314EventCenter(){
-  const live=v314EventLive(),left=Math.max(0,NIGHTFALL_TARGET_UTC-Date.now()),o=v314Storage(),claimed=!!o?.nightfallClaimed;
+  const live=v314EventLive(),left=v314CountdownMs(),o=v314Storage(),claimed=!!o?.nightfallClaimed;
   v314Open('🌑 Nightfall Event Center',
     '<div class="quick-card"><h3>'+ (live?'🌑 NIGHTFALL IS LIVE':'🌑 NIGHTFALL DEPLOYS OCTOBER 1') +'</h3><p>'+(live?'The event is active. Supply Drops are boosted during Nightfall.':'The event activates at 12:00 PM (noon) U.S. Eastern Time on October 1, 2026.')+'</p></div>'+
     '<div class="option" style="text-align:center"><div class="small">EVENT COUNTDOWN</div><div id="v314EventBigCountdown" style="font-size:38px;font-weight:900;margin:8px 0">'+(live?'LIVE':'T− '+v314Fmt(left))+'</div><div class="small">October 1, 2026 • 12:00 PM (NOON) U.S. Eastern Time</div></div>'+
@@ -382,9 +384,9 @@ function v314Tick(){
   try{
     v314EnsureCards();v314TrackProgress();v314MilestoneTick();v314SupplyTick();v314ThreatTick();v314NightfallHUD();
     const mini=document.getElementById('v314CountdownMini');
-    if(mini)mini.textContent=v314EventLive()?'🌑 NIGHTFALL IS LIVE':'T− '+v314Fmt(NIGHTFALL_TARGET_UTC-Date.now());
+    if(mini)mini.textContent=v314EventLive()?'🌑 NIGHTFALL IS LIVE':'T− '+v314Fmt(v314CountdownMs());
     const big=document.getElementById('v314EventBigCountdown');
-    if(big)big.textContent=v314EventLive()?'LIVE':'T− '+v314Fmt(NIGHTFALL_TARGET_UTC-Date.now());
+    if(big)big.textContent=v314EventLive()?'LIVE':'T− '+v314Fmt(NIGHTFALL_TARGET-Date.now());
     if(v314TrackProgress.dirty&&Date.now()-(v314Tick.lastPersist||0)>5000){v314SafePersist();v314TrackProgress.dirty=false;v314Tick.lastPersist=Date.now();}
   }catch(err){/* v3.14 systems never stop the base game */}
 }

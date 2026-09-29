@@ -157,7 +157,7 @@ function v314TrackProgress(){
   const rk=Number(run.kills||0),rc=Number(run.coins||0),rb=Number(run.bosses||0),rt=Number(game.time||0),rl=Number(game.level||1);
   if(!v314TrackProgress.state)v314TrackProgress.state={k:rk,c:rc,b:rb,t:rt,l:rl};
   const s=v314TrackProgress.state;
-  if(rk<s.k){s.k=rk;s.c=rc;s.b=rb;s.t=rt;s.l=rl;return;}
+  if(rk<s.k||rc<s.c||rb<s.b||rt<s.t){s.k=rk;s.c=rc;s.b=rb;s.t=rt;s.l=rl;return;}
   const dk=Math.max(0,rk-s.k),dc=Math.max(0,rc-s.c),db=Math.max(0,rb-s.b),dt=Math.max(0,rt-s.t);
   if(dk||dc||db||dt||rl>s.l){
     for(const c of v314DailyOps()){

@@ -3342,7 +3342,7 @@ document.getElementById('adminBtn').onclick=function(){
     '<button class="option" data-action="adminSpawnBoss">👹 Spawn Boss</button>'+ 
     '<button class="option" data-action="adminSpawnElite">🔥 Spawn Elite</button>'+ 
     '<button class="option" data-action="adminSpawnZombie">🧟 Spawn Zombie</button>'+ 
-    '<button class="option" data-action="adminSpawnLoot">💎 Spawn Loot</button>'+ 
+    '<button class="option" data-action="adminSpawnLoot">💎 Spawn Loot</button><button class="option" data-action="adminEventPreview">👁️ Preview Upcoming Event</button>'+ 
     '<button class="option" data-action="adminWave">🌊 Next Wave</button>'+ 
     '<button class="option danger" data-action="adminReset">⚠️ Reset Save (test only)</button>'+ 
     '<button class="option danger" data-action="adminLock">🔒 LOCK & DISCARD TEST CHANGES</button>'+
@@ -3353,6 +3353,17 @@ window.adminLogin=function(){
   const input=document.getElementById('adminPasswordInput'), error=document.getElementById('adminLoginError');
   if((input?.value||'')!==ADMIN_PASSWORD){if(error)error.textContent='Incorrect admin password.';if(input){input.value='';input.focus();}return;}
   enterAdminSandbox();
+};
+window.adminEventPreview=function(){
+  if(!isAdmin())return;
+  const entries=Object.entries(worldEvents||{});
+  const cards=entries.length?entries.map(([name,desc])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+String(name).replace(/"/g,'&quot;')+'"><b>🌎 '+name+'</b><div class="small">'+desc+'</div><div class="small" style="margin-top:5px;color:#f2d06b">PREVIEW ONLY • Does not trigger the event</div></button>').join(''):'<div class="option">No upcoming events are configured.</div>';
+  openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT PREVIEW</b><div class="small">Preview an event without starting, triggering, or saving it.</div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');
+  document.getElementById('subContent')?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{
+    const name=btn.dataset.adminPreviewEvent,desc=worldEvents[name]||'No description available.';
+    const result=document.getElementById('adminEventPreviewResult');
+    if(result)result.innerHTML='<div style="font-size:28px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged.</div></div>';
+  }));
 };
 window.adminLock=leaveAdminSandbox;
 window.adminCoins=function(amount){if(!isAdmin())return;save.coins+=Number(amount)||0;updateMenuSummary();toast('🪙 Temporary coins added');document.getElementById('adminBtn').click()};

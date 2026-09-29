@@ -2,8 +2,8 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.5';
-const NIGHTFALL_TARGET=new Date(2026,9,1,12,0,0,0);
+const V314='3.14.6';
+const NIGHTFALL_TARGET=new Date(Date.UTC(2026,9,1,16,0,0,0));
 const OPS_KEY='v314Ops';
 const DAILY_POOL=[
   {id:'sweep',name:'Zombie Sweep',desc:'Defeat 75 zombies across your runs today.',type:'kills',target:75,reward:125},
@@ -132,8 +132,8 @@ function renderV314Operations(){
 function renderV314EventCenter(){
   const live=v314EventLive(),left=Math.max(0,NIGHTFALL_TARGET.getTime()-Date.now());
   v314Open('🌑 Nightfall Event Center',
-    '<div class="quick-card"><h3>'+ (live?'🌑 NIGHTFALL IS LIVE':'🌑 NIGHTFALL DEPLOYS OCTOBER 1') +'</h3><p>'+(live?'The event window is active. Long runs receive faster Supply Drops.':'Live countdown uses your local device time.')+'</p></div>'+
-    '<div class="option" style="text-align:center"><div class="small">EVENT COUNTDOWN</div><div id="v314EventBigCountdown" style="font-size:38px;font-weight:900;margin:8px 0">'+(live?'LIVE':'T− '+v314Fmt(left))+'</div><div class="small">October 1, 2026 • Local time</div></div>'+
+    '<div class="quick-card"><h3>'+ (live?'🌑 NIGHTFALL IS LIVE':'🌑 NIGHTFALL DEPLOYS OCTOBER 1') +'</h3><p>'+(live?'The event window is active. Long runs receive faster Supply Drops.':'The event starts at October 1, 2026 • 12:00 PM ET.')+'</p></div>'+
+    '<div class="option" style="text-align:center"><div class="small">EVENT COUNTDOWN</div><div id="v314EventBigCountdown" style="font-size:38px;font-weight:900;margin:8px 0">'+(live?'LIVE':'T− '+v314Fmt(left))+'</div><div class="small">October 1, 2026 • 12:00 PM ET</div></div>'+
     '<div class="grid" style="margin-top:12px"><div class="option"><b>Supply Drop Boost</b><div class="small">Long runs receive automatic supply caches. Nightfall shortens the interval.</div></div><div class="option"><b>Event Status</b><div class="small">'+(live?'ACTIVE':'SCHEDULED')+'</div></div><div class="option"><b>Preview Safe</b><div class="small">Event Preview in Admin lets admins inspect events without triggering them.</div></div></div>'
   );
 }

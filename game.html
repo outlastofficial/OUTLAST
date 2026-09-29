@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.11">
-<title>OUTLAST v3.14.11</title>
+<meta name="outlast-build" content="3.14.12">
+<title>OUTLAST v3.14.12</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.11 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.12 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3208,7 +3208,7 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.14.11';
+const CURRENT_UPDATE_VERSION='3.14.12';
 const CURRENT_UPDATE_INFO={title:'v3.14.10 — Upgrade Choice Visibility Fix',summary:'Fixed the upgrade expansion so the new choices are actually added to the live pool and strengthened the rarity presentation.',items:['Fixed the new upgrade pool so all 19 added choices can actually appear.','Rare, Epic, Legendary, and Mythic cards now have stronger animated halos and orbiting particles.','Legendary and Mythic choices get extra rotating energy rings and a prominent rarity badge.','Mythic choices get a pulsing center beacon and MYTHIC DROP label.','Upgrade choice effects remain synced with the existing pause and selection flow.']};
 function showUpdatePopup(force=false){
   let seen='';
@@ -4305,7 +4305,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
 </script><script src="outlast-v3.9.7.js"></script>
-<script src="outlast-v3.14.0.js?v=3.14.11"></script>
+<script src="outlast-v3.14.0.js?v=3.14.12"></script>
 
 <script id="outlast-v3143-skin-button-fix">
 (function(){
@@ -4487,6 +4487,177 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   if(typeof oldDamage==='function'&&!window.__v31411Damage){
     window.__v31411Damage=true;window.damageEnemy=function(e,dmg){const p=game.player;if(p){if(p.executioner&&e?.kind==='elite')dmg*=1+p.executioner;if(p.bossDamageBonus&&e?.boss)dmg*=1+p.bossDamageBonus;if(p.lastStand&&p.hp<p.max*.25)dmg*=1+(p.lastStandBonus||.35);}return oldDamage(e,dmg);};
   }
+})();
+</script>
+<style id="outlast-owner-remake-style">
+#outlastOwnerRemake{position:fixed;inset:0;z-index:200000;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(3,7,11,.9);backdrop-filter:blur(8px)}
+#outlastOwnerRemake .owner-modal{width:min(1100px,96vw);height:min(820px,92vh);display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(145deg,#101923,#080d13);border:1px solid #3b5368;border-radius:22px;box-shadow:0 30px 110px rgba(0,0,0,.7)}
+#outlastOwnerRemake .owner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;border-bottom:1px solid #283a49;background:linear-gradient(180deg,#172533,#0d151d)}
+#outlastOwnerRemake .owner-head h2{margin:0;font-size:24px}.outlast-owner-build{font-size:11px;color:#8fb8d5}.outlast-owner-close{width:auto!important;margin:0!important;padding:9px 13px!important;background:#6d3030!important;box-shadow:none!important}
+#outlastOwnerRemake .owner-body{display:flex;flex:1;min-height:0}.outlast-owner-nav{width:205px;flex:0 0 205px;padding:12px;background:#091018;border-right:1px solid #263846;overflow:auto}
+#outlastOwnerRemake .owner-nav-btn{width:100%;margin:0 0 8px!important;text-align:left;background:#111b24!important;border:1px solid #2a4052!important;box-shadow:none!important;font-size:13px!important}
+#outlastOwnerRemake .owner-nav-btn.active{background:#245d78!important;border-color:#67b8e7!important}
+#outlastOwnerRemake .owner-content{flex:1;min-width:0;overflow:auto;padding:18px}
+#outlastOwnerRemake .owner-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#outlastOwnerRemake .owner-card{background:#0e171f;border:1px solid #2b4050;border-radius:15px;padding:14px}
+#outlastOwnerRemake .owner-card h3{margin:0 0 7px;font-size:15px}
+#outlastOwnerRemake .owner-muted{color:#8da0b0;font-size:12px}.owner-ok{color:#76e0a0}.owner-warn{color:#ffd66d}.owner-bad{color:#ff8d8d}
+#outlastOwnerRemake input,#outlastOwnerRemake select,#outlastOwnerRemake textarea{width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid #334a5d;background:#091119;color:#fff;font:inherit}
+#outlastOwnerRemake button{cursor:pointer}.owner-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#outlastOwnerRemake .owner-table-row{display:grid;grid-template-columns:1.4fr .8fr 1fr;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #20313e;font-size:13px}
+#outlastOwnerRemake .owner-login{width:min(460px,100%);margin:auto}
+#outlastOwnerRemake .owner-brand{font-weight:900;font-size:28px;letter-spacing:.04em;margin-bottom:4px}
+@media(max-width:760px){
+ #outlastOwnerRemake{padding:0}.outlast-owner-nav{width:100%;flex:0 0 auto;display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid #263846;gap:7px}
+ #outlastOwnerRemake .owner-nav-btn{width:auto;white-space:nowrap;margin:0!important}.outlastOwner-build{display:none}
+ #outlastOwnerRemake .owner-body{flex-direction:column}.owner-grid{grid-template-columns:1fr!important}
+ #outlastOwnerRemake .owner-modal{width:100%;height:100dvh;border-radius:0}.owner-table-row{grid-template-columns:1fr!important;gap:4px!important}
+}
+</style>
+<script id="outlast-owner-remake-v31412">
+(function(){
+  'use strict';
+  const API='https://outlast-server.onrender.com';
+  const OWNER_NAMES=new Set(['bestgamer','landon']);
+  let unlocked=false,password='',tab='overview',busy=false;
+
+  function isOwnerName(){
+    const n=String(currentUsername||'').trim().toLowerCase();
+    return OWNER_NAMES.has(n);
+  }
+  function esc(v){
+    return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function root(){
+    let el=document.getElementById('outlastOwnerRemake');
+    if(el)return el;
+    el=document.createElement('div');el.id='outlastOwnerRemake';
+    el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.12</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
+    document.body.appendChild(el);
+    el.addEventListener('click',handleClick,true);
+    el.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();closePanel();}if(e.key==='Enter'&&document.getElementById('ownerRemakePassword')===document.activeElement)login();},true);
+    el.addEventListener('click',e=>{if(e.target===el)closePanel();},false);
+    return el;
+  }
+  function show(){root().style.display='flex';document.body.style.overflow='hidden';}
+  function closePanel(){unlocked=false;password='';tab='overview';const el=document.getElementById('outlastOwnerRemake');if(el)el.style.display='none';document.body.style.overflow='';}
+  function loginView(){
+    const el=root();show();
+    const nav=document.getElementById('outlastOwnerNav'),content=document.getElementById('outlastOwnerContent');
+    nav.innerHTML='';
+    content.innerHTML='<div class="owner-login owner-card">'+
+      '<div class="owner-brand">👑 OWNER ACCESS</div><div class="owner-muted">Server-verified access for the Owner Control Center.</div>'+
+      '<div style="height:14px"></div><label class="owner-muted">Owner password</label><input id="ownerRemakePassword" type="password" autocomplete="off" placeholder="Enter password" style="margin-top:6px">'+
+      '<div id="ownerRemakeError" class="owner-bad" style="min-height:20px;margin-top:8px"></div>'+
+      '<div class="owner-actions"><button type="button" class="gold" data-owner-remake="login">🔓 Unlock Owner Panel</button><button type="button" data-owner-remake="close">Cancel</button></div></div>';
+    setTimeout(()=>document.getElementById('ownerRemakePassword')?.focus(),30);
+  }
+  async function api(path,method='GET',body){
+    let url=API+path;const opt={method,cache:'no-store',headers:{}};
+    if(method==='GET'){
+      const q=new URLSearchParams({ownerUsername:String(currentUsername||''),password});
+      url+=(url.includes('?')?'&':'?')+q.toString();
+    }else{opt.headers['Content-Type']='application/json';opt.body=JSON.stringify({...body,ownerUsername:String(currentUsername||''),password});}
+    const r=await fetch(url,opt);const d=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));
+    if(!r.ok||d.ok===false)throw new Error(d.error||('Server request failed ('+r.status+')'));
+    return d;
+  }
+  async function login(){
+    if(busy)return;const input=document.getElementById('ownerRemakePassword'),err=document.getElementById('ownerRemakeError'),pw=String(input?.value||'');
+    if(!pw){if(err)err.textContent='Enter the owner password.';return;}
+    busy=true;
+    try{
+      const r=await fetch(API+'/api/owner/verify',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({ownerUsername:String(currentUsername||''),password:pw})});
+      const d=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));
+      if(!r.ok||d.ok!==true)throw new Error(d.error||'Owner verification failed.');
+      password=pw;unlocked=true;tab='overview';toast?.('👑 Owner Panel unlocked');render();
+    }catch(e){if(err)err.textContent=e.message||'Owner verification failed.';if(input){input.value='';input.focus();}}
+    finally{busy=false;}
+  }
+  function nav(){
+    const n=document.getElementById('outlastOwnerNav');if(!n)return;
+    const tabs=[['overview','⌂ Overview'],['players','👥 Players'],['events','🌎 Events'],['abuse','⚡ Admin Abuse'],['rewards','🎁 Rewards'],['announce','📣 Announce']];
+    n.innerHTML=tabs.map(x=>'<button type="button" class="owner-nav-btn '+(tab===x[0]?'active':'')+'" data-owner-remake="tab" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+
+      '<button type="button" class="owner-nav-btn" data-owner-remake="refresh">↻ Refresh</button><button type="button" class="owner-nav-btn" data-owner-remake="lock">🔒 Lock Panel</button>';
+  }
+  function content(html){const c=document.getElementById('outlastOwnerContent');if(c)c.innerHTML=html;}
+  async function render(){
+    if(!unlocked||!isOwnerName()){closePanel();return;}
+    show();nav();content('<div class="owner-card">Loading owner controls…</div>');
+    try{
+      if(tab==='overview'){
+        const h=await api('/api/health');
+        const ev=h.globalEvent?.active?String(h.globalEvent.label||'Active event')+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
+        content('<div class="owner-grid">'+
+          '<div class="owner-card"><h3>👑 Owner</h3><div>'+esc(currentUsername)+'</div><div class="owner-muted">Verified server-side</div></div>'+
+          '<div class="owner-card"><h3>🌐 Server</h3><div class="owner-ok">'+esc(h.status||'unknown')+'</div><div class="owner-muted">Server v'+esc(h.version||'unknown')+'</div></div>'+
+          '<div class="owner-card"><h3>🟢 Connected Players</h3><div style="font-size:26px;font-weight:900">'+Number(h.players||0)+'</div></div>'+
+          '<div class="owner-card"><h3>🌎 Global Event</h3><div>'+esc(ev)+'</div></div></div>'+
+          '<div class="owner-card" style="margin-top:10px"><b>Owner panel status</b><div class="owner-muted" style="margin-top:6px">All protected actions require the server owner password on every request.</div></div>');
+      }else if(tab==='players'){
+        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[];
+        const rows=ps.map(p=>'<div class="owner-table-row"><b>'+esc(p.username)+'</b><span class="'+(p.online?'owner-ok':'owner-muted')+'">'+(p.online?'🟢 Online':'⚪ Offline')+'</span><span class="owner-muted">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent activity')+'</span></div>').join('');
+        content('<div class="owner-card"><h3>👥 Players</h3><div class="owner-muted">Live online players plus players known by the server.</div><div style="margin-top:10px">'+(rows||'<div class="owner-muted">No players recorded.</div>')+'</div></div>');
+      }else if(tab==='events'){
+        const d=await api('/api/owner/global-event');const current=d.active?String(d.label||'Active'):'None';
+        content('<div class="owner-card"><h3>🌎 Global Event Controller</h3><div class="owner-muted">Current: '+esc(current)+'</div><div style="height:12px"></div><label class="owner-muted">Event</label><select id="ownerRemakeEvent" style="margin-top:6px">'+['october','double_coins','double_xp','chaos','blackout','boss_rush'].map(x=>'<option value="'+x+'">'+x.replace(/_/g,' ')+'</option>').join('')+'</select><div style="height:8px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeEventMinutes" type="number" min="1" max="1440" value="30" style="margin-top:6px"><div class="owner-actions"><button type="button" class="gold" data-owner-remake="startEvent">▶ Start Event</button><button type="button" class="danger" data-owner-remake="stopEvent">■ Stop Event</button></div></div>');
+      }else if(tab==='abuse'){
+        const actions=[['boss','👹 Boss Spawn'],['blackout','🌑 Blackout'],['speed','💨 Enemy Speed Surge'],['chaos','⚡ Chaos'],['powerup','✨ Power-Up Rain'],['waves','🧟 Rapid Waves'],['stop','■ Stop Abuse']];
+        content('<div class="owner-card"><h3>⚡ Admin Abuse Controls</h3><div class="owner-muted">Temporary server-wide effects. Duration applies to effects that support it.</div><div style="height:10px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeAbuseMinutes" type="number" min="1" max="60" value="5" style="margin-top:6px"><div class="owner-grid" style="margin-top:10px">'+actions.map(x=>'<button type="button" class="'+(x[0]==='stop'?'danger':'option')+'" data-owner-remake="abuse" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+'</div></div>');
+      }else if(tab==='rewards'){
+        content('<div class="owner-grid"><div class="owner-card"><h3>🎁 Gift Coins</h3><div class="owner-muted">Queues coins server-side for a player to claim.</div><input id="ownerRemakeGiftUser" maxlength="18" placeholder="Player username" style="margin-top:10px"><input id="ownerRemakeGiftAmount" type="number" min="1" max="10000000" value="1000" style="margin-top:8px"><button type="button" class="gold" data-owner-remake="gift" style="margin-top:8px">● Gift Coins</button></div><div class="owner-card"><h3>🎁 Reward All</h3><div class="owner-muted">Queues the same reward for all known players.</div><input id="ownerRemakeAllAmount" type="number" min="1" max="100000" value="100" style="margin-top:10px"><button type="button" class="green" data-owner-remake="rewardAll" style="margin-top:8px">🎁 Reward All Players</button></div></div>');
+      }else{
+        content('<div class="owner-card"><h3>📣 Announcement</h3><div class="owner-muted">Broadcast a message to connected OUTLAST players.</div><textarea id="ownerRemakeAnnouncement" maxlength="240" placeholder="Announcement message" style="margin-top:10px;min-height:130px"></textarea><button type="button" class="gold" data-owner-remake="announce" style="margin-top:8px">📣 Send Announcement</button></div>');
+      }
+    }catch(e){
+      content('<div class="owner-card"><h3 class="owner-bad">⚠️ Owner request failed</h3><div class="owner-muted" style="margin-top:8px">'+esc(e.message||'Request failed')+'</div><button type="button" data-owner-remake="refresh" style="margin-top:10px">Retry</button></div>');
+    }
+  }
+  async function action(name,value){
+    if(busy)return;busy=true;
+    try{
+      if(name==='tab'){tab=value;await render();return;}
+      if(name==='refresh'){await render();return;}
+      if(name==='lock'){closePanel();toast?.('🔒 Owner Panel locked');return;}
+      if(name==='close'){closePanel();return;}
+      if(name==='login'){await login();return;}
+      if(!unlocked||!isOwnerName()){closePanel();return;}
+      if(name==='startEvent'){const type=document.getElementById('ownerRemakeEvent')?.value||'october',minutes=Math.floor(Number(document.getElementById('ownerRemakeEventMinutes')?.value)||30),d=await api('/api/owner/global-event','POST',{action:'start',eventType:type,durationMinutes:minutes});toast?.('🌎 '+(d.event?.label||'Event started'));await render();return;}
+      if(name==='stopEvent'){await api('/api/owner/global-event','POST',{action:'stop'});toast?.('■ Global event stopped');await render();return;}
+      if(name==='abuse'){const minutes=Math.floor(Number(document.getElementById('ownerRemakeAbuseMinutes')?.value)||5),d=await api('/api/owner/admin-abuse','POST',{action:value,durationMinutes:minutes});toast?.((d.label||'Admin abuse updated'));await render();return;}
+      if(name==='gift'){const target=String(document.getElementById('ownerRemakeGiftUser')?.value||'').trim(),amount=Math.floor(Number(document.getElementById('ownerRemakeGiftAmount')?.value)||0),d=await api('/api/owner/gift-coins','POST',{targetUsername:target,amount});toast?.('● '+d.amount+' coins queued for '+d.username);await render();return;}
+      if(name==='rewardAll'){const amount=Math.floor(Number(document.getElementById('ownerRemakeAllAmount')?.value)||0),d=await api('/api/owner/global-reward','POST',{amount});toast?.('🎁 '+d.amount+' coins queued for '+d.players+' players');await render();return;}
+      if(name==='announce'){const message=String(document.getElementById('ownerRemakeAnnouncement')?.value||'').trim();await api('/api/owner/announcement','POST',{message});toast?.('📣 Announcement sent');await render();return;}
+    }catch(e){toast?.('⚠️ '+(e.message||'Owner action failed'));await render();}
+    finally{busy=false;}
+  }
+  function handleClick(e){
+    const b=e.target?.closest?.('[data-owner-remake]');if(!b||!document.getElementById('outlastOwnerRemake')?.contains(b))return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    action(b.dataset.ownerRemake,b.dataset.value);
+  }
+  function open(){
+    if(!isOwnerName()){toast?.('Owner access required');return;}
+    if(unlocked){render();return;}
+    loginView();
+  }
+  function bindOwnerButton(){
+    const b=document.getElementById('ownerBtn');if(!b)return;
+    b.style.display=isOwnerName()?'':'none';
+    b.dataset.ownerRemakeBound='1';
+  }
+  document.addEventListener('pointerup',e=>{
+    const b=e.target?.closest?.('#ownerBtn');if(!b)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open();
+  },true);
+  document.addEventListener('click',e=>{
+    const b=e.target?.closest?.('#ownerBtn');if(!b)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open();
+  },true);
+  window.openOwnerPanel=open;
+  setTimeout(bindOwnerButton,0);setTimeout(bindOwnerButton,250);setTimeout(bindOwnerButton,1000);
 })();
 </script>
 </body>

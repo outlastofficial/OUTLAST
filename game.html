@@ -4704,5 +4704,82 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   setTimeout(bindOwnerButton,0);setTimeout(bindOwnerButton,250);setTimeout(bindOwnerButton,1000);
 })();
 </script>
-</body>
+<style id="outlast-v315-tutorial-css">
+#newPlayerTutorial{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,10,.78);backdrop-filter:blur(4px);z-index:140}
+#newPlayerTutorial .npt-card{width:min(620px,92vw);background:linear-gradient(145deg,#172535,#0c141c);border:1px solid #41627e;border-radius:22px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.62);position:relative}
+#newPlayerTutorial .npt-kicker{color:#82c8ff;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px}
+#newPlayerTutorial h2{font-size:30px;margin:0 0 8px}
+#newPlayerTutorial p{color:#b8c8d6;line-height:1.5;margin:8px 0}
+#newPlayerTutorial .npt-step{font-size:12px;color:#8197aa;margin-bottom:12px}
+#newPlayerTutorial .npt-tip{margin-top:14px;padding:12px 14px;border-radius:13px;background:#0b131b;border:1px solid #263b4e;color:#dbe8f2}
+#newPlayerTutorial .npt-actions{display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+#newPlayerTutorial button{margin:0}
+#newPlayerTutorial .npt-skip{background:#17232f;border:1px solid #334b60;box-shadow:none}
+#newPlayerTutorial .npt-next{background:#3da96b;box-shadow:0 4px 0 #23673f}
+.npt-focus{position:relative!important;z-index:141!important;box-shadow:0 0 0 4px rgba(105,192,255,.78),0 0 30px rgba(70,180,255,.45)!important;animation:nptPulse 1.1s ease-in-out infinite}
+@keyframes nptPulse{50%{filter:brightness(1.18);transform:translateY(-1px)}}
+@media(max-width:600px){#newPlayerTutorial .npt-card{padding:19px}#newPlayerTutorial h2{font-size:25px}}
+</style><script id="outlast-v315-new-player-tutorial">
+(function(){
+  const KEY='outlastNewPlayerTutorialV315';
+  const steps=[
+    {title:'Start your first run',body:'OUTLAST can look like a lot at first. You only need a few things to get started.',tip:'Tap PLAY, then START RUN. You can explore the other systems later.',target:'#startBtn'},
+    {title:'Move and survive',body:'Once the run begins, move around and stay alive while enemies come after you.',tip:'PC: WASD / Arrow Keys • Dash: Shift • Skill: Q • Ultimate: Space • Mobile: use the joystick and on-screen controls.',target:'#game'},
+    {title:'Defeat enemies and earn XP',body:'Defeating enemies gives you XP. Keep playing to level up and unlock stronger choices.',tip:'You do not need to understand every system before your first run. Focus on surviving and learning the controls.',target:'#game'},
+    {title:'Choose an upgrade',body:'When you level up, the game pauses and gives you three upgrade choices. Pick one and keep going.',tip:'Higher-rarity upgrades can have stronger effects. Legendary and Mythic choices have their own rolling reveal.',target:'#game'},
+    {title:'Explore when you are ready',body:'After your first run, you can explore Loadout, Gear, Progress, Challenges, World Events, and the other systems from the menu.',tip:'You can skip this tutorial anytime. Your first goal is simply: START RUN → SURVIVE → LEVEL UP.',target:'.menu-nav-btn[data-page="more"]'}
+  ];
+  let step=0,active=false,timer=null;
+  function el(s){try{return document.querySelector(s)}catch(_){return null}}
+  function clearFocus(){document.querySelectorAll('.npt-focus').forEach(x=>x.classList.remove('npt-focus'))}
+  function render(){
+    const root=el('#newPlayerTutorial'); if(!root)return;
+    const s=steps[step];
+    root.querySelector('.npt-step').textContent='STEP '+(step+1)+' OF '+steps.length;
+    root.querySelector('h2').textContent=s.title;
+    root.querySelector('.npt-body').textContent=s.body;
+    root.querySelector('.npt-tip').textContent=s.tip;
+    root.querySelector('.npt-next').textContent=step===steps.length-1?'FINISH':'NEXT';
+    clearFocus();
+    const target=el(s.target);
+    if(target) target.classList.add('npt-focus');
+  }
+  function close(mark){
+    active=false; clearFocus();
+    const root=el('#newPlayerTutorial'); if(root)root.style.display='none';
+    if(mark){try{localStorage.setItem(KEY,'1')}catch(_){}}
+  }
+  function show(){
+    if(active)return;
+    const root=el('#newPlayerTutorial'); if(!root)return;
+    step=0; active=true; root.style.display='flex'; render();
+  }
+  function ready(){
+    const menu=el('#menu'),login=el('#login');
+    if(!menu)return false;
+    if(login && getComputedStyle(login).display!=='none')return false;
+    return getComputedStyle(menu).display!=='none';
+  }
+  function waitForMenu(){
+    if(ready()){
+      let seen=false; try{seen=localStorage.getItem(KEY)==='1'}catch(_){}
+      if(!seen){setTimeout(show,450);return}
+    }
+    clearTimeout(timer); timer=setTimeout(waitForMenu,700);
+  }
+  function install(){
+    if(document.getElementById('newPlayerTutorial'))return;
+    const root=document.createElement('div');
+    root.id='newPlayerTutorial';
+    root.innerHTML='<div class="npt-card" role="dialog" aria-modal="true" aria-label="New Player Tutorial"><div class="npt-kicker">OUTLAST • NEW PLAYER TUTORIAL</div><div class="npt-step"></div><h2></h2><p class="npt-body"></p><div class="npt-tip"></div><div class="npt-actions"><button type="button" class="npt-skip">SKIP TUTORIAL</button><button type="button" class="npt-next">NEXT</button></div></div>';
+    document.body.appendChild(root);
+    root.querySelector('.npt-next').addEventListener('click',function(){if(step<steps.length-1){step++;render()}else close(true)});
+    root.querySelector('.npt-skip').addEventListener('click',function(){close(true)});
+    root.addEventListener('click',function(e){if(e.target===root)close(true)});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&active)close(true)});
+    waitForMenu();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+})();
+</script></body>
 </html>

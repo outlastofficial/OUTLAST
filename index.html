@@ -774,7 +774,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
         <nav class="menu-nav" aria-label="Main menu">
           <button class="menu-nav-btn active" data-page="play">▶ Play</button>
           <button class="menu-nav-btn" data-page="loadout">⚔ Loadout</button>
-          <button class="menu-nav-btn" data-page="systems">◆ Systems</button>
+          <button class="menu-nav-btn" data-page="systems">◆ Gear</button>
           <button class="menu-nav-btn" data-page="progress">★ Progress</button>
           <button class="menu-nav-btn" data-page="more">▦ More</button>
         </nav>
@@ -787,61 +787,68 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.9.7 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.1 • SURVIVOR HUB</div>
         </div>
-        <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
+        <div id="menuSummary" class="small"></div>
+        <div class="row" style="justify-content:flex-start;margin:0 0 10px">
+          <button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button>
+          <button id="fullscreenBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Enter Fullscreen</button>
+        </div>
 
         <section class="menu-page active" data-page-content="play">
-          <div class="menu-page-title">Choose Your Run</div>
-          <div class="menu-page-sub">Everything you need to start is one tap away.</div>
+          <div class="menu-page-title">Play</div>
+          <div class="menu-page-sub">Everything that changes the current run is grouped here.</div>
           <div class="quick-card">
             <h3 style="font-size:22px;margin:0 0 4px">READY TO DEPLOY?</h3>
-            <p>Jump in with your current loadout, or tune the run below.</p>
+            <p>Start with your current setup or configure the run before you enter.</p>
             <div style="margin-top:12px"><button class="menu-btn green hero-btn" id="startBtn">▶ START RUN</button></div>
           </div>
           <div class="menu-cards">
-            <div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div><div class="menu-card"><h3>Map</h3><button class="menu-btn" id="mapBtn">Choose Map</button></div>
+            <div class="menu-card"><h3>Online</h3><button class="menu-btn" id="onlineBtn">Online / Multiplayer</button></div>
+            <div class="menu-card"><h3>Map</h3><button class="menu-btn" id="mapBtn">Choose Map</button></div>
             <div class="menu-card"><h3>Difficulty</h3><button class="menu-btn" id="difficultyBtn">Choose Difficulty</button></div>
             <div class="menu-card"><h3>Mode</h3><button class="menu-btn" id="modeBtn">Choose Game Mode</button></div>
             <div class="menu-card"><h3>Run Builder</h3><button class="menu-btn" id="runBuilderBtn">Build a Run</button></div>
             <div class="menu-card"><h3>Weekly</h3><button class="menu-btn" id="challengeBtn">Weekly Challenge</button></div>
             <div class="menu-card"><h3>Challenges</h3><button class="menu-btn" id="challengeModeBtn">Challenge Modes</button></div>
-            <div class="menu-card"><h3>Display</h3><button class="menu-btn" id="fullscreenBtn">Enter Fullscreen</button></div>
+            <div class="menu-card"><h3>World Events</h3><button class="menu-btn" id="worldBtn">World Events</button></div>
+            <div class="menu-card"><h3>World & Endgame</h3><button class="menu-btn" id="world2Btn">World & Endgame</button></div>
+            <div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
           </div>
         </section>
 
         <section class="menu-page" data-page-content="loadout">
-          <div class="menu-page-title">Build Your Survivor</div>
-          <div class="menu-page-sub">Your character, weapons, and abilities all live here.</div>
+          <div class="menu-page-title">Loadout</div>
+          <div class="menu-page-sub">Choose the survivor, gear, abilities, and upgrades you take into a run.</div>
           <div class="menu-cards">
-            <div class="menu-card"><h3>Upgrades</h3><button class="menu-btn" id="upgradeBtn">Open Upgrades</button></div>
             <div class="menu-card"><h3>Character</h3><button class="menu-btn" id="charBtn">Choose Character</button></div>
             <div class="menu-card"><h3>Weapons</h3><button class="menu-btn" id="weaponBtn">Choose Weapons</button></div>
             <div class="menu-card"><h3>Skins</h3><button class="menu-btn" id="skinBtn">Choose Skins</button></div>
             <div class="menu-card"><h3>Pets</h3><button class="menu-btn" id="petBtn">Manage Pets</button></div>
             <div class="menu-card"><h3>Active Skills</h3><button class="menu-btn" id="skillBtn">Manage Skills</button></div>
             <div class="menu-card"><h3>Elements</h3><button class="menu-btn" id="elementBtn">Manage Elements</button></div>
+            <div class="menu-card"><h3>Upgrades</h3><button class="menu-btn" id="upgradeBtn">Open Upgrades</button></div>
+            <div class="menu-card"><h3>Relics</h3><button class="menu-btn" id="relicBtn">Manage Relics</button></div>
+            <div class="menu-card"><h3>Charms</h3><button class="menu-btn" id="charmBtn">Manage Charms</button></div>
           </div>
         </section>
 
         <section class="menu-page" data-page-content="systems">
           <div class="menu-page-title">Gear & Systems</div>
-          <div class="menu-page-sub">Craft, upgrade, shop, and tune your run.</div>
+          <div class="menu-page-sub">Manage resources, crafting, shops, and long-term build systems.</div>
           <div class="menu-cards">
-            <div class="menu-card"><h3>Relics</h3><button class="menu-btn" id="relicBtn">Manage Relics</button></div>
-            <div class="menu-card"><h3>Charms</h3><button class="menu-btn" id="charmBtn">Manage Charms</button></div>
-            <div class="menu-card"><h3>Forge</h3><button class="menu-btn" id="forgeBtn">Open Forge</button></div>
-            <div class="menu-card"><h3>Daily Shop</h3><button class="menu-btn" id="shopBtn">Open Shop</button></div>
             <div class="menu-card"><h3>Inventory</h3><button class="menu-btn" id="inventoryBtn">Open Inventory</button></div>
+            <div class="menu-card"><h3>Forge</h3><button class="menu-btn" id="forgeBtn">Open Forge</button></div>
             <div class="menu-card"><h3>Crafting</h3><button class="menu-btn" id="craftBtn">Open Crafting</button></div>
             <div class="menu-card"><h3>Progression</h3><button class="menu-btn" id="progressionBtn">Keys & Skill Tree</button></div>
             <div class="menu-card"><h3>Modifiers</h3><button class="menu-btn" id="modifierBtn">Run Modifiers</button></div>
+            <div class="menu-card"><h3>Daily Shop</h3><button class="menu-btn" id="shopBtn">Open Shop</button></div>
           </div>
         </section>
 
         <section class="menu-page" data-page-content="progress">
-          <div class="menu-page-title">Your Progress</div>
-          <div class="menu-page-sub">See how far you've come and what is left to conquer.</div>
+          <div class="menu-page-title">Progress</div>
+          <div class="menu-page-sub">Track your records, rewards, achievements, quests, and collection.</div>
           <div class="menu-cards">
             <div class="menu-card"><h3>Stats</h3><button class="menu-btn" id="statsBtn">View Stats</button></div>
             <div class="menu-card"><h3>Leaderboard</h3><button class="menu-btn" id="leaderBtn">View Leaderboard</button></div>
@@ -851,21 +858,23 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Daily Reward</h3><button class="menu-btn" id="dailyBtn">Claim Daily Reward</button></div>
             <div class="menu-card"><h3>Titles</h3><button class="menu-btn" id="titleBtn">Manage Titles</button></div>
             <div class="menu-card"><h3>Records</h3><button class="menu-btn" id="recordsBtn">View Records</button></div>
-            <div class="menu-card"><h3>Collection</h3><button class="menu-btn" id="extrasBtn">Collection</button></div><div class="menu-card"><h3>Player Hub</h3><button class="menu-btn gold" id="playerHubBtn">🎯 Player Hub</button></div>
+            <div class="menu-card"><h3>Collection</h3><button class="menu-btn" id="extrasBtn">Collection</button></div>
+            <div class="menu-card"><h3>Player Hub</h3><button class="menu-btn gold" id="playerHubBtn">🎯 Player Hub</button></div>
           </div>
         </section>
 
         <section class="menu-page" data-page-content="more">
-          <div class="menu-page-title">Explore & Tools</div>
-          <div class="menu-page-sub">World content, help, updates, and advanced tools.</div>
+          <div class="menu-page-title">More</div>
+          <div class="menu-page-sub">Community, help, updates, settings, and restricted tools.</div>
           <div class="menu-cards">
-            <div class="menu-card"><h3>World Events</h3><button class="menu-btn" id="worldBtn">World Events</button></div>
-            <div class="menu-card"><h3>World 2.0</h3><button class="menu-btn" id="world2Btn">World & Endgame</button></div>
             <div class="menu-card"><h3>Help & Guide</h3><button class="menu-btn" id="helpBtn">Search How-To</button></div>
-            <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div><div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div><div class="menu-card"><h3>Daily Challenge</h3><button class="menu-btn gold" id="dailyChallengeBtn">🎯 Today Challenge</button></div>
+            <div class="menu-card"><h3>Update Log</h3><button class="menu-btn" id="updatesBtn">View Update Log</button></div>
+            <div class="menu-card"><h3>OUTLAST Archive</h3><button class="menu-btn" id="archiveBtn">📚 Open Archive</button></div>
             <div class="menu-card"><h3>Settings</h3><button class="menu-btn" id="settingsNewBtn">⚙️ Settings</button></div>
-            <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div><div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div><div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div><div class="menu-card" id="ownerPanelCard"><h3>Owner Panel</h3><button class="menu-btn gold" id="ownerBtn">👑 Open Owner Panel</button></div>
-            
+            <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div>
+            <div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div>
+            <div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
+            <div class="menu-card" id="ownerPanelCard"><h3>Owner Tools</h3><button class="menu-btn gold" id="ownerBtn">👑 Owner Panel</button></div>
           </div>
         </section>
       </main>

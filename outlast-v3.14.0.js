@@ -307,14 +307,7 @@ function v314PatchAdmin(){
 }
 
 function v314UpdatePopup(){
-  const pop=document.getElementById('updatePopup'),title=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
-  if(!pop||!title||!body)return;
-  let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersionV314')||'';}catch(_){}
-  title.textContent='v3.14.0 — OPERATIONS EXPANSION';
-  body.innerHTML='<p class="note">OUTLAST has a new major gameplay and progression update.</p><ul class="update-pop-list">'+UPDATE_ITEMS.map(x=>'<li>'+v314Esc(x)+'</li>').join('')+'</ul>';
-  const close=()=>{try{outlastStorage.setItem('outlastSeenUpdateVersionV314',V314);}catch(_){}pop.style.display='none';};
-  const cb=document.getElementById('updatePopupClose');if(cb&&!cb.dataset.v314Bound){cb.dataset.v314Bound='1';cb.onclick=close;}
-  if(!seen)pop.style.display='flex';
+  /* The main game owns the current update notification. Never hide it here. */
 }
 
 function v314UpdateLog(){

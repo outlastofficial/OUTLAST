@@ -297,8 +297,8 @@ setInterval(()=>{try{const b=$('exitGameBtn');if(b&&window.game)b.style.display=
 
   function cleanSwitchUsername(){
     buttonsByText(/^SWITCH USERNAME(?:\s*[•·|:;,.…→›>✦✧★☆])?$/i).forEach(btn=>{
-      btn.textContent='SWITCH USERNAME';
-      btn.setAttribute('type','button');
+      if(textOf(btn)!=='SWITCH USERNAME') btn.textContent='SWITCH USERNAME';
+      btn.setAttribute('type',btn.getAttribute('type')||'button');
     });
   }
 

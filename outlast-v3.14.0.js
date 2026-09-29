@@ -307,19 +307,21 @@ function v314PatchAdmin(){
 }
 
 function v314UpdatePopup(){
-  const pop=document.getElementById('updatePopup'),title=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
-  if(!pop||!title||!body)return;
-  let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersionV314')||'';}catch(_){}
-  title.textContent='v3.14.0 — OPERATIONS EXPANSION';
-  body.innerHTML='<p class="note">OUTLAST has a new major gameplay and progression update.</p><ul class="update-pop-list">'+UPDATE_ITEMS.map(x=>'<li>'+v314Esc(x)+'</li>').join('')+'</ul>';
-  const close=()=>{try{outlastStorage.setItem('outlastSeenUpdateVersionV314',V314);}catch(_){}pop.style.display='none';};
-  const cb=document.getElementById('updatePopupClose');if(cb&&!cb.dataset.v314Bound){cb.dataset.v314Bound='1';cb.onclick=close;}
-  if(!seen)pop.style.display='flex';
+  /* v3.14.0 systems remain active, but their retired release popup is disabled.
+     The single current popup is owned by the main game build metadata. */
+  const pop=document.getElementById('updatePopup');
+  if(pop && pop.dataset.v314Retired!=='1'){
+    pop.dataset.v314Retired='1';
+    if(pop.style.display==='flex')pop.style.display='none';
+  }
 }
 
 function v314UpdateLog(){
-  const items=UPDATE_ITEMS.map((x,i)=>'<div class="option"><b>'+((i+1))+'.</b> '+v314Esc(x)+'</div>').join('');
-  v314Open('▤ Update Log','<div class="quick-card"><h3>v3.14.0 • OPERATIONS EXPANSION</h3><p>Major new systems, progression rewards, event tools, and stability routing.</p></div><div class="feature-list">'+items+'</div><div class="option" style="margin-top:12px"><b>Previous updates</b><div class="small">Earlier release history remains part of the OUTLAST archive.</div></div>');
+  /* The current build owns the release log. Do not replace it with the
+     retired v3.14.0-only log. */
+  try{
+    if(typeof renderUpdates==='function'){ renderUpdates(); return; }
+  }catch(_){}
 }
 
 function v314Tick(){

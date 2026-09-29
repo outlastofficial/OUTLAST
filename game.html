@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.1">
-<title>OUTLAST v3.14.1</title>
+<meta name="outlast-build" content="3.14.2">
+<title>OUTLAST v3.14.2</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.1 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.2 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -873,7 +873,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div>
             <div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div>
             <div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
-            <div class="menu-card" id="ownerPanelCard"><h3>Owner Tools</h3><button class="menu-btn gold" id="ownerBtn">👑 Owner Panel</button></div>
+            <div class="menu-card" id="ownerPanelCard"><h3>Owner Panel</h3><button class="menu-btn gold" id="ownerBtn">👑 Owner Panel</button></div>
           </div>
         </section>
       </main>
@@ -2803,19 +2803,7 @@ window.adminXP=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a 
 window.adminRareLoot=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.gems.push({x:game.player.x+55,y:game.player.y,value:game.xpNeed*8,icon:'✦'});game.coins.push({x:game.player.x-55,y:game.player.y,value:500,icon:'✦'});toast('✦ Rare loot spawned!');document.getElementById('adminBtn').click()};
 window.adminShrine=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');spawnShrine();document.getElementById('adminBtn').click()};
 window.adminHazard=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');triggerMapEvent();toast('⚠ Map hazard triggered!');document.getElementById('adminBtn').click()};
-window.adminEventPreview=()=>{
- if(!isAdmin())return;
- const entries=Object.entries(worldEvents);
- const cards=entries.map(([name,desc])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+name+'"><b>🌎 '+name+'</b><div class="small">'+desc+'</div><div class="small" style="margin-top:5px;color:#f2d06b">PREVIEW ONLY • Does not trigger the event</div></button>').join('');
- openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT PREVIEW</b><div class="small">Preview an event without starting or saving it.</div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');
- const panel=document.getElementById('subContent');
- panel?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{
-   const name=btn.dataset.adminPreviewEvent,desc=worldEvents[name]||'No description available.';
-   const result=document.getElementById('adminEventPreviewResult');
-   if(result)result.innerHTML='<div style="font-size:28px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged.</div></div>';
- }));
-};
-window.adminEvent=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;toast('🌎 '+game.worldEvent+' triggered!');document.getElementById('adminBtn').click()};
+window.adminEventPreview=()=>{if(!isAdmin())return;const entries=Object.entries(worldEvents||{}),names=entries.map(x=>x[0]),opts=names.map((n,i)=>'<option value="'+i+'">'+String(n).split('<').join('&lt;').split('>').join('&gt;')+'</option>').join('');openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT PREVIEW</b><div class="small">Preview-only. Nothing is started, saved, or broadcast.</div><label class="small" style="display:block;margin-top:12px">Event</label><select id="adminPreviewSelect" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60">'+opts+'</select><div class="row" style="justify-content:flex-start;margin-top:10px"><button class="gold" id="adminPreviewApply">👁️ PREVIEW EVENT</button></div></div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"></div>');const show=()=>{const i=Number(document.getElementById('adminPreviewSelect')?.value||0),n=names[i]||names[0],d=worldEvents?.[n]||'No description available.',r=document.getElementById('adminEventPreviewResult');if(r)r.innerHTML='<div style="font-size:24px;font-weight:900">🌎 '+String(n).split('<').join('&lt;').split('>').join('&gt;')+'</div><div class="small" style="margin-top:8px">'+String(d).split('<').join('&lt;').split('>').join('&gt;')+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">Live event state was not changed.</div></div>';};const b=document.getElementById('adminPreviewApply');if(b)b.onclick=show;if(names.length)show();};window.adminEvent=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;toast('🌎 '+game.worldEvent+' triggered!');document.getElementById('adminBtn').click()};
 window.adminObjective=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.objectiveComplete=true;toast('🎯 Objective completed!');document.getElementById('adminBtn').click()};
 window.adminRaidBoss=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.raidBoss=save.raidBoss||Object.keys(raidBossDefs)[0];spawnBoss();toast('♛ Raid boss spawned!');document.getElementById('adminBtn').click()};
 window.adminWeekly=()=>{if(!isFullAdmin())return;save.weeklyKey='';persist();toast('▣ Weekly challenge reset!');document.getElementById('adminBtn').click()};
@@ -2840,6 +2828,85 @@ window.adminLock=()=>{
  closeSub();toast('🔒 Admin panel locked • player username restored');
 };
 window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account to a fresh OUTLAST save?')){save=freshSave();ensureMegaSave();persist();toast('Account reset.');closeSub();updateMenuSummary()}};
+
+
+/* OUTLAST v3.14.2 OWNER CONTROL CENTER */
+(function(){
+  const OWNER_API='https://outlast-server.onrender.com';
+  let unlocked=false, password='', tab='overview';
+  function esc(v){return String(v??'').split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&#39;');}
+  function owner(){return typeof isOwner==='function'&&isOwner();}
+  async function api(path,method,body){
+    let url=OWNER_API+path;
+    const o={method:method||'GET',cache:'no-store',headers:{}};
+    if(o.method==='GET'&&password) url+=(url.includes('?')?'&':'?')+new URLSearchParams({ownerUsername:String(currentUsername||''),password:password}).toString();
+    if(o.method!=='GET'){o.headers['Content-Type']='application/json';o.body=JSON.stringify(Object.assign({},body||{},password?{ownerUsername:String(currentUsername||''),password:password}:{}));}
+    const r=await fetch(url,o),d=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));
+    if(!r.ok||d.ok===false)throw new Error(d.error||('Server request failed ('+r.status+')'));return d;
+  }
+  function shell(){
+    return '<div class="option"><b>👑 OWNER CONTROL CENTER</b><div class="small">Password-verified owner tools. All protected actions are checked by the server.</div></div>'+
+    '<div class="row" style="justify-content:flex-start;margin:10px 0;overflow:auto">'+
+    '<button class="option" data-owner-action="tab" data-value="overview">Overview</button>'+
+    '<button class="option" data-owner-action="tab" data-value="players">Players</button>'+
+    '<button class="option" data-owner-action="tab" data-value="events">Global Events</button>'+
+    '<button class="option" data-owner-action="tab" data-value="abuse">Admin Abuse</button>'+
+    '<button class="option" data-owner-action="tab" data-value="rewards">Rewards</button>'+
+    '<button class="option" data-owner-action="tab" data-value="announce">Announcements</button>'+
+    '<button class="danger" data-owner-action="logout">🔒 Lock</button></div><div id="ownerPanelBody"></div>';
+  }
+  function open(){
+    if(!owner()){openSub('👑 Owner Panel','<div class="option"><b>Owner access required.</b><div class="small">Use an owner account to access this control center.</div></div>');return;}
+    if(unlocked){openSub('👑 Owner Panel',shell());render(tab);return;}
+    openSub('🔐 Owner Panel Unlock','<div class="option"><b style="font-size:24px">OWNER VERIFICATION</b><div class="small" style="margin:8px 0 12px">Enter the owner password to unlock all owner controls.</div><input id="ownerPasswordInput" type="password" autocomplete="off" placeholder="Owner password" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:2px solid #3b4d60;background:#0f151c;color:#fff;font-size:18px;margin-bottom:10px><button class="gold" data-owner-action="login">🔓 UNLOCK OWNER PANEL</button><div id="ownerLoginError" class="small" style="color:#ff8c8c;min-height:20px;margin-top:8px"></div></div>');
+    setTimeout(()=>document.getElementById('ownerPasswordInput')?.focus(),0);
+  }
+  async function login(){
+    const i=document.getElementById('ownerPasswordInput'),err=document.getElementById('ownerLoginError'),pw=i?.value||'';
+    if(!pw){if(err)err.textContent='Enter the owner password.';return;}
+    try{await api('/api/owner/players?'+new URLSearchParams({ownerUsername:String(currentUsername||''),password:pw}).toString());password=pw;unlocked=true;tab='overview';toast('👑 Owner Panel unlocked');openSub('👑 Owner Panel',shell());render(tab);}
+    catch(e){if(err)err.textContent=e.message||'Owner verification failed.';if(i){i.value='';i.focus();}}
+  }
+  async function render(which){
+    if(!unlocked||!owner())return;tab=which||tab;const b=document.getElementById('ownerPanelBody');if(!b)return;b.innerHTML='<div class="option">Loading…</div>';
+    try{
+      if(tab==='overview'){
+        const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
+        b.innerHTML='<div class="grid"><div class="option"><b>👑 Owner</b><div class="small">'+esc(currentUsername)+'</div></div><div class="option"><b>🌐 Server</b><div class="small">'+esc(h.status||'unknown')+'</div></div><div class="option"><b>🟢 Online</b><div class="small">'+Number(h.players||0)+' players</div></div><div class="option"><b>🌎 Event</b><div class="small">'+esc(ev)+'</div></div></div><button class="option" data-owner-action="tab" data-value="overview" style="margin-top:10px">↻ Refresh</button>';
+      }else if(tab==='players'){
+        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[],rows=ps.length?ps.map(p=>'<div class="option" style="display:flex;justify-content:space-between;gap:10px"><div><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+'</div></div><div class="small">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent time')+'</div></div>').join(''):'<div class="option">No known players yet.</div>';
+        b.innerHTML='<div class="option"><b>👥 All Players</b><div class="small">Online players first; offline players remain from the server record.</div></div><div style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><button class="option" data-owner-action="tab" data-value="players" style="margin-top:10px">↻ Refresh Players</button>';
+      }else if(tab==='events'){
+        const d=await api('/api/owner/global-event'),names=['october','double_coins','double_xp','chaos','blackout','boss_rush'],opts=names.map(x=>'<option value="'+x+'">'+x.split('_').join(' ')+'</option>').join(''),cur=d.active?d.label:'No global event active';
+        b.innerHTML='<div class="option"><b>🌎 Global Event Controller</b><div class="small">Current: '+esc(cur)+'</div></div><div class="option" style="margin-top:10px"><label class="small">Event</label><select id="ownerEventType" style="width:100%;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60">'+opts+'</select><label class="small" style="display:block;margin-top:10px">Duration (minutes)</label><input id="ownerEventDuration" type="number" min="1" max="1440" value="30" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><div class="row" style="justify-content:flex-start;margin-top:10px"><button class="gold" data-owner-action="startEvent">▶ Start Global Event</button><button class="danger" data-owner-action="stopEvent">■ Stop Event</button></div></div>';
+      }else if(tab==='abuse'){
+        const a=[['boss','👹 Boss Spawn'],['blackout','🌑 Blackout'],['speed','💨 Enemy Speed Surge'],['chaos','⚡ Chaos'],['powerup','✨ Power-Up Rain'],['waves','🧟 Rapid Waves']];
+        b.innerHTML='<div class="option"><b>⚠ Admin Abuse Controller</b><div class="small">Temporary server-wide event effects.</div></div><div class="grid" style="margin-top:10px">'+a.map(x=>'<button class="option" data-owner-action="abuse" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+'<button class="danger" data-owner-action="abuse" data-value="stop">■ Stop Admin Abuse</button></div><div class="option" style="margin-top:10px"><label class="small">Duration (minutes)</label><input id="ownerAbuseDuration" type="number" min="1" max="60" value="5" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"></div>';
+      }else if(tab==='rewards'){
+        b.innerHTML='<div class="option"><b>🎁 Player Rewards</b><div class="small">Gifts are stored server-side until the player claims them.</div></div><div class="option" style="margin-top:10px"><h3 style="margin:0 0 8px">Gift Coins</h3><input id="ownerGiftUser" maxlength="18" placeholder="Player username" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60;margin-bottom:8px"><input id="ownerGiftAmount" type="number" min="1" max="10000000" value="1000" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><button class="gold" data-owner-action="gift">● Gift Coins</button></div><div class="option" style="margin-top:10px"><h3 style="margin:0 0 8px">Global Reward</h3><input id="ownerGlobalAmount" type="number" min="1" max="100000" value="100" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><button class="green" data-owner-action="globalReward">🎁 Reward All Known Players</button></div>';
+      }else{
+        b.innerHTML='<div class="option"><b>📣 Global Announcement</b><div class="small">Send a message to connected players.</div><textarea id="ownerAnnouncementText" maxlength="240" placeholder="Announcement…" style="width:100%;box-sizing:border-box;min-height:110px;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60;margin-top:10px"></textarea><button class="gold" data-owner-action="announce">📣 Send Announcement</button></div>';
+      }
+    }catch(e){b.innerHTML='<div class="option"><b>⚠️ Owner server error</b><div class="small">'+esc(e.message||'Request failed')+'</div></div>';}
+  }
+  document.addEventListener('click',async e=>{
+    const b=e.target.closest?.('[data-owner-action]');if(!b)return;e.preventDefault();e.stopPropagation();const a=b.dataset.ownerAction,v=b.dataset.value;
+    try{
+      if(a==='tab'){render(v);return;}if(a==='login'){await login();return;}if(a==='logout'){unlocked=false;password='';closeSub();toast('🔒 Owner Panel locked');return;}
+      if(!unlocked||!owner()){open();return;}
+      if(a==='startEvent'){const type=document.getElementById('ownerEventType')?.value||'october',duration=Math.floor(Number(document.getElementById('ownerEventDuration')?.value)||30),d=await api('/api/owner/global-event','POST',{action:'start',eventType:type,durationMinutes:duration});toast('🌎 '+(d.event?.label||'Global event started'));render('events');return;}
+      if(a==='stopEvent'){await api('/api/owner/global-event','POST',{action:'stop'});toast('■ Global event stopped');render('events');return;}
+      if(a==='abuse'){const duration=Math.floor(Number(document.getElementById('ownerAbuseDuration')?.value)||5),d=await api('/api/owner/admin-abuse','POST',{action:v,durationMinutes:duration});toast(d.label||'Admin abuse updated');render('abuse');return;}
+      if(a==='gift'){const target=document.getElementById('ownerGiftUser')?.value?.trim()||'',amount=Math.floor(Number(document.getElementById('ownerGiftAmount')?.value)||0),d=await api('/api/owner/gift-coins','POST',{targetUsername:target,amount});toast('● '+d.amount+' coins gifted to '+d.username);render('rewards');return;}
+      if(a==='globalReward'){const amount=Math.floor(Number(document.getElementById('ownerGlobalAmount')?.value)||0),d=await api('/api/owner/global-reward','POST',{amount});toast('🎁 '+d.amount+' coins queued for '+d.players+' players');render('rewards');return;}
+      if(a==='announce'){const message=document.getElementById('ownerAnnouncementText')?.value?.trim()||'';await api('/api/owner/announcement','POST',{message});toast('📣 Announcement sent');render('announce');return;}
+    }catch(err){toast('⚠️ '+(err.message||'Owner action failed'));render(tab);}
+  },true);
+  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('ownerPasswordInput'))login();});
+  window.openOwnerPanel=open;const btn=document.getElementById('ownerBtn');if(btn)btn.onclick=e=>{e.preventDefault();e.stopPropagation();open();};
+  async function claimGifts(){const u=String(currentUsername||'').trim();if(u.length<2||u.length>18)return;try{const r=await fetch(OWNER_API+'/api/coins/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u})}),d=await r.json().catch(()=>null),n=Math.floor(Number(d?.coins)||0);if(r.ok&&d?.ok&&n>0){save.coins=Math.max(0,Math.floor(Number(save.coins)||0))+n;persist();toast('🎁 +'+n+' gifted coins received');}}catch(_){}}
+  window.claimServerCoinGifts=claimGifts;setTimeout(claimGifts,1800);
+})();
 
 document.getElementById('dailyBtn').onclick=()=>{
  const key=todayKey();const claimable=save.dayKey!==key;openSub('◆ Daily Reward',`<div style="text-align:center"><h3>${claimable?'Ready to claim!':'Already claimed today.'}</h3><p>Reward: <b>${50+save.dailyStreak*10} coins</b></p><p>Current streak: ${save.dailyStreak}</p><button ${claimable?'':'disabled'} data-action="daily" class="gold">${claimable?'CLAIM REWARD':'CLAIMED'}</button></div>`)
@@ -3089,8 +3156,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.14.0';
-const CURRENT_UPDATE_INFO={title:'v3.14.0 — Operations Expansion',summary:'Major gameplay, event, progression, and stability expansion.',items:['Added Operations Center systems and rotating contracts.','Added milestone rewards and restored the Nightfall Event Center.']};
+const CURRENT_UPDATE_VERSION='3.14.2';
+const CURRENT_UPDATE_INFO={title:'v3.14.2 — Owner Control & Event Preview',summary:'Restored the Owner Panel and made Admin Event Preview reliable.',items:['Owner Panel now uses server-verified owner unlock.','Owner controls cover players, global events, admin abuse, rewards, and announcements.','Admin Event Preview is preview-only and does not change the live event.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

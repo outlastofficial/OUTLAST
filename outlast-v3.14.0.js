@@ -2,7 +2,7 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.4';
+const V314='3.14.5';
 const NIGHTFALL_TARGET=new Date(2026,9,1,12,0,0,0);
 const OPS_KEY='v314Ops';
 const DAILY_POOL=[

@@ -2,8 +2,8 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.0';
-const NIGHTFALL_TARGET=new Date(2026,9,1,0,0,0,0);
+const V314='3.14.4';
+const NIGHTFALL_TARGET=new Date(2026,9,1,12,0,0,0);
 const OPS_KEY='v314Ops';
 const DAILY_POOL=[
   {id:'sweep',name:'Zombie Sweep',desc:'Defeat 75 zombies across your runs today.',type:'kills',target:75,reward:125},

@@ -284,30 +284,52 @@ function v314AdminPreview(){
 
 function v314EnsureAdminPreview(){
   const sc=document.getElementById('subContent');if(!sc)return;
-  const grid=sc.querySelector('.grid');
-  if(!grid)return;
-  const hasAdminLock=!!sc.querySelector('[data-action="adminLock"]');
-  const hasPreview=!!sc.querySelector('[data-action="adminEventPreview"],[data-action="v314AdminEventPreview"]');
-  if(hasAdminLock&&!hasPreview){
-    grid.insertAdjacentHTML('beforeend','<button class="option" data-action="v314AdminEventPreview">👁️ Preview Upcoming Event</button>');
+  const grid=sc.querySelector('.grid');if(!grid)return;
+  const hasLock=!!sc.querySelector('[data-action="adminLock"]');
+  const hasPreview=!!sc.querySelector('[data-action="adminEventPreview"],[data-action="v314AdminEventPreview"],[data-v314-preview]');
+  if(hasLock&&!hasPreview){
+    grid.insertAdjacentHTML('beforeend','<button type="button" class="option" data-action="v314AdminEventPreview" data-v314-preview="1">👁️ Preview Upcoming Event</button>');
   }
+  sc.querySelectorAll('[data-action="adminEventPreview"],[data-action="v314AdminEventPreview"],[data-v314-preview]').forEach(btn=>{
+    if(btn.dataset.v314PreviewBound==='1')return;
+    btn.dataset.v314PreviewBound='1';
+    btn.addEventListener('pointerup',function(e){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      v314AdminPreview();
+    },true);
+    btn.addEventListener('click',function(e){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      v314AdminPreview();
+    },true);
+  });
 }
 
 function v314PatchAdmin(){
   window.adminEventPreview=v314AdminPreview;
-  document.addEventListener('click',e=>{
-    const b=e.target?.closest?.('[data-action="v314AdminEventPreview"],[data-action="adminEventPreview"]');
+  document.addEventListener('pointerup',function(e){
+    const b=e.target?.closest?.('[data-action="v314AdminEventPreview"],[data-action="adminEventPreview"],[data-v314-preview]');
     if(!b)return;
-    e.preventDefault();e.stopImmediatePropagation();
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+    v314AdminPreview();
+  },true);
+  document.addEventListener('click',function(e){
+    const b=e.target?.closest?.('[data-action="v314AdminEventPreview"],[data-action="adminEventPreview"],[data-v314-preview]');
+    if(!b)return;
+    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
     v314AdminPreview();
   },true);
   const b=document.getElementById('adminBtn');
   if(b&&!b.dataset.v314AdminWrap){
-    b.dataset.v314AdminWrap='1';const old=b.onclick;
-    b.onclick=function(e){let r;try{if(typeof old==='function')r=old.call(this,e);}finally{setTimeout(v314EnsureAdminPreview,0);}return r;};
+    b.dataset.v314AdminWrap='1';
+    const old=b.onclick;
+    b.onclick=function(e){
+      let r;
+      try{if(typeof old==='function')r=old.call(this,e);}
+      finally{setTimeout(v314EnsureAdminPreview,0);}
+      return r;
+    };
   }
 }
-
 function v314UpdatePopup(){
   /* The main game owns the current update notification. Never hide it here. */
 }

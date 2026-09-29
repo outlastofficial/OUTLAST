@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.8">
-<title>OUTLAST v3.14.8</title>
+<meta name="outlast-build" content="3.14.9">
+<title>OUTLAST v3.14.9</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.8 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.9 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3203,8 +3203,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.14.8';
-const CURRENT_UPDATE_INFO={title:'v3.14.8 — Upgrade Rarity Expansion',summary:'Made level-up choices feel like real reward drops with stronger rarity effects and many more upgrade possibilities.',items:['Added 19 new run upgrades for more build variety.','Rare and higher choices now get stronger orbiting particles, corner sigils, and animated rarity effects.','Mythic choices get a special MYTHIC DROP presentation.','Improved Upgrade Luck rarity weighting so luck has a clearer impact on rare choices.','Added stronger elite and boss-focused upgrade paths.','Preserved keyboard, mouse, touch, pause, and selection behavior.']};
+const CURRENT_UPDATE_VERSION='3.14.9';
+const CURRENT_UPDATE_INFO={title:'v3.14.9 — Upgrade Choice Visibility Fix',summary:'Fixed the upgrade expansion so the new choices are actually added to the live pool and strengthened the rarity presentation.',items:['Fixed the new upgrade pool so all 19 added choices can actually appear.','Rare, Epic, Legendary, and Mythic cards now have stronger animated halos and orbiting particles.','Legendary and Mythic choices get extra rotating energy rings and a prominent rarity badge.','Mythic choices get a pulsing center beacon and MYTHIC DROP label.','Upgrade choice effects remain synced with the existing pause and selection flow.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4338,7 +4338,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     ['Last Stand',v=>'+'+Math.round(35*v)+'% damage below 25% HP',v=>{game.player.lastStand=true;game.player.lastStandBonus=(game.player.lastStandBonus||0)+.35*v}],
     ['Combat Medic',v=>'+'+(1.2*v).toFixed(1)+' HP/s and stronger healing',v=>{game.player.regen+=(1.2*v);game.player.healMult=(game.player.healMult||1)+.12*v}]
   ];
-  if(Array.isArray(window.tempUp)){
+  if(typeof tempUp!=='undefined'&&Array.isArray(tempUp)){
     for(const u of extraUpgrades) if(!tempUp.some(x=>x[0]===u[0])) tempUp.push(u);
   }
 

@@ -2,7 +2,7 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.3';
+const V314='3.14.4';
 /* Rebuilt Nightfall timer: fixed U.S. Eastern noon target, independent of browser timezone. */
 const NIGHTFALL_TIMER_TARGET=Date.UTC(2026,9,1,16,0,0,0);
 const OPS_KEY='v314Ops';
@@ -161,7 +161,7 @@ function renderV314EventCenter(){
     '<div class="quick-card"><h3>'+ (live?'🌑 NIGHTFALL IS LIVE':'🌑 NIGHTFALL DEPLOYS OCTOBER 1') +'</h3><p>'+(live?'The event is active. Supply Drops are boosted during Nightfall.':'The event activates at 12:00 PM (noon) U.S. Eastern Time on October 1, 2026.')+'</p></div>'+
     '<div class="option" style="text-align:center"><div class="small">EVENT COUNTDOWN</div><div id="v314EventBigCountdown" style="font-size:38px;font-weight:900;margin:8px 0">'+(live?'LIVE':'T− '+v314NewTimerText(left))+'</div><div class="small">October 1, 2026 • 12:00 PM (NOON) U.S. Eastern Time</div></div>'+
     '<div class="grid" style="margin-top:12px"><div class="option"><b>📦 Supply Drop Boost</b><div class="small">Nightfall supply drops arrive every 45 seconds and contain extra rewards.</div></div><div class="option"><b>🌑 Event Status</b><div class="small">'+(live?'ACTIVE':'SCHEDULED')+'</div></div><div class="option"><b>🎁 Event Reward</b><div class="small">Live players can claim one permanent event reward: 1,000 coins + 5 World Keys.</div><button class="'+(live&&!claimed?'gold':'menu-btn')+'" data-action="v314ClaimNightfall" '+(!live||claimed?'disabled':'')+' style="margin-top:8px;width:100%">'+(claimed?'✓ REWARD CLAIMED':live?'CLAIM NIGHTFALL REWARD':'LOCKED UNTIL LIVE')+'</button></div></div>'+
-    '<div class="option" style="margin-top:12px"><b>👁️ Admin Preview</b><div class="small">Admin Event Preview is separate from the live event and never activates it.</div></div>'
+    ''
   );
 }
 
@@ -317,14 +317,19 @@ function v314AdminPanelOpen(){
   return /admin panel|administrator|admin tools|admin controls|admin abuse/.test(title)||/admin panel|administrator|admin tools|admin controls|admin abuse/.test(text);
 }
 function v314EnsureAdminPreview(){
-  const sc=document.getElementById('subContent');if(!sc||!v314AdminUnlocked())return;
+  const sc=document.getElementById('subContent');
+  if(!sc)return;
+  const title=(sc.querySelector('h2,h3')?.textContent||'').trim().toLowerCase();
   const text=(sc.textContent||'').toLowerCase();
-  const title=(sc.querySelector('h2,h3')?.textContent||'').toLowerCase();
-  const owner=/owner panel|owner tools|owner control center/.test(title+' '+text);
-  const admin=/admin panel|administrator|admin tools|admin controls|admin abuse/.test(title+' '+text);
-  if(owner||(!admin&&sc.dataset.v314AdminContext!=='1'))return;
-  sc.dataset.v314AdminContext='1';
-  if(sc.querySelector('[data-v314-admin-preview-launch]'))return;
+  const owner=/owner panel|owner tools|owner control center/.test(title);
+  const admin=/admin panel|administrator|admin tools|admin controls|admin abuse/.test(title);
+  const wrappers=[...sc.querySelectorAll('[data-v314-admin-preview-launch]')];
+  wrappers.slice(1).forEach(el=>el.remove());
+  if(!v314AdminUnlocked()||owner||!admin){
+    wrappers.forEach(el=>el.remove());
+    return;
+  }
+  if(wrappers[0])return;
   const wrap=document.createElement('div');
   wrap.setAttribute('data-v314-admin-preview-launch','1');
   wrap.className='option';

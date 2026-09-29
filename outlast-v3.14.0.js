@@ -2,8 +2,8 @@
 'use strict';
 
 /* OUTLAST v3.14.0 — Operations / Event / Progression expansion */
-const V314='3.14.0';
-const NIGHTFALL_TARGET=new Date(2026,9,1,0,0,0,0);
+const V314='3.14.1';
+const NIGHTFALL_TARGET=new Date(2026,9,1,12,0,0,0);
 const OPS_KEY='v314Ops';
 const DAILY_POOL=[
   {id:'sweep',name:'Zombie Sweep',desc:'Defeat 75 zombies across your runs today.',type:'kills',target:75,reward:125},
@@ -57,6 +57,7 @@ function v314Storage(){
   if(!o.weekClaimed)o.weekClaimed=false;
   if(!o.milestones)o.milestones={};
   if(!o.snapshot)o.snapshot=null;
+  if(typeof o.nightfallClaimed!=='boolean')o.nightfallClaimed=false;
   if(o.dailyKey!==v314DayKey()){
     o.dailyKey=v314DayKey();o.dailyProgress={};o.dailyClaims={};
   }
@@ -95,6 +96,27 @@ function v314Fmt(ms){
   return m+'m '+String(ss).padStart(2,'0')+'s';
 }
 function v314EventLive(){return Date.now()>=NIGHTFALL_TARGET.getTime();}
+function v314NightfallClaim(){
+  const o=v314Storage();
+  if(!o||!v314EventLive())return v314Toast('🌑 Nightfall is not live yet');
+  if(o.nightfallClaimed)return v314Toast('Nightfall event reward already claimed');
+  o.nightfallClaimed=true;
+  save.coins=Math.round((Number(save.coins)||0)+1000);
+  save.worldKeys=(Number(save.worldKeys)||0)+5;
+  v314SafePersist();
+  v314Toast('🌑 Nightfall reward claimed! +1000 coins • +5 World Keys');
+  renderV314EventCenter();
+}
+function v314NightfallHUD(){
+  let el=document.getElementById('v314NightfallHUD');
+  if(!el){
+    el=document.createElement('div');el.id='v314NightfallHUD';
+    el.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:20;display:none;padding:7px 13px;border:1px solid #8a6a19;border-radius:999px;background:rgba(24,13,8,.94);box-shadow:0 8px 24px rgba(0,0,0,.35);font:900 12px Arial;color:#f4d48a;pointer-events:none;text-align:center';
+    document.body.appendChild(el);
+  }
+  if(typeof game==='undefined'||!game?.running||!v314EventLive()){el.style.display='none';return;}
+  el.style.display='block';el.textContent='🌑 NIGHTFALL LIVE • SUPPLY DROPS BOOSTED';
+}
 function v314SafePersist(){try{if(typeof persist==='function')persist();}catch(_){} }
 function v314Toast(msg){try{if(typeof toast==='function')toast(msg);}catch(_){} }
 function v314Open(title,body){try{if(typeof openSub==='function')openSub(title,body);}catch(_){} }
@@ -130,11 +152,12 @@ function renderV314Operations(){
 }
 
 function renderV314EventCenter(){
-  const live=v314EventLive(),left=Math.max(0,NIGHTFALL_TARGET.getTime()-Date.now());
+  const live=v314EventLive(),left=Math.max(0,NIGHTFALL_TARGET.getTime()-Date.now()),o=v314Storage(),claimed=!!o?.nightfallClaimed;
   v314Open('🌑 Nightfall Event Center',
-    '<div class="quick-card"><h3>'+ (live?'🌑 NIGHTFALL IS LIVE':'🌑 NIGHTFALL DEPLOYS OCTOBER 1') +'</h3><p>'+(live?'The event window is active. Long runs receive faster Supply Drops.':'Live countdown uses your local device time.')+'</p></div>'+
-    '<div class="option" style="text-align:center"><div class="small">EVENT COUNTDOWN</div><div id="v314EventBigCountdown" style="font-size:38px;font-weight:900;margin:8px 0">'+(live?'LIVE':'T− '+v314Fmt(left))+'</div><div class="small">October 1, 2026 • Local time</div></div>'+
-    '<div class="grid" style="margin-top:12px"><div class="option"><b>Supply Drop Boost</b><div class="small">Long runs receive automatic supply caches. Nightfall shortens the interval.</div></div><div class="option"><b>Event Status</b><div class="small">'+(live?'ACTIVE':'SCHEDULED')+'</div></div><div class="option"><b>Preview Safe</b><div class="small">Event Preview in Admin lets admins inspect events without triggering them.</div></div></div>'
+    '<div class="quick-card"><h3>'+ (live?'🌑 NIGHTFALL IS LIVE':'🌑 NIGHTFALL DEPLOYS OCTOBER 1') +'</h3><p>'+(live?'The event is active. Supply Drops are boosted during Nightfall.':'The event activates at 12:00 PM local time on October 1, 2026.')+'</p></div>'+
+    '<div class="option" style="text-align:center"><div class="small">EVENT COUNTDOWN</div><div id="v314EventBigCountdown" style="font-size:38px;font-weight:900;margin:8px 0">'+(live?'LIVE':'T− '+v314Fmt(left))+'</div><div class="small">October 1, 2026 • 12:00 PM local time</div></div>'+
+    '<div class="grid" style="margin-top:12px"><div class="option"><b>📦 Supply Drop Boost</b><div class="small">Nightfall supply drops arrive every 45 seconds and contain extra rewards.</div></div><div class="option"><b>🌑 Event Status</b><div class="small">'+(live?'ACTIVE':'SCHEDULED')+'</div></div><div class="option"><b>🎁 Event Reward</b><div class="small">Live players can claim one permanent event reward: 1,000 coins + 5 World Keys.</div><button class="'+(live&&!claimed?'gold':'menu-btn')+'" data-action="v314ClaimNightfall" '+(!live||claimed?'disabled':'')+' style="margin-top:8px;width:100%">'+(claimed?'✓ REWARD CLAIMED':live?'CLAIM NIGHTFALL REWARD':'LOCKED UNTIL LIVE')+'</button></div></div>'+
+    '<div class="option" style="margin-top:12px"><b>👁️ Admin Preview</b><div class="small">Admin Event Preview is separate from the live event and never activates it.</div></div>'
   );
 }
 
@@ -195,9 +218,9 @@ function v314SupplyTick(){
   if(nowT<prev){game.v314NextSupply=v314EventLive()?60:90;}
   v314SupplyTick.lastTime=nowT;
   if(!game.v314NextSupply)game.v314NextSupply=(v314EventLive()?60:90);
-  const interval=v314EventLive()?60:90;
+  const interval=v314EventLive()?45:90;
   if(nowT>=game.v314NextSupply){
-    if(Array.isArray(game.coins))for(let i=0;i<3;i++)game.coins.push({x:game.player.x+(Math.random()-.5)*120,y:game.player.y+(Math.random()-.5)*120,value:20+Math.floor(Math.random()*15),icon:'◆'});
+    if(Array.isArray(game.coins))for(let i=0;i<(v314EventLive()?5:3);i++)game.coins.push({x:game.player.x+(Math.random()-.5)*140,y:game.player.y+(Math.random()-.5)*140,value:(v314EventLive()?30:20)+Math.floor(Math.random()*(v314EventLive()?20:15)),icon:'◆'});
     if(Array.isArray(game.gems))game.gems.push({x:game.player.x+30,y:game.player.y-30,value:Math.max(20,Number(game.xpNeed||50)/3),icon:'✦'});
     if(Array.isArray(game.powerups)&&game.powerups.length<25)game.powerups.push({x:game.player.x-30,y:game.player.y-30,type:'shield'});
     v314Toast('📦 SUPPLY DROP incoming!');
@@ -290,13 +313,19 @@ function v314AdminPanelOpen(){
   return /admin panel|administrator|admin tools|admin controls|admin abuse/.test(title)||/admin panel|administrator|admin tools|admin controls|admin abuse/.test(text);
 }
 function v314EnsureAdminPreview(){
-  const sc=document.getElementById('subContent');if(!sc||!v314AdminUnlocked()||!v314AdminPanelOpen())return;
+  const sc=document.getElementById('subContent');if(!sc||!v314AdminUnlocked())return;
+  const text=(sc.textContent||'').toLowerCase();
+  const title=(sc.querySelector('h2,h3')?.textContent||'').toLowerCase();
+  const owner=/owner panel|owner tools|owner control center/.test(title+' '+text);
+  const admin=/admin panel|administrator|admin tools|admin controls|admin abuse/.test(title+' '+text);
+  if(owner||(!admin&&sc.dataset.v314AdminContext!=='1'))return;
+  sc.dataset.v314AdminContext='1';
   if(sc.querySelector('[data-v314-admin-preview-launch]'))return;
   const wrap=document.createElement('div');
   wrap.setAttribute('data-v314-admin-preview-launch','1');
   wrap.className='option';
   wrap.style.cssText='margin-top:12px;border:1px solid #8a6a19;background:#17130a;text-align:left';
-  wrap.innerHTML='<b>👁️ EVENT PREVIEW</b><div class="small" style="margin-top:5px">Admin-only. Inspect an event without starting or changing it.</div><button type="button" class="gold" data-action="v314AdminEventPreview" style="margin-top:9px;width:100%">OPEN EVENT PREVIEW</button>';
+  wrap.innerHTML='<b>👁️ EVENT PREVIEW</b><div class="small" style="margin-top:5px">ADMIN ONLY • inspect events without starting them.</div><button type="button" class="gold" data-action="v314AdminEventPreview" style="margin-top:9px;width:100%">OPEN EVENT PREVIEW</button>';
   sc.appendChild(wrap);
 }
 function v314PatchAdmin(){
@@ -351,7 +380,7 @@ function v314UpdateLog(){
 
 function v314Tick(){
   try{
-    v314EnsureCards();v314TrackProgress();v314MilestoneTick();v314SupplyTick();v314ThreatTick();
+    v314EnsureCards();v314TrackProgress();v314MilestoneTick();v314SupplyTick();v314ThreatTick();v314NightfallHUD();
     const mini=document.getElementById('v314CountdownMini');
     if(mini)mini.textContent=v314EventLive()?'🌑 NIGHTFALL IS LIVE':'T− '+v314Fmt(NIGHTFALL_TARGET.getTime()-Date.now());
     const big=document.getElementById('v314EventBigCountdown');
@@ -374,6 +403,7 @@ function v314Bind(){
     else if(a==='v314SaveSnapshot')v314SaveSnapshot();
     else if(a==='v314LoadSnapshot')v314LoadSnapshot();
     else if(a==='v314LeaderboardCheck')v314LeaderboardCheck();
+    else if(a==='v314ClaimNightfall')v314NightfallClaim();
     else if(a==='v314Protocol'){if(typeof save!=='undefined'){save.selectedModifier=v;v314SafePersist();v314Toast('⚡ '+v+' armed for the next run');}}
   });}
   v314UpdatePopup();

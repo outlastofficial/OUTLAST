@@ -159,62 +159,67 @@
 })();
 
 
-/* OUTLAST v3.12.2 — safe UI restores. Intentionally does not replace existing button handlers. */
-(function installSafeUIRestores(){
-  'use strict';
-  function el(id){return document.getElementById(id)}
-  function status(){
-    const menu=el('menu'); if(!menu)return;
-    let bar=el('playerStatusBar');
-    if(!bar){
-      bar=document.createElement('div'); bar.id='playerStatusBar'; bar.setAttribute('aria-label','Player status');
-      bar.innerHTML='<div class="status-cell status-player"><span class="status-label">USERNAME</span><span id="statusUsername" class="status-value">Player</span></div><div class="status-cell status-coins"><span class="status-label">COINS</span><span id="statusCoins" class="status-value">● 0</span></div><div class="status-cell status-level"><span class="status-label">LEVEL</span><span id="statusLevel" class="status-value">LV 1</span></div><div class="status-cell"><span class="status-label">HIGH SCORE</span><span id="statusHighScore" class="status-value">0</span></div><div class="status-cell"><span class="status-label">SKIN</span><span id="statusSkin" class="status-value">Classic</span></div>';
-      const summary=el('menuSummary'); if(summary)summary.parentNode.insertBefore(bar,summary); else menu.querySelector('.menu-main')?.prepend(bar);
-    }
-    const set=(id,v)=>{const x=el(id);if(x)x.textContent=v};
-    try{
-      set('statusUsername',window.currentUsername||'Player');
-      set('statusCoins','● '+Math.round(Number(window.save?.coins)||0));
-      set('statusLevel','LV '+Math.max(1,Number(window.save?.stats?.bestLevel)||1));
-      set('statusHighScore',Number(window.save?.stats?.highScore||window.save?.highScore||0)||0);
-      set('statusSkin',window.save?.selectedSkin||'Classic');
-    }catch(_){ }
-  }
-  function exitControl(){
-    let b=el('exitGameBtn');
-    if(!b){
-      b=document.createElement('button'); b.id='exitGameBtn'; b.type='button'; b.className='danger'; b.textContent='✕ EXIT GAME';
-      Object.assign(b.style,{position:'fixed',right:'18px',top:'18px',display:'none',zIndex:'70',pointerEvents:'auto',touchAction:'manipulation'});
-      b.setAttribute('aria-label','Exit current run');
-      document.body.appendChild(b);
-      b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{if(typeof window.exitGame==='function')window.exitGame();else if(typeof window.__outlastReturnToMenu==='function')window.__outlastReturnToMenu();}catch(err){console.error(err)}});
-    }
-    return b;
-  }
-  function version(){
-    const v='3.12.2';
-    const meta=document.querySelector('meta[name="outlast-build"]'); if(meta)meta.content=v;
-    const meta2=document.querySelector('meta[name="build-version"]'); if(meta2)meta2.content=v;
-    document.title='OUTLAST v'+v;
-    document.querySelectorAll('.menu-chip').forEach(x=>{if(/SURVIVOR HUB/i.test(x.textContent))x.textContent='v'+v+' • SURVIVOR HUB'});
-  }
-  function start(){
-    status(); const b=exitControl(); version();
-    const oldStart=window.startGame;
-    if(typeof oldStart==='function' && !oldStart.__safeExitWrapped){
-      const wrapped=function(){const out=oldStart.apply(this,arguments);try{exitControl().style.display='block'}catch(_){}status();return out};
-      wrapped.__safeExitWrapped=true; window.startGame=wrapped;
-    }
-    const oldExit=window.exitGame;
-    if(typeof oldExit==='function' && !oldExit.__safeExitWrapped){
-      const wrappedExit=function(){try{exitControl().style.display='none'}catch(_){}return oldExit.apply(this,arguments)};
-      wrappedExit.__safeExitWrapped=true; window.exitGame=wrappedExit;
-      b.onclick=function(e){e.preventDefault();e.stopPropagation();wrappedExit()};
-    }
-  }
-  const style=document.createElement('style');
-  style.textContent='#playerStatusBar{display:grid;grid-template-columns:1.35fr repeat(4,minmax(105px,1fr));gap:8px;margin:0 22px 10px}#playerStatusBar .status-cell{min-width:0;padding:9px 11px;background:linear-gradient(145deg,#0c1821,#081119);border:1px solid #244050;border-radius:10px;box-sizing:border-box}#playerStatusBar .status-label{display:block;margin-bottom:3px;color:#678296;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}#playerStatusBar .status-value{display:block;color:#eff8ff;font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#playerStatusBar .status-player .status-value{color:#69d7bd}#playerStatusBar .status-coins .status-value{color:#ffd85a}#playerStatusBar .status-level .status-value{color:#71c9ff}#exitGameBtn{min-width:132px;min-height:46px;padding:10px 14px;font:900 14px Arial,sans-serif;border-radius:10px;cursor:pointer}@media(max-width:760px){#playerStatusBar{grid-template-columns:repeat(2,minmax(0,1fr));margin:0 13px 9px}#playerStatusBar .status-player{grid-column:1/-1}#playerStatusBar .status-value{font-size:14px}#exitGameBtn{right:10px!important;top:10px!important;min-width:118px;min-height:48px;font-size:13px}}';
-  document.head.appendChild(style);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
-  setInterval(()=>{try{status();const b=el('exitGameBtn');if(b&&window.game)b.style.display=window.game.running?'block':'none'}catch(_){ }},500);
+
+/* OUTLAST v3.12.3 — UI cleanup + multiplayer room client. */
+(function(){
+'use strict';
+const SERVER_WS='wss://outlast-server.onrender.com';
+let socket=null,room=null,selfId='',reconnectTimer=null,pingTimer=null,stateTimer=null;
+const remotePlayers=new Map();
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function version(){const v='3.12.3';document.querySelector('meta[name="outlast-build"]')?.setAttribute('content',v);document.querySelector('meta[name="build-version"]')?.setAttribute('content',v);document.title='OUTLAST v'+v}
+function removeDuplicateStatus(){document.querySelectorAll('#playerStatusBar').forEach(x=>x.remove())}
+function installExit(){let b=$('exitGameBtn');if(!b){b=document.createElement('button');b.id='exitGameBtn';b.type='button';b.textContent='✕ EXIT GAME';b.className='danger';Object.assign(b.style,{position:'fixed',right:'18px',top:'18px',display:'none',zIndex:'70',minWidth:'132px',minHeight:'46px',fontWeight:'900',cursor:'pointer',touchAction:'manipulation'});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{if(typeof window.exitGame==='function')window.exitGame();else if(typeof window.closeAllOverlays==='function')window.closeAllOverlays()}catch(err){console.error('OUTLAST exit:',err)}});document.body.appendChild(b)}return b}
+function playerName(){return String(window.currentUsername||window.save?.username||'Player').trim()||'Player'}
+function send(payload){if(socket&&socket.readyState===WebSocket.OPEN)socket.send(JSON.stringify(payload))}
+function setOnlineStatus(text,ok){const e=$('coopConnectionStatus');if(e){e.textContent=text;e.style.color=ok?'#69d7bd':'#ffb36b'}}
+function connectOutlastServer(){
+ if(socket&&(socket.readyState===WebSocket.OPEN||socket.readyState===WebSocket.CONNECTING)){updateRoomUI();return}
+ setOnlineStatus('CONNECTING…',false);
+ try{socket=new WebSocket(SERVER_WS)}catch(_){setOnlineStatus('CONNECTION FAILED',false);return}
+ socket.onopen=()=>{setOnlineStatus('ONLINE',true);send({type:'player_join',username:playerName()});if(pingTimer)clearInterval(pingTimer);pingTimer=setInterval(()=>send({type:'player_ping',username:playerName()}),5000);updateRoomUI()};
+ socket.onmessage=e=>{
+  let msg;try{msg=JSON.parse(e.data)}catch(_){return}
+  if(msg.type==='welcome'){selfId=msg.id||selfId;return}
+  if(msg.type==='room_created'||msg.type==='room_joined'){room={code:msg.code,started:Boolean(msg.started),players:Array.isArray(msg.players)?msg.players:[]};selfId=msg.selfId||selfId;updateRemote(room.players);updateRoomUI();return}
+  if(msg.type==='room_state'){room={code:msg.code,started:Boolean(msg.started),players:Array.isArray(msg.players)?msg.players:[]};updateRemote(room.players);updateRoomUI();return}
+  if(msg.type==='room_game_start'){if(room)room.started=true;updateRoomUI();window.coopLaunchActive=true;window.roomStarted=true;try{if(typeof closeAllOverlays==='function')closeAllOverlays()}catch(_){}try{if(typeof window.startGame==='function'&&!window.game?.running)window.startGame(false)}catch(err){console.error(err)}return}
+  if(msg.type==='player_state'){remotePlayers.set(msg.id,msg);window.outlastRemotePlayers=remotePlayers;document.dispatchEvent(new CustomEvent('outlast:remote-player',{detail:msg}));return}
+  if(msg.type==='room_error'){if(typeof window.toast==='function')window.toast('⚠️ '+msg.error);updateRoomUI()}
+ };
+ socket.onerror=()=>setOnlineStatus('CONNECTION ERROR',false);
+ socket.onclose=()=>{if(pingTimer)clearInterval(pingTimer);pingTimer=null;setOnlineStatus('OFFLINE',false);room=null;remotePlayers.clear();updateRoomUI();if(reconnectTimer)clearTimeout(reconnectTimer);reconnectTimer=setTimeout(()=>{if(document.visibilityState!=='hidden')connectOutlastServer()},4000)}
+}
+function disconnectOutlastServer(){if(reconnectTimer)clearTimeout(reconnectTimer);if(pingTimer)clearInterval(pingTimer);pingTimer=null;room=null;remotePlayers.clear();if(socket){try{socket.close()}catch(_){}}socket=null;updateRoomUI();setOnlineStatus('OFFLINE',false)}
+function createRoom(){connectOutlastServer();setTimeout(()=>send({type:'create_room',username:playerName()}),200)}
+function joinRoom(){connectOutlastServer();const code=String($('coopRoomCode')?.value||'').trim().toUpperCase();if(code.length!==4){if(typeof window.toast==='function')window.toast('Enter the 4-character room code.');return}setTimeout(()=>send({type:'join_room',code,username:playerName()}),200)}
+function leaveRoom(){send({type:'leave_room'});room=null;remotePlayers.clear();updateRoomUI()}
+function startRoom(){if(!room){if(typeof window.toast==='function')window.toast('Create or join a room first.');return}send({type:'start_run'})}
+function updateRemote(players){const seen=new Set();for(const p of players||[]){seen.add(p.id);if(p.id!==selfId)remotePlayers.set(p.id,p)}for(const id of [...remotePlayers.keys()])if(!seen.has(id))remotePlayers.delete(id);window.outlastRemotePlayers=remotePlayers}
+function localState(){const p=window.game?.player||window.player||window.game?.p;if(!p)return null;const x=Number(p.x),y=Number(p.y);if(!Number.isFinite(x)||!Number.isFinite(y))return null;return{type:'player_state',username:playerName(),x,y,skinColor:p.skinColor||'#69d7bd',characterVisual:p.visual||{},level:Math.max(1,Number(window.save?.stats?.bestLevel)||1)}}
+function stateTick(){if(!room||!room.started)return;const s=localState();if(s)send(s)}
+function renderPlayerList(){const box=$('coopPlayers');if(!box)return;const players=room?.players||[];box.innerHTML=players.length?players.map(p=>'<div class="option" style="padding:9px 11px"><b>'+esc(p.username||'Player')+'</b>'+(p.id===selfId?' <b style="color:#69d7bd">(YOU)</b>':'')+'<span class="small" style="float:right">LV '+esc(p.level||1)+'</span></div>').join(''):'<div class="small">No room members yet.</div>'}
+function updateRoomUI(){const code=$('coopRoomCodeDisplay'),state=$('coopRoomState'),create=$('coopCreateBtn'),join=$('coopJoinBtn'),leave=$('coopLeaveBtn'),start=$('coopStartBtn');if(code)code.textContent=room?.code||'----';if(state)state.textContent=room?(room.started?'RUN STARTED':'ROOM READY'):'CREATE OR JOIN A ROOM';if(create)create.style.display=room?'none':'inline-flex';if(join)join.style.display=room?'none':'inline-flex';if(leave)leave.style.display=room?'inline-flex':'none';if(start)start.style.display=room&&!room.started?'inline-flex':'none';renderPlayerList()}
+function renderOnlinePanel(){
+ connectOutlastServer();
+ const body=\`
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div><h2 style="margin:0">🌐 MULTIPLAYER</h2><div class="small">Create a room or join another player with a 4-character code.</div></div><div id="coopConnectionStatus" style="font-weight:900;color:#ffb36b">CONNECTING…</div></div>
+<div class="option" style="margin-top:12px;text-align:center"><div class="small">ROOM CODE</div><div id="coopRoomCodeDisplay" style="font-size:30px;letter-spacing:.18em;font-weight:900;margin:5px 0 12px">----</div><div id="coopRoomState" class="small">CREATE OR JOIN A ROOM</div></div>
+<div class="grid" style="margin-top:12px"><button id="coopCreateBtn" type="button">CREATE ROOM</button><button id="coopJoinBtn" type="button">JOIN ROOM</button></div>
+<div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap"><input id="coopRoomCode" maxlength="4" autocomplete="off" placeholder="ROOM CODE" style="flex:1;min-width:130px;text-transform:uppercase"><button id="coopLeaveBtn" type="button" style="display:none">LEAVE</button><button id="coopStartBtn" type="button" style="display:none">START RUN</button></div>
+<div style="margin-top:12px"><h3 style="margin:0 0 7px">PLAYERS</h3><div id="coopPlayers"><div class="small">No room members yet.</div></div></div>
+<div class="small" style="margin-top:12px">Up to 4 players can share a room. Room membership, start state, and player positions are synchronized through the OUTLAST server.</div>\`;
+ if(typeof window.openSub==='function')window.openSub('🌐 MULTIPLAYER',body);else{const p=$('subContent');if(p)p.innerHTML=body;const panel=$('subPanel');if(panel)panel.style.display='flex'}
+ setTimeout(()=>{$('coopCreateBtn')?.addEventListener('click',createRoom);$('coopJoinBtn')?.addEventListener('click',joinRoom);$('coopLeaveBtn')?.addEventListener('click',leaveRoom);$('coopStartBtn')?.addEventListener('click',startRoom);$('coopRoomCode')?.addEventListener('input',e=>e.target.value=e.target.value.replace(/[^A-Za-z0-9]/g,'').slice(0,4).toUpperCase());updateRoomUI()},0)
+}
+window.connectOutlastServer=connectOutlastServer;
+window.disconnectOutlastServer=disconnectOutlastServer;
+window.sendOnlinePing=()=>send({type:'player_ping',username:playerName()});
+window.createRoom=createRoom;window.joinRoom=joinRoom;window.leaveRoom=leaveRoom;window.broadcastRoomStart=startRoom;window.renderOnlinePanel=renderOnlinePanel;
+window.coopLaunchActive=false;window.roomStarted=false;
+version();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{removeDuplicateStatus();installExit()},{once:true});else{removeDuplicateStatus();installExit()}
+stateTimer=setInterval(stateTick,100);
+setInterval(()=>{try{const b=$('exitGameBtn');if(b&&window.game)b.style.display=window.game.running?'block':'none';removeDuplicateStatus()}catch(_){}},1000);
 })();

@@ -141,14 +141,16 @@ function renderV314EventCenter(){
 function v314EnsureCards(){
   const more=document.querySelector('.menu-page[data-page-content="more"] .menu-cards');
   if(more&&!document.getElementById('v314OperationsBtn')){
-    more.insertAdjacentHTML('beforeend','<div class="menu-card"><h3>Operations</h3><button class="menu-btn gold" id="v314OperationsBtn">🚨 Operations Center</button><div class="small">Daily contracts, milestones, protocols, and sync tools.</div></div>');
+    more.insertAdjacentHTML('beforeend','<div class="menu-card"><h3>Operations</h3><button type="button" class="menu-btn gold" id="v314OperationsBtn">🚨 Operations Center</button><div class="small">Daily contracts, milestones, protocols, and sync tools.</div></div>');
   }
   const play=document.querySelector('.menu-page[data-page-content="play"] .menu-cards');
-  if(play&&!document.getElementById('v314EventBtn')){
-    play.insertAdjacentHTML('beforeend','<div class="menu-card" id="v314NightfallCard"><h3>Nightfall Event</h3><button class="menu-btn" id="v314EventBtn">🌑 Event Center</button><div class="small" id="v314CountdownMini">Calculating countdown…</div></div>');
+  if(play&&!document.getElementById('v314NightfallCard')){
+    play.insertAdjacentHTML('beforeend','<div class="menu-card" id="v314NightfallCard"><h3>Nightfall Event</h3><button type="button" class="menu-btn" id="v314EventBtn">🌑 Event Center</button><div class="small" id="v314CountdownMini">Calculating countdown…</div></div>');
   }
-  const ob=document.getElementById('v314OperationsBtn');if(ob&&!ob.dataset.bound){ob.dataset.bound='1';ob.addEventListener('click',renderV314Operations);}
-  const eb=document.getElementById('v314EventBtn');if(eb&&!eb.dataset.bound){eb.dataset.bound='1';eb.addEventListener('click',renderV314EventCenter);}
+  const ob=document.getElementById('v314OperationsBtn');
+  if(ob&&!ob.dataset.bound){ob.dataset.bound='1';ob.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();renderV314Operations();});}
+  const eb=document.getElementById('v314EventBtn');
+  if(eb&&!eb.dataset.bound){eb.dataset.bound='1';eb.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();renderV314EventCenter();});}
 }
 
 function v314TrackProgress(){
@@ -318,10 +320,19 @@ function v314UpdateLog(){
 function v314Tick(){
   try{
     v314EnsureCards();v314TrackProgress();v314MilestoneTick();v314SupplyTick();v314ThreatTick();
+    const left=Math.max(0,NIGHTFALL_TARGET.getTime()-Date.now());
+    const live=left<=0;
+    const label=live?'🌑 NIGHTFALL IS LIVE':'T− '+v314Fmt(left);
     const mini=document.getElementById('v314CountdownMini');
-    if(mini)mini.textContent=v314EventLive()?'🌑 NIGHTFALL IS LIVE':'T− '+v314Fmt(NIGHTFALL_TARGET.getTime()-Date.now());
+    if(mini){mini.textContent=label;mini.dataset.countdownLive=live?'1':'0';}
     const big=document.getElementById('v314EventBigCountdown');
-    if(big)big.textContent=v314EventLive()?'LIVE':'T− '+v314Fmt(NIGHTFALL_TARGET.getTime()-Date.now());
+    if(big){big.textContent=live?'LIVE':'T− '+v314Fmt(left);}
+    const card=document.getElementById('v314NightfallCard');
+    if(card){
+      const heading=card.querySelector('h3');
+      if(heading)heading.textContent=live?'Nightfall Event • LIVE':'Nightfall Event';
+      card.setAttribute('data-event-live',live?'1':'0');
+    }
     if(v314TrackProgress.dirty&&Date.now()-(v314Tick.lastPersist||0)>5000){v314SafePersist();v314TrackProgress.dirty=false;v314Tick.lastPersist=Date.now();}
   }catch(err){/* v3.14 systems never stop the base game */}
 }
@@ -343,8 +354,11 @@ function v314Bind(){
     else if(a==='v314Protocol'){if(typeof save!=='undefined'){save.selectedModifier=v;v314SafePersist();v314Toast('⚡ '+v+' armed for the next run');}}
   });}
   v314UpdatePopup();
-  setInterval(v314Tick,1000);
-  setTimeout(v314Tick,40);
+  if(!window.__outlastV314TimerBound){
+    window.__outlastV314TimerBound=true;
+    setInterval(v314Tick,1000);
+    setTimeout(v314Tick,40);
+  }
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',v314Bind,{once:true});else v314Bind();

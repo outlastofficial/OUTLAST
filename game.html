@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.7">
-<title>OUTLAST v3.14.7</title>
+<meta name="outlast-build" content="3.14.8">
+<title>OUTLAST v3.14.8</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.7 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.8 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3198,12 +3198,13 @@ const updates=[
   ['v2.3.4 — Device Save & Username Identity','Progress is now saved to the device instead of being tied to the username. Usernames are used for leaderboard identity and moderation only.'],
   ['v2.3.7 — Mobile & Gameplay Polish','Improved mobile controls and avatar visibility, raised the movement speed cap, added more permanent upgrade variety, and made projectiles stop when they hit solid map objects.'],
   ['v2.6.0 — Rooms & Mobile','Added online co-op rooms for up to 4 players, room codes, synchronized player movement/shooting, mobile controls, and cumulative fixes from post-v2.5.7 work.'],
+  ['v3.14.8 — Upgrade Rarity Expansion','Expanded level-up choices with 19 new upgrades and stronger animated rarity presentations.'],
   ['v3.0.0 — Gameplay & Systems Fixes','Fixed remaining buttons and menu routing, weapon damage and projectile upgrades, weapon selling, coin rounding, level-up pausing, World Event effects, zombie variants, enemy HUD counting, Settings/Controls consolidation, leaderboard placement, Quest/Challenge/Raid/Endgame actions, and Update Log synchronization.'],
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.14.7';
-const CURRENT_UPDATE_INFO={title:'v3.14.7 — Upgrade Cards',summary:'Upgraded the level-up screen with rarity visuals and a larger upgrade pool for more build variety.',items:['Upgrade cards now have animated rarity glows and borders.','Rare, Epic, Legendary, and Mythic choices get additional effects around the card.','Added the new Mythic rarity with a very small drop chance.','Added 12 new run upgrades for more build variety.','Upgrade descriptions now wrap cleanly inside the card.','Existing pause, keyboard, click, and mobile-safe upgrade selection behavior is preserved.']};
+const CURRENT_UPDATE_VERSION='3.14.8';
+const CURRENT_UPDATE_INFO={title:'v3.14.8 — Upgrade Rarity Expansion',summary:'Made level-up choices feel like real reward drops with stronger rarity effects and many more upgrade possibilities.',items:['Added 19 new run upgrades for more build variety.','Rare and higher choices now get stronger orbiting particles, corner sigils, and animated rarity effects.','Mythic choices get a special MYTHIC DROP presentation.','Improved Upgrade Luck rarity weighting so luck has a clearer impact on rare choices.','Added stronger elite and boss-focused upgrade paths.','Preserved keyboard, mouse, touch, pause, and selection behavior.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4311,5 +4312,147 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
  },true);
 })();
 </script>
+
+<script id="outlast-v3148-upgrade-expansion">
+(function(){
+  'use strict';
+  /* OUTLAST v3.14.8 — Upgrade Choice Expansion */
+  const extraUpgrades=[
+    ['Bloodrush',v=>'+ '+Math.round(18*v)+'% damage while below 50% HP',v=>{game.player.bloodrush=true;game.player.berserk=true}],
+    ['Quick Reload',v=>'+'+Math.round(14*v)+'% faster attacks',v=>{game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.14*v))}],
+    ['Ricochet',v=>'+'+Math.max(1,Math.round(v))+' pierce and '+Math.round(8*v)+'% projectile size',v=>{game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(v));game.player.bulletSize=(game.player.bulletSize||1)*(1+.08*v)}],
+    ['Executioner',v=>'+'+Math.round(16*v)+'% damage to elites',v=>{game.player.executioner=(game.player.executioner||0)+.16*v}],
+    ['Bossbreaker',v=>'+'+Math.round(22*v)+'% damage to bosses',v=>{game.player.bossDamageBonus=(game.player.bossDamageBonus||0)+.22*v}],
+    ['Cryo Burst',v=>'Frost aura + stronger slow',v=>{game.player.frost=true;game.player.slowPower=(game.player.slowPower||1)+.35*v}],
+    ['Shock Circuit',v=>'Chain effects +'+Math.round(22*v)+'%',v=>{game.player.chain=(game.player.chain||1)*(1+.22*v)}],
+    ['Vampire Core',v=>'+'+(0.3*v).toFixed(1)+' HP per kill and +'+Math.round(8*v)+'% max HP',v=>{game.player.vampire=(game.player.vampire||0)+.3*v;game.player.max+=8*v;game.player.hp=Math.min(game.player.max,game.player.hp+8*v)}],
+    ['Fortress',v=>'+'+Math.round(50*v)+' max HP and +'+Math.round(8*v)+'% armor',v=>{game.player.max+=50*v;game.player.hp=Math.min(game.player.max,game.player.hp+50*v);game.player.armor=Math.max(.1,(game.player.armor||1)-.08*v)}],
+    ['Adrenal Core',v=>'+'+Math.round(15*v)+'% speed and '+Math.round(10*v)+'% attack speed',v=>{game.player.speed=Math.min(game.player.speedCap,game.player.speed*(1+.15*v));game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.10*v))}],
+    ['Salvager',v=>'+'+Math.round(18*v)+'% coins and +'+Math.round(12*v)+' pickup range',v=>{game.player.coinMult*=1+.18*v;game.player.magnet+=12*v}],
+    ['XP Reactor',v=>'+'+Math.round(18*v)+'% XP and +'+Math.round(5*v)+' Upgrade Luck',v=>{game.player.xpBonus*=1+.18*v;game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
+    ['Lucky Barrage',v=>'+ '+Math.round(12*v)+'% extra-shot chance',v=>{game.player.doubleTap=true;game.player.extraShotLuck=(game.player.extraShotLuck||0)+.12*v}],
+    ['Shield Nova',v=>'Gain '+Math.round(4*v)+'s shield and a defensive pulse',v=>{game.player.shield=Math.max(game.player.shield||0,4*v);game.player.shieldNova=true}],
+    ['Overclock',v=>'+'+Math.round(24*v)+'% attack speed, +'+Math.round(6*v)+'% damage',v=>{game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.24*v));game.player.damage*=1+.06*v}],
+    ['Deadly Precision',v=>'+'+Math.round(10*v)+'% crit chance and +'+Math.round(12*v)+'% crit damage',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.10*v);game.player.critMult=(game.player.critMult||1.8)+.12*v}],
+    ['Treasure Engine',v=>'+'+Math.round(20*v)+' Treasure Luck and 2x drop chance',v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+20*v;game.player.treasure=true;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
+    ['Last Stand',v=>'+'+Math.round(35*v)+'% damage below 25% HP',v=>{game.player.lastStand=true;game.player.lastStandBonus=(game.player.lastStandBonus||0)+.35*v}],
+    ['Combat Medic',v=>'+'+(1.2*v).toFixed(1)+' HP/s and stronger healing',v=>{game.player.regen+=(1.2*v);game.player.healMult=(game.player.healMult||1)+.12*v}]
+  ];
+  if(Array.isArray(window.tempUp)){
+    for(const u of extraUpgrades) if(!tempUp.some(x=>x[0]===u[0])) tempUp.push(u);
+  }
+
+  /* Add a small amount of stateful behavior for the new upgrades. */
+  const oldDamageEnemy=window.damageEnemy;
+  if(typeof oldDamageEnemy==='function'&&!window.__v3148DamagePatch){
+    window.__v3148DamagePatch=true;
+    window.damageEnemy=function(e,dmg){
+      const p=game.player;
+      if(p){
+        if(p.executioner&&e?.kind==='elite')dmg*=1+p.executioner;
+        if(p.bossDamageBonus&&e?.boss)dmg*=1+p.bossDamageBonus;
+        if(p.berserk&&p.hp<p.max*.5)dmg*=1.5;
+        if(p.lastStand&&p.hp<p.max*.25)dmg*=1+(p.lastStandBonus||.35);
+      }
+      return oldDamageEnemy(e,dmg);
+    };
+  }
+
+  /* Replace the old rarity roll with a slightly more expressive luck curve. */
+  const oldRoll=window.rollUpgradeRarity;
+  if(typeof oldRoll==='function'&&!window.__v3148RarityPatch){
+    window.__v3148RarityPatch=true;
+    window.rollUpgradeRarity=function(){
+      const luck=Math.max(0,Number(game.player?.upgradeLuck||0));
+      const bonus=Math.min(.72,luck/125);
+      const weights={
+        Common:50*(1-bonus*.58),
+        Uncommon:25*(1-bonus*.42),
+        Rare:13*(1+bonus*.62),
+        Epic:7*(1+bonus*1.0),
+        Legendary:3.2*(1+bonus*1.8),
+        Mythic:.8*(1+bonus*3.2)
+      };
+      const total=Object.values(weights).reduce((a,b)=>a+b,0);
+      let r=Math.random()*total;
+      for(const name of Object.keys(weights)){r-=weights[name];if(r<=0)return name;}
+      return 'Common';
+    };
+  }
+
+  /* Stronger canvas treatment for rare choices. */
+  window.drawUpgradeRarityFX=function(ctx,x,y,w,h,rarity,now,i){
+    const def=upgradeRarities[rarity]||upgradeRarities.Common, glow=def.glow||'#9aa5ad';
+    const cx=x+w/2,cy=y+h/2, rare=rarity!=='Common';
+    ctx.save();
+    if(rare){
+      ctx.globalAlpha=.18;
+      ctx.fillStyle=glow;
+      ctx.beginPath();
+      ctx.arc(cx,cy,Math.min(w,h)*.48,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha=.85;
+    ctx.strokeStyle=glow;
+    ctx.lineWidth=rarity==='Mythic'?4:2;
+    const corner=18;
+    for(const s of [-1,1]){
+      ctx.beginPath();ctx.moveTo(x+8,y+8+s*corner);ctx.lineTo(x+8,y+8);ctx.lineTo(x+8+s*corner,y+8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+w-8,y+8+s*corner);ctx.lineTo(x+w-8,y+8);ctx.lineTo(x+w-8+s*corner,y+8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+8,y+h-8+s*corner);ctx.lineTo(x+8,y+h-8);ctx.lineTo(x+8+s*corner,y+h-8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(x+w-8,y+h-8+s*corner);ctx.lineTo(x+w-8,y+h-8);ctx.lineTo(x+w-8+s*corner,y+h-8);ctx.stroke();
+    }
+    if(rarity==='Rare'||rarity==='Epic'||rarity==='Legendary'||rarity==='Mythic'){
+      const orbitR=152, count=rarity==='Mythic'?12:rarity==='Legendary'?10:rarity==='Epic'?8:6;
+      for(let k=0;k<count;k++){
+        const a=now*(rarity==='Mythic'?.9:rarity==='Legendary'?.65:.42)+k*Math.PI*2/count+i*.35;
+        const px=cx+Math.cos(a)*orbitR,py=cy+Math.sin(a)*(orbitR*.72);
+        ctx.globalAlpha=.8;
+        ctx.fillStyle=glow;
+        ctx.shadowColor=glow;ctx.shadowBlur=10;
+        ctx.beginPath();ctx.arc(px,py,rarity==='Mythic'?2.8:2.2,0,Math.PI*2);ctx.fill();
+      }
+    }
+    if(rarity==='Legendary'||rarity==='Mythic'){
+      ctx.globalAlpha=.28+.08*Math.sin(now*5+i);
+      ctx.strokeStyle=glow;ctx.lineWidth=3;
+      for(let k=0;k<3;k++){
+        ctx.beginPath();ctx.arc(cx,cy,82+k*22,now*.35+k,now*.35+k+1.0);ctx.stroke();
+      }
+    }
+    if(rarity==='Mythic'){
+      ctx.globalAlpha=.92;ctx.fillStyle=glow;ctx.shadowColor=glow;ctx.shadowBlur=18;
+      ctx.beginPath();ctx.arc(cx,cy-102,6+2*Math.sin(now*7+i),0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText('MYTHIC DROP',cx,cy-116);
+    }
+    ctx.restore();
+  };
+
+  /* Patch the existing draw routine once, immediately after its card loop renders. */
+  if(typeof window.draw==='function'&&!window.__v3148DrawPatch){
+    window.__v3148DrawPatch=true;
+    const nativeDraw=window.draw;
+    window.draw=function(){
+      nativeDraw();
+      if(!game?.upgradeOpen||!game?.upgradeChoices)return;
+      const now=performance.now()/1000;
+      const c=document.getElementById('game');
+      if(!c)return;
+      const context=c.getContext('2d');
+      game.upgradeChoices.forEach((u,i)=>{
+        const x=45+i*350,y=185,w=325,h=290,rarity=u[3]||'Common';
+        drawUpgradeRarityFX(context,x,y,w,h,rarity,now,i);
+        context.save();
+        context.textAlign='center';
+        context.font='bold 11px Arial';
+        context.fillStyle=(upgradeRarities[rarity]||upgradeRarities.Common).glow;
+        context.fillText('✦ '+rarity.toUpperCase()+' ✦',x+w/2,y+h-10);
+        context.restore();
+      });
+    };
+  }
+})();
+</script>
+
 </body>
 </html>

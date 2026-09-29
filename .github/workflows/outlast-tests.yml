@@ -34,3 +34,5 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 14
+
+# Keep automated testing enabled for every main-branch change.

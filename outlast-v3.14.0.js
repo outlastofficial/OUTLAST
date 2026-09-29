@@ -284,38 +284,36 @@ function v314EnsureAdminPreview(){
   const sc=document.getElementById('subContent');if(!sc)return;
   const hasPreview=!!sc.querySelector('[data-action="adminEventPreview"],[data-action="v314AdminEventPreview"]');
   if(hasPreview)return;
-  const button='<button type="button" class="option" data-action="v314AdminEventPreview" style="margin-top:10px;text-align:left">👁️ Preview Upcoming Event<div class="small">Admin-only preview • does not start the event.</div></button>';
   const grid=sc.querySelector('.grid');
+  const button='<button type="button" class="option" data-action="v314AdminEventPreview" style="margin-top:10px;text-align:left">👁️ Preview Upcoming Event<div class="small">Admin-only preview • does not start the event.</div></button>';
   if(grid)grid.insertAdjacentHTML('beforeend',button);
   else sc.insertAdjacentHTML('beforeend',button);
 }
 
 function v314PatchAdmin(){
   window.adminEventPreview=v314AdminPreview;
+  const bindAdminPreview=()=>{
+    const b=document.getElementById('adminBtn');
+    if(!b||b.dataset.v314AdminBound)return;
+    b.dataset.v314AdminBound='1';
+    b.addEventListener('click',()=>{
+      setTimeout(v314EnsureAdminPreview,150);
+      setTimeout(v314EnsureAdminPreview,500);
+    },true);
+  };
+  bindAdminPreview();
+  setInterval(bindAdminPreview,1000);
   if(!document.body.dataset.v314PreviewClickBound){
     document.body.dataset.v314PreviewClickBound='1';
     document.addEventListener('click',e=>{
       const b=e.target?.closest?.('[data-action="v314AdminEventPreview"],[data-action="adminEventPreview"]');
       if(!b)return;
-      e.preventDefault();e.stopImmediatePropagation();
+      e.preventDefault();
+      e.stopImmediatePropagation();
       v314AdminPreview();
     },true);
   }
-  const bind=()=>{
-    const b=document.getElementById('adminBtn');
-    if(!b)return;
-    if(!b.dataset.v314AdminWrap){
-      b.dataset.v314AdminWrap='1';
-      b.addEventListener('click',()=>setTimeout(v314EnsureAdminPreview,100),true);
-      const old=b.onclick;
-      b.onclick=function(e){let r;try{if(typeof old==='function')r=old.call(this,e);}finally{setTimeout(v314EnsureAdminPreview,100);}return r;};
-    }
-  };
-  bind();
-  setTimeout(bind,500);
-  setTimeout(v314EnsureAdminPreview,150);
 }
-
 function v314UpdatePopup(){
   /* v3.14.0 systems remain active, but their retired release popup is disabled.
      The single current popup is owned by the main game build metadata. */

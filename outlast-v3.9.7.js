@@ -223,3 +223,260 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 stateTimer=setInterval(stateTick,100);
 setInterval(()=>{try{const b=$('exitGameBtn');if(b&&window.game)b.style.display=window.game.running?'block':'none';removeDuplicateStatus()}catch(_){}},1000);
 })();
+
+/* OUTLAST v3.13.1 — responsive UI polish + interaction safeguards. */
+(function(){
+  'use strict';
+  const VERSION='3.13.1';
+  const $=id=>document.getElementById(id);
+
+  function injectStyle(){
+    if($('outlast-v3131-style')) return;
+    const style=document.createElement('style');
+    style.id='outlast-v3131-style';
+    style.textContent=`
+      :root{--ol-gap:clamp(8px,2vw,14px);--ol-pad:clamp(10px,3vw,22px)}
+      html{overflow-x:hidden;text-size-adjust:100%;-webkit-text-size-adjust:100%}
+      body{overflow-x:hidden;overflow-y:auto;min-height:100dvh;box-sizing:border-box}
+      button,[role="button"],input,select,textarea{box-sizing:border-box;max-width:100%}
+      button,[role="button"]{min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+      .outlast-start-run{min-height:52px!important;min-width:min(240px,100%)!important;width:auto!important;padding:12px 22px!important;font-size:clamp(15px,3.8vw,19px)!important;line-height:1.15!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;white-space:nowrap!important}
+      .outlast-start-run *{margin:0!important;line-height:1.15!important}
+      .outlast-profile-avatar{object-fit:contain!important;object-position:center!important;overflow:hidden!important;flex:0 0 auto!important}
+      .outlast-profile-wrap{overflow:visible!important;min-width:0!important}
+      .outlast-username{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .outlast-ui-box{box-sizing:border-box;max-width:100%;min-width:0}
+      .outlast-ui-row{display:flex;flex-wrap:wrap;gap:var(--ol-gap);align-items:center}
+      .outlast-ui-row>*{min-width:0}
+      .outlast-bottom-safe{padding-bottom:max(90px,env(safe-area-inset-bottom) + 72px)!important}
+      .outlast-readable,.small,.muted,.label,.description{overflow-wrap:anywhere}
+      @media(max-width:480px){
+        :root{--ol-pad:12px}
+        .outlast-start-run{width:100%!important;min-width:0!important;padding:11px 16px!important}
+        button{font-size:clamp(12px,3.6vw,16px)}
+      }
+      @media(min-width:481px) and (max-width:900px){
+        .outlast-start-run{min-width:min(260px,90vw)!important}
+      }
+      @media(min-width:901px){
+        .outlast-start-run{min-width:220px!important}
+      }
+      @media(orientation:landscape) and (max-height:520px){
+        .outlast-start-run{min-height:46px!important;padding:9px 16px!important}
+      }
+      @media(prefers-reduced-motion:reduce){
+        *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function normalizeViewport(){
+    let meta=document.querySelector('meta[name="viewport"]');
+    if(!meta){
+      meta=document.createElement('meta');
+      meta.name='viewport';
+      document.head.appendChild(meta);
+    }
+    meta.content='width=device-width, initial-scale=1, viewport-fit=cover';
+  }
+
+  function textOf(el){return String(el?.textContent||'').replace(/\s+/g,' ').trim()}
+  function buttonsByText(pattern){
+    return [...document.querySelectorAll('button,[role="button"]')].filter(b=>pattern.test(textOf(b)));
+  }
+
+  function polishStartRun(){
+    buttonsByText(/^START RUN(?:\s*[→›>])?$/i).forEach(btn=>{
+      btn.classList.add('outlast-start-run');
+      btn.setAttribute('type','button');
+      const children=[...btn.children];
+      children.forEach(child=>{child.style.margin='0';child.style.lineHeight='1.15'});
+    });
+  }
+
+  function cleanSwitchUsername(){
+    buttonsByText(/^SWITCH USERNAME(?:\s*[•·|:;,.…→›>✦✧★☆])?$/i).forEach(btn=>{
+      btn.textContent='SWITCH USERNAME';
+      btn.setAttribute('type','button');
+    });
+  }
+
+  function polishAvatar(){
+    const candidates=[...document.querySelectorAll(
+      '.profile-avatar,.avatar,[data-avatar],img[alt*="avatar" i],img[alt*="profile" i],img[src*="avatar" i]'
+    )];
+    const switchButton=buttonsByText(/^SWITCH USERNAME$/i)[0];
+    if(switchButton){
+      const parent=switchButton.closest('header,.profile,.profile-card,.menu-header,.menu-top,.card,section,div');
+      if(parent){
+        parent.querySelectorAll('img').forEach(img=>{if(!candidates.includes(img))candidates.push(img)});
+      }
+    }
+    candidates.forEach(img=>{
+      img.classList.add('outlast-profile-avatar');
+      img.style.maxWidth='100%';
+      img.style.height='auto';
+      img.style.display='block';
+      img.style.borderRadius=img.style.borderRadius||'50%';
+    });
+  }
+
+  function improveTopSpacing(){
+    const switchButton=buttonsByText(/^SWITCH USERNAME$/i)[0];
+    if(!switchButton)return;
+    const profile=switchButton.closest('header,.profile,.profile-card,.menu-header,.menu-top,section');
+    if(profile){
+      profile.classList.add('outlast-ui-box');
+      profile.style.maxWidth='100%';
+      profile.style.minWidth='0';
+      profile.style.boxSizing='border-box';
+      profile.style.gap='clamp(8px,2vw,14px)';
+    }
+    const avatar=profile?.querySelector('.outlast-profile-avatar');
+    if(avatar){
+      avatar.style.marginRight='clamp(6px,2vw,12px)';
+    }
+  }
+
+  function protectBottomNavigation(){
+    const candidates=[...document.querySelectorAll(
+      'nav,.bottom-nav,.menu-nav,.menu-navigation,[class*="bottom-menu" i],[class*="bottom-nav" i]'
+    )];
+    candidates.forEach(nav=>{
+      nav.style.boxSizing='border-box';
+      nav.style.maxWidth='100vw';
+      nav.style.paddingBottom='max(8px, env(safe-area-inset-bottom))';
+      [...nav.querySelectorAll('button,[role="button"],a')].forEach(b=>{
+        b.style.minWidth='0';
+        b.style.maxWidth='100%';
+        b.style.flex='1 1 0';
+      });
+    });
+    document.body.classList.add('outlast-bottom-safe');
+  }
+
+  function improveReadableText(){
+    document.querySelectorAll('.small,.muted,.label,.description,[class*="subtitle" i]').forEach(el=>{
+      if(!el.closest('button')) el.style.overflowWrap='anywhere';
+    });
+  }
+
+  function wholeButtonAndDoubleTapGuard(){
+    document.querySelectorAll('button,[role="button"]').forEach(btn=>{
+      if(btn.dataset.ol3131Guard)return;
+      btn.dataset.ol3131Guard='1';
+      btn.setAttribute('type',btn.getAttribute('type')||'button');
+      btn.style.touchAction='manipulation';
+      let last=0;
+      btn.addEventListener('click',event=>{
+        const now=Date.now();
+        if(now-last<420){
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          return;
+        }
+        last=now;
+      },true);
+    });
+  }
+
+  function startRunGuard(){
+    buttonsByText(/^START RUN(?:\s*[→›>])?$/i).forEach(btn=>{
+      if(btn.dataset.olStartGuard)return;
+      btn.dataset.olStartGuard='1';
+      btn.addEventListener('click',()=>{
+        const now=Date.now();
+        const previous=Number(btn.dataset.olLastStart||0);
+        if(now-previous<650)return;
+        btn.dataset.olLastStart=String(now);
+        btn.setAttribute('aria-busy','true');
+        setTimeout(()=>btn.removeAttribute('aria-busy'),650);
+      },true);
+    });
+  }
+
+  function persistAfterChoice(){
+    document.addEventListener('click',event=>{
+      const btn=event.target.closest?.('button,[role="button"]');
+      if(!btn)return;
+      const label=textOf(btn);
+      if(/^(MAP|DIFFICULTY|GAME MODE|MODE|SAVE|APPLY|SWITCH USERNAME)/i.test(label)){
+        setTimeout(()=>{
+          try{
+            if(typeof persist==='function')persist();
+            else if(typeof saveGame==='function')saveGame();
+          }catch(_){}
+        },80);
+      }
+    },true);
+  }
+
+  function normalizeUsernameOnSave(){
+    const normalize=value=>{
+      let s=String(value??'').trim().replace(/\s+/g,' ');
+      const chars=Array.from(s).slice(0,18);
+      return chars.join('');
+    };
+    try{
+      if(typeof window.currentUsername!=='undefined'){
+        const n=normalize(window.currentUsername);
+        window.currentUsername=n||'Player';
+      }
+      if(window.save&&typeof window.save==='object'){
+        const raw=window.save.username??window.save.name;
+        if(raw!==undefined){
+          const n=normalize(raw);
+          window.save.username=n||'Player';
+          if('name' in window.save)window.save.name=n||'Player';
+        }
+      }
+    }catch(_){}
+  }
+
+  function installPersistenceSafety(){
+    normalizeUsernameOnSave();
+    const originalPersist=window.persist;
+    if(typeof originalPersist==='function'&&!originalPersist.__ol3131Wrapped){
+      const wrapped=function(){
+        normalizeUsernameOnSave();
+        return originalPersist.apply(this,arguments);
+      };
+      wrapped.__ol3131Wrapped=true;
+      window.persist=wrapped;
+    }
+  }
+
+  function apply(){
+    injectStyle();
+    normalizeViewport();
+    polishStartRun();
+    cleanSwitchUsername();
+    polishAvatar();
+    improveTopSpacing();
+    protectBottomNavigation();
+    improveReadableText();
+    wholeButtonAndDoubleTapGuard();
+    startRunGuard();
+    installPersistenceSafety();
+  }
+
+  function init(){
+    document.title='OUTLAST v'+VERSION;
+    apply();
+    if(!window.__outlast3131Observer){
+      window.__outlast3131Observer=new MutationObserver(()=>apply());
+      window.__outlast3131Observer.observe(document.body,{childList:true,subtree:true});
+    }
+    if(!window.__outlast3131PersistenceListener){
+      window.__outlast3131PersistenceListener=true;
+      persistAfterChoice();
+    }
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+  setTimeout(apply,500);
+  setTimeout(apply,1500);
+  setTimeout(apply,3000);
+})();

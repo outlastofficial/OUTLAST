@@ -5014,7 +5014,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     action(b.dataset.ownerRemake,b.dataset.value);
   }
   function open(){
-    if(!isOwnerName()){toast?.('Owner access required');return;}
+    /* The button is intentionally visible to everyone; access is enforced by server verification. */
     if(unlocked){render();return;}
     loginView();
   }

@@ -5671,5 +5671,51 @@ function install(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugReport:bugReport};
 })();
+</script><style id="globalChatEverywhereStyles">
+#outlastEverywhereChat{position:fixed;right:18px;bottom:76px;width:min(360px,calc(100vw - 36px));z-index:99990;display:none;pointer-events:none}
+#outlastEverywhereChat .gec-panel{pointer-events:auto;background:rgba(7,12,18,.96);border:1px solid #385064;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);overflow:hidden}
+#outlastEverywhereChat .gec-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #293b49}
+#outlastEverywhereChat .gec-title{font-weight:800}
+#outlastEverywhereChat .gec-messages{height:190px;overflow:auto;padding:9px;font-size:13px}
+#outlastEverywhereChat .gec-row{display:flex;gap:7px;padding:8px;border-top:1px solid #243440}
+#outlastEverywhereChat input{flex:1;min-width:0;background:#101820;color:#fff;border:1px solid #385064;border-radius:9px;padding:9px}
+#outlastEverywhereChat button{border:1px solid #385064;background:#16232d;color:#fff;border-radius:9px;padding:9px 11px;cursor:pointer}
+#outlastEverywhereChat .gec-toggle{position:fixed;right:18px;bottom:18px;border-radius:999px;font-weight:800}
+@media(max-width:600px){#outlastEverywhereChat{right:10px;bottom:68px;width:calc(100vw - 20px)}#outlastEverywhereChat .gec-messages{height:150px}}
+</style>
+<div id="outlastEverywhereChat">
+ <div class="gec-panel">
+  <div class="gec-head"><span class="gec-title">💬 Global Chat</span><button id="gecClose">×</button></div>
+  <div id="gecMessages" class="gec-messages"><div class="small">Connecting to chat…</div></div>
+  <div class="gec-row"><input id="gecInput" maxlength="180" placeholder="Type a message…"><button id="gecSend">Send</button></div>
+ </div>
+ <button class="gec-toggle" id="gecToggle">💬 Chat</button>
+</div>
+<script>
+(function(){
+ function init(){
+  const root=document.getElementById('outlastEverywhereChat');if(!root||root.dataset.ready)return;root.dataset.ready='1';
+  const panel=root.querySelector('.gec-panel'),msgs=document.getElementById('gecMessages'),input=document.getElementById('gecInput');
+  document.getElementById('gecToggle').onclick=()=>{panel.style.display=panel.style.display==='none'?'':'none';};
+  document.getElementById('gecClose').onclick=()=>{panel.style.display='none';};
+  panel.style.display='none';
+  function render(){
+   const source=document.getElementById('globalChatMessages')||document.getElementById('chatMessages');
+   if(source&&source!==msgs) msgs.innerHTML=source.innerHTML;
+  }
+  document.getElementById('gecSend').onclick=()=>{
+   const text=input.value.trim();if(!text)return;
+   const candidates=[document.getElementById('globalChatInput'),document.getElementById('chatInput')];
+   const target=candidates.find(x=>x);
+   if(target){target.value=text;target.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true}));}
+   else if(typeof window.sendGlobalChatMessage==='function')window.sendGlobalChatMessage(text);
+   input.value='';setTimeout(render,120);
+  };
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('gecSend').click();}});
+  setInterval(()=>{render();const visible=document.body&&getComputedStyle(root).display!=='none';if(!visible)root.style.display='block';},500);
+  root.style.display='block';
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
 </script></body>
 </html>

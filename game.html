@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.16.0">
-<meta name="build-version" content="3.16.0">
-<title>OUTLAST v3.16.0</title>
+<meta name="outlast-build" content="3.16.1">
+<meta name="build-version" content="3.16.1">
+<title>OUTLAST v3.16.1</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.16.0 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.16.1 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -2450,7 +2450,11 @@ const p=game.player;if(p){
   ctx.textAlign='left';
 }
  if(game.upgradeOpen){
-  ctx.fillStyle='rgba(0,0,0,.96)';ctx.fillRect(0,0,CW,CH);
+  // Upgrade choices are screen-space UI. Reset the camera transform so the
+  // player/world can never render over the choice screen.
+  ctx.save();
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.fillStyle='rgba(0,0,0,.97)';ctx.fillRect(0,0,CW,CH);
   const now=performance.now()/1000;
   const fx={Common:{c:'#9aa5ad',r:0},Uncommon:{c:'#71d68a',r:1},Rare:{c:'#72a8ff',r:2},Epic:{c:'#d28cff',r:3},Legendary:{c:'#ffd84d',r:4},Mythic:{c:'#ff65e8',r:5}};
   const choiceKey=game.upgradeChoices.map(u=>String(u[0])+'|'+String(u[3]||'Common')).join('||');
@@ -2458,7 +2462,9 @@ const p=game.player;if(p){
     game.__upgradeRollKey=choiceKey;
     const hasMythic=game.upgradeChoices.some(u=>u&&u[3]==='Mythic');
     const hasLegendary=game.upgradeChoices.some(u=>u&&u[3]==='Legendary');
-    game.__upgradeRollDuration=hasMythic?1.85:(hasLegendary?1.45:0);
+    // Shorter, lighter reveal timings keep the special roll exciting without
+    // holding the game in an expensive animation for nearly two seconds.
+    game.__upgradeRollDuration=hasMythic?1.15:(hasLegendary?0.95:0);
     game.__upgradeRollStart=now;
     game.__upgradeRollUnlockAt=(now+game.__upgradeRollDuration)*1000;
   }
@@ -2474,52 +2480,36 @@ const p=game.player;if(p){
     const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r;
     const cardRolling=rank>=4&&rollProgress<1;
     const eased=1-Math.pow(1-Math.min(1,rollProgress),3);
-    const spin=cardRolling?(1-eased)*Math.PI*(8+rank*1.5)+i*.45:0;
-    const reelSquash=cardRolling?Math.max(.16,.28+.72*eased):1;
-    const rollLift=cardRolling?Math.sin((1-eased)*Math.PI*3+i)*22*(1-eased):0;
-    const pulse=1+Math.sin(now*(2.2+rank*.45)+i)*(.025+rank*.01);
+    const spin=cardRolling?(1-eased)*Math.PI*(2.4+rank*.35)+i*.18:0;
+    const reelSquash=cardRolling?Math.max(.72,.82+.18*eased):1;
+    const rollLift=cardRolling?Math.sin((1-eased)*Math.PI*2+i)*8*(1-eased):0;
     ctx.save();
-    if(cardRolling){
-      ctx.translate(cx,cy+rollLift);ctx.rotate(spin);ctx.scale(reelSquash,1);
-      ctx.filter='blur('+Math.round((1-eased)*3)+'px)';
-    }
-    ctx.globalAlpha=.14+rank*.04;ctx.fillStyle=glow;ctx.shadowColor=glow;ctx.shadowBlur=28+rank*18;
-    ctx.beginPath();ctx.roundRect(x-10,y-10,w+20,h+20,22);ctx.fill();ctx.shadowBlur=0;
-    if(rank>=1){
-      const rays=rank===1?6:8+rank*3;
-      ctx.globalAlpha=.24+rank*.06;ctx.strokeStyle=glow;ctx.lineWidth=1.5+rank*.4;
-      for(let k=0;k<rays;k++){const a=now*(.28+rank*.1)+k*Math.PI*2/rays+i*.22;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*118,cy+Math.sin(a)*98);ctx.lineTo(cx+Math.cos(a)*154,cy+Math.sin(a)*134);ctx.stroke();}
-    }
-    if(rank>=2){
-      const dots=4+rank*2;
-      for(let k=0;k<dots;k++){const a=-now*(.45+rank*.08)+k*Math.PI*2/dots+i*.3,rr=126+Math.sin(now*2+k)*6,px=cx+Math.cos(a)*rr,py=cy+Math.sin(a)*rr*.76;
-        ctx.globalAlpha=.6;ctx.fillStyle=glow;ctx.shadowColor=glow;ctx.shadowBlur=12+rank*3;ctx.beginPath();ctx.arc(px,py,2.4+rank*.45,0,Math.PI*2);ctx.fill();}
-    }
-    if(rank>=3){
-      ctx.globalAlpha=.28+.08*Math.sin(now*4+i);ctx.strokeStyle=glow;ctx.lineWidth=3;
-      for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(cx,cy,78+k*22,now*.5+k,now*.5+k+1.1);ctx.stroke();}
-      ctx.globalAlpha=.18+.05*Math.sin(now*6+i);ctx.fillStyle=glow;ctx.beginPath();ctx.arc(cx,cy,58+8*Math.sin(now*3+i),0,Math.PI*2);ctx.fill();
-    }
+    if(cardRolling){ctx.translate(cx,cy+rollLift);ctx.rotate(spin);ctx.scale(reelSquash,1);}
+    // Lightweight glow: translucent fills/strokes instead of blur filters,
+    // large shadow buffers, and many animated particles.
+    ctx.globalAlpha=.10+rank*.025;ctx.fillStyle=glow;ctx.beginPath();ctx.roundRect(x-5,y-5,w+10,h+10,18);ctx.fill();
     if(rank>=4){
-      ctx.globalAlpha=.9;ctx.fillStyle=glow;ctx.shadowColor=glow;ctx.shadowBlur=22;ctx.beginPath();ctx.arc(cx,cy-103,6+2*Math.sin(now*7+i),0,Math.PI*2);ctx.fill();
-      if(rank===5){for(let k=0;k<4;k++){const a=now*.8+k*Math.PI/2,px=cx+Math.cos(a)*112,py=cy+Math.sin(a)*86;ctx.save();ctx.translate(px,py);ctx.rotate(a);ctx.fillStyle='#fff';ctx.fillRect(-3,-3,6,6);ctx.restore();}}
+      ctx.globalAlpha=.28;ctx.strokeStyle=glow;ctx.lineWidth=2;
+      const ring=72+Math.sin(now*2+i)*4;
+      ctx.beginPath();ctx.arc(cx,cy,ring,0,Math.PI*2);ctx.stroke();
+      if(rank===5){
+        ctx.globalAlpha=.75;ctx.fillStyle='#fff';
+        for(let k=0;k<2;k++){const a=now*.55+k*Math.PI,px=cx+Math.cos(a)*105,py=cy+Math.sin(a)*78;ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);ctx.fill();}
+      }
     }
-    ctx.globalAlpha=1;ctx.translate(cx,cy);ctx.scale(pulse,pulse);ctx.translate(-cx,-cy);
-    ctx.fillStyle='#0f1821';ctx.shadowColor=glow;ctx.shadowBlur=24+rank*10;ctx.beginPath();ctx.roundRect(x,y,w,h,18);ctx.fill();ctx.shadowBlur=0;
-    ctx.globalAlpha=.15+rank*.025;ctx.fillStyle=glow;ctx.beginPath();ctx.roundRect(x+3,y+3,w-6,h-6,15);ctx.fill();
-    ctx.globalAlpha=1;ctx.fillStyle='#0f1821';ctx.beginPath();ctx.roundRect(x+8,y+8,w-16,h-16,13);ctx.fill();
-    ctx.strokeStyle=glow;ctx.lineWidth=4+rank*.35;ctx.stroke();
-    ctx.globalAlpha=.35;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x+14,y+14,w-28,h-28);ctx.globalAlpha=1;
-    const badgeW=rank>=4?185:rank>=2?155:138;ctx.fillStyle=glow;ctx.globalAlpha=.18;ctx.beginPath();ctx.roundRect(cx-badgeW/2,y+18,badgeW,30,15);ctx.fill();
+    ctx.globalAlpha=1;ctx.fillStyle='#0f1821';ctx.beginPath();ctx.roundRect(x,y,w,h,18);ctx.fill();
+    ctx.globalAlpha=.12+rank*.02;ctx.fillStyle=glow;ctx.beginPath();ctx.roundRect(x+3,y+3,w-6,h-6,15);ctx.fill();
+    ctx.globalAlpha=1;ctx.strokeStyle=glow;ctx.lineWidth=3+rank*.25;ctx.beginPath();ctx.roundRect(x,y,w,h,18);ctx.stroke();
+    const badgeW=rank>=4?185:rank>=2?155:138;ctx.fillStyle=glow;ctx.globalAlpha=.16;ctx.beginPath();ctx.roundRect(cx-badgeW/2,y+18,badgeW,30,15);ctx.fill();
     ctx.globalAlpha=1;ctx.fillStyle=glow;ctx.font='bold 15px Arial';ctx.fillText((rank===5?'✦ ':rank===4?'★ ':rank>=3?'◆ ':'')+(cardRolling?'RISING '+u[3].toUpperCase():u[3].toUpperCase()),cx,y+39);
     ctx.fillStyle='#ffe56d';ctx.font='bold 30px Arial';ctx.fillText(String(i+1),cx,y+82);
     if(cardRolling){
       const reel=['???','POWER','BOOST','UPGRADE','ROLLING','???'];
-      const reelWord=reel[Math.floor(now*(18+rank*2)+i)%reel.length];
-      const reelOffset=((now*(260+rank*40))%92)-46;
+      const reelWord=reel[Math.floor(now*(12+rank)+i)%reel.length];
+      const reelOffset=((now*(125+rank*12))%64)-32;
       ctx.save();ctx.beginPath();ctx.rect(x+18,y+96,w-36,96);ctx.clip();
       ctx.globalAlpha=.92;ctx.fillStyle='#fff';ctx.font='900 24px Arial';ctx.fillText(reelWord,cx,y+140+reelOffset);
-      ctx.globalAlpha=.32;ctx.fillStyle=glow;ctx.font='900 20px Arial';ctx.fillText('•••',cx,y+190+reelOffset);
+      ctx.globalAlpha=.28;ctx.fillStyle=glow;ctx.font='900 18px Arial';ctx.fillText('•••',cx,y+188+reelOffset);
       ctx.restore();
       ctx.globalAlpha=.9;ctx.fillStyle=glow;ctx.font='bold 14px Arial';ctx.fillText(rank===5?'MYTHIC REVEAL':'LEGENDARY REVEAL',cx,y+216);
     }else{
@@ -2531,10 +2521,10 @@ const p=game.player;if(p){
     ctx.fillStyle=glow;ctx.font='bold 13px Arial';ctx.fillText(rank===5?'MYTHIC POWER • EXTREMELY RARE':rank===4?'LEGENDARY POWER • VERY RARE':rank===3?'EPIC POWER • POWER SURGE':rank===2?'RARE POWER • ENHANCED':rank===1?'UNCOMMON POWER • BOOSTED':'COMMON POWER • BASE',cx,y+244);
     ctx.globalAlpha=.8;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+52,y+258);ctx.lineTo(x+w-52,y+258);ctx.stroke();
     ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='11px Arial';ctx.fillText(cardRolling?'ROLLING… WAIT':'SELECT TO CLAIM',cx,y+274);
-    ctx.filter='none';
     ctx.restore();
   });
   ctx.textAlign='left';
+  ctx.restore();
 } drawMinimap();
 }
 function showGameOverActions(v){
@@ -3154,7 +3144,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 const helpArticles=[
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
-  ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Legendary and Mythic choices use a rolling reveal before they can be selected.'],
+  ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Legendary and Mythic choices use a rolling reveal before they can be selected. Legendary and Mythic rolling is optimized to use lightweight canvas effects so the reveal stays smooth.'],
 
   ['How do I use the Halloween Event?','Halloween Event','Watch the countdown from the small event pill in the corner. Open DETAILS to investigate clues, read broadcasts, complete missions, earn Event Coins, shop limited rewards, view the event leaderboard, and enter the event when it goes live. During the live event, event runs can trigger signal encounters and the Rift Pumpkin boss. After the finale, permanent event rewards and aftermath content remain available.'],
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
@@ -3324,8 +3314,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.16.0';
-const CURRENT_UPDATE_INFO={title:'v3.16.0 — Survivor & Zombie Visual Overhaul',summary:'A visual overhaul for survivors and every zombie class while keeping gameplay mechanics unchanged.',items:['All zombie classes now have distinct silhouettes, colors, gear, faces, and visual effects.','Bosses have a larger, more recognizable silhouette with animated energy and crown-like armor.','Player characters now have clearer armor, helmets, visors, backpacks, class-specific gear, and skin-colored energy trim.','Gameplay stats, weapons, controls, progression, and save data are unchanged.']};
+const CURRENT_UPDATE_VERSION='3.16.1';
+const CURRENT_UPDATE_INFO={title:'v3.16.1 — Upgrade Roll & Overlay Performance Fix',summary:'A small maintenance release that makes Legendary/Mythic upgrade rolls much lighter and fixes the upgrade screen layering.',items:['Legendary and Mythic rolling now uses a lightweight animation with no canvas blur filters or large shadow buffers.','The special roll is shorter and remains fully selectable after the reveal completes.','The upgrade screen now resets to screen-space before drawing, so the player and world cannot appear over the upgrade choices.','How-To and update information are synchronized with this maintenance release.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

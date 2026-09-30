@@ -141,7 +141,7 @@
     openModal('INCOMING TRANSMISSION','<div class="oeb23-card"><h4>'+esc(b[0])+'</h4><div>'+esc(b[1])+'</div></div><p class="oeb23-muted">Transmissions unlock as the countdown approaches zero.</p>');
   }
 
-  function missionDone(m){return m[5]?.()>=m[2]}
+  function missionDone(m){return Number(m[3]?.()||0)>=m[2]}
   function rewardForMission(i){
     if(state.missions['claim'+i])return;
     const m=missions[i];if(!missionDone(m))return;

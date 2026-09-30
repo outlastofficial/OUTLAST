@@ -52,6 +52,9 @@
   function ensureCss(){
     if(qs('#oeb23Css'))return;
     const s=document.createElement('style');s.id='oeb23Css';s.textContent=`
+      .oeb-overlay{position:fixed;inset:0;background:rgba(2,7,12,.78);z-index:99990;display:flex;align-items:center;justify-content:center;padding:18px}
+      .oeb-modal{width:min(680px,100%);max-height:88vh;overflow:auto;background:#0b1722;border:1px solid #41677b;border-radius:20px;padding:22px;box-shadow:0 20px 80px #000}
+      .oeb-kicker{font-size:10px;letter-spacing:1.4px;color:#70d7c7;font-weight:800}.oeb-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.oeb-btn{border:1px solid #37627a;background:#142738;color:#eaf5ff;border-radius:8px;padding:7px 9px;cursor:pointer;font-size:10px;font-weight:800}
       #oeb23Root{font-family:inherit;color:#eaf5ff}
       .oeb23-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
       .oeb23-card{padding:11px;border:1px solid #29475b;background:#0e1c28;border-radius:11px}

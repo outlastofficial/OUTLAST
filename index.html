@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.19.0">
+<meta name="outlast-build" content="3.19.1">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.19.0">
-<title>OUTLAST v3.19.0</title>
+<meta name="build-version" content="3.19.1">
+<title>OUTLAST v3.19.1</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.19.0 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.19.1 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3189,6 +3189,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.19.1 — Small Bug Fixes','Fixed a skin-selection button issue, a Claim Coins stall path, and release-version synchronization.'],
   ['v3.19.0 — Boss Fight Overhaul','Remade bosses into three-phase encounters with readable attack telegraphs, dash/shockwave/stagger patterns, a dedicated boss display, and safer processing. Also fixed a Claim Coins stall path and release-version synchronization.'],
   ['v3.18.0 — Settings Update','Expanded Settings with time-zone selection, clock/date formatting, a menu clock, Reduced Motion, High Contrast, and Auto-Pause on Tab Switch.'],
   ['v3.17.1 — Update Notice Fix','Removed owner-only tools from player-facing update notices and corrected release messaging consistency.'],
@@ -3302,8 +3303,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.19.0';
-const CURRENT_UPDATE_INFO={title:'v3.19.0 — Boss Fight Overhaul',summary:'Remade boss encounters to feel like real multi-phase fights, plus small stability and bug fixes.',items:['Remade bosses with three readable phases and attack telegraphs.','Added boss dash, shockwave, stagger, and summon patterns with safer timing.','Added a dedicated boss name, phase, and health display during boss encounters.','Reduced boss processing spikes by preventing overlapping boss encounters and limiting attack effects.','Fixed a Claim Coins stall path by making server claims timeout-safe and non-blocking.']};
+const CURRENT_UPDATE_VERSION='3.19.1';
+const CURRENT_UPDATE_INFO={title:'v3.19.1 — Small Bug Fixes',summary:'Small bug fixes and stability improvements.',items:['Fixed a skin-selection button issue.','Fixed a Claim Coins stall path.','Synchronized the patch version across the game interface and update notice.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4850,6 +4851,43 @@ html.outlast-high-contrast{filter:contrast(1.12)}
   document.addEventListener('visibilitychange',autoPause);
   document.addEventListener('fullscreenchange',applySettings);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applySettings,{once:true});else applySettings();
+})();
+</script>
+<script id="outlast-v3191-skin-button-fix">
+(function(){
+  'use strict';
+  function install(){
+    const host=document.getElementById('subContent');
+    if(!host || host.dataset.v3191SkinFix==='1') return;
+    host.dataset.v3191SkinFix='1';
+    host.addEventListener('click',function(e){
+      const b=e.target&&e.target.closest?e.target.closest('button[data-action="skin"]'):null;
+      if(!b || !host.contains(b)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      const name=String(b.dataset.value||'').trim();
+      try{
+        if(!name || !skins || !skins[name]){
+          if(typeof toast==='function') toast('Skin unavailable');
+          return;
+        }
+        save.skins=save.skins||{};
+        if(!save.skins[name]){
+          if(typeof toast==='function') toast('Open Skin Cases to unlock this skin');
+          return;
+        }
+        save.selectedSkin=name;
+        if(typeof persist==='function') persist();
+        if(typeof openSkinMenu==='function') openSkinMenu();
+      }catch(err){
+        console.error('OUTLAST skin selection error:',err);
+        if(typeof toast==='function') toast('Skin selection failed — please try again');
+      }
+    },true);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true});
+  else install();
 })();
 </script>
 </body>

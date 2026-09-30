@@ -1036,6 +1036,24 @@ c.tabIndex=0;
 c.style.outline='none';
 function keyName(e){return (e.key||'').toLowerCase()}
 function held(name,code){return !!keys[name]||!!keyCodes[code]}
+
+/* v3.26.4: Space is not a game/menu control. Block browser button activation and page scrolling,
+   but keep Space working normally inside text inputs, textareas, and editable chat fields. */
+addEventListener('keydown',e=>{
+  if(e.code==='Space'||e.key===' '){
+    const target=e.target;
+    const typing=!!target && ((target.tagName||'').toLowerCase()==='input' || (target.tagName||'').toLowerCase()==='textarea' || target.isContentEditable);
+    if(!typing){e.preventDefault();e.stopPropagation();}
+  }
+},true);
+addEventListener('keypress',e=>{
+  if(e.code==='Space'||e.key===' '){
+    const target=e.target;
+    const typing=!!target && ((target.tagName||'').toLowerCase()==='input' || (target.tagName||'').toLowerCase()==='textarea' || target.isContentEditable);
+    if(!typing){e.preventDefault();e.stopPropagation();}
+  }
+},true);
+
 addEventListener('keydown',e=>{
   const k=keyName(e), code=e.code||'';
   const target=e.target;
@@ -3240,7 +3258,7 @@ const helpArticles=[
   ['How do I change accessibility settings?','Accessibility','Open Settings to change UI size, brightness, music, SFX, voice, and ambient volume along with all other player settings.'],
 
   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run or from the main menu. Chat now uses the live connection when available and automatically falls back to the HTTP chat service if the live connection drops.'],
-   ['How do I use Settings?','Settings','Open Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings.'],
+   ['How do I use Settings?','Settings','Open Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings. Space is not a game or menu control; it is ignored outside text fields.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
   ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Projectile Speed is a possible level-up choice that makes fired projectiles travel faster. Legendary and Mythic choices use a rolling reveal before they can be selected. Legendary and Mythic rolling is optimized to use lightweight canvas effects so the reveal stays smooth.'],
@@ -3303,6 +3321,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.26.4 — Input Fix','Fixed Space so it cannot scroll the page or activate focused game/menu buttons while preserving normal spaces in text fields.'],
    ['v3.26.2 — Zombie Spawn Recovery','Restored reliable zombie spawning during normal runs and added a safety recovery for a run that becomes empty.'],
    ['v3.25.5 — Chat Connection Fix','Fixed Global Chat connection status and strengthened the HTTP fallback when the live connection is unavailable.'],
    ['v3.25.2 — Version & Chat Fix','Fixed the visible game version marker and Global Chat interface.'],
@@ -3427,8 +3446,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.26.3';
-const CURRENT_UPDATE_INFO={title:'v3.26.3 — Small Bug Fixes',summary:'Applied small bug fixes and reliability improvements.',items:['Improved feedback and report handling.','Applied owner-panel reliability improvements.','Updated the How To and update information.']};
+const CURRENT_UPDATE_VERSION='3.26.4';
+const CURRENT_UPDATE_INFO={title:'v3.26.4 — Input Fix',summary:'Fixed Space so it cannot trigger game or menu actions.',items:['Space no longer scrolls the page or activates focused game/menu buttons.','Text fields such as chat, bug reports, and other inputs can still use normal spaces.','Updated the How To and control behavior.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

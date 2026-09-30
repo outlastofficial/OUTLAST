@@ -4,7 +4,7 @@
   if(window.__OUTLAST_EVENT_EXPANSION__) return;
   window.__OUTLAST_EVENT_EXPANSION__=true;
 
-  const EVENT_AT=new Date('2026-10-01T00:00:00').getTime();
+  const EVENT_AT=new Date('2026-10-01T10:00:00').getTime();
   const API='https://outlast-server.onrender.com';
   const KEY='outlastEventExpansionV323';
   const defaults={

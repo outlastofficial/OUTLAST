@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.23.6">
-<meta name="build-version" content="3.23.6">
-<title>OUTLAST v3.23.6</title>
+<meta name="outlast-build" content="3.24.0">
+<meta name="build-version" content="3.24.0">
+<title>OUTLAST v3.24.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.23.6 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.24.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -5441,5 +5441,225 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.23.6';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');else if(e.code==='Space')flash('ULTIMATE')},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.23.6';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.23.6';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes, restored interface systems, improved settings, and control feedback.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script></body>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.24.0';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');else if(e.code==='Space')flash('ULTIMATE')},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.24.0';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.24.0';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Game quality, reliability, recovery, accessibility, practice mode, player history, favorites, and bug reporting improvements.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<style id="outlast-v324-quality-css">
+#outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
+.outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.outlast-quality-card{padding:12px;border:1px solid #293f52;border-radius:14px;background:#101922}
+.outlast-quality-card h3{margin:0 0 5px;font-size:13px}.outlast-quality-card p{margin:0 0 8px;color:#8ea3b4;font-size:11px;line-height:1.4}
+.outlast-quality-btn{width:100%;margin:0;padding:9px 10px;background:#172633;border:1px solid #304a5e;box-shadow:none;font-size:12px}
+.outlast-quality-btn.good{background:#1b4635;border-color:#4b8f6d}
+.outlast-quality-btn.warn{background:#503434;border-color:#875454}
+.outlast-quality-list{max-height:52vh;overflow:auto;display:grid;gap:7px}
+.outlast-quality-row{padding:9px;border:1px solid #263b4b;border-radius:10px;background:#0d151d}
+.outlast-quality-row strong{font-size:12px}.outlast-quality-row .small{font-size:10px;line-height:1.4}
+.outlast-quality-form input,.outlast-quality-form textarea,.outlast-quality-form select{width:100%;box-sizing:border-box;margin:5px 0 9px;padding:9px;border-radius:9px;background:#0a1219;color:#fff;border:1px solid #354e62;font:700 12px Arial}
+.outlast-quality-form textarea{min-height:110px;resize:vertical}
+html.outlast-ui-large .menu-page-title{font-size:30px!important}html.outlast-ui-large .menu-btn{font-size:14px!important;padding:12px!important}
+html.outlast-brightness-low #game{filter:brightness(.82)}
+html.outlast-brightness-high #game{filter:brightness(1.16)}
+@media(max-width:650px){.outlast-quality-grid{grid-template-columns:1fr}#outlastQualityBadge{bottom:58px}}
+</style>
+<script id="outlast-v324-quality-layer">
+(function(){
+'use strict';
+const VERSION='v3.24.0', KEY='outlastQualityV324';
+const root=()=>window.outlastStorage||window.localStorage;
+function read(){try{const x=JSON.parse(root().getItem(KEY)||'{}');return x&&typeof x==='object'?x:{}}catch(_){return {}}}
+function write(x){try{root().setItem(KEY,JSON.stringify(x))}catch(_){}}
+function ensure(){
+  save=save||{};
+  save.settings=save.settings||{};
+  const q=read();
+  q.favorites=q.favorites||{maps:[],modes:[],challenges:[]};
+  q.runHistory=Array.isArray(q.runHistory)?q.runHistory:[];
+  q.objectiveHistory=Array.isArray(q.objectiveHistory)?q.objectiveHistory:[];
+  q.completedChallenges=Number(q.completedChallenges)||0;
+  q.audio=q.audio||{music:100,sfx:100,voice:100,ambient:100};
+  q.brightness=Number.isFinite(Number(q.brightness))?Number(q.brightness):100;
+  q.uiScale=q.uiScale==='large'?'large':'normal';
+  write(q); return q;
+}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function meta(){
+ return {version:VERSION,map:save?.map||'Unknown',mode:save?.mode||'Classic',difficulty:save?.difficulty||'Normal',user:currentUsername||'Player'};
+}
+function open(title,html){openSub(title,html);setTimeout(()=>{const x=document.getElementById('subContent');if(x)x.classList.add('outlast-quality-form')},0)}
+function toastQ(t){if(typeof toast==='function')toast(t)}
+function favorite(kind,value){
+ const q=ensure(),a=q.favorites[kind]||[];
+ const i=a.indexOf(value); if(i>=0){a.splice(i,1);toastQ('☆ Removed from favorites')}else{a.push(value);toastQ('★ Added to favorites')}
+ q.favorites[kind]=a.slice(-30);write(q);return a;
+}
+function objective(){
+ const current=save?.currentObjective||game?.objective||'No active objective';
+ const complete=!!game?.objectiveComplete;
+ const q=ensure();
+ if(complete && q.objectiveHistory[q.objectiveHistory.length-1]!==current){q.objectiveHistory.push({objective:current,date:new Date().toLocaleString()});q.objectiveHistory=q.objectiveHistory.slice(-30);write(q)}
+ open('🎯 Current Objective',
+   '<div class="note"><b>'+esc(complete?'Objective Complete':'Current Objective')+'</b><div class="small">'+esc(current)+'</div></div>'+
+   '<div class="spacer"></div><div class="small">Previous objectives</div>'+
+   '<div class="outlast-quality-list">'+(q.objectiveHistory.length?q.objectiveHistory.slice().reverse().map(x=>'<div class="outlast-quality-row"><strong>'+esc(x.objective)+'</strong><div class="small">'+esc(x.date)+'</div></div>').join(''):'<div class="outlast-quality-row small">No previous objectives recorded yet.</div>')+'</div>');
+}
+function stats(){
+ const s=save?.stats||{},q=ensure();
+ open('📊 Player Statistics',
+  '<div class="outlast-quality-grid">'+
+  card('Completed / Runs',String(Math.max(0,Number(s.games)||0)),'Recorded normal runs')+
+  card('Failed Runs',String(q.failedRuns||0),'Runs ending without victory')+
+  card('Total Play Time',fmtTime((Number(s.bestTime)||0)+(Number(s.totalPlayTime)||0)),'Tracked run time')+
+  card('Maps Played',String(q.mapsPlayed||0),'Distinct map selections used')+
+  card('Challenges',String(q.completedChallenges||0),'Completed challenge objectives')+
+  card('Game Modes',String(q.modesPlayed||0),'Run mode selections')+
+  card('Difficulty',String(q.difficultiesPlayed||0),'Difficulty selections used')+
+  card('Best Level',String(s.bestLevel||1),'Highest recorded run level')+
+  '</div>');
+}
+function card(a,b,c){return '<div class="outlast-quality-card"><h3>'+esc(a)+'</h3><div style="font-size:22px;font-weight:900">'+esc(b)+'</div><p>'+esc(c)+'</p></div>'}
+function fmtTime(sec){sec=Math.max(0,Math.floor(Number(sec)||0));const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60;return h+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s'}
+function history(){
+ const q=ensure(),rows=q.runHistory.slice().reverse();
+ open('🗂️ Run History','<div class="small">Your latest runs are saved on this device.</div><div class="spacer"></div><div class="outlast-quality-list">'+(rows.length?rows.map(r=>'<div class="outlast-quality-row"><strong>'+esc(r.result)+' • '+esc(r.map)+'</strong><div class="small">'+esc(r.mode)+' • '+esc(r.difficulty)+' • Level '+esc(r.level)+' • '+fmtTime(r.time)+' • '+esc(r.date)+'</div></div>').join(''):'<div class="outlast-quality-row small">No runs recorded yet.</div>')+'</div>');
+}
+function favorites(){
+ const q=ensure();
+ const section=(kind,label,items)=>'<div class="outlast-quality-card"><h3>'+label+'</h3><div class="small">'+(items.length?items.map(esc).join(' • '):'None saved')+'</div></div>';
+ open('★ Favorites',section('maps','Maps',q.favorites.maps)+section('modes','Modes',q.favorites.modes)+section('challenges','Challenges',q.favorites.challenges));
+}
+function favoritesPicker(){
+ const q=ensure();
+ open('★ Save Current Choices',
+  '<div class="outlast-quality-grid">'+
+  '<div class="outlast-quality-card"><h3>Map</h3><p>'+esc(save.map||'Forest')+'</p><button class="outlast-quality-btn" data-quality="fav-map">'+(q.favorites.maps.includes(save.map)?'☆ Remove':'★ Favorite')+'</button></div>'+
+  '<div class="outlast-quality-card"><h3>Mode</h3><p>'+esc(save.mode||'Classic')+'</p><button class="outlast-quality-btn" data-quality="fav-mode">'+(q.favorites.modes.includes(save.mode)?'☆ Remove':'★ Favorite')+'</button></div>'+
+  '<div class="outlast-quality-card"><h3>Challenge</h3><p>'+esc(save.challengeMode||'None')+'</p><button class="outlast-quality-btn" data-quality="fav-challenge">'+(q.favorites.challenges.includes(save.challengeMode||'None')?'☆ Remove':'★ Favorite')+'</button></div>'+
+  '</div><div class="spacer"></div><button class="outlast-quality-btn good" data-quality="favorites-view">Open Favorites</button>');
+}
+function bugReport(){
+ const m=meta();
+ open('🐞 Bug Report',
+  '<div class="note"><b>Automatic context</b><div class="small">Version '+esc(m.version)+' • Map '+esc(m.map)+' • Mode '+esc(m.mode)+' • Difficulty '+esc(m.difficulty)+'</div></div>'+
+  '<label>What happened?</label><textarea id="qBugBody" maxlength="1200" placeholder="Describe the problem and what you were doing."></textarea>'+
+  '<button class="outlast-quality-btn good" data-quality="bug-submit">Submit Bug Report</button>');
+}
+async function submitBug(){
+ const body=(document.getElementById('qBugBody')?.value||'').trim();
+ if(body.length<5)return toastQ('Please describe the problem first.');
+ const m=meta(),q=ensure();
+ const item={id:Date.now()+Math.random(),type:'bug',title:'In-game bug report',body,context:m,date:Date.now(),serverSaved:false};
+ q.bugReports=Array.isArray(q.bugReports)?q.bugReports:[];q.bugReports.push(item);q.bugReports=q.bugReports.slice(-50);write(q);
+ try{
+   const res=await fetch(OUTLAST_HTTP_SERVER+'/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId:String(item.id),user:String(currentUsername||'Player').slice(0,18),type:'bug',title:'In-game bug report',body:body+'\n\n[Context] '+JSON.stringify(m),date:item.date})});
+   item.serverSaved=!!res.ok;write(q);
+   toastQ(res.ok?'🐞 Bug report submitted':'🐞 Saved locally; server sync can retry.');
+ }catch(_){toastQ('🐞 Saved locally; server sync can retry.')}
+ closeSub();
+}
+function settings(){
+ const q=ensure(),s=save.settings||{};
+ open('⚙️ Quality Settings',
+  '<div class="outlast-quality-grid">'+
+  '<div class="outlast-quality-card"><h3>UI Size</h3><p>Increase menu text and buttons.</p><button class="outlast-quality-btn" data-quality="ui">'+(q.uiScale==='large'?'Large':'Normal')+'</button></div>'+
+  '<div class="outlast-quality-card"><h3>Brightness</h3><p>Adjust the game display.</p><input id="qBright" type="range" min="70" max="130" value="'+q.brightness+'"><div class="small" id="qBrightVal">'+q.brightness+'%</div></div>'+
+  '<div class="outlast-quality-card"><h3>Music Volume</h3><input data-qvol="music" type="range" min="0" max="100" value="'+q.audio.music+'"></div>'+
+  '<div class="outlast-quality-card"><h3>SFX Volume</h3><input data-qvol="sfx" type="range" min="0" max="100" value="'+q.audio.sfx+'"></div>'+
+  '<div class="outlast-quality-card"><h3>Voice Volume</h3><input data-qvol="voice" type="range" min="0" max="100" value="'+q.audio.voice+'"></div>'+
+  '<div class="outlast-quality-card"><h3>Ambient Volume</h3><input data-qvol="ambient" type="range" min="0" max="100" value="'+q.audio.ambient+'"></div>'+
+  '</div>');
+}
+function apply(){
+ const q=ensure();document.documentElement.classList.toggle('outlast-ui-large',q.uiScale==='large');
+ document.documentElement.classList.toggle('outlast-brightness-low',q.brightness<95);
+ document.documentElement.classList.toggle('outlast-brightness-high',q.brightness>105);
+ document.querySelectorAll('audio,video').forEach(el=>{el.volume=Math.max(0,Math.min(1,(q.audio?.sfx??100)/100))});
+}
+function qualityHub(){
+ const q=ensure(),m=meta();
+ open('🛠️ Quality & Recovery',
+ '<div class="note"><b>Build '+esc(m.version)+'</b><div class="small">Quick tools for objectives, recovery, history, favorites, and reporting.</div></div><div class="spacer"></div>'+
+ '<div class="outlast-quality-grid">'+
+ '<div class="outlast-quality-card"><h3>Objective</h3><p>See what to do next and review completed objectives.</p><button class="outlast-quality-btn" data-quality="objective">Open Objective</button></div>'+
+ '<div class="outlast-quality-card"><h3>Run History</h3><p>Review recent map, mode, difficulty, result, and time.</p><button class="outlast-quality-btn" data-quality="history">Open History</button></div>'+
+ '<div class="outlast-quality-card"><h3>Favorites</h3><p>Save frequently used maps, modes, and challenges.</p><button class="outlast-quality-btn" data-quality="favorites">Open Favorites</button></div>'+
+ '<div class="outlast-quality-card"><h3>Bug Report</h3><p>Automatically include version, map, mode, and difficulty.</p><button class="outlast-quality-btn warn" data-quality="bug">Report a Bug</button></div>'+
+ '<div class="outlast-quality-card"><h3>Quality Settings</h3><p>UI size, brightness, and separate volume controls.</p><button class="outlast-quality-btn" data-quality="settings">Open Settings</button></div>'+
+ '<div class="outlast-quality-card"><h3>Practice Mode</h3><p>Explore without enemies, normal rewards, or progression.</p><button class="outlast-quality-btn good" data-quality="practice">Start Practice</button></div>'+
+ '</div>');
+}
+function startPractice(){
+ save.practiceMode=true;try{persist()}catch(_){}
+ const b=document.getElementById('startBtn');if(b){b.click();setTimeout(()=>{if(window.game)game.practiceMode=true;toastQ('🎓 Practice Mode: no enemies or normal progression.');},50)}else toastQ('Start Run button is unavailable.');
+}
+function recordRun(victory){
+ const q=ensure(),r={...meta(),result:victory?'Completed':'Failed',level:game?.level||1,time:game?.time||0,kills:run?.kills||0,date:new Date().toLocaleString()};
+ q.runHistory.push(r);q.runHistory=q.runHistory.slice(-50);
+ q.mapsPlayed=(q.mapsPlayed||0)+1;q.modesPlayed=(q.modesPlayed||0)+1;q.difficultiesPlayed=(q.difficultiesPlayed||0)+1;
+ if(victory&&game?.objectiveComplete)q.completedChallenges=(q.completedChallenges||0)+1;
+ write(q);
+}
+function install(){
+ ensure();apply();
+ const badge=document.createElement('div');badge.id='outlastQualityBadge';badge.textContent=VERSION+' • QUALITY';document.body.appendChild(badge);
+ const more=document.querySelector('[data-page-content="more"] .menu-cards'),progress=document.querySelector('[data-page-content="progress"] .menu-cards'),play=document.querySelector('[data-page-content="play"] .menu-cards');
+ if(more&&!document.getElementById('qualityHubBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Quality Center</h3><button class="menu-btn" id="qualityHubBtn">🛠️ Quality & Recovery</button>';more.appendChild(d)}
+ if(progress&&!document.getElementById('runHistoryBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Run History</h3><button class="menu-btn" id="runHistoryBtn">🗂️ Run History</button>';progress.appendChild(d)}
+ if(progress&&!document.getElementById('favoritesBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Favorites</h3><button class="menu-btn" id="favoritesBtn">★ Favorites</button>';progress.appendChild(d)}
+ if(play&&!document.getElementById('practiceBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Practice</h3><button class="menu-btn good" id="practiceBtn">🎓 Practice Mode</button>';play.appendChild(d)}
+ if(more&&!document.getElementById('bugReportBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Bug Reporting</h3><button class="menu-btn" id="bugReportBtn">🐞 Report a Bug</button>';more.appendChild(d)}
+ document.addEventListener('click',function(e){
+   const b=e.target.closest?.('[data-quality],#qualityHubBtn,#runHistoryBtn,#favoritesBtn,#practiceBtn,#bugReportBtn');if(!b)return;
+   if(b.id==='qualityHubBtn'){e.preventDefault();qualityHub();return}
+   if(b.id==='runHistoryBtn'){e.preventDefault();history();return}
+   if(b.id==='favoritesBtn'){e.preventDefault();favoritesPicker();return}
+   if(b.id==='practiceBtn'){e.preventDefault();startPractice();return}
+   if(b.id==='bugReportBtn'){e.preventDefault();bugReport();return}
+   const a=b.dataset.quality;
+   if(a==='objective')objective();else if(a==='history')history();else if(a==='favorites')favoritesPicker();else if(a==='bug')bugReport();else if(a==='settings')settings();else if(a==='practice')startPractice();
+   else if(a==='bug-submit')submitBug();else if(a==='favorites-view')favorites();else if(a==='fav-map'){favorite('maps',save.map);favoritesPicker()}else if(a==='fav-mode'){favorite('modes',save.mode);favoritesPicker()}else if(a==='fav-challenge'){favorite('challenges',save.challengeMode||'None');favoritesPicker()}else if(a==='ui'){const q=ensure();q.uiScale=q.uiScale==='large'?'normal':'large';write(q);apply();settings()}
+ },true);
+ document.addEventListener('input',function(e){
+   if(e.target.id==='qBright'){const q=ensure();q.brightness=Number(e.target.value);write(q);apply();const v=document.getElementById('qBrightVal');if(v)v.textContent=q.brightness+'%'}
+   if(e.target.dataset.qvol){const q=ensure();q.audio=q.audio||{};q.audio[e.target.dataset.qvol]=Number(e.target.value);write(q);apply()}
+ },true);
+ document.addEventListener('click',function(e){
+   const b=e.target.closest?.('button');if(!b)return;
+   const now=Date.now(),last=Number(b.dataset.outlastTap||0);
+   if(now-last<280){e.preventDefault();e.stopImmediatePropagation();return}
+   b.dataset.outlastTap=String(now);
+ },true);
+ const oldOpen=window.openSub;
+ if(typeof oldOpen==='function'&&!window.__v324OpenWrapped){
+   window.__v324OpenWrapped=true;
+   window.openSub=function(title,body,backAction=null){return oldOpen(title,body,backAction)}
+ }
+ const oldEnd=window.endRun;
+ if(typeof oldEnd==='function'&&!window.__v324EndWrapped){
+   window.__v324EndWrapped=true;
+   window.endRun=function(victory,recordScore=true,showEnd=true){
+     const practice=!!game?.practiceMode;
+     if(practice){
+       const snapshot=JSON.stringify(save);
+       const result=oldEnd(victory,false,showEnd);
+       try{save=JSON.parse(snapshot);persist()}catch(_){}
+       game.practiceMode=false;save.practiceMode=false;return result;
+     }
+     const result=oldEnd(victory,recordScore,showEnd);try{recordRun(!!victory)}catch(_){}
+     return result;
+   }
+ }
+ const oldSpawn=window.spawnEnemy;
+ if(typeof oldSpawn==='function'&&!window.__v324SpawnWrapped){
+   window.__v324SpawnWrapped=true;
+   window.spawnEnemy=function(type){if(game?.practiceMode)return;return oldSpawn(type)}
+ }
+ const oldBoss=window.spawnBoss;
+ if(typeof oldBoss==='function'&&!window.__v324BossWrapped){
+   window.__v324BossWrapped=true;
+   window.spawnBoss=function(){if(game?.practiceMode)return;return oldBoss()}
+ }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugReport:bugReport};
+})();
+</script></body>
 </html>

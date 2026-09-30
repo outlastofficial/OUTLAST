@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.14.19">
+<meta name="outlast-build" content="3.14.20">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="build-version" content="3.14.19">
@@ -787,7 +787,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.19 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.20 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3263,8 +3263,8 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.17 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.19';
-const CURRENT_UPDATE_INFO={title:'v3.14.19 — Gameplay Animation Layer',summary:'Gameplay and menu feedback animations are back, while login and device-login behavior is left untouched.',items:['Hit, critical-hit, XP, coin, level-up, boss, reward, synergy, dash, and ultimate effects are restored.','Upgrade rarity/reveal and menu/card transitions use the visual animation layer.','Login and device-login popups are excluded from the animation event hooks.','Reduced-motion preferences are respected.']};function showUpdatePopup(force=false){
+const CURRENT_UPDATE_VERSION='3.14.20';
+const CURRENT_UPDATE_INFO={title:'v3.14.20 — Event Build-Up',summary:'The event buildup is now active with a countdown, investigation, transmissions, rewards, escalating warnings, and final activation sequence.',items:['Track the event countdown from the hub.','Investigate signals and collect 5 pre-event clues.','Watch new broadcasts as the event approaches.','Complete the investigation to unlock the pre-event reward.','The final 24-hour warning phase intensifies the event atmosphere.','On activation, the locked event protocol becomes accessible.']};function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;
@@ -4575,5 +4575,6 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 </script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
+<script src="outlast-v3.14.20-event-buildup.js?v=3.14.20"></script>
 </body>
 </html>

@@ -3214,7 +3214,7 @@ const helpArticles=[
   ['How do I report a bug?','Bug Reporting','Open More → Report a Bug. The report automatically includes the current OUTLAST version, map, mode, and difficulty. Reports are saved locally and sent to the OUTLAST server when available.'],
   ['Where can I see previous runs?','Run History','Open Progress → Run History to review recent map, mode, difficulty, result, level, duration, and date.'],
   ['How do Favorites work?','Favorites','Open Progress → Favorites to save the current map, mode, or challenge. Favorites are stored on this device for quick reference.'],
-  ['How do I change accessibility settings?','Accessibility','Open More → Quality & Recovery → Quality Settings to change UI size, brightness, and separate music, SFX, voice, and ambient volume preferences.'],
+  ['How do I change accessibility settings?','Accessibility','Open More → Settings to change UI size, brightness, music, SFX, voice, and ambient volume along with all other player settings.'],
 
   ['How do I use Settings?','Settings','Open More → Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
@@ -5390,6 +5390,14 @@ html.outlast-high-contrast{filter:contrast(1.12)}
           '<div class="outlast-setting">'+toggleButton('reducedMotion','Reduced Motion',s.reducedMotion===true)+'</div>'+
           '<div class="outlast-setting">'+toggleButton('highContrast','High Contrast',s.highContrast===true)+'</div>'+
         '</div></div>'+
+        '<div class="outlast-settings-section"><h3>Audio & Quality</h3><div class="outlast-settings-grid">'+
+          '<div class="outlast-setting"><strong>UI Size</strong><div class="small">Choose normal or larger menu text and buttons.</div><button type="button" class="outlast-settings-btn" data-quality-setting="ui">'+(ensure().uiScale==='large'?'Large':'Normal')+'</button></div>'+
+          '<div class="outlast-setting"><strong>Brightness</strong><div class="small">Adjust the game display.</div><input data-quality-setting="brightness" type="range" min="70" max="130" value="'+ensure().brightness+'"><div class="small">'+ensure().brightness+'%</div></div>'+
+          '<div class="outlast-setting"><strong>Music Volume</strong><input data-quality-volume="music" type="range" min="0" max="100" value="'+ensure().audio.music+'"></div>'+
+          '<div class="outlast-setting"><strong>SFX Volume</strong><input data-quality-volume="sfx" type="range" min="0" max="100" value="'+ensure().audio.sfx+'"></div>'+
+          '<div class="outlast-setting"><strong>Voice Volume</strong><input data-quality-volume="voice" type="range" min="0" max="100" value="'+ensure().audio.voice+'"></div>'+
+          '<div class="outlast-setting"><strong>Ambient Volume</strong><input data-quality-volume="ambient" type="range" min="0" max="100" value="'+ensure().audio.ambient+'"></div>'+
+        '</div></div>'+
         '<div class="outlast-settings-section"><h3>Gameplay & Controls</h3><div class="outlast-settings-grid">'+
           '<div class="outlast-setting"><strong>Device</strong><div class="small">'+esc((typeof getDeviceMode==='function'?(getDeviceMode()||'not selected'):'not selected').toUpperCase())+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px"><button type="button" class="outlast-settings-btn" data-setting-device="pc">🖥️ PC</button><button type="button" class="outlast-settings-btn" data-setting-device="mobile">📱 Mobile</button></div></div>'+
           '<div class="outlast-setting"><strong>Joystick</strong><div class="small">Joystick is intended for mobile in-run controls.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px"><button type="button" class="outlast-settings-btn" data-setting-joy="on">🕹️ ON</button><button type="button" class="outlast-settings-btn" data-setting-joy="off">🚫 OFF</button></div></div>'+
@@ -5418,6 +5426,8 @@ html.outlast-high-contrast{filter:contrast(1.12)}
       e.preventDefault();e.stopPropagation();try{if(typeof setJoystickMode==='function')setJoystickMode(b.dataset.settingJoy);}catch(_){}
       render();
     });
+    sub.querySelectorAll('[data-quality-setting]').forEach(el=>{el.oninput=el.onclick=function(e){e.preventDefault();e.stopPropagation();const q=ensure();const k=el.dataset.qualitySetting;if(k==='ui')q.uiScale=q.uiScale==='large'?'normal':'large';else if(k==='brightness')q.brightness=Number(el.value)||100;saveQ(q);apply();if(k==='ui')render();};});
+    sub.querySelectorAll('[data-quality-volume]').forEach(el=>el.oninput=function(){const q=ensure();q.audio=q.audio||{music:100,sfx:100,voice:100,ambient:100};q.audio[el.dataset.qualityVolume]=Number(el.value)||0;saveQ(q);apply();});
     const full=sub.querySelector('[data-setting-fullscreen]');
     if(full)full.onclick=function(e){e.preventDefault();e.stopPropagation();try{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();}catch(_){}};
     const reset=sub.querySelector('[data-setting-reset]');

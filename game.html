@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.18">
-<title>OUTLAST v3.14.18</title>
+<meta name="outlast-build" content="3.14.19">
+<title>OUTLAST v3.14.19</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.18 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.19 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3160,6 +3160,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.14.19 — Gameplay Animation Layer','Restored gameplay/UI feedback animations for hits, criticals, XP, coins, level-ups, bosses, rewards, synergies, dash, ultimate, upgrade reveals, and menu transitions. Login and device-login popups are excluded.'],
   ['v3.14.18 — Upgrade System Rebuild','Added clearer upgrade categories, beginner-friendly early choices, Final Swarm, Glass Reactor, Overdrive, Guardian Core, Treasure Hunter, Weapon Mastery, build synergies, and stronger build-focused progression. Existing Legendary/Mythic rolling and Luck rarity system preserved.'],
   ['v3.14.18 — Upgrade System Rebuild','Expanded in-run upgrades with clearer categories, beginner-friendly early choices, new build-defining upgrades, build synergies, stronger Luck influence, and improved upgrade explanations. Legendary/Mythic rolling remains intact.'],
 
@@ -3261,8 +3262,8 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.18';
-const CURRENT_UPDATE_INFO={title:'v3.14.18 — Legendary Roll Reveal',summary:'Legendary and Mythic upgrades now roll into view with a dramatic animated reveal before they can be claimed.',items:['Legendary upgrades use a rolling, spinning reveal before showing the real upgrade.','Mythic upgrades get a longer, more intense reveal with the existing Mythic FX.','Upgrade selection is temporarily locked during Legendary/Mythic reveals so the animation can finish.','Existing rarity auras, rays, orbiting particles, rings, and card pulses remain active.']};
+const CURRENT_UPDATE_VERSION='3.14.19';
+const CURRENT_UPDATE_INFO={title:'v3.14.19 — Gameplay Animation Layer',summary:'Gameplay and menu feedback animations are back, while login and device-login behavior is left untouched.',items:['Hit, critical-hit, XP, coin, level-up, boss, reward, synergy, dash, and ultimate effects are restored.','Upgrade rarity/reveal and menu/card transitions use the visual animation layer.','Login and device-login popups are excluded from the animation event hooks.','Reduced-motion preferences are respected.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4888,5 +4889,6 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     toast((u[0]||'Upgrade')+' • '+(u[4]||category(u[0]))+' • '+(u[1]||''));
   };
 })();
-</script><script src="outlast-v3.14.18-upgrades.js?v=3.14.18"></script></body>
+</script><script src="outlast-v3.14.18-upgrades.js?v=3.14.18"></script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
+</body>
 </html>

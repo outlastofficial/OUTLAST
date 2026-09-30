@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.22.0">
+<meta name="outlast-build" content="3.23.0">
 <meta name="build-version" content="3.19.2">
-<title>OUTLAST v3.22.0</title>
+<title>OUTLAST v3.23.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -699,10 +699,39 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 
 <style id="daily-shop-v316">
 .daily-shop-wrap{display:grid;gap:12px}.daily-shop-banner{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px;border:1px solid #3b5265;border-radius:14px;background:linear-gradient(135deg,#132433,#0c141c)}.daily-shop-banner b{letter-spacing:.06em}.daily-shop-timer{text-align:right;font-size:10px;color:#8197a8;white-space:nowrap}.daily-shop-timer strong{font-size:17px;color:#8fe0b0}.daily-shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.daily-shop-card{min-height:135px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:13px!important;background:linear-gradient(150deg,#14212b,#0e151d)!important;border:1px solid #304758!important;text-align:left!important}.daily-shop-card:hover:not(:disabled){border-color:#5aa9c7!important;transform:translateY(-2px)}.daily-shop-card:disabled{opacity:.58}.daily-shop-top{display:flex;justify-content:space-between;align-items:center}.daily-shop-rank{font-size:10px;color:#6f8798}.daily-shop-tag{font-size:9px;padding:3px 6px;border:1px solid #36556a;border-radius:999px;color:#8fc8e4}.daily-shop-price{font-weight:800;color:#e8c85a;margin-top:7px}.daily-shop-bought .daily-shop-price{color:#7ee7a0}.daily-shop-footer{text-align:center;padding:8px;color:#718695}@media(max-width:700px){.daily-shop-grid{grid-template-columns:1fr 1fr}.daily-shop-banner{align-items:flex-start}.daily-shop-timer{font-size:9px}}@media(max-width:460px){.daily-shop-grid{grid-template-columns:1fr}.daily-shop-banner{flex-direction:column}.daily-shop-timer{text-align:left}}
+</style><style id="outlast-v323-chat">
+#outlastChat{position:fixed;right:16px;bottom:105px;width:min(330px,30vw);z-index:43;display:none;pointer-events:auto;font-family:inherit}
+#outlastChat.open{display:block}
+#outlastChat .chat-card{background:rgba(8,14,20,.94);border:1px solid rgba(92,136,166,.55);border-radius:14px;box-shadow:0 16px 45px rgba(0,0,0,.42);overflow:hidden;backdrop-filter:blur(7px)}
+#outlastChat .chat-head{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:rgba(18,31,43,.96);border-bottom:1px solid rgba(92,136,166,.28)}
+#outlastChat .chat-title{font-weight:900;font-size:12px;letter-spacing:.08em}
+#outlastChat .chat-status{font-size:10px;color:#8ea8bb}
+#outlastChat .chat-messages{height:150px;overflow:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+#outlastChat .chat-msg{font-size:11px;line-height:1.35;word-break:break-word}
+#outlastChat .chat-msg .name{font-weight:900;color:#b8dbef}
+#outlastChat .chat-msg .time{font-size:9px;color:#6f8797;margin-left:5px}
+#outlastChat .chat-empty{font-size:11px;color:#718795;text-align:center;margin:auto}
+#outlastChat .chat-compose{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(92,136,166,.24)}
+#outlastChat .chat-compose input{min-width:0;flex:1;padding:9px 10px;border-radius:9px;border:1px solid #3b5263;background:#0b131a;color:#fff;outline:none}
+#outlastChat .chat-compose button{padding:9px 11px;border-radius:9px;border:1px solid #4d748e;background:#173244;color:#eaf7ff;font-weight:800;cursor:pointer}
+#outlastChatToggle{position:fixed;right:16px;bottom:105px;z-index:43;display:none;border:1px solid #4d748e;border-radius:999px;background:rgba(12,24,34,.92);color:#eaf7ff;padding:9px 13px;font:800 11px Arial;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+#outlastChatToggle.chat-visible{display:block}
+@media(max-width:760px){
+ #outlastChat{right:10px;bottom:154px;width:min(360px,calc(100vw - 20px))}
+ #outlastChatToggle{right:10px;bottom:154px}
+ #outlastChat .chat-messages{height:125px}
+}
 </style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
-<div id="mobileAvatarPreview"><canvas id="mobileAvatarCanvas" width="62" height="74"></canvas></div>
+<button id="outlastChatToggle" type="button">💬 CHAT</button>
+<div id="outlastChat" aria-label="OUTLAST global chat">
+  <div class="chat-card">
+    <div class="chat-head"><span class="chat-title">GLOBAL CHAT</span><span class="chat-status" id="outlastChatStatus">Offline</span><button id="outlastChatClose" type="button" style="background:none;border:0;color:#9eb3c1;font-size:15px;cursor:pointer">×</button></div>
+    <div class="chat-messages" id="outlastChatMessages"><div class="chat-empty">No messages yet.</div></div>
+    <div class="chat-compose"><input id="outlastChatInput" maxlength="180" autocomplete="off" placeholder="Type a message…"><button id="outlastChatSend" type="button">SEND</button></div>
+  </div>
+</div><div id="mobileAvatarPreview"><canvas id="mobileAvatarCanvas" width="62" height="74"></canvas></div>
 
 <div id="mobileControls" aria-hidden="true">
   <div id="mobileStick"><div id="mobileStickKnob"></div></div>
@@ -796,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.22.0 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.23.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1666,7 +1695,7 @@ function startGame(fromRoom=false){
     game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
   }
   game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
-  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
+  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();if(typeof connectOutlastServer==='function')connectOutlastServer();syncOutlastChatUI();
  }catch(err){
    fatalGameError=err?.message||String(err);
    fatalErrorShown=true;
@@ -2001,7 +2030,7 @@ function killEnemy(target){
   if(game.player.vampire)game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire);
   game.enemies.splice(i,1);
 }
-function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices()}
+function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices();syncOutlastChatUI?.()}
 const upgradeRarities={
  Common:{mult:1,label:'COMMON',weight:52,glow:'#9aa5ad'},
  Uncommon:{mult:1.5,label:'UNCOMMON',weight:25,glow:'#71d68a'},
@@ -2060,7 +2089,7 @@ const tempUp=[
 ];
 function rollUpgradeRarity(){const luck=Math.max(0,Number(game.player?.upgradeLuck||0));const bonus=Math.min(.8,luck/100);const weights={Common:52*(1-bonus*.65),Uncommon:25*(1-bonus*.5),Rare:13*(1+bonus*.8),Epic:6.5*(1+bonus*1.25),Legendary:2.5*(1+bonus*2.4),Mythic:.5*(1+bonus*4)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name];if(r<=0)return name}return 'Common'}
 function makeChoices(){const a=[...tempUp],out=[];while(out.length<3){const i=Math.floor(Math.random()*a.length);if(out.some(u=>u[0]===a[i][0]))continue;const [name,desc,apply]=a.splice(i,1)[0],rarity=game.level===3&&out.length===0?'Legendary':rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;out.push([name,desc(mult),()=>apply(mult),rarity])}return out}
-function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;const rolling=game.upgradeChoices.some(u=>u&&u[3]&&(u[3]==='Legendary'||u[3]==='Mythic'));if(rolling&&(!game.__upgradeRollKey||performance.now()<Number(game.__upgradeRollUnlockAt||0)))return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[];game.__upgradeRollKey='';game.__upgradeRollUnlockAt=0;game.__upgradeRollActive=false;game.paused=false;syncMobileControls?.();}
+function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;const rolling=game.upgradeChoices.some(u=>u&&u[3]&&(u[3]==='Legendary'||u[3]==='Mythic'));if(rolling&&(!game.__upgradeRollKey||performance.now()<Number(game.__upgradeRollUnlockAt||0)))return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[];game.__upgradeRollKey='';game.__upgradeRollUnlockAt=0;game.__upgradeRollActive=false;game.paused=false;syncMobileControls?.();syncOutlastChatUI?.();}
 function upg(name){return save.upgrades[name]||0}
 function syncGameAdminUI(){
  const toggle=document.getElementById('gameAdminToggle'),panel=document.getElementById('gameAdminPanel');
@@ -3228,6 +3257,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.23.0 — Global Chat','Added a live Global Chat for connected players with a compact in-game chat box.'],
   ['v3.22.0 — Aura & Stability Update','Fixed aura upgrades so Frost Aura and Cryo Burst now apply their radius, slow, and chill effects consistently.'],
   ['v3.21.0 — Aura Upgrade Fix','Fixed Frost Aura and Cryo Burst so their radius and slow strength now stack, affect nearby enemies, and display a visible aura around the survivor.'],
   ['v3.20.0 — Upgrade & HUD Fix','Fixed the player appearing over level-up choices and added Projectile Speed as a level-up upgrade.'],
@@ -3346,8 +3376,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.22.0';
-const CURRENT_UPDATE_INFO={title:'v3.22.0 — Small Bug Fixes',summary:'Small bug fixes and stability improvements.',items:['Fixed aura upgrade behavior and consistency.','Improved general run stability.','Updated the in-game version marker to v3.22.0.']};
+const CURRENT_UPDATE_VERSION='3.23.0';
+const CURRENT_UPDATE_INFO={title:'v3.23.0 — Small Bug Fixes',summary:'Small bug fixes and stability improvements.',items:['Added a compact live chat for connected players.','Improved general run stability.','Updated the in-game version marker to v3.23.0.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4157,14 +4187,62 @@ if(!save.coinPurchases)save.coinPurchases={};
 /* OUTLAST ONLINE SERVER + ROOMS */
 setTimeout(()=>{if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();},1500);
 const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
+let outlastChatMessages=[];
+let outlastChatOpen=false;
+let outlastChatUnread=0;
 let outlastSocket=null,outlastOnline=false,outlastOnlineUsers=0,roomCode='',roomClientId='',roomPlayers={},roomStarted=false,coopLaunchActive=false;
 let roomShots=[];
 function onlineStatus(){return outlastOnline?'🟢 Connected':'🔴 Offline'}
 let pendingRoomAction='';
+function chatEscapeText(v){return String(v??'').replace(/[<>&"]/g,s=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[s]));}
+function renderOutlastChat(){
+ const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus'),toggle=document.getElementById('outlastChatToggle');if(!box)return;
+ if(status)status.textContent=outlastOnline?'🟢 Online':'🔴 Offline';
+ box.textContent='';
+ const msgs=outlastChatMessages.slice(-80);
+ if(!msgs.length){const empty=document.createElement('div');empty.className='chat-empty';empty.textContent='No messages yet.';box.appendChild(empty);}
+ else msgs.forEach(m=>{
+   const row=document.createElement('div');row.className='chat-msg';
+   const name=document.createElement('span');name.className='name';name.textContent=String(m.username||'Player');
+   const tm=document.createElement('span');tm.className='time';tm.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+   const body=document.createElement('span');body.textContent=': '+String(m.message||'');
+   row.append(name,tm,body);box.appendChild(row);
+ });
+ box.scrollTop=box.scrollHeight;
+ if(toggle)toggle.textContent=outlastChatUnread>0?'💬 CHAT • '+Math.min(99,outlastChatUnread):'💬 CHAT';
+}
+function toggleOutlastChat(force){
+ outlastChatOpen=typeof force==='boolean'?force:!outlastChatOpen;outlastChatUnread=outlastChatOpen?0:outlastChatUnread;
+ const panel=document.getElementById('outlastChat'),toggle=document.getElementById('outlastChatToggle');
+ if(panel)panel.classList.toggle('open',!!outlastChatOpen);
+ if(toggle)toggle.classList.toggle('chat-visible',!!game?.running&&!outlastChatOpen);
+ if(outlastChatOpen)document.getElementById('outlastChatInput')?.focus();
+ renderOutlastChat();
+}
+function syncOutlastChatUI(){
+ const active=!!game?.running&&!game?.over&&!game?.upgradeOpen&&!fatalErrorShown;
+ const panel=document.getElementById('outlastChat'),toggle=document.getElementById('outlastChatToggle');
+ if(!active){if(panel)panel.classList.remove('open');if(toggle)toggle.classList.remove('chat-visible');return;}
+ if(outlastChatOpen){if(panel)panel.classList.add('open');if(toggle)toggle.classList.remove('chat-visible');}
+ else if(toggle)toggle.classList.add('chat-visible');
+ renderOutlastChat();
+}
+function sendOutlastChatMessage(){
+ const input=document.getElementById('outlastChatInput');const message=String(input?.value||'').trim().slice(0,180);if(!message)return;
+ if(!outlastOnline){connectOutlastServer();return;}
+ roomSend({type:'chat_message',message});if(input)input.value='';
+}
+function setupOutlastChat(){
+ document.getElementById('outlastChatToggle')?.addEventListener('click',()=>toggleOutlastChat(true));
+ document.getElementById('outlastChatClose')?.addEventListener('click',()=>toggleOutlastChat(false));
+ document.getElementById('outlastChatSend')?.addEventListener('click',sendOutlastChatMessage);
+ document.getElementById('outlastChatInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendOutlastChatMessage();}});
+}
+setupOutlastChat();
 function connectOutlastServer(){
  if(outlastSocket&&(outlastSocket.readyState===WebSocket.OPEN||outlastSocket.readyState===WebSocket.CONNECTING))return;
  try{outlastSocket=new WebSocket(OUTLAST_SERVER_URL);outlastSocket.onopen=()=>{outlastOnline=true;roomClientId=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2));roomSend({type:'player_join',username:currentUsername||'Player'});if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();toast('🌐 Connected to OUTLAST server');renderOnlinePanel();const action=pendingRoomAction;pendingRoomAction='';if(action==='create')createRoom();else if(action==='join')joinRoom();};
- outlastSocket.onmessage=e=>{try{const m=JSON.parse(e.data);if(m.type==='player_count')outlastOnlineUsers=Number(m.players)||0;if(m.type==='room_created'||m.type==='room_joined'){roomCode=String(m.code||'').toUpperCase();roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);toast('🏠 Room '+roomCode);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}if(m.type==='room_state'){roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}if(m.type==='room_error')toast('⚠️ '+(m.error||'Room error'));if(m.type==='player_left'){delete roomPlayers[m.id]}if(m.type==='room_game_start'){roomStarted=true;coopLaunchActive=true;document.getElementById('subPanel').style.display='none';if(!game.running)startGame(true);const menu=document.getElementById('menu');if(menu&&game.running)menu.style.display='none';toast('▶ Co-op run started')}if(m.type==='player_state'&&m.id){roomPlayers[m.id]={...(roomPlayers[m.id]||{}),...m};delete roomPlayers[m.id].type}if(m.type==='player_shoot'&&m.id&&Number.isFinite(Number(m.x))&&Number.isFinite(Number(m.y))){roomShots.push({id:m.id,x:Number(m.x),y:Number(m.y),a:Number(m.a)||0,weapon:String(m.weapon||'Blaster'),t:.28,max:.28,color:String(m.color||'#fff08a'),speed:Number(m.speed)||720,size:Number(m.size)||5});if(roomShots.length>120)roomShots.splice(0,roomShots.length-120)}}catch(_){ }renderOnlinePanel()};
+ outlastSocket.onmessage=e=>{try{const m=JSON.parse(e.data);if(m.type==='player_count')outlastOnlineUsers=Number(m.players)||0;if(m.type==='chat_history'&&Array.isArray(m.messages)){outlastChatMessages=m.messages.slice(-200);renderOutlastChat();}if(m.type==='chat_message'&&m.message){outlastChatMessages.push({id:m.id,username:m.username,message:m.message,at:m.at});if(outlastChatMessages.length>200)outlastChatMessages.splice(0,outlastChatMessages.length-200);if(!outlastChatOpen&&game?.running)outlastChatUnread++;renderOutlastChat();}if(m.type==='chat_error')toast('⚠️ '+(m.error||'Chat error'));if(m.type==='room_created'||m.type==='room_joined'){roomCode=String(m.code||'').toUpperCase();roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);toast('🏠 Room '+roomCode);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}if(m.type==='room_state'){roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}if(m.type==='room_error')toast('⚠️ '+(m.error||'Room error'));if(m.type==='player_left'){delete roomPlayers[m.id]}if(m.type==='room_game_start'){roomStarted=true;coopLaunchActive=true;document.getElementById('subPanel').style.display='none';if(!game.running)startGame(true);const menu=document.getElementById('menu');if(menu&&game.running)menu.style.display='none';toast('▶ Co-op run started')}if(m.type==='player_state'&&m.id){roomPlayers[m.id]={...(roomPlayers[m.id]||{}),...m};delete roomPlayers[m.id].type}if(m.type==='player_shoot'&&m.id&&Number.isFinite(Number(m.x))&&Number.isFinite(Number(m.y))){roomShots.push({id:m.id,x:Number(m.x),y:Number(m.y),a:Number(m.a)||0,weapon:String(m.weapon||'Blaster'),t:.28,max:.28,color:String(m.color||'#fff08a'),speed:Number(m.speed)||720,size:Number(m.size)||5});if(roomShots.length>120)roomShots.splice(0,roomShots.length-120)}}catch(_){ }renderOnlinePanel()};
  outlastSocket.onclose=()=>{outlastOnline=false;outlastSocket=null;roomCode='';roomPlayers={};roomShots=[];roomStarted=false;renderOnlinePanel()};outlastSocket.onerror=()=>{outlastOnline=false;renderOnlinePanel();toast('⚠️ Could not connect to OUTLAST server')};
  }catch(_){outlastOnline=false;toast('⚠️ Multiplayer connection failed')}}
 function roomSend(o){if(outlastSocket&&outlastSocket.readyState===WebSocket.OPEN)outlastSocket.send(JSON.stringify(o))}

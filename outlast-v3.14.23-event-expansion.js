@@ -1,10 +1,15 @@
-/* OUTLAST v3.14.23 — Full Event Expansion */
+/* OUTLAST v3.14.23 — Full Event Expansion • timing source shared by countdown + calendar */
 (function(){
   'use strict';
   if(window.__OUTLAST_EVENT_EXPANSION__) return;
   window.__OUTLAST_EVENT_EXPANSION__=true;
 
-  const EVENT_AT=new Date('2026-10-01T10:00:00').getTime();
+  const EVENT_CONFIG={
+    id:'nightfall-october-2026',
+    name:'Nightfall / October Event',
+    startAt:new Date('2026-10-01T10:00:00').getTime()
+  };
+  const EVENT_AT=EVENT_CONFIG.startAt;
   const API='https://outlast-server.onrender.com';
   const KEY='outlastEventExpansionV323';
   const defaults={
@@ -25,6 +30,20 @@
   function remaining(){return Math.max(0,EVENT_AT-Date.now())}
   function phase(){return remaining()===0?'LIVE':remaining()<=86400000?'FINAL':'BUILDUP'}
   function fmt(ms){let sec=Math.floor(ms/1000),d=Math.floor(sec/86400);sec%=86400;let h=Math.floor(sec/3600);sec%=3600;let m=Math.floor(sec/60);sec%=60;return d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(sec).padStart(2,'0')+'s'}
+  function eventDateText(){
+    return new Date(EVENT_AT).toLocaleString([],{
+      weekday:'long',year:'numeric',month:'long',day:'numeric',
+      hour:'numeric',minute:'2-digit'
+    });
+  }
+  function showCalendar(){
+    const r=remaining(),p=phase();
+    openModal('EVENT CALENDAR',
+      '<div class="oeb23-card"><h4>'+esc(EVENT_CONFIG.name)+'</h4>'+
+      '<div>'+esc(eventDateText())+'</div>'+
+      '<div class="oeb23-muted">This is the exact timestamp used by the live event countdown.</div></div>'+
+      '<div class="oeb23-card"><h4>Countdown</h4><div><b>'+(p==='LIVE'?'LIVE':fmt(r))+'</b></div></div>');
+  }
   function toastMsg(msg){try{if(typeof toast==='function')toast(msg)}catch(_){}}
 
   const clueNames=['Broken Signal Fragment','Unknown Coordinate','Damaged Access Key','Encrypted Warning','Strange Symbol'];
@@ -261,7 +280,7 @@
       '<div class="oeb23-card"><h4>Investigation</h4><div>'+state.clues+'/5 clues</div></div>'+
       '<div class="oeb23-card"><h4>Event Missions</h4><div>'+missionCount+'/5 complete</div></div>'+
       '</div>'+
-      '<div class="oeb23-actions"><button class="oeb23-btn" data-i>INVESTIGATE</button><button class="oeb23-btn" data-b>BROADCAST</button><button class="oeb23-btn gold" data-m>MISSIONS</button><button class="oeb23-btn gold" data-s>SHOP</button><button class="oeb23-btn" data-l>LEADERBOARD</button><button class="oeb23-btn green" data-a>ACCESS</button></div>'+
+      '<div class="oeb23-actions"><button class="oeb23-btn" data-i>INVESTIGATE</button><button class="oeb23-btn" data-b>BROADCAST</button><button class="oeb23-btn gold" data-m>MISSIONS</button><button class="oeb23-btn gold" data-s>SHOP</button><button class="oeb23-btn" data-l>LEADERBOARD</button><button class="oeb23-btn" data-c>CALENDAR</button><button class="oeb23-btn green" data-a>ACCESS</button></div>'+
       (state.aftermath?'<div class="oeb23-terminal"><strong>AFTERMATH ARCHIVE</strong><div class="oeb23-actions"><button class="oeb23-btn" data-after>VIEW AFTERMATH</button></div></div>':'');
     const m=openModal('EVENT PROTOCOL',body);
     m.querySelector('[data-i]').onclick=()=>{m.remove();showInvestigation()};
@@ -269,6 +288,7 @@
     m.querySelector('[data-m]').onclick=()=>{m.remove();showMissions()};
     m.querySelector('[data-s]').onclick=()=>{m.remove();showShop()};
     m.querySelector('[data-l]').onclick=()=>{m.remove();showLeaderboard()};
+    m.querySelector('[data-c]').onclick=()=>{m.remove();showCalendar()};
     m.querySelector('[data-a]').onclick=()=>{m.remove();terminalAccess()};
     m.querySelector('[data-after]')?.addEventListener('click',()=>{m.remove();showAftermath()});
   }
@@ -287,5 +307,5 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 
-  window.OUTLAST_EVENT_EXPANSION={showDetails,showInvestigation,showMissions,showShop,showLeaderboard,terminalAccess,spawnEventBoss};
+  window.OUTLAST_EVENT_EXPANSION={showDetails,showInvestigation,showMissions,showShop,showLeaderboard,showCalendar,terminalAccess,spawnEventBoss};
 })();

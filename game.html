@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.19.2">
+<meta name="outlast-build" content="3.20.0">
 <meta name="build-version" content="3.19.2">
-<title>OUTLAST v3.19.2</title>
+<title>OUTLAST v3.20.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.17.0 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.20.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1652,7 +1652,7 @@ function startGame(fromRoom=false){
   const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
   const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
   coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
-  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
+  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
   game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
   game.player2=null;
   if(save.mode==='1v1 Arena'){
@@ -1912,7 +1912,7 @@ function shoot(){
  // Special weapons also respect every Multi-Shot level instead of ignoring it.
  const multiBonus=Math.max(0,Number(p.multiShot)||0);
  if(weapon==='OrbitBlades'){}
- if(!['Laser','FrostNova'].includes(weapon)){const shotsToFire=count+(p.doubleTap&&Math.random()<.20?1:0);for(let i=0;i<shotsToFire;i++){let a=ang+(i-(shotsToFire-1)/2)*spread;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult)?Math.max(1,p.damage*mult):Math.max(1,p.damage||1),hits:0,type:weapon,pierce});}} if(!['Laser','FrostNova'].includes(weapon)){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
+ speed*=Math.max(.1,Number(p.projectileSpeed)||1); if(!['Laser','FrostNova'].includes(weapon)){const shotsToFire=count+(p.doubleTap&&Math.random()<.20?1:0);for(let i=0;i<shotsToFire;i++){let a=ang+(i-(shotsToFire-1)/2)*spread;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult)?Math.max(1,p.damage*mult):Math.max(1,p.damage||1),hits:0,type:weapon,pierce});}} if(!['Laser','FrostNova'].includes(weapon)){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
  if(weapon==='Laser'){const targets=game.enemies.filter(e=>Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,Math.min(game.enemies.length,4+Math.max(0,Math.floor(p.multiShot||0))));targets.forEach(e=>{damageEnemy(e,p.damage*3.2);applyElement(e);game.effects.push({x:e.x,y:e.y,t:.35,r:18});if(e.hp<=0)killEnemy(e)});}
  if(weapon==='FrostNova'){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(e.x-p.x,e.y-p.y)<210){damageEnemy(e,p.damage*1.9);applyElement(e);e.burn=Math.max(e.burn||0,0);e.slowTimer=3;if(e.hp<=0)killEnemy(e)}}game.effects.push({x:p.x,y:p.y,t:.45,r:210})}
  // Lightning is projectile-count driven; no extra chain shots are spawned here.
@@ -2014,7 +2014,7 @@ const tempUp=[
  ['Multi-Shot',v=>`+${Math.max(2,Math.round(2*v))} projectiles`,v=>game.player.multiShot=(game.player.multiShot||0)+Math.max(2,Math.round(2*v))],
  ['Frost Aura',v=>`Stronger slowing aura`,v=>game.player.frost=true],
  ['Berserker',v=>`+${Math.round(50*v)}% damage below 50% HP`,v=>game.player.berserk=true],
- ['Big Bullets',v=>`${Math.round(35*v)}% larger shots`,v=>game.player.bulletSize=(game.player.bulletSize||1)*(1+.35*v)],
+ ['Big Bullets',v=>`${Math.round(35*v)}% larger shots`,v=>game.player.bulletSize=(game.player.bulletSize||1)*(1+.35*v)],  ['Projectile Speed',v=>`+${Math.round(18*v)}% projectile speed`,v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.18*v)],
  ['Lucky Hunter',v=>`${Math.round(25+10*(v-1))}% chance for double XP`,v=>game.player.lucky=true],
  ['Overcharge',v=>`+${Math.round(20*v)}% ultimate damage`,v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.20*v)],
  ['Second Wind',v=>`+${Math.round(2*v)} HP/s`,v=>game.player.regen+=2*v],
@@ -2453,7 +2453,7 @@ const p=game.player;if(p){
   // player/world can never render over the choice screen.
   ctx.save();
   ctx.setTransform(1,0,0,1,0,0);
-  ctx.fillStyle='rgba(0,0,0,.97)';ctx.fillRect(0,0,CW,CH);
+  ctx.fillStyle='#071018';ctx.fillRect(0,0,CW,CH);
   const now=performance.now()/1000;
   const fx={Common:{c:'#9aa5ad',r:0},Uncommon:{c:'#71d68a',r:1},Rare:{c:'#72a8ff',r:2},Epic:{c:'#d28cff',r:3},Legendary:{c:'#ffd84d',r:4},Mythic:{c:'#ff65e8',r:5}};
   const choiceKey=game.upgradeChoices.map(u=>String(u[0])+'|'+String(u[3]||'Common')).join('||');
@@ -3162,7 +3162,7 @@ const helpArticles=[
   ['How do I use Settings?','Settings','Open More → Settings to choose your time zone, clock/date format, menu clock, Screen Shake, Damage Numbers, Reduced Motion, High Contrast, device controls, joystick behavior, Auto-Pause on Tab Switch, fullscreen, and Reset Settings.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
-  ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Legendary and Mythic choices use a rolling reveal before they can be selected. Legendary and Mythic rolling is optimized to use lightweight canvas effects so the reveal stays smooth.'],
+  ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Projectile Speed is a possible level-up choice that makes fired projectiles travel faster. Legendary and Mythic choices use a rolling reveal before they can be selected. Legendary and Mythic rolling is optimized to use lightweight canvas effects so the reveal stays smooth.'],
 
   ['How do I use the Halloween Event?','Halloween Event','Watch the countdown from the small event pill in the corner. Open DETAILS to investigate clues, read broadcasts, complete missions, earn Event Coins, shop limited rewards, view the event leaderboard, and enter the event when it goes live. During the live event, event runs can trigger signal encounters and the Rift Pumpkin boss. After the finale, permanent event rewards and aftermath content remain available.'],
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
@@ -3221,8 +3221,9 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.20.0 — Upgrade & HUD Fix','Fixed the player appearing over level-up choices and added Projectile Speed as a level-up upgrade.'],
   ['v3.19.2 — HUD Cleanup','Moved the boss countdown out of the top HUD so it stays readable without covering the play area.'],
-  ['v3.19.1 — Small Bug Fixes','Removed the Extract button from the run UI.'];
+  ['v3.19.1 — Small Bug Fixes','Removed the Extract button from the run UI.'],
   ['v3.18.0 — Settings Update','Expanded Settings with time-zone selection, clock/date formatting, a menu clock, Reduced Motion, High Contrast, and Auto-Pause on Tab Switch.'],
   ['v3.17.1 — Update Notice Fix','Removed owner-only tools from player-facing update notices and corrected release messaging consistency.'],
   ['v3.15.1 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
@@ -3336,8 +3337,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.18.0';
-const CURRENT_UPDATE_INFO={title:'v3.18.0 — Settings Update',summary:'Expanded Settings with time, display, motion, and focus controls.',items:['Added Automatic or manual time-zone selection.','Added 12/24-hour clock and date-format options.','Added a live menu clock, Reduced Motion, and High Contrast settings.','Added Auto-Pause on Tab Switch while a run is active.']};
+const CURRENT_UPDATE_VERSION='3.20.0';
+const CURRENT_UPDATE_INFO={title:'v3.20.0 — Upgrade & HUD Fix',summary:'Upgrade-screen and combat improvements.',items:['Stopped the player and other avatar layers from appearing over level-up choices.','Added Projectile Speed as a level-up upgrade.','Updated the in-game version marker to v3.20.0.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4092,17 +4093,17 @@ function drawPlayerAvatar(p,accent,isP2){
 }
 function restoreAvatarRendering(){
  const original=draw;
- draw=function(){original();if(!game.running||!game.player)return;const p=game.player;const [sx,sy]=worldPoint(p.x,p.y);ctx.save();ctx.translate(sx-p.x,sy-p.y);drawPlayerAvatar(p,'#5e9fff',false);if(save.mode==='1v1 Arena'&&game.player2)drawPlayerAvatar(game.player2,'#ff5f69',true);ctx.restore();};
+ draw=function(){original();if(!game.running||!game.player||game.upgradeOpen)return;const p=game.player;const [sx,sy]=worldPoint(p.x,p.y);ctx.save();ctx.translate(sx-p.x,sy-p.y);drawPlayerAvatar(p,'#5e9fff',false);if(save.mode==='1v1 Arena'&&game.player2)drawPlayerAvatar(game.player2,'#ff5f69',true);ctx.restore();};
 }
 
 
 /* Restore full character avatars on top of the legacy renderer. */
-(function(){const priorDraw=draw;draw=function(){priorDraw();if(!game.running||!game.player)return;ctx.save();ctx.translate(-game.camera.x,-game.camera.y);drawPlayerAvatar(game.player,'#5e9fff',false);if(save.mode==='1v1 Arena'&&game.player2)drawPlayerAvatar(game.player2,'#ff5f69',true);ctx.restore();};})();
+(function(){const priorDraw=draw;draw=function(){priorDraw();if(!game.running||!game.player||game.upgradeOpen)return;ctx.save();ctx.translate(-game.camera.x,-game.camera.y);drawPlayerAvatar(game.player,'#5e9fff',false);if(save.mode==='1v1 Arena'&&game.player2)drawPlayerAvatar(game.player2,'#ff5f69',true);ctx.restore();};})();
 /* ---------- Visual health bar, extraction marker, map/event overlays ---------- */
 const oldDraw=draw;
 draw=function(){
  oldDraw();
- if(!game.running||!game.player)return;
+ if(!game.running||!game.player||game.upgradeOpen)return;
  const p=game.player,[sx,sy]=worldPoint(p.x,p.y);const bw=90,bh=9;ctx.fillStyle='rgba(0,0,0,.75)';ctx.fillRect(sx-bw/2,sy-42,bw,bh);ctx.fillStyle='#55df72';ctx.fillRect(sx-bw/2,sy-42,bw*Math.max(0,p.hp/p.max),bh);ctx.strokeStyle='#fff';ctx.strokeRect(sx-bw/2,sy-42,bw,bh);ctx.fillStyle='#fff';ctx.font='11px Arial';ctx.textAlign='center';ctx.fillText(Math.ceil(p.hp)+' / '+Math.ceil(p.max),sx,sy-47);ctx.textAlign='left';
  if(p.extraction){const [ex,ey]=worldPoint(p.extraction.x,p.extraction.y);ctx.strokeStyle='#6fffd1';ctx.lineWidth=5;ctx.beginPath();ctx.arc(ex,ey,35,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#6fffd1';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText(p.extraction.charge>0?'EXTRACTING...':'EXTRACTION',ex,ey-45);ctx.textAlign='left';}
  if(game.eventTimer>0){ctx.fillStyle='#fff';ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.fillText('EVENT: '+game.event+'  '+Math.ceil(game.eventTimer)+'s',CW/2,32);ctx.textAlign='left';}
@@ -4112,7 +4113,7 @@ draw=function(){
 
 /* Special enemy labels are drawn by a light overlay after the base draw. */
 const oldDraw2=draw;
-draw=function(){oldDraw2();if(!game.running)return;
+draw=function(){oldDraw2();if(!game.running||game.upgradeOpen)return;
  if(roomCode&&typeof roomPlayers==='object'){
   for(const rp of Object.values(roomPlayers)){
    if(!rp||rp.id===roomClientId||!Number.isFinite(Number(rp.x))||!Number.isFinite(Number(rp.y)))continue;

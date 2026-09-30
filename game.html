@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.24">
-<title>OUTLAST v3.14.24</title>
+<meta name="outlast-build" content="3.14.25">
+<title>OUTLAST v3.14.25</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -795,7 +795,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.24 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.25 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3171,6 +3171,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.14.25 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
   ['v3.14.23 — Full Event Expansion','Expanded the October event into a complete progression: shared community signal, event investigation, broadcasts, missions, Event Coins, limited shop, achievements, live event terminal, Rift Pumpkin boss encounter, event leaderboard, finale, and permanent aftermath.'],
   ['v3.14.20 — Event Build-Up','Added the full event buildup: countdown, broadcasts, investigation clues, pre-event rewards, progress tracking, event access, final warning phase, and activation sequence.'],
   ['v3.14.22 — Event UI Placement','Kept the full event buildup system, but moved its home-screen indicator to a small unobtrusive bottom-corner pill so it no longer takes over the hub.'],['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.22">
+<meta name="outlast-build" content="3.14.23">
 <title>OUTLAST v3.14.22</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
@@ -3117,7 +3117,7 @@ const helpArticles=[
   ['How do I equip a pet?','Inventory Pet','Open Inventory, choose Pet, and select an owned pet. Equipped pets follow you during runs.'],
   ['How do I equip a relic?','Inventory Relic','Open Inventory, choose Relic, and select an owned relic to equip it.'],
   ['How do I equip a charm?','Inventory Charm','Open Inventory, choose Charm, and select an owned charm to equip it.'],
-  ['How does the Event Build-Up work?','Event Build-Up','Use the Event Protocol panel to track the countdown, investigate signals, collect 5 clues, read broadcasts, and unlock the pre-event reward. During the final 24 hours, the warning state intensifies. When the countdown reaches zero, the event access sequence activates.'],
+  ['How does the October Event work?','October Event','Use the compact Event Protocol indicator to follow the countdown. Before the event, investigate 5 clues, read broadcasts, complete missions, earn Event Coins, contribute to the community signal, and unlock rewards. When the countdown reaches zero, the event terminal opens and the Rift Pumpkin boss can be fought during an Event Run. The finale and permanent aftermath keep your event achievements and cosmetics unlocked.'],
   ['How does XP work?','XP','Collect XP drops to fill the XP bar and level up. Boss XP drops are tuned to give one level-up when collected.'],
   ['How do I get more coins?','Coins','Earn coins from runs, drops, shops, missions, rewards, and other progression systems. New players start with 0 coins.'],
   ['How does the Daily Shop work?','Daily Shop','Open Gear → Daily Shop. Today’s six offers are saved for the entire day; the next daily reset creates a new stock selection rather than only rearranging the same offers.'],
@@ -3161,6 +3161,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.14.23 — Full Event Expansion','Expanded the October event into a complete progression: shared community signal, event investigation, broadcasts, missions, Event Coins, limited shop, achievements, live event terminal, Rift Pumpkin boss encounter, event leaderboard, finale, and permanent aftermath.'],
   ['v3.14.20 — Event Build-Up','Added the full event buildup: countdown, broadcasts, investigation clues, pre-event rewards, progress tracking, event access, final warning phase, and activation sequence.'],
   ['v3.14.22 — Event UI Placement','Kept the full event buildup system, but moved its home-screen indicator to a small unobtrusive bottom-corner pill so it no longer takes over the hub.'],['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],
   ['v3.14.21 — Event Build-Up','Added the full event buildup: live countdown, escalating hub warnings, incoming broadcasts, 5-clue investigation, pre-event rewards, progress tracking, locked event access, final 24-hour phase, and final transmission sequence.'],
@@ -3266,8 +3267,9 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.22';
-const CURRENT_UPDATE_INFO={title:'v3.14.22 — Event UI Placement',summary:'The event buildup is now active with a countdown, investigation, transmissions, rewards, escalating warnings, and final activation sequence.',items:['Track the event countdown from the hub.','Investigate signals and collect 5 pre-event clues.','Watch new broadcasts as the event approaches.','Complete the investigation to unlock the pre-event reward.','The final 24-hour warning phase intensifies the event atmosphere.','On activation, the locked event protocol becomes accessible.']};
+const CURRENT_UPDATE_VERSION='3.14.23';
+const CURRENT_UPDATE_INFO={title:'v3.14.23 — Full Event Expansion',summary:'The October event is now expanded into a full event progression from countdown to aftermath.',items:['Track the compact countdown from the hub.','Investigate 5 clues and decode the event signal.','Complete event missions and earn Event Coins.','Spend Event Coins in the limited-time event shop.','Contribute to the shared community signal and view the event leaderboard.','Enter the live event terminal and fight the Rift Pumpkin boss.','Unlock event achievements, rewards, cosmetics, and the permanent aftermath.']};
+/* CURRENT_UPDATE_ITEMS_REPLACED */
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4894,6 +4896,6 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   };
 })();
 </script><script src="outlast-v3.14.18-upgrades.js?v=3.14.18"></script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
-<script src="outlast-v3.14.20-event-buildup.js?v=3.14.22"></script>
+<script src="outlast-v3.14.23-event-expansion.js?v=3.14.23"></script>
 </body>
 </html>

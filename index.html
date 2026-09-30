@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.6">
-<meta name="build-version" content="3.27.6">
-<title>OUTLAST v3.27.6</title>
+<meta name="outlast-build" content="3.27.7">
+<meta name="build-version" content="3.27.7">
+<title>OUTLAST v3.27.7</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -846,7 +846,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.27.6 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.7 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3281,7 +3281,7 @@ const helpArticles=[
   ['How do I change accessibility settings?','Accessibility','Open Settings to change UI size, brightness, music, SFX, voice, and ambient volume along with all other player settings.'],
 
   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run or from the main menu. Messages use the shared chat service and are synchronized across devices, with the live connection available for fast delivery.'],
-  ['How do Announcements work?','Announcements','Owner announcements are delivered through the shared server. A new announcement appears as an in-game notification, and recent announcements can be recovered after reconnecting or refreshing the page.'],
+  ['How do Announcements work?','Announcements','Owner announcements are delivered through the shared server. A new announcement appears as an in-game notification for 10 seconds, then closes automatically. Recent announcements can be recovered after reconnecting or refreshing the page.'],
    ['How do I use Settings?','Settings','Open Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings. Space is not a game or menu control; it is ignored outside text fields.'],
   ['What is the XP Vacuum power-up?','XP Vacuum','Pick up the XP Vacuum to immediately collect every XP drop currently on the map. It applies your normal XP bonuses and does not collect coins or other loot.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
@@ -3346,6 +3346,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.27.7 — Announcement & Multiplayer Fix','Announcement notifications now close automatically after 10 seconds, and incoming announcements no longer open the Online / Multiplayer panel.'],
    ['v3.27.6 — Announcements Fix','Fixed Global Announcements so connected and reconnecting devices can receive them reliably.'],
    ['v3.27.5 — Chat Sync Fix','Strengthened Global Chat synchronization between phones, PCs, and other devices.'],
    ['v3.27.4 — Chat Connection Fix','Fixed Global Chat startup and strengthened shared server synchronization.'],
@@ -3477,8 +3478,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.6';
-const CURRENT_UPDATE_INFO={title:'v3.27.6 — Announcements Fix',summary:'Fixed Global Announcements so connected and reconnecting devices can receive them reliably.',items:['Announcements now appear as a clear in-game notification when sent.','Reconnects and page refreshes can retrieve recent announcements from the shared server history.','Announcement notifications can be closed with the close button, outside click, or Escape.']};
+const CURRENT_UPDATE_VERSION='3.27.7';
+const CURRENT_UPDATE_INFO={title:'v3.27.7 — Announcement & Multiplayer Fix',summary:'Improved announcement behavior and stopped announcements from opening the multiplayer panel.',items:['Announcement notifications now close automatically after 10 seconds.','Receiving an announcement no longer opens or refreshes the Online / Multiplayer panel.','Manual close controls still work, and announcement delivery remains synchronized across devices.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4300,6 +4301,7 @@ let pendingOutlastChat=[];
 let outlastChatPollTimer=null;
 let outlastAnnouncementHistory=[];
 let outlastAnnouncementInitialized=false;
+let outlastAnnouncementTimer=null;
 let outlastSeenAnnouncementIds=new Set();
 try{
   const saved=JSON.parse(localStorage.getItem('outlastSeenAnnouncementIds')||'[]');
@@ -4324,6 +4326,8 @@ function showOutlastAnnouncement(entry){
   msg.textContent=a.message;
   if(tm)tm.textContent='Posted '+new Date(a.at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
   pop.classList.add('open');
+  clearTimeout(outlastAnnouncementTimer);
+  outlastAnnouncementTimer=setTimeout(()=>{closeOutlastAnnouncement();},10000);
 }
 function receiveOutlastAnnouncement(entry){
   const a=storeOutlastAnnouncement(entry);if(!a)return;
@@ -4347,7 +4351,7 @@ async function pollOutlastAnnouncements(){
     list.forEach(a=>receiveOutlastAnnouncement(a));
   }catch(_){}
 }
-function closeOutlastAnnouncement(){document.getElementById('outlastAnnouncement')?.classList.remove('open');}
+function closeOutlastAnnouncement(){clearTimeout(outlastAnnouncementTimer);outlastAnnouncementTimer=null;document.getElementById('outlastAnnouncement')?.classList.remove('open');}
 document.getElementById('outlastAnnouncementClose')?.addEventListener('click',closeOutlastAnnouncement);
 document.getElementById('outlastAnnouncement')?.addEventListener('click',e=>{if(e.target.id==='outlastAnnouncement')closeOutlastAnnouncement()});
 
@@ -4470,7 +4474,7 @@ function connectOutlastServer(){
     if(m.type==='player_state'&&m.id){roomPlayers[m.id]={...(roomPlayers[m.id]||{}),...m};delete roomPlayers[m.id].type}
     if(m.type==='player_shoot'&&m.id&&Number.isFinite(Number(m.x))&&Number.isFinite(Number(m.y))){roomShots.push({id:m.id,x:Number(m.x),y:Number(m.y),a:Number(m.a)||0,weapon:String(m.weapon||'Blaster'),t:.28,max:.28,color:String(m.color||'#fff08a'),speed:Number(m.speed)||720,size:Number(m.size)||5});if(roomShots.length>120)roomShots.splice(0,roomShots.length-120)}
    }catch(_){}
-   renderOnlinePanel();
+   if(['player_count','room_created','room_joined','room_state','room_game_start','player_state','player_shoot','player_left','room_error'].includes(m.type)) renderOnlinePanel();
   };
   outlastSocket.onclose=()=>{
    outlastOnline=false;outlastSocket=null;roomCode='';roomPlayers={};roomShots=[];roomStarted=false;
@@ -5007,7 +5011,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.27.6</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.27.7</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);

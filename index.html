@@ -3270,8 +3270,7 @@ const TUTORIAL_UPDATE_ENTRY=['v3.14.17 — Tutorial Reliability','Rebuilt the Ne
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='3.14.23';
 const CURRENT_UPDATE_INFO={title:'v3.14.23 — Full Event Expansion',summary:'The October event is now expanded into a full event progression from countdown to aftermath.',items:['Track the compact countdown from the hub.','Investigate 5 clues and decode the event signal.','Complete event missions and earn Event Coins.','Spend Event Coins in the limited-time event shop.','Contribute to the shared community signal and view the event leaderboard.','Enter the live event terminal and fight the Rift Pumpkin boss.','Unlock event achievements, rewards, cosmetics, and the permanent aftermath.']};
-/* CURRENT_UPDATE_ITEMS_REPLACED */
-const CURRENT_UPDATE_INFO_OLD={items:['Track the event countdown from the hub.','Investigate signals and collect 5 pre-event clues.','Watch new broadcasts as the event approaches.','Complete the investigation to unlock the pre-event reward.','The final 24-hour warning phase intensifies the event atmosphere.','On activation, the locked event protocol becomes accessible.']};function showUpdatePopup(force=false){
+function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;

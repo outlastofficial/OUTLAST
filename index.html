@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.26.1">
-<meta name="build-version" content="3.26.1">
-<title>OUTLAST v3.26.1</title>
+<meta name="outlast-build" content="3.26.2">
+<meta name="build-version" content="3.26.2">
+<title>OUTLAST v3.26.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2172,7 +2172,28 @@ if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game
  if(game.gunfireAlert>0)game.gunfireAlert-=dt;
 
  game.shrineClock-=dt;if(game.shrineClock<=0){spawnShrine();game.shrineClock=55}
- game.spawn-=dt;if(save.mode==='1v1 Arena'){game.spawn=999;}else if(game.spawn<=0){const levelPressure=1/(1+Math.pow(Math.max(0,game.level-1),0.82)*0.045);const levelDifficulty=levelDifficultyRamp(game.level);const interval=Math.max(.10,.72*game.stats.spawnMult*levelPressure/levelDifficulty*(game.event==='BLOOD MOON'?.68:1)-Math.min(.25,game.level*.004));const extraChance=Math.min(.55,.08+game.level*.012);spawnEnemy();if(Math.random()<extraChance)spawnEnemy();if(game.level>=12&&Math.random()<Math.min(.19,(game.level-10)*.010))spawnEnemy('elite');game.spawn=interval}
+ game.spawn-=dt;
+ if(save.mode==='1v1 Arena'){
+   game.spawn=999;
+ }else{
+   /* v3.26.2: keep the normal enemy stream alive even if the spawn timer ever becomes invalid. */
+   if(!Number.isFinite(game.spawn))game.spawn=.25;
+   if(game.spawn<=0){
+     const levelPressure=1/(1+Math.pow(Math.max(0,game.level-1),0.82)*0.045);
+     const levelDifficulty=levelDifficultyRamp(game.level);
+     const interval=Math.max(.10,.72*game.stats.spawnMult*levelPressure/levelDifficulty*(game.event==='BLOOD MOON'?.68:1)-Math.min(.25,game.level*.004));
+     const extraChance=Math.min(.55,.08+game.level*.012);
+     spawnEnemy();
+     if(Math.random()<extraChance)spawnEnemy();
+     if(game.level>=12&&Math.random()<Math.min(.19,(game.level-10)*.010))spawnEnemy('elite');
+     game.spawn=interval;
+   }
+   /* Recovery: a live non-PvP run should never remain empty because of a stuck spawn state. */
+   if(game.time>.15&&game.enemies.length===0){
+     spawnEnemy();
+     game.spawn=Math.min(Number.isFinite(game.spawn)?game.spawn:.45,.45);
+   }
+ }
  if(save.mode!=='1v1 Arena'&&game.bossClock>=game.stats.bossEvery){game.bossClock=0;spawnBoss()}
  // Power-ups no longer spawn randomly in the world; they come from enemy drops/events.
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
@@ -3405,8 +3426,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.26.1';
-const CURRENT_UPDATE_INFO={title:'v3.26.1 — Boss Difficulty & Keyboard Fix',summary:'Improved boss combat difficulty and fixed an issue where Space could move the page.',items:['Bosses now have stronger attacks, faster phases, and more dangerous summons.','Space no longer scrolls the page when the game or menu has keyboard focus.','Updated the How To and controls behavior.']};
+const CURRENT_UPDATE_VERSION='3.26.2';
+const CURRENT_UPDATE_INFO={title:'v3.26.2 — Zombie Spawn Recovery',summary:'Restored reliable zombie spawning during normal runs.',items:['Zombie spawning now has a recovery check so a run cannot get stuck with an empty map.','The existing enemy spawn pacing and difficulty scaling are preserved.','Updated the How To and update information.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

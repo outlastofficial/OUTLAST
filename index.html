@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.14.21">
+<meta name="outlast-build" content="3.14.22">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="build-version" content="3.14.19">
@@ -787,7 +787,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.21 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.22 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3165,7 +3165,7 @@ function renderUpdates(){
  
 const updates=[
   ['v3.14.20 — Event Build-Up','Added the full event buildup: countdown, broadcasts, investigation clues, pre-event rewards, progress tracking, event access, final warning phase, and activation sequence.'],
-  ['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],
+  ['v3.14.22 — Event UI Placement','Kept the full event buildup system, but moved its home-screen indicator to a small unobtrusive bottom-corner pill so it no longer takes over the hub.'],['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],
   ['v3.14.21 — Event Build-Up','Added the full event buildup: live countdown, escalating hub warnings, incoming broadcasts, 5-clue investigation, pre-event rewards, progress tracking, locked event access, final 24-hour phase, and final transmission sequence.'],
   ['v3.13.2 — Countdown Fix','Restored the Nightfall/October event countdown, fixed a multiplayer UI script syntax error that could stop later UI systems from running, and removed the duplicate owner script load.'],
   ['v3.13.3 — Maintenance Update','Routine release maintenance and control-routing updates.'],
@@ -3267,8 +3267,8 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.17 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.21';
-const CURRENT_UPDATE_INFO={title:'v3.14.21 — Event Build-Up',summary:'The event buildup is now active with a countdown, investigation, transmissions, rewards, escalating warnings, and final activation sequence.',items:['Track the event countdown from the hub.','Investigate signals and collect 5 pre-event clues.','Watch new broadcasts as the event approaches.','Complete the investigation to unlock the pre-event reward.','The final 24-hour warning phase intensifies the event atmosphere.','On activation, the locked event protocol becomes accessible.']};function showUpdatePopup(force=false){
+const CURRENT_UPDATE_VERSION='3.14.22';
+const CURRENT_UPDATE_INFO={title:'v3.14.22 — Event UI Placement',summary:'The event buildup is now active with a countdown, investigation, transmissions, rewards, escalating warnings, and final activation sequence.',items:['Track the event countdown from the hub.','Investigate signals and collect 5 pre-event clues.','Watch new broadcasts as the event approaches.','Complete the investigation to unlock the pre-event reward.','The final 24-hour warning phase intensifies the event atmosphere.','On activation, the locked event protocol becomes accessible.']};function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;
@@ -4579,6 +4579,6 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 </script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
-<script src="outlast-v3.14.21-event-buildup.js?v=3.14.21"></script>
+<script src="outlast-v3.14.20-event-buildup.js?v=3.14.22"></script>
 </body>
 </html>

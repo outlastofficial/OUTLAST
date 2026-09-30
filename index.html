@@ -4334,7 +4334,7 @@ async function postOutlastChatMessage(message){
  }catch(_){return false}
 }
 async function pollOutlastChat(){
- try{const res=await fetch(OUTLAST_HTTP_URL+'/api/chat?limit=200',{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data?.ok){outlastChatHttpOnline=true;mergeOutlastChatMessages(data.messages);}}catch(_){outlastChatHttpOnline=false;renderOutlastChat();}
+ try{const res=await fetch(OUTLAST_HTTP_URL+'/api/chat?limit=200&sync='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data?.ok){outlastChatHttpOnline=true;mergeOutlastChatMessages(data.messages);}}catch(_){outlastChatHttpOnline=false;renderOutlastChat();}
 }
 function startOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=setInterval(()=>{pollOutlastChat()},1000);pollOutlastChat();}
 function stopOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=null;}

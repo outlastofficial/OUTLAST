@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.14.23">
+<meta name="outlast-build" content="3.14.24">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.14.23">
-<title>OUTLAST v3.14.23</title>
+<meta name="build-version" content="3.14.24">
+<title>OUTLAST v3.14.24</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.23 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.24 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3174,6 +3174,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.14.24 — Nightfall Event Timing Fix','Fixed the frozen/synchronized countdown behavior and delayed Nightfall event activation until October 1 at 10:00 AM.'],
   ['v3.14.23 — Full Event Expansion','Expanded the October event into a complete progression: shared community signal, event investigation, broadcasts, missions, Event Coins, limited shop, achievements, live event terminal, Rift Pumpkin boss encounter, event leaderboard, finale, and permanent aftermath.'],
   ['v3.14.20 — Event Build-Up','Added the full event buildup: countdown, broadcasts, investigation clues, pre-event rewards, progress tracking, event access, final warning phase, and activation sequence.'],
   ['v3.14.22 — Event UI Placement','Kept the full event buildup system, but moved its home-screen indicator to a small unobtrusive bottom-corner pill so it no longer takes over the hub.'],['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],
@@ -3278,8 +3279,8 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.17 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.23';
-const CURRENT_UPDATE_INFO={title:'v3.14.23 — Full Event Expansion',summary:'The October event is now expanded into a full event progression from countdown to aftermath.',items:['Track the compact countdown from the hub.','Investigate 5 clues and decode the event signal.','Complete event missions and earn Event Coins.','Spend Event Coins in the limited-time event shop.','Contribute to the shared community signal and view the event leaderboard.','Enter the live event terminal and fight the Rift Pumpkin boss.','Unlock event achievements, rewards, cosmetics, and the permanent aftermath.']};
+const CURRENT_UPDATE_VERSION='3.14.24';
+const CURRENT_UPDATE_INFO={title:'v3.14.24 — Nightfall Event Timing Fix',summary:'The Nightfall event countdown is synchronized and the event activation is delayed until October 1 at 10:00 AM.',items:['Track the compact countdown from the hub.','Investigate 5 clues and decode the event signal.','Complete event missions and earn Event Coins.','Spend Event Coins in the limited-time event shop.','Contribute to the shared community signal and view the event leaderboard.','Enter the live event terminal and fight the Rift Pumpkin boss.','Unlock event achievements, rewards, cosmetics, and the permanent aftermath.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4396,7 +4397,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.23</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.24</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);
@@ -4591,6 +4592,6 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 </script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
-<script src="outlast-v3.14.23-event-expansion.js?v=3.14.23"></script>
+<script src="outlast-v3.14.23-event-expansion.js?v=3.14.24"></script>
 </body>
 </html>

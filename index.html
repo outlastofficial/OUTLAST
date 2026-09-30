@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.14.20">
+<meta name="outlast-build" content="3.14.17">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.14.20">
-<title>OUTLAST v3.14.20</title>
+<meta name="build-version" content="3.14.17">
+<title>OUTLAST v3.14.17</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -787,7 +787,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.20 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.17 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3107,7 +3107,7 @@ document.getElementById('extrasBtn').onclick=renderExtras;
 document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
-const helpArticles=[\n  ['What animations are in OUTLAST?','Animations','Level-ups, upgrades, Legendary/Mythic reveals, hits, critical hits, XP and coin pickups, dashes, Ultimates, bosses, rewards, synergies, Daily Shop cards, menus, and events now have animated feedback. Reduced-motion preferences are respected.'],
+const helpArticles=[
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
   ['How do I dash?','Dash','Press Shift during a run to dash. Your dash follows the current movement direction.'],
   ['How do I use my Active Skill?','Active Skill','Press Q during a run to activate your equipped Active Skill.'],
@@ -3163,7 +3163,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.14.20 — Login Reliability Fix','Isolated the animation layer from the menu/login page so username login remains reliable while gameplay animations continue after entering the game.'];\n    ['v3.13.2 — Countdown Fix','Restored the Nightfall/October event countdown, fixed a multiplayer UI script syntax error that could stop later UI systems from running, and removed the duplicate owner script load.'],
+  ['v3.13.2 — Countdown Fix','Restored the Nightfall/October event countdown, fixed a multiplayer UI script syntax error that could stop later UI systems from running, and removed the duplicate owner script load.'],
   ['v3.13.3 — Maintenance Update','Routine release maintenance and control-routing updates.'],
   ['v3.11.0 — Global Events','Added the synchronized global-event system, including timed global events that can be started and stopped for connected players.'],
   ['v3.9.7 — Nightfall Event Countdown','Added a live in-game countdown to the Nightfall Event, scheduled for October 1, 2026 at 12:00 AM local time. The countdown switches to NIGHTFALL IS LIVE when the event begins.'],
@@ -3261,10 +3261,10 @@ const updates=[
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
-const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
+const TUTORIAL_UPDATE_ENTRY=['v3.14.17 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.20';
-const CURRENT_UPDATE_INFO={title:'v3.14.20 — Login Reliability Fix',summary:'Fixed a regression where the new animation layer could interfere with the menu/login page.',items:['The login screen is now isolated from the gameplay animation layer.','Username login and Enter-to-login remain directly wired to the original login handler.','Gameplay animations remain available after entering the game.']};function showUpdatePopup(force=false){
+const CURRENT_UPDATE_VERSION='3.14.17';
+const CURRENT_UPDATE_INFO={title:'v3.14.17 — Legendary Roll Reveal',summary:'Legendary and Mythic upgrades now roll into view with a dramatic animated reveal before they can be claimed.',items:['Legendary upgrades use a rolling, spinning reveal before showing the real upgrade.','Mythic upgrades get a longer, more intense reveal with the existing Mythic FX.','Upgrade selection is temporarily locked during Legendary/Mythic reveals so the animation can finish.','Existing rarity auras, rays, orbiting particles, rings, and card pulses remain active.']};function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;
@@ -4294,7 +4294,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 })();
 </script>
 <script src="outlast-v3.9.7.js"></script>
-<script src="outlast-v3.14.0.js?v=3.14.18"></script>
+<script src="outlast-v3.14.0.js?v=3.14.17"></script>
 
 <script id="outlast-v3143-skin-button-fix">
 (function(){
@@ -4380,7 +4380,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.18</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.17</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);

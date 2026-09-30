@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.14.20">
+<meta name="outlast-build" content="3.14.21">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.14.20">
-<title>OUTLAST v3.14.20</title>
+<meta name="build-version" content="3.14.21">
+<title>OUTLAST v3.14.21</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -787,7 +787,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.20 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.21 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3208,8 +3208,8 @@ const helpArticles=[\• v3.14.21 — Login Flow Rebuild: replaced conflicting l
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.20';
-const CURRENT_UPDATE_INFO={title:'v3.14.20 — Login Reliability Fix',summary:'Fixed a regression where the new animation layer could interfere with the menu/login page.',items:['The login screen is now isolated from the gameplay animation layer.','Username login and Enter-to-login remain directly wired to the original login handler.','Gameplay animations remain available after entering the game.']};function showUpdatePopup(force=false){
+const CURRENT_UPDATE_VERSION='3.14.21';
+const CURRENT_UPDATE_INFO={title:'v3.14.21 — Login Reliability Fix',summary:'Fixed a regression where the new animation layer could interfere with the menu/login page.',items:['The login screen is now isolated from the gameplay animation layer.','Username login and Enter-to-login remain directly wired to the original login handler.','Gameplay animations remain available after entering the game.']};function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;

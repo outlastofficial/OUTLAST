@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.17.1">
+<meta name="outlast-build" content="3.18.0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.17.1">
-<title>OUTLAST v3.17.1</title>
+<meta name="build-version" content="3.18.0">
+<title>OUTLAST v3.18.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3119,6 +3119,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['How do I use Settings?','Settings','Open More → Settings to choose your time zone, clock/date format, menu clock, Screen Shake, Damage Numbers, Reduced Motion, High Contrast, device controls, joystick behavior, Auto-Pause on Tab Switch, fullscreen, and Reset Settings.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
   ['How do I use the Halloween Event?','Halloween Event','Watch the countdown from the small event pill in the corner. Open DETAILS to investigate clues, read broadcasts, complete missions, earn Event Coins, shop limited rewards, view the event leaderboard, and enter the event when it goes live. During the live event, event runs can trigger signal encounters and the Rift Pumpkin boss. After the finale, permanent event rewards and aftermath content remain available.'],
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
@@ -3177,6 +3178,8 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.18.0 — Settings Update','Expanded Settings with time-zone selection, clock/date formatting, a menu clock, Reduced Motion, High Contrast, and Auto-Pause on Tab Switch.'],
+  ['v3.17.1 — Update Notice Fix','Removed owner-only tools from player-facing update notices and corrected release messaging consistency.'],
   ['v3.15.1 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
   ['v3.15.1 — Nightfall Event Timing Fix','Fixed the frozen/synchronized countdown behavior and delayed Nightfall event activation until October 1 at 10:00 AM.'],
   ['v3.14.23 — Full Event Expansion','Expanded the October event into a complete progression: shared community signal, event investigation, broadcasts, missions, Event Coins, limited shop, achievements, live event terminal, Rift Pumpkin boss encounter, event leaderboard, finale, and permanent aftermath.'],
@@ -4599,7 +4602,243 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
-</script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
+</script><script src="outlast-v3.14.19-juice.js?v=3.18.0"></script>
 <script src="outlast-v3.14.23-event-expansion.js?v=3.15.1"></script>
+<style id="outlast-v318-settings-css">
+#outlastSettingsClock{display:none}
+.outlast-settings-wrap{display:grid;gap:12px}
+.outlast-settings-section{padding:12px;border:1px solid #2c4052;border-radius:14px;background:#0e151d}
+.outlast-settings-section h3{margin:0 0 8px;font-size:13px;color:#bcd0df;letter-spacing:.05em;text-transform:uppercase}
+.outlast-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.outlast-setting{min-width:0;padding:12px;border:1px solid #293d4f;border-radius:11px;background:#121c26}
+.outlast-setting strong{display:block;font-size:13px;margin-bottom:4px}
+.outlast-setting .small{line-height:1.4}
+.outlast-setting select{width:100%;margin-top:8px;padding:9px;border-radius:9px;background:#0b131b;color:#fff;border:1px solid #3b5367;font:700 13px Arial;box-sizing:border-box}
+.outlast-settings-toggle,.outlast-settings-btn{width:100%;margin:0;padding:10px 11px;border-radius:10px;background:#182532;border:1px solid #30495d;color:#e4eef7;box-shadow:none;font-size:12px}
+.outlast-settings-toggle.on{background:#1f4a38;border-color:#4b9c70}
+.outlast-settings-btn.reset{background:#5c3030;border-color:#914f4f}
+.outlast-settings-clockbox{padding:13px;border:1px solid #31526b;border-radius:13px;background:linear-gradient(135deg,#102435,#0e171f)}
+.outlast-settings-clock{font-size:25px;font-weight:900;letter-spacing:.03em}
+.outlast-settings-zone{margin-top:4px;color:#8fa6b8;font-size:11px}
+html.outlast-reduced-motion *,html.outlast-reduced-motion *::before,html.outlast-reduced-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+html.outlast-high-contrast{filter:contrast(1.12)}
+#outlastMenuClock{margin-left:8px;display:none;align-items:center;justify-content:center;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:680px){.outlast-settings-grid{grid-template-columns:1fr}.outlast-settings-clock{font-size:21px}}
+</style>
+<script id="outlast-v318-settings">
+(function(){
+  const DEFAULTS={
+    shake:true,
+    damageNumbers:true,
+    timeZone:'auto',
+    clockFormat:'12',
+    dateFormat:'mdy',
+    showMenuClock:true,
+    reducedMotion:false,
+    highContrast:false,
+    autoPauseOnTab:false
+  };
+  let clockTimer=0;
+
+  function getSettings(){
+    try{
+      save.settings=Object.assign({},DEFAULTS,save.settings||{});
+      return save.settings;
+    }catch(_){
+      window.save=window.save||{settings:Object.assign({},DEFAULTS)};
+      window.save.settings=Object.assign({},DEFAULTS,window.save.settings||{});
+      return window.save.settings;
+    }
+  }
+  function saveSettings(){
+    try{if(typeof persist==='function')persist();}catch(_){}
+  }
+  function autoZone(){
+    try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';}catch(_){return 'UTC';}
+  }
+  function effectiveZone(){
+    const s=getSettings();
+    return s.timeZone&&s.timeZone!=='auto'?s.timeZone:autoZone();
+  }
+  function safeDateParts(date){
+    const s=getSettings(),tz=effectiveZone();
+    try{
+      return new Intl.DateTimeFormat('en-US',{
+        timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',
+        hour:'numeric',minute:'2-digit',second:'2-digit',
+        hour12:s.clockFormat!=='24'
+      }).formatToParts(date);
+    }catch(_){
+      return new Intl.DateTimeFormat('en-US',{
+        timeZone:'UTC',year:'numeric',month:'2-digit',day:'2-digit',
+        hour:'numeric',minute:'2-digit',second:'2-digit',
+        hour12:s.clockFormat!=='24'
+      }).formatToParts(date);
+    }
+  }
+  function formatClock(date=new Date()){
+    const s=getSettings(),parts=safeDateParts(date),get=k=>(parts.find(x=>x.type===k)||{}).value||'';
+    const time=get('hour')+':'+get('minute')+':'+get('second')+(get('dayPeriod')?' '+get('dayPeriod'):'');
+    const y=get('year'),m=get('month'),d=get('day');
+    const dateText=s.dateFormat==='dmy'?(d+'/'+m+'/'+y):(m+'/'+d+'/'+y);
+    return {time,dateText,zone:effectiveZone()};
+  }
+  function zoneLabel(){
+    const s=getSettings(),z=effectiveZone();
+    let offset='';
+    try{
+      const parts=new Intl.DateTimeFormat('en-US',{timeZone:z,timeZoneName:'shortOffset'}).formatToParts(new Date());
+      offset=(parts.find(x=>x.type==='timeZoneName')||{}).value||'';
+    }catch(_){}
+    return (s.timeZone==='auto'?'Automatic • '+z:z)+(offset?' • '+offset:'');
+  }
+  function applySettings(){
+    const s=getSettings();
+    document.documentElement.classList.toggle('outlast-reduced-motion',s.reducedMotion===true);
+    document.documentElement.classList.toggle('outlast-high-contrast',s.highContrast===true);
+    const top=document.querySelector('#menu .menu-topbar');
+    let clock=document.getElementById('outlastMenuClock');
+    if(!clock&&top){
+      clock=document.createElement('div');
+      clock.id='outlastMenuClock';
+      clock.className='menu-chip';
+      top.appendChild(clock);
+    }
+    if(clock){
+      clock.style.display=s.showMenuClock===false?'none':'flex';
+      if(s.showMenuClock!==false){
+        const f=formatClock();
+        clock.textContent=f.time+' • '+f.dateText;
+        clock.title=zoneLabel();
+      }
+    }
+  }
+  function startClock(){
+    clearInterval(clockTimer);
+    clockTimer=setInterval(()=>{
+      const el=document.getElementById('outlastSettingsClock');
+      const menu=document.getElementById('outlastMenuClock');
+      if(!el&&!menu){clearInterval(clockTimer);clockTimer=0;return;}
+      const f=formatClock();
+      if(el){
+        el.querySelector('.outlast-settings-clock').textContent=f.time;
+        el.querySelector('.outlast-settings-zone').textContent=zoneLabel();
+        const d=el.querySelector('.outlast-settings-date');if(d)d.textContent=f.dateText;
+      }
+      if(menu){
+        const s=getSettings();
+        menu.style.display=s.showMenuClock===false?'none':'flex';
+        if(s.showMenuClock!==false){menu.textContent=f.time+' • '+f.dateText;menu.title=zoneLabel();}
+      }
+    },1000);
+  }
+  function esc(v){
+    return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  const zones=[
+    ['auto','Automatic (Browser)'],
+    ['UTC','UTC'],
+    ['America/New_York','Eastern Time'],
+    ['America/Chicago','Central Time'],
+    ['America/Denver','Mountain Time'],
+    ['America/Los_Angeles','Pacific Time'],
+    ['America/Anchorage','Alaska Time'],
+    ['Pacific/Honolulu','Hawaii Time'],
+    ['Europe/London','London'],
+    ['Europe/Paris','Paris'],
+    ['Asia/Tokyo','Tokyo'],
+    ['Australia/Sydney','Sydney']
+  ];
+  function selectHtml(key,current,options){
+    return '<select data-setting-select="'+esc(key)+'">'+options.map(o=>'<option value="'+esc(o[0])+'"'+(o[0]===current?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select>';
+  }
+  function toggleButton(key,label,on){
+    return '<button type="button" class="outlast-settings-toggle '+(on?'on':'')+'" data-setting-toggle="'+esc(key)+'">'+label+': '+(on?'ON':'OFF')+'</button>';
+  }
+  function render(){
+    const sub=document.getElementById('subContent'),panel=document.getElementById('subPanel');
+    if(!sub||!panel)return;
+    const s=getSettings(),f=formatClock();
+    const html=
+      '<div class="outlast-settings-wrap">'+
+        '<div class="outlast-settings-clockbox" id="outlastSettingsClock">'+
+          '<div class="small">CURRENT TIME</div>'+
+          '<div class="outlast-settings-clock">'+esc(f.time)+'</div>'+
+          '<div class="outlast-settings-date">'+esc(f.dateText)+'</div>'+
+          '<div class="outlast-settings-zone">'+esc(zoneLabel())+'</div>'+
+        '</div>'+
+        '<div class="outlast-settings-section"><h3>Time & Region</h3><div class="outlast-settings-grid">'+
+          '<div class="outlast-setting"><strong>Time Zone</strong><div class="small">Choose Automatic or display OUTLAST times in a specific zone.</div>'+selectHtml('timeZone',s.timeZone,zones)+'</div>'+
+          '<div class="outlast-setting"><strong>Clock Format</strong><div class="small">Choose a 12-hour or 24-hour clock.</div>'+selectHtml('clockFormat',s.clockFormat,[['12','12-hour'],['24','24-hour']])+'</div>'+
+          '<div class="outlast-setting"><strong>Date Format</strong><div class="small">Choose how dates are displayed in menus and settings.</div>'+selectHtml('dateFormat',s.dateFormat,[['mdy','MM/DD/YYYY'],['dmy','DD/MM/YYYY']])+'</div>'+
+          '<div class="outlast-setting"><strong>Menu Clock</strong><div class="small">Show the live clock in the main menu top bar.</div>'+toggleButton('showMenuClock','Menu Clock',s.showMenuClock!==false)+'</div>'+
+        '</div></div>'+
+        '<div class="outlast-settings-section"><h3>Display & Motion</h3><div class="outlast-settings-grid">'+
+          '<div class="outlast-setting">'+toggleButton('shake','Screen Shake',s.shake!==false)+'</div>'+
+          '<div class="outlast-setting">'+toggleButton('damageNumbers','Damage Numbers',s.damageNumbers!==false)+'</div>'+
+          '<div class="outlast-setting">'+toggleButton('reducedMotion','Reduced Motion',s.reducedMotion===true)+'</div>'+
+          '<div class="outlast-setting">'+toggleButton('highContrast','High Contrast',s.highContrast===true)+'</div>'+
+        '</div></div>'+
+        '<div class="outlast-settings-section"><h3>Gameplay & Controls</h3><div class="outlast-settings-grid">'+
+          '<div class="outlast-setting"><strong>Device</strong><div class="small">'+esc((typeof getDeviceMode==='function'?(getDeviceMode()||'not selected'):'not selected').toUpperCase())+'</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px"><button type="button" class="outlast-settings-btn" data-setting-device="pc">🖥️ PC</button><button type="button" class="outlast-settings-btn" data-setting-device="mobile">📱 Mobile</button></div></div>'+
+          '<div class="outlast-setting"><strong>Joystick</strong><div class="small">Joystick is intended for mobile in-run controls.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px"><button type="button" class="outlast-settings-btn" data-setting-joy="on">🕹️ ON</button><button type="button" class="outlast-settings-btn" data-setting-joy="off">🚫 OFF</button></div></div>'+
+          '<div class="outlast-setting">'+toggleButton('autoPauseOnTab','Auto-Pause on Tab Switch',s.autoPauseOnTab===true)+'</div>'+
+          '<div class="outlast-setting"><strong>Current Time Zone</strong><div class="small">'+esc(zoneLabel())+'</div></div>'+
+        '</div></div>'+
+        '<div class="outlast-settings-section"><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">'+
+          '<button type="button" class="outlast-settings-btn" data-setting-fullscreen="1">🖥️ Toggle Fullscreen</button>'+
+          '<button type="button" class="outlast-settings-btn reset" data-setting-reset="1">↩️ Reset Settings</button>'+
+        '</div></div>'+
+      '</div>';
+    sub.innerHTML=html;
+    panel.style.display='flex';
+    sub.querySelectorAll('[data-setting-toggle]').forEach(b=>b.onclick=function(e){
+      e.preventDefault();e.stopPropagation();
+      const k=b.dataset.settingToggle,s2=getSettings();s2[k]=!(s2[k]===true);saveSettings();applySettings();render();
+    });
+    sub.querySelectorAll('[data-setting-select]').forEach(sel=>sel.onchange=function(){
+      const s2=getSettings();s2[sel.dataset.settingSelect]=sel.value;saveSettings();applySettings();render();
+    });
+    sub.querySelectorAll('[data-setting-device]').forEach(b=>b.onclick=function(e){
+      e.preventDefault();e.stopPropagation();try{if(typeof setDeviceMode==='function')setDeviceMode(b.dataset.settingDevice);}catch(_){}
+      render();
+    });
+    sub.querySelectorAll('[data-setting-joy]').forEach(b=>b.onclick=function(e){
+      e.preventDefault();e.stopPropagation();try{if(typeof setJoystickMode==='function')setJoystickMode(b.dataset.settingJoy);}catch(_){}
+      render();
+    });
+    const full=sub.querySelector('[data-setting-fullscreen]');
+    if(full)full.onclick=function(e){e.preventDefault();e.stopPropagation();try{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();}catch(_){}};
+    const reset=sub.querySelector('[data-setting-reset]');
+    if(reset)reset.onclick=function(e){
+      e.preventDefault();e.stopPropagation();
+      const s2=getSettings();Object.assign(s2,DEFAULTS);saveSettings();applySettings();render();
+    };
+    startClock();
+    applySettings();
+  }
+  function autoPause(){
+    const s=getSettings();
+    if(document.visibilityState!=='hidden'||s.autoPauseOnTab!==true)return;
+    try{
+      if(window.game&&game.running&&!game.over&&!game.paused){
+        game.paused=true;
+        if(typeof toast==='function')toast('⏸️ Run auto-paused because the tab lost focus.');
+      }
+    }catch(_){}
+  }
+  function open(){
+    try{if(typeof ensureMegaSave==='function')ensureMegaSave();}catch(_){}
+    render();
+  }
+  window.outlastSettingsV318={render,applySettings,effectiveZone};
+  window.settingsOpen=open;
+  window.openSettingsSafe=open;
+  window.openControlsSafe=open;
+  document.addEventListener('visibilitychange',autoPause);
+  document.addEventListener('fullscreenchange',applySettings);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applySettings,{once:true});else applySettings();
+})();
+</script>
 </body>
 </html>

@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.25.5 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -2035,7 +2035,8 @@ function killEnemy(target){
   const radarMult=game.player.treasure?3:1;
   const powerupChance=Math.min(.045,(.0025+treasureLuck*.00025)*radarMult);
   if(Math.random()<powerupChance){
-    game.powerups.push({x:e.x,y:e.y,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]});
+    const powerType=Math.random()<.12?'xpVacuum':['shield','heal','speed','damage'][Math.floor(Math.random()*4)];
+    game.powerups.push({x:e.x,y:e.y,type:powerType});
   }
   if(game.player.shockwave&&run.kills%12===0){
     for(let j=game.enemies.length-1;j>=0;j--){
@@ -2236,7 +2237,7 @@ for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(
   }
   if(p.shrineTimer>0){p.shrineTimer-=dt;if(p.shrineTimer<=0){p.tempDamage=0;p.tempSpeed=0;p.tempMagnet=0}}
   if(p.xpBonusTimer>0)p.xpBonusTimer-=dt;
-  for(let i=game.powerups.length-1;i>=0;i--){const q=game.powerups[i];if(Math.hypot(q.x-p.x,q.y-p.y)<35){if(q.type==='heal')p.hp=Math.min(p.max,p.hp+35*(p.healMult||1));if(q.type==='speed')p.speed=Math.min(p.speedCap||p.speed*1.2,p.speed*1.18);if(q.type==='damage')p.damage+=4;if(q.type==='shield')p.shield=4.5;game.powerups.splice(i,1)}}
+  for(let i=game.powerups.length-1;i>=0;i--){const q=game.powerups[i];if(Math.hypot(q.x-p.x,q.y-p.y)<35){if(q.type==='heal')p.hp=Math.min(p.max,p.hp+35*(p.healMult||1));if(q.type==='speed')p.speed=Math.min(p.speedCap||p.speed*1.2,p.speed*1.18);if(q.type==='damage')p.damage+=4;if(q.type==='shield')p.shield=4.5;if(q.type==='xpVacuum'){let vacuumXP=0;for(const g of game.gems)vacuumXP+=Number(g.value)||0;game.gems=[];game.xp+=vacuumXP*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;if(vacuumXP>0)toast('★ XP VACUUM — ALL XP COLLECTED!');if(game.xp>=game.xpNeed)levelUp();}game.powerups.splice(i,1)}}
  for(let i=game.particles.length-1;i>=0;i--){const a=game.particles[i];a.t-=dt;a.x+=a.vx*dt;a.y+=a.vy*dt;a.vx*=.96;a.vy*=.96;if(a.t<=0)game.particles.splice(i,1);}for(let i=game.effects.length-1;i>=0;i--){game.effects[i].t-=dt;if(game.effects[i].t<=0)game.effects.splice(i,1);}for(const e of game.enemies){if(e.hitFlash>0)e.hitFlash-=dt;}if(game.shake>0)game.shake-=dt;
  if(game.enemies.length>MAX_ENEMIES)game.enemies.length=MAX_ENEMIES;
  if(game.bullets.length>MAX_BULLETS)game.bullets.splice(0,game.bullets.length-MAX_BULLETS);
@@ -2396,7 +2397,7 @@ function drawWeaponProjectile(b){
   }
   ctx.restore();
 }
-function drawMinimap(){if(!game.running||game.upgradeOpen)return;const mw=Math.min(165,Math.max(135,CW*.17)),mh=mw*H/W,mx=10,my=145,sx=mw/W,sy=mh/H;ctx.save();ctx.fillStyle='rgba(5,10,15,.92)';ctx.fillRect(mx-5,my-5,mw+10,mh+10);ctx.strokeStyle='#5c7185';ctx.lineWidth=2;ctx.strokeRect(mx-5,my-5,mw+10,mh+10);ctx.fillStyle='rgba(35,50,62,.9)';ctx.fillRect(mx,my,mw,mh);for(const o of obstacleRects()){ctx.fillStyle='rgba(150,165,175,.65)';ctx.fillRect(mx+o.x*sx,my+o.y*sy,Math.max(2,o.w*sx),Math.max(2,o.h*sy));}for(const g of game.gems){ctx.fillStyle='#55d8ff';ctx.fillRect(mx+g.x*sx-1,my+g.y*sy-1,3,3);}for(const q of game.coins){ctx.fillStyle='#ffd24d';ctx.fillRect(mx+q.x*sx-1,my+q.y*sy-1,3,3);}for(const q of game.powerups){ctx.fillStyle='#d7b4ff';ctx.beginPath();ctx.arc(mx+q.x*sx,my+q.y*sy,3,0,Math.PI*2);ctx.fill();}for(const s of game.shrines){ctx.fillStyle=s.color||'#fff';ctx.fillRect(mx+s.x*sx-2,my+s.y*sy-2,4,4);}for(const e of game.enemies){ctx.fillStyle=e.boss?'#ff5a5a':'#e86a6a';ctx.fillRect(mx+e.x*sx-1.5,my+e.y*sy-1.5,e.boss?5:3,e.boss?5:3);}if(game.player){ctx.fillStyle='#69c0ff';ctx.beginPath();ctx.arc(mx+game.player.x*sx,my+game.player.y*sy,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();}if(game.player2){ctx.fillStyle='#ff5f69';ctx.beginPath();ctx.arc(mx+game.player2.x*sx,my+game.player2.y*sy,4,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.fillText('MAP',mx+7,my+14);ctx.font='10px Arial';ctx.fillStyle='#8fa3b5';ctx.fillText('● Player  ● Enemies  ● Loot',mx+7,my+mh-7);ctx.restore();}
+function drawMinimap(){if(!game.running||game.upgradeOpen)return;const mw=Math.min(165,Math.max(135,CW*.17)),mh=mw*H/W,mx=10,my=145,sx=mw/W,sy=mh/H;ctx.save();ctx.fillStyle='rgba(5,10,15,.92)';ctx.fillRect(mx-5,my-5,mw+10,mh+10);ctx.strokeStyle='#5c7185';ctx.lineWidth=2;ctx.strokeRect(mx-5,my-5,mw+10,mh+10);ctx.fillStyle='rgba(35,50,62,.9)';ctx.fillRect(mx,my,mw,mh);for(const o of obstacleRects()){ctx.fillStyle='rgba(150,165,175,.65)';ctx.fillRect(mx+o.x*sx,my+o.y*sy,Math.max(2,o.w*sx),Math.max(2,o.h*sy));}for(const g of game.gems){ctx.fillStyle='#55d8ff';ctx.fillRect(mx+g.x*sx-1,my+g.y*sy-1,3,3);}for(const q of game.coins){ctx.fillStyle='#ffd24d';ctx.fillRect(mx+q.x*sx-1,my+q.y*sy-1,3,3);}for(const q of game.powerups){ctx.fillStyle=q.type==='xpVacuum'?'#ffe16b':'#d7b4ff';ctx.beginPath();ctx.arc(mx+q.x*sx,my+q.y*sy,3,0,Math.PI*2);ctx.fill();}for(const s of game.shrines){ctx.fillStyle=s.color||'#fff';ctx.fillRect(mx+s.x*sx-2,my+s.y*sy-2,4,4);}for(const e of game.enemies){ctx.fillStyle=e.boss?'#ff5a5a':'#e86a6a';ctx.fillRect(mx+e.x*sx-1.5,my+e.y*sy-1.5,e.boss?5:3,e.boss?5:3);}if(game.player){ctx.fillStyle='#69c0ff';ctx.beginPath();ctx.arc(mx+game.player.x*sx,my+game.player.y*sy,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();}if(game.player2){ctx.fillStyle='#ff5f69';ctx.beginPath();ctx.arc(mx+game.player2.x*sx,my+game.player2.y*sy,4,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.fillText('MAP',mx+7,my+14);ctx.font='10px Arial';ctx.fillStyle='#8fa3b5';ctx.fillText('● Player  ● Enemies  ● Loot',mx+7,my+mh-7);ctx.restore();}
 function draw(){
  syncGameAdminUI();
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
@@ -2407,7 +2408,7 @@ function draw(){
  for(const g of game.gems){ctx.fillStyle='#59d8ff';ctx.beginPath();ctx.arc(g.x,g.y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#08314a';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.icon||'◆',g.x,g.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
  for(const q of game.coins){ctx.fillStyle='#ffd24d';ctx.beginPath();ctx.arc(q.x,q.y,10,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3200';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(q.icon||'$',q.x,q.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
  for(const s of game.shrines){ctx.strokeStyle=s.color;ctx.lineWidth=4;ctx.beginPath();ctx.arc(s.x,s.y,22,0,Math.PI*2);ctx.stroke();ctx.fillStyle=s.color;ctx.font='11px Arial';ctx.fillText(s.type.split(' ')[0],s.x-20,s.y+4)}
- for(const q of game.powerups){ctx.fillStyle=q.type==='heal'?'#65db74':q.type==='speed'?'#64b8ff':q.type==='damage'?'#ff6a62':'#d7b4ff';ctx.beginPath();ctx.arc(q.x,q.y,12,0,Math.PI*2);ctx.fill();const pi={heal:'+ ',speed:'↯',damage:'⚔',shield:'⬟'}[q.type]||'?';ctx.fillStyle='#101820';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pi.trim(),q.x,q.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
+ for(const q of game.powerups){ctx.fillStyle=q.type==='xpVacuum'?'#ffe16b':q.type==='heal'?'#65db74':q.type==='speed'?'#64b8ff':q.type==='damage'?'#ff6a62':'#d7b4ff';ctx.beginPath();ctx.arc(q.x,q.y,12,0,Math.PI*2);ctx.fill();const pi={xpVacuum:'★',heal:'+ ',speed:'↯',damage:'⚔',shield:'⬟'}[q.type]||'?';ctx.fillStyle='#101820';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pi.trim(),q.x,q.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
  for(const b of game.bullets){drawWeaponProjectile(b)}
  function drawZombieVisual(e){
   const r=Math.max(6,e.r||15), k=String(e.kind||'normal').toLowerCase();
@@ -3259,6 +3260,7 @@ const helpArticles=[
 
   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run or from the main menu. Chat now uses the live connection when available and automatically falls back to the HTTP chat service if the live connection drops.'],
    ['How do I use Settings?','Settings','Open Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings. Space is not a game or menu control; it is ignored outside text fields.'],
+  ['What is the XP Vacuum power-up?','XP Vacuum','Pick up the XP Vacuum to immediately collect every XP drop currently on the map. It applies your normal XP bonuses and does not collect coins or other loot.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
   ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Projectile Speed is a possible level-up choice that makes fired projectiles travel faster. Legendary and Mythic choices use a rolling reveal before they can be selected. Legendary and Mythic rolling is optimized to use lightweight canvas effects so the reveal stays smooth.'],
@@ -3321,7 +3323,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.26.4 — Input Fix','Fixed Space so it cannot scroll the page or activate focused game/menu buttons while preserving normal spaces in text fields.'],
+   ['v3.27.0 — XP & Input Fix','Added XP Vacuum, fixed the zombie spawn regression, and made Space inert outside text fields.'],
    ['v3.26.2 — Zombie Spawn Recovery','Restored reliable zombie spawning during normal runs and added a safety recovery for a run that becomes empty.'],
    ['v3.25.5 — Chat Connection Fix','Fixed Global Chat connection status and strengthened the HTTP fallback when the live connection is unavailable.'],
    ['v3.25.2 — Version & Chat Fix','Fixed the visible game version marker and Global Chat interface.'],
@@ -3446,8 +3448,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.26.4';
-const CURRENT_UPDATE_INFO={title:'v3.26.4 — Input Fix',summary:'Fixed Space so it cannot trigger game or menu actions.',items:['Space no longer scrolls the page or activates focused game/menu buttons.','Text fields such as chat, bug reports, and other inputs can still use normal spaces.','Updated the How To and control behavior.']};
+const CURRENT_UPDATE_VERSION='3.27.0';
+const CURRENT_UPDATE_INFO={title:'v3.27.0 — XP & Input Fix',summary:'Added a new XP pickup power-up and fixed zombie spawning and Space input behavior.',items:['Added the XP Vacuum power-up, which collects all XP drops currently on the map.','Fixed the practice-mode spawn guard so normal runs can spawn zombies again.','Space is ignored outside text fields and cannot trigger actions or scroll the page.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4919,7 +4921,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.25.5</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.27.0</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);
@@ -5523,7 +5525,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.25.5';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');else if(e.code==='Space')flash('ULTIMATE')},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.25.5';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.25.5';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Game quality, reliability, recovery, accessibility, practice mode, player history, favorites, and bug reporting improvements.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.0';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.27.0';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.27.0';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'XP Vacuum, zombie spawning, and input reliability improvements.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -5669,8 +5671,8 @@ function qualityHub(){
  '</div>');
 }
 function startPractice(){
- save.practiceMode=true;try{persist()}catch(_){}
- const b=document.getElementById('startBtn');if(b){b.click();setTimeout(()=>{if(window.game)game.practiceMode=true;toastQ('🎓 Practice Mode: no enemies or normal progression.');},50)}else toastQ('Start Run button is unavailable.');
+ save.practiceMode=true;game.practiceMode=true;try{persist()}catch(_){}
+ const b=document.getElementById('startBtn');if(b){b.click();toastQ('🎓 Practice Mode: no enemies or normal progression.');}else{save.practiceMode=false;game.practiceMode=false;toastQ('Start Practice failed safely.');}
 }
 function recordRun(victory){
  const q=ensure(),r={...meta(),result:victory?'Completed':'Failed',level:game?.level||1,time:game?.time||0,kills:run?.kills||0,date:new Date().toLocaleString()};
@@ -5732,7 +5734,7 @@ function install(){
  const oldSpawn=window.spawnEnemy;
  if(typeof oldSpawn==='function'&&!window.__v324SpawnWrapped){
    window.__v324SpawnWrapped=true;
-   window.spawnEnemy=function(type){if(game?.practiceMode||save?.practiceMode)return;return oldSpawn(type)}
+   window.spawnEnemy=function(type){if(game?.practiceMode)return;return oldSpawn(type)}
  }
  const oldBoss=window.spawnBoss;
  if(typeof oldBoss==='function'&&!window.__v324BossWrapped){

@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.23.0">
+<meta name="outlast-build" content="3.23.1">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.19.2">
-<title>OUTLAST v3.23.0</title>
+<meta name="build-version" content="3.23.1">
+<title>OUTLAST v3.23.1</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.23.0 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.23.1 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3182,7 +3182,7 @@ const helpArticles=[
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
   ['How do I dash?','Dash','Press Shift during a run to dash. Your dash follows the current movement direction.'],
   ['How do I use my Active Skill?','Active Skill','Press Q during a run to activate your equipped Active Skill.'],
-  ['How do I use my Ultimate?','Ultimate','Press Space during a run to use your equipped Ultimate when it is available.'],  ['What do Frost Aura and Cryo Burst do?','Aura Upgrades','Frost Aura creates a visible slowing aura around the survivor. Repeating it increases the aura radius and slow strength. Cryo Burst further increases both.'],  ['What does Projectile Speed do?','Projectile Speed','Projectile Speed makes your fired projectiles travel faster. It can appear as a level-up choice and applies to projectile-based weapons.'],   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run to talk with other connected OUTLAST players. Messages are shared live across the server.'],
+  ['How do I use my Ultimate?','Ultimate','Press Space during a run to use your equipped Ultimate when it is available.'],  ['What do Frost Aura and Cryo Burst do?','Aura Upgrades','Frost Aura creates a visible slowing aura around the survivor. Repeating it increases the aura radius and slow strength. Cryo Burst further increases both.'],  ['What does Projectile Speed do?','Projectile Speed','Projectile Speed makes your fired projectiles travel faster. It can appear as a level-up choice and applies to projectile-based weapons.'],   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run to talk with other connected OUTLAST players. Messages are shared live across the server, with automatic reconnect and an HTTP fallback if the live connection drops.'],
   ['How do I pause?','Pause','Press Esc during a run to open the pause screen and view your current run stats.'],
   ['How do I exit a run?','Exit','Press X during a run and confirm the exit prompt to return to the menu.'],
   ['How do I change my character?','Inventory Character','Open Inventory, choose Character, then select the survivor you want to equip.'],
@@ -3236,6 +3236,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.23.1 — Global Chat Fix','Fixed chat delivery when the WebSocket is unavailable by adding automatic reconnect, message retry, and an HTTP fallback.'],
   ['v3.23.0 — Global Chat','Added a live Global Chat for connected players with a compact in-game chat box.'],
   ['v3.22.0 — Aura & Stability Update','Fixed aura upgrades so Frost Aura and Cryo Burst now apply their radius, slow, and chill effects consistently.'],
   ['v3.21.0 — Aura Upgrade Fix','Fixed Frost Aura and Cryo Burst so their radius and slow strength now stack, affect nearby enemies, and display a visible aura around the survivor.'],
@@ -3355,8 +3356,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.23.0';
-const CURRENT_UPDATE_INFO={title:'v3.23.0 — Small Bug Fixes',summary:'Small bug fixes and stability improvements.',items:['Added a compact live chat for connected players.','Improved general run stability.','Updated the in-game version marker to v3.23.0.']};
+const CURRENT_UPDATE_VERSION='3.23.1';
+const CURRENT_UPDATE_INFO={title:'v3.23.1 — Chat Fix',summary:'Fixed Global Chat connection and message delivery.',items:['Added an HTTP fallback when live chat cannot use the WebSocket.','Added automatic reconnects and message retry.','Updated the in-game version marker to v3.23.1.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4074,15 +4075,32 @@ if(!save.coinPurchases)save.coinPurchases={};
 <script>
 /* OUTLAST ONLINE SERVER + ROOMS */
 setTimeout(()=>{if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();},1500);
+
 const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
+const OUTLAST_HTTP_URL='https://outlast-server.onrender.com';
 let outlastChatMessages=[];
 let outlastChatOpen=false;
 let outlastChatUnread=0;
 let outlastSocket=null,outlastOnline=false,outlastOnlineUsers=0,roomCode='',roomClientId='',roomPlayers={},roomStarted=false,coopLaunchActive=false;
 let roomShots=[];
-function onlineStatus(){return outlastOnline?'🟢 Connected':'🔴 Offline'}
 let pendingRoomAction='';
+let pendingOutlastChat=[];
+let outlastChatPollTimer=null;
+let outlastReconnectTimer=null;
+let outlastReconnectAttempts=0;
+function onlineStatus(){return outlastOnline?'🟢 Connected':'🔴 Offline'}
 function chatEscapeText(v){return String(v??'').replace(/[<>&"]/g,s=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[s]));}
+function pushOutlastChatMessage(entry){
+ if(!entry||!entry.message)return;
+ const id=String(entry.id||'');
+ if(id&&outlastChatMessages.some(m=>String(m.id||'')===id))return;
+ outlastChatMessages.push({id:id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),username:String(entry.username||'Player'),message:String(entry.message||'').slice(0,180),at:Number(entry.at)||Date.now()});
+ if(outlastChatMessages.length>200)outlastChatMessages.splice(0,outlastChatMessages.length-200);
+ if(!outlastChatOpen&&game?.running)outlastChatUnread++;
+ renderOutlastChat();
+ if(typeof renderOwnerChatBox==='function')renderOwnerChatBox();
+}
+function mergeOutlastChatMessages(messages){if(!Array.isArray(messages))return;messages.forEach(pushOutlastChatMessage);renderOutlastChat();}
 function renderOutlastChat(){
  const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus'),toggle=document.getElementById('outlastChatToggle');if(!box)return;
  if(status)status.textContent=outlastOnline?'🟢 Online':'🔴 Offline';
@@ -4104,7 +4122,7 @@ function toggleOutlastChat(force){
  const panel=document.getElementById('outlastChat'),toggle=document.getElementById('outlastChatToggle');
  if(panel)panel.classList.toggle('open',!!outlastChatOpen);
  if(toggle)toggle.classList.toggle('chat-visible',!!game?.running&&!outlastChatOpen);
- if(outlastChatOpen)document.getElementById('outlastChatInput')?.focus();
+ if(outlastChatOpen){document.getElementById('outlastChatInput')?.focus();if(!outlastOnline&&!outlastSocket)connectOutlastServer();}
  renderOutlastChat();
 }
 function syncOutlastChatUI(){
@@ -4115,10 +4133,27 @@ function syncOutlastChatUI(){
  else if(toggle)toggle.classList.add('chat-visible');
  renderOutlastChat();
 }
-function sendOutlastChatMessage(){
+async function postOutlastChatMessage(message){
+ try{
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),8000);
+  const res=await fetch(OUTLAST_HTTP_URL+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',signal:ctrl.signal,body:JSON.stringify({username:currentUsername||'Player',message:String(message||'').slice(0,180)})});
+  clearTimeout(timer);if(!res.ok)throw new Error('HTTP '+res.status);
+  const data=await res.json();if(!data?.ok||!data?.entry)throw new Error('Invalid chat response');
+  pushOutlastChatMessage(data.entry);return true;
+ }catch(_){return false}
+}
+async function pollOutlastChat(){
+ if(outlastOnline)return;
+ try{const res=await fetch(OUTLAST_HTTP_URL+'/api/chat?limit=200',{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data?.ok)mergeOutlastChatMessages(data.messages);}catch(_){}
+}
+function startOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=setInterval(()=>{if(!outlastOnline)pollOutlastChat()},2500);pollOutlastChat();}
+function stopOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=null;}
+async function sendOutlastChatMessage(){
  const input=document.getElementById('outlastChatInput');const message=String(input?.value||'').trim().slice(0,180);if(!message)return;
- if(!outlastOnline){connectOutlastServer();return;}
- roomSend({type:'chat_message',message});if(input)input.value='';
+ if(outlastOnline&&outlastSocket?.readyState===WebSocket.OPEN){roomSend({type:'chat_message',message});if(input)input.value='';return;}
+ const sent=await postOutlastChatMessage(message);
+ if(sent){if(input)input.value='';connectOutlastServer();return;}
+ pendingOutlastChat.push(message);if(input)input.value='';connectOutlastServer();toast('⚠️ Chat is reconnecting — your message will retry automatically.');
 }
 function setupOutlastChat(){
  document.getElementById('outlastChatToggle')?.addEventListener('click',()=>toggleOutlastChat(true));
@@ -4127,12 +4162,50 @@ function setupOutlastChat(){
  document.getElementById('outlastChatInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendOutlastChatMessage();}});
 }
 setupOutlastChat();
+function flushPendingOutlastChat(){if(!outlastOnline||outlastSocket?.readyState!==WebSocket.OPEN||!pendingOutlastChat.length)return;const pending=pendingOutlastChat.splice(0,pendingOutlastChat.length);pending.forEach(message=>roomSend({type:'chat_message',message}));}
+function scheduleOutlastReconnect(){
+ if(outlastReconnectTimer||outlastOnline)return;
+ const shouldReconnect=!!game?.running||outlastChatOpen;if(!shouldReconnect)return;
+ const delay=Math.min(10000,2000*Math.max(1,outlastReconnectAttempts+1));
+ outlastReconnectTimer=setTimeout(()=>{outlastReconnectTimer=null;if(!outlastOnline)connectOutlastServer()},delay);
+}
 function connectOutlastServer(){
  if(outlastSocket&&(outlastSocket.readyState===WebSocket.OPEN||outlastSocket.readyState===WebSocket.CONNECTING))return;
- try{outlastSocket=new WebSocket(OUTLAST_SERVER_URL);outlastSocket.onopen=()=>{outlastOnline=true;roomClientId=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2));roomSend({type:'player_join',username:currentUsername||'Player'});if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();toast('🌐 Connected to OUTLAST server');renderOnlinePanel();const action=pendingRoomAction;pendingRoomAction='';if(action==='create')createRoom();else if(action==='join')joinRoom();};
- outlastSocket.onmessage=e=>{try{const m=JSON.parse(e.data);if(m.type==='player_count')outlastOnlineUsers=Number(m.players)||0;if(m.type==='chat_history'&&Array.isArray(m.messages)){outlastChatMessages=m.messages.slice(-200);renderOutlastChat();if(typeof renderOwnerChatBox==='function')renderOwnerChatBox();}if(m.type==='chat_message'&&m.message){outlastChatMessages.push({id:m.id,username:m.username,message:m.message,at:m.at});if(outlastChatMessages.length>200)outlastChatMessages.splice(0,outlastChatMessages.length-200);if(!outlastChatOpen&&game?.running)outlastChatUnread++;renderOutlastChat();if(typeof renderOwnerChatBox==='function')renderOwnerChatBox();}if(m.type==='chat_error')toast('⚠️ '+(m.error||'Chat error'));if(m.type==='room_created'||m.type==='room_joined'){roomCode=String(m.code||'').toUpperCase();roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);toast('🏠 Room '+roomCode);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}if(m.type==='room_state'){roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}if(m.type==='room_error')toast('⚠️ '+(m.error||'Room error'));if(m.type==='player_left'){delete roomPlayers[m.id]}if(m.type==='room_game_start'){roomStarted=true;coopLaunchActive=true;document.getElementById('subPanel').style.display='none';if(!game.running)startGame(true);const menu=document.getElementById('menu');if(menu&&game.running)menu.style.display='none';toast('▶ Co-op run started')}if(m.type==='player_state'&&m.id){roomPlayers[m.id]={...(roomPlayers[m.id]||{}),...m};delete roomPlayers[m.id].type}if(m.type==='player_shoot'&&m.id&&Number.isFinite(Number(m.x))&&Number.isFinite(Number(m.y))){roomShots.push({id:m.id,x:Number(m.x),y:Number(m.y),a:Number(m.a)||0,weapon:String(m.weapon||'Blaster'),t:.28,max:.28,color:String(m.color||'#fff08a'),speed:Number(m.speed)||720,size:Number(m.size)||5});if(roomShots.length>120)roomShots.splice(0,roomShots.length-120)}}catch(_){ }renderOnlinePanel()};
- outlastSocket.onclose=()=>{outlastOnline=false;outlastSocket=null;roomCode='';roomPlayers={};roomShots=[];roomStarted=false;renderOnlinePanel()};outlastSocket.onerror=()=>{outlastOnline=false;renderOnlinePanel();toast('⚠️ Could not connect to OUTLAST server')};
- }catch(_){outlastOnline=false;toast('⚠️ Multiplayer connection failed')}}
+ try{
+  outlastSocket=new WebSocket(OUTLAST_SERVER_URL);
+  outlastSocket.onopen=()=>{
+   outlastOnline=true;outlastReconnectAttempts=0;stopOutlastChatPolling();
+   roomClientId=(crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2));
+   roomSend({type:'player_join',username:currentUsername||'Player'});flushPendingOutlastChat();
+   if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();
+   renderOutlastChat();renderOnlinePanel();
+   const action=pendingRoomAction;pendingRoomAction='';if(action==='create')createRoom();else if(action==='join')joinRoom();
+  };
+  outlastSocket.onmessage=e=>{
+   try{
+    const m=JSON.parse(e.data);
+    if(m.type==='player_count')outlastOnlineUsers=Number(m.players)||0;
+    if(m.type==='chat_history'&&Array.isArray(m.messages))mergeOutlastChatMessages(m.messages);
+    if(m.type==='chat_message'&&m.message)pushOutlastChatMessage(m);
+    if(m.type==='chat_error')toast('⚠️ '+(m.error||'Chat error'));
+    if(m.type==='room_created'||m.type==='room_joined'){roomCode=String(m.code||'').toUpperCase();roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);toast('🏠 Room '+roomCode);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}
+    if(m.type==='room_state'){roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}
+    if(m.type==='room_error')toast('⚠️ '+(m.error||'Room error'));
+    if(m.type==='player_left'){delete roomPlayers[m.id]}
+    if(m.type==='room_game_start'){roomStarted=true;coopLaunchActive=true;document.getElementById('subPanel').style.display='none';if(!game.running)startGame(true);const menu=document.getElementById('menu');if(menu&&game.running)menu.style.display='none';toast('▶ Co-op run started')}
+    if(m.type==='player_state'&&m.id){roomPlayers[m.id]={...(roomPlayers[m.id]||{}),...m};delete roomPlayers[m.id].type}
+    if(m.type==='player_shoot'&&m.id&&Number.isFinite(Number(m.x))&&Number.isFinite(Number(m.y))){roomShots.push({id:m.id,x:Number(m.x),y:Number(m.y),a:Number(m.a)||0,weapon:String(m.weapon||'Blaster'),t:.28,max:.28,color:String(m.color||'#fff08a'),speed:Number(m.speed)||720,size:Number(m.size)||5});if(roomShots.length>120)roomShots.splice(0,roomShots.length-120)}
+   }catch(_){}
+   renderOnlinePanel();
+  };
+  outlastSocket.onclose=()=>{
+   outlastOnline=false;outlastSocket=null;roomCode='';roomPlayers={};roomShots=[];roomStarted=false;
+   renderOutlastChat();renderOnlinePanel();startOutlastChatPolling();outlastReconnectAttempts++;scheduleOutlastReconnect();
+  };
+  outlastSocket.onerror=()=>{outlastOnline=false;renderOutlastChat();renderOnlinePanel();startOutlastChatPolling();};
+ }catch(_){outlastOnline=false;outlastSocket=null;renderOutlastChat();startOutlastChatPolling();outlastReconnectAttempts++;scheduleOutlastReconnect();toast('⚠️ Multiplayer connection failed');}
+}
+
 function roomSend(o){if(outlastSocket&&outlastSocket.readyState===WebSocket.OPEN)outlastSocket.send(JSON.stringify(o))}
 function createRoom(){if(!outlastOnline){pendingRoomAction='create';connectOutlastServer();toast('🌐 Connecting to server…');return}roomSend({type:'create_room',username:currentUsername||'Player'});toast('🏠 Creating room…')}
 function joinRoom(){const v=(document.getElementById('roomJoinInput')?.value||'').trim().toUpperCase();if(!/^[A-Z0-9]{4}$/.test(v)){toast('Enter a 4-character room code');return}if(!outlastOnline){pendingRoomAction='join';connectOutlastServer();toast('🌐 Connecting to server…');return}roomSend({type:'join_room',code:v,username:currentUsername||'Player'});toast('🚪 Joining room…')}

@@ -3107,63 +3107,7 @@ document.getElementById('extrasBtn').onclick=renderExtras;
 document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
-const helpArticles=[\n  ['What animations are in OUTLAST?','Animations','Level-ups, upgrades, Legendary/Mythic reveals, hits, critical hits, XP and coin pickups, dashes, Ultimates, bosses, rewards, synergies, Daily Shop cards, menus, and events now have animated feedback. Reduced-motion preferences are respected.'],
-  ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
-  ['How do I dash?','Dash','Press Shift during a run to dash. Your dash follows the current movement direction.'],
-  ['How do I use my Active Skill?','Active Skill','Press Q during a run to activate your equipped Active Skill.'],
-  ['How do I use my Ultimate?','Ultimate','Press Space during a run to use your equipped Ultimate when it is available.'],
-  ['How do I pause?','Pause','Press Esc during a run to open the pause screen and view your current run stats.'],
-  ['How do I exit a run?','Exit','Press X during a run and confirm the exit prompt to return to the menu.'],
-  ['How do I change my character?','Inventory Character','Open Inventory, choose Character, then select the survivor you want to equip.'],
-  ['How do I change my weapon?','Inventory Weapon','Open Inventory, choose Weapons, then select your weapon. Use Back to return to Inventory.'],
-  ['How do I change my skin?','Inventory Skin','Open Inventory, choose Skin, then equip a skin. The preview and player appearance update to match.'],
-  ['How do I equip a pet?','Inventory Pet','Open Inventory, choose Pet, and select an owned pet. Equipped pets follow you during runs.'],
-  ['How do I equip a relic?','Inventory Relic','Open Inventory, choose Relic, and select an owned relic to equip it.'],
-  ['How do I equip a charm?','Inventory Charm','Open Inventory, choose Charm, and select an owned charm to equip it.'],
-  ['How does XP work?','XP','Collect XP drops to fill the XP bar and level up. Boss XP drops are tuned to give one level-up when collected.'],
-  ['How do I get more coins?','Coins','Earn coins from runs, drops, shops, missions, rewards, and other progression systems. New players start with 0 coins.'],
-  ['How does the Daily Shop work?','Daily Shop','Open Gear → Daily Shop. Today’s six offers are saved for the entire day; the next daily reset creates a new stock selection rather than only rearranging the same offers.'],
-  ['How does the online leaderboard work?','Leaderboard','Open Progress → Leaderboard. The server stores one best score per player name, and Refresh reloads the current server records with a local fallback if the server cannot be reached.'],
-  ['How do I use the Forge?','Forge','Open Systems → Forge to evolve weapons and spend Forge Cores on progression and refinement.'],
-  ['What are relics and charms?','Relics & Charms','Relics and charms provide bonuses that modify your build. Equip them from Inventory.'],
-  ['How does the Weekly Challenge work?','Weekly Challenge','Open Play → Weekly Challenge. You can also generate a random run with a random map, difficulty, modifier, and survival game mode.'],
-  ['What are World Keys?','World Keys','World Keys are a permanent progression currency. Earn them from runs, quests, objectives, and raids, then spend them in the Skill Tree.'],
-  ['How does the Skill Tree work?','Skill Tree','Open Systems → Progression to spend World Keys on permanent bonuses to health, damage, coins, XP, and pet power.'],
-  ['How does the Quest Board work?','Quest Board','Open Progress → Quest Board to see daily objectives. Complete them to earn World Keys; quests reset each day.'],
-  ['How do I extract from a run?','Extraction','Pause a normal run and press EXTRACT & KEEP REWARDS to end the run safely while keeping the earned run rewards.'],
-  ['What is World 2.0?','World 2.0','Open More → World & Endgame to choose a zone, objective, raid, build preset, mastery path, or endgame difficulty.'],
-  ['How do raids work?','Boss Raids','Open World & Endgame, choose a raid boss, and start it. Raids use Boss Rush rules and reward large coin payouts.'],
-  ['How do build presets work?','Build Presets','World & Endgame has three presets. Save your current character, weapon, skin, pet, relic, charm, element, and active skill, then load them later.'],
-  ['What is Survivor Mastery?','Mastery','Survivor mastery rises as you complete strong runs with a character. Pet mastery rises from longer runs while that pet is equipped.'],
-  ['What are Nightmare+ and Omega?','Endgame','Open World & Endgame and choose Nightmare+, Omega, or Omega+. These difficulties increase enemy power and rewards.'],
-  ['How do I use Random Run?','Random Run','In Weekly Challenge, choose Challenge a Random Run to generate a random map, difficulty, modifier, and survival game mode. Reroll before starting if you want a different setup.'],
-  ['How do I use achievements?','Achievements','Open Progress → Achievements to see your milestones. Many achievements unlock automatically as you play.'],
-  ['How do I use titles?','Titles','Open Progress → Titles to view and manage unlocked titles. Titles can unlock from milestones and achievements.'],
-  ['What do the rarities mean?','Rarities','Rarity progresses from Common through Uncommon, Rare, Epic, Legendary, Mythic, Divine, Celestial, Transcendent, Eternal, and Omega.'],
-  ['How do map obstacles work?','Map Obstacles','Maps can contain solid objects such as trees, rocks, vehicles, walls, crates, furniture, and rubble. Move around them instead of through them.'],
-  ['What are map hazards?','Map Hazards','Some maps have unique hazards and events. Learn their warning patterns and move around dangerous areas to survive.'],
-  ['How do I see what a character will look like?','Character Preview','Open Inventory to see the live preview. It updates for your selected character and skin.'],
-  ['Where can I see update information?','Update News','New versions can show an Update News popup on the main menu. You can also open the Update Log to see the full history.'],
-  ['How do I use the Admin Panel?','Admin','If the Admin Panel is unlocked, gameplay-only admin controls can appear during a run. Admin-only changes are intentionally not listed in the player Update Log.']
-];
-function openHelp(){
-  const cards=helpArticles.map((a,i)=>`<button class="option help-result" data-help-index="${i}"><b>${a[0]}</b><div class="small">${a[2]}</div></button>`).join('');
-  openSub('❔ Help & Guide',`<div class="option"><input id="helpSearch" class="help-input" placeholder="Search: XP, weapons, pets, 1v1, maps..." autocomplete="off"><div class="small" style="margin-top:6px">Search for what you want to learn. Select a result for the full how-to.</div></div><div id="helpResults" class="grid">${cards}</div><div id="helpAnswer" class="option" style="display:none"></div>`);
-  const input=document.getElementById('helpSearch'), results=document.getElementById('helpResults'), answer=document.getElementById('helpAnswer');
-  const render=(q='')=>{
-    const terms=q.toLowerCase().trim().split(/\s+/).filter(Boolean);
-    const html=helpArticles.map((a,i)=>({a,i,score:terms.reduce((n,t)=>n+([a[0],a[1],a[2]].join(' ').toLowerCase().includes(t)?1:0),0)})).filter(x=>!terms.length||x.score>0).sort((x,y)=>y.score-x.score||x.i-y.i).map(x=>`<button class="option help-result" data-help-index="${x.i}"><b>${x.a[0]}</b><div class="small">${x.a[2]}</div></button>`).join('');
-    results.innerHTML=html||'<div class="option"><b>No matching help found.</b><div class="small">Try a word like XP, inventory, map, boss, 1v1, weapon, pet, or shop.</div></div>';
-  };
-  input.oninput=()=>render(input.value);
-  results.onclick=(e)=>{const b=e.target.closest('[data-help-index]');if(!b)return; const a=helpArticles[+b.dataset.helpIndex]; answer.style.display='block'; answer.innerHTML=`<b>${a[0]}</b><div class="small" style="margin-top:8px">${a[2]}</div>`; answer.scrollIntoView({block:'nearest'});};
-  input.focus();
-}
-
-function renderUpdates(){
- 
-const updates=[
-  ['v3.14.20 — Login Reliability Fix','Isolated the animation layer from the menu/login page so username login remains reliable while gameplay animations continue after entering the game.'];\n  ['v3.14.19 — Animation & Juice Pass','Added the unified OUTLAST animation layer: level-up bursts, XP/coin pickups, hit and crit feedback, dash/Ultimate effects, boss entrances and defeats, upgrade/reveal animations, synergy reveals, reward/chest effects, menu transitions, and event feedback.'];
+const helpArticles=[\• v3.14.21 — Login Flow Rebuild: replaced conflicting login routing with one canonical capture handler for the username button and Enter key; login now safely advances to device setup.n  ['v3.14.19 — Animation & Juice Pass','Added the unified OUTLAST animation layer: level-up bursts, XP/coin pickups, hit and crit feedback, dash/Ultimate effects, boss entrances and defeats, upgrade/reveal animations, synergy reveals, reward/chest effects, menu transitions, and event feedback.'];
   ['v3.13.2 — Countdown Fix','Restored the Nightfall/October event countdown, fixed a multiplayer UI script syntax error that could stop later UI systems from running, and removed the duplicate owner script load.'],
   ['v3.13.3 — Maintenance Update','Routine release maintenance and control-routing updates.'],
   ['v3.11.0 — Global Events','Added the synchronized global-event system, including timed global events that can be started and stopped for connected players.'],
@@ -4575,5 +4519,65 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
-</script></body>
+</script><script id="outlast-v31421-login-rebuild">
+(function(){
+  'use strict';
+  // v3.14.21: one canonical login controller. It deliberately captures only
+  // the login button/Enter key so older duplicate handlers cannot block login.
+  function ready(){
+    const input=()=>document.getElementById('usernameInput');
+    const popup=()=>document.getElementById('loginPopup');
+    const error=()=>document.getElementById('usernameError');
+    const clean=v=>String(v||'').trim().replace(/\s+/g,' ').slice(0,18);
+    function showError(msg){const e=error();if(e)e.textContent=msg;}
+    function login(){
+      const name=clean(input()?.value);
+      if(!/^[A-Za-z0-9 _-]{2,18}$/.test(name)){
+        showError('Use 2–18 letters, numbers, spaces, _ or -.');
+        input()?.focus();
+        return false;
+      }
+      showError('');
+      try{ window.currentUsername=name; }catch(_){}
+      try{
+        if(typeof outlastStorage!=='undefined') outlastStorage.setItem('USERNAME_KEY',name);
+      }catch(_){}
+      try{ if(typeof persist==='function') persist(); }catch(_){}
+      const p=popup(); if(p)p.style.display='none';
+      try{ if(typeof updateMenuSummary==='function') updateMenuSummary(); }catch(_){}
+      let mode='';
+      try{ mode=typeof getDeviceMode==='function'?getDeviceMode():''; }catch(_){}
+      const dm=document.getElementById('deviceModePopup');
+      if(dm) dm.style.display=mode?'none':'flex';
+      try{ if(typeof syncMobileControls==='function') syncMobileControls(); }catch(_){}
+      try{ if(typeof updateDeviceModeStatus==='function') updateDeviceModeStatus(); }catch(_){}
+      return true;
+    }
+    window.outlastLogin=login;
+    function captureClick(e){
+      const b=e.target?.closest?.('#loginBtn');
+      if(!b)return;
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      login();
+    }
+    function captureKey(e){
+      if(e.key!=='Enter')return;
+      const el=e.target;
+      if(el?.id==='usernameInput' && document.getElementById('loginPopup')?.style.display!=='none'){
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        login();
+      }
+    }
+    document.addEventListener('click',captureClick,true);
+    document.addEventListener('keydown',captureKey,true);
+    const b=document.getElementById('loginBtn');
+    const i=input();
+    if(i){i.addEventListener('input',()=>{if(error()?.textContent)showError('')});}
+    if(popup()?.style.display!=='none') setTimeout(()=>i?.focus(),50);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ready,{once:true});
+  else ready();
+})();
+</script>
+</body>
 </html>

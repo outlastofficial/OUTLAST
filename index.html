@@ -1597,12 +1597,19 @@ if(currentUsername){
 function sanitizeUsername(name){
   return String(name||'').trim().replace(/\s+/g,' ').slice(0,18);
 }
+async function registerUsernameWithServer(name){
+  try{
+    const base='https://outlast-server.onrender.com';
+    await fetch(base+'/api/players/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:String(name||'').slice(0,18)})});
+  }catch(_){}
+}
 function finishUsernameLogin(){
   const input=document.getElementById('usernameInput');
   const err=document.getElementById('usernameError');
   const name=sanitizeUsername(input?.value);
   if(!/^[A-Za-z0-9 _-]{2,18}$/.test(name)){ if(err) err.textContent='Use 2–18 letters, numbers, spaces, _ or -.'; return false; }
   currentUsername=name;
+  registerUsernameWithServer(name);
   if(!outlastStorage.getItem(DEVICE_SAVE_KEY)) save=loadDeviceSave(currentUsername);
   ensureMegaSave();
   persist();
@@ -2996,8 +3003,8 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
         const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
         b.innerHTML='<div class="grid"><div class="option"><b>👑 Owner</b><div class="small">'+esc(currentUsername)+'</div></div><div class="option"><b>🌐 Server</b><div class="small">'+esc(h.status||'unknown')+'</div></div><div class="option"><b>🟢 Online</b><div class="small">'+Number(h.players||0)+' players</div></div><div class="option"><b>🌎 Event</b><div class="small">'+esc(ev)+'</div></div></div><button class="option" data-owner-action="tab" data-value="overview" style="margin-top:10px">↻ Refresh</button>';
       }else if(tab==='players'){
-        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[],rows=ps.length?ps.map(p=>'<div class="option" style="display:flex;justify-content:space-between;gap:10px"><div><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+'</div></div><div class="small">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent time')+'</div></div>').join(''):'<div class="option">No known players yet.</div>';
-        b.innerHTML='<div class="option"><b>👥 All Players</b><div class="small">Online players first; offline players remain from the server record.</div></div><div style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><button class="option" data-owner-action="tab" data-value="players" style="margin-top:10px">↻ Refresh Players</button>';
+        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[],rows=ps.length?ps.map(p=>'<div class="option" style="display:flex;justify-content:space-between;gap:10px"><div><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+'</div></div><div class="small">'+(p.createdAt?('Created '+new Date(Number(p.createdAt)).toLocaleDateString()+(p.lastSeen?' • Last seen '+new Date(Number(p.lastSeen)).toLocaleString():'')):'No creation date')+'</div></div>').join(''):'<div class="option">No known players yet.</div>';
+        b.innerHTML='<div class="option"><b>👥 Created Usernames</b><div class="small">Server-registered usernames. Online players are shown first, and previously registered offline names remain in the list.</div><div class="small" id="ownerPlayerCount" style="margin-top:6px"></div></div><div style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><button class="option" data-owner-action="tab" data-value="players" style="margin-top:10px">↻ Refresh Players</button>';const count=document.getElementById('ownerPlayerCount');if(count)count.textContent=ps.length+' registered username'+(ps.length===1?'':'s');
       }else if(tab==='events'){
         const d=await api('/api/owner/global-event'),names=['october','double_coins','double_xp','chaos','blackout','boss_rush'],opts=names.map(x=>'<option value="'+x+'">'+x.split('_').join(' ')+'</option>').join(''),cur=d.active?d.label:'No global event active';
         b.innerHTML='<div class="option"><b>🌎 Global Event Controller</b><div class="small">Current: '+esc(cur)+'</div></div><div class="option" style="margin-top:10px"><label class="small">Event</label><select id="ownerEventType" style="width:100%;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60">'+opts+'</select><label class="small" style="display:block;margin-top:10px">Duration (minutes)</label><input id="ownerEventDuration" type="number" min="1" max="1440" value="30" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><div class="row" style="justify-content:flex-start;margin-top:10px"><button class="gold" data-owner-action="startEvent">▶ Start Global Event</button><button class="danger" data-owner-action="stopEvent">■ Stop Event</button></div></div>';

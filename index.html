@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.5">
-<meta name="build-version" content="3.27.5">
-<title>OUTLAST v3.27.5</title>
+<meta name="outlast-build" content="3.27.6">
+<meta name="build-version" content="3.27.6">
+<title>OUTLAST v3.27.6</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -177,6 +177,17 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 #mobileAvatarPreview{display:none;position:fixed;left:10px;top:10px;z-index:34;width:62px;height:74px;border:1px solid rgba(140,200,255,.35);border-radius:12px;background:rgba(8,14,20,.68);pointer-events:none}
 #mobileAvatarPreview canvas{width:100%;height:100%}
 @media(max-width:760px){#mobileAvatarPreview{display:block}}
+</style>
+<style id="outlast-announcement-ui">
+#outlastAnnouncement{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;padding:58px 16px 20px;box-sizing:border-box;background:rgba(0,0,0,.42);z-index:130;pointer-events:none}
+#outlastAnnouncement.open{display:flex}
+#outlastAnnouncement .announcement-card{width:min(620px,92vw);background:linear-gradient(145deg,#172536,#0d141c);border:1px solid #4f79a0;border-radius:18px;padding:18px 20px;box-shadow:0 24px 70px rgba(0,0,0,.55);pointer-events:auto}
+#outlastAnnouncement .announcement-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+#outlastAnnouncement .announcement-title{font-size:14px;font-weight:900;letter-spacing:.08em}
+#outlastAnnouncement .announcement-close{background:none;border:0;box-shadow:none;color:#9eb3c1;font-size:18px;padding:3px 7px;min-height:0}
+#outlastAnnouncement .announcement-message{font-size:18px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+#outlastAnnouncement .announcement-time{margin-top:8px;color:#91a5b7;font-size:12px}
+@media(max-width:700px){#outlastAnnouncement{padding:42px 10px 12px}#outlastAnnouncement .announcement-card{padding:16px}.announcement-message{font-size:16px!important}}
 </style>
 <style id="feedback-button-hotfix">.feedback-choice-btn{position:relative;z-index:5;pointer-events:auto!important;touch-action:manipulation;cursor:pointer}.feedback-submit-btn{position:relative;z-index:5;pointer-events:auto!important;touch-action:manipulation;cursor:pointer}.feedback-choice-btn *, .feedback-submit-btn *{pointer-events:none!important}</style>
 
@@ -778,6 +789,16 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
     <div class="update-pop-actions"><button id="updatePopupClose" class="green">GOT IT</button></div>
   </div>
 </div>
+<div id="outlastAnnouncement" role="dialog" aria-modal="false" aria-labelledby="outlastAnnouncementTitle">
+  <div class="announcement-card">
+    <div class="announcement-head">
+      <div id="outlastAnnouncementTitle" class="announcement-title">OUTLAST ANNOUNCEMENT</div>
+      <button id="outlastAnnouncementClose" class="announcement-close" type="button" aria-label="Close announcement">×</button>
+    </div>
+    <div id="outlastAnnouncementMessage" class="announcement-message"></div>
+    <div id="outlastAnnouncementTime" class="announcement-time"></div>
+  </div>
+</div>
 <button id="gameAdminToggle" type="button">ADMIN</button>
 <div id="gameAdminPanel" aria-label="In-game admin controls">
   <h3>ADMIN • Gameplay</h3>
@@ -825,7 +846,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.27.5 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.6 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3260,6 +3281,7 @@ const helpArticles=[
   ['How do I change accessibility settings?','Accessibility','Open Settings to change UI size, brightness, music, SFX, voice, and ambient volume along with all other player settings.'],
 
   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run or from the main menu. Messages use the shared chat service and are synchronized across devices, with the live connection available for fast delivery.'],
+  ['How do Announcements work?','Announcements','Owner announcements are delivered through the shared server. A new announcement appears as an in-game notification, and recent announcements can be recovered after reconnecting or refreshing the page.'],
    ['How do I use Settings?','Settings','Open Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings. Space is not a game or menu control; it is ignored outside text fields.'],
   ['What is the XP Vacuum power-up?','XP Vacuum','Pick up the XP Vacuum to immediately collect every XP drop currently on the map. It applies your normal XP bonuses and does not collect coins or other loot.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
@@ -3324,6 +3346,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.27.6 — Announcements Fix','Fixed Global Announcements so connected and reconnecting devices can receive them reliably.'],
    ['v3.27.5 — Chat Sync Fix','Strengthened Global Chat synchronization between phones, PCs, and other devices.'],
    ['v3.27.4 — Chat Connection Fix','Fixed Global Chat startup and strengthened shared server synchronization.'],
    ['v3.27.3 — Build Sync Fix','Synchronized the game entry points so devices load the same current OUTLAST build.'],
@@ -3454,8 +3477,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.5';
-const CURRENT_UPDATE_INFO={title:'v3.27.5 — Chat Sync Fix',summary:'Strengthened Global Chat synchronization between phones, PCs, and other devices.',items:['Chat now performs an immediate shared-history refresh when opened and when the page regains focus.','Shared chat polling is more frequent while keeping WebSocket live delivery available.','The chat server keeps message history across server restarts.']};
+const CURRENT_UPDATE_VERSION='3.27.6';
+const CURRENT_UPDATE_INFO={title:'v3.27.6 — Announcements Fix',summary:'Fixed Global Announcements so connected and reconnecting devices can receive them reliably.',items:['Announcements now appear as a clear in-game notification when sent.','Reconnects and page refreshes can retrieve recent announcements from the shared server history.','Announcement notifications can be closed with the close button, outside click, or Escape.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4275,6 +4298,59 @@ let roomShots=[];
 let pendingRoomAction='';
 let pendingOutlastChat=[];
 let outlastChatPollTimer=null;
+let outlastAnnouncementHistory=[];
+let outlastAnnouncementInitialized=false;
+let outlastSeenAnnouncementIds=new Set();
+try{
+  const saved=JSON.parse(localStorage.getItem('outlastSeenAnnouncementIds')||'[]');
+  if(Array.isArray(saved))outlastSeenAnnouncementIds=new Set(saved.filter(Boolean).slice(-100));
+}catch(_){}
+function saveOutlastAnnouncementSeen(){
+  try{localStorage.setItem('outlastSeenAnnouncementIds',JSON.stringify([...outlastSeenAnnouncementIds].slice(-100)));}catch(_){}
+}
+function storeOutlastAnnouncement(entry){
+  if(!entry||!entry.message)return null;
+  const id=String(entry.id||'')||('announcement-'+String(entry.at||Date.now())+'-'+String(entry.message).slice(0,12));
+  if(outlastAnnouncementHistory.some(x=>String(x.id)===id))return outlastAnnouncementHistory.find(x=>String(x.id)===id);
+  const normalized={id,message:String(entry.message).slice(0,240),from:String(entry.from||'OUTLAST'),at:Number(entry.at)||Date.now()};
+  outlastAnnouncementHistory.push(normalized);
+  if(outlastAnnouncementHistory.length>100)outlastAnnouncementHistory.splice(0,outlastAnnouncementHistory.length-100);
+  return normalized;
+}
+function showOutlastAnnouncement(entry){
+  const a=storeOutlastAnnouncement(entry);if(!a)return;
+  const pop=document.getElementById('outlastAnnouncement'),msg=document.getElementById('outlastAnnouncementMessage'),tm=document.getElementById('outlastAnnouncementTime');
+  if(!pop||!msg)return;
+  msg.textContent=a.message;
+  if(tm)tm.textContent='Posted '+new Date(a.at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  pop.classList.add('open');
+}
+function receiveOutlastAnnouncement(entry){
+  const a=storeOutlastAnnouncement(entry);if(!a)return;
+  if(outlastSeenAnnouncementIds.has(a.id))return;
+  outlastSeenAnnouncementIds.add(a.id);
+  saveOutlastAnnouncementSeen();
+  showOutlastAnnouncement(a);
+}
+async function pollOutlastAnnouncements(){
+  try{
+    const res=await fetch(OUTLAST_HTTP_URL+'/api/announcements?limit=50&sync='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();if(!data?.ok||!Array.isArray(data.announcements))return;
+    const list=data.announcements.map(storeOutlastAnnouncement).filter(Boolean);
+    if(!outlastAnnouncementInitialized){
+      const latest=list[list.length-1];
+      if(latest&&!outlastSeenAnnouncementIds.has(latest.id)&&Date.now()-latest.at<30*60*1000)receiveOutlastAnnouncement(latest);
+      outlastAnnouncementInitialized=true;
+      return;
+    }
+    list.forEach(a=>receiveOutlastAnnouncement(a));
+  }catch(_){}
+}
+function closeOutlastAnnouncement(){document.getElementById('outlastAnnouncement')?.classList.remove('open');}
+document.getElementById('outlastAnnouncementClose')?.addEventListener('click',closeOutlastAnnouncement);
+document.getElementById('outlastAnnouncement')?.addEventListener('click',e=>{if(e.target.id==='outlastAnnouncement')closeOutlastAnnouncement()});
+
 let outlastReconnectTimer=null;
 let outlastReconnectAttempts=0;
 function onlineStatus(){return outlastOnline?'🟢 Connected':'🔴 Offline'}
@@ -4336,7 +4412,7 @@ async function postOutlastChatMessage(message){
 async function pollOutlastChat(){
  try{const res=await fetch(OUTLAST_HTTP_URL+'/api/chat?limit=200&sync='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data?.ok){outlastChatHttpOnline=true;mergeOutlastChatMessages(data.messages);}}catch(_){outlastChatHttpOnline=false;renderOutlastChat();}
 }
-function startOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=setInterval(()=>{pollOutlastChat()},1000);pollOutlastChat();}
+function startOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=setInterval(()=>{pollOutlastChat();pollOutlastAnnouncements()},1000);pollOutlastChat();pollOutlastAnnouncements();}
 function stopOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=null;}
 async function sendOutlastChatMessage(){
  const input=document.getElementById('outlastChatInput');const message=String(input?.value||'').trim().slice(0,180);if(!message)return;
@@ -4350,6 +4426,7 @@ function setupOutlastChat(){
  document.getElementById('outlastChatToggle')?.addEventListener('click',()=>toggleOutlastChat(true));
  document.getElementById('outlastChatClose')?.addEventListener('click',()=>toggleOutlastChat(false));
  document.getElementById('outlastChatSend')?.addEventListener('click',sendOutlastChatMessage);
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOutlastAnnouncement();},true);
  document.getElementById('outlastChatInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendOutlastChatMessage();}});
  const markTyping=active=>{game.__outlastTypingActive=!!active;if(active){for(const k of Object.keys(keys||{}))keys[k]=false;for(const k of Object.keys(keyCodes||{}))keyCodes[k]=false;}};
  document.addEventListener('focusin',e=>{const t=e.target;if(t?.matches?.('input,textarea,[contenteditable="true"]'))markTyping(true);},true);
@@ -4383,7 +4460,7 @@ function connectOutlastServer(){
     const m=JSON.parse(e.data);
     if(m.type==='player_count')outlastOnlineUsers=Number(m.players)||0;
     if(m.type==='chat_history'&&Array.isArray(m.messages))mergeOutlastChatMessages(m.messages);
-    if(m.type==='chat_message'&&m.message)pushOutlastChatMessage(m);
+    if(m.type==='chat_message'&&m.message)pushOutlastChatMessage(m);if(m.type==='owner_announcement'&&m.message)receiveOutlastAnnouncement(m);
     if(m.type==='chat_error')toast('⚠️ '+(m.error||'Chat error'));
     if(m.type==='room_created'||m.type==='room_joined'){roomCode=String(m.code||'').toUpperCase();roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);toast('🏠 Room '+roomCode);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}
     if(m.type==='room_state'){roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}
@@ -4930,7 +5007,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.27.5</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.27.6</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);
@@ -5534,7 +5611,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.5';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.27.5';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.27.5';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Cross-device chat synchronization, XP Vacuum, zombie spawning, and input reliability improvements.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.6';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.27.5';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.27.5';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Cross-device chat synchronization, XP Vacuum, zombie spawning, and input reliability improvements.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

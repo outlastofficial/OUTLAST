@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.26">
-<meta name="build-version" content="3.14.26">
-<title>OUTLAST v3.14.26</title>
+<meta name="outlast-build" content="3.16.0">
+<meta name="build-version" content="3.16.0">
+<title>OUTLAST v3.16.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.26 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.16.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1742,7 +1742,7 @@ function mergeLeaderboardEntry(entry){
 }
 async function submitServerLeaderboard(entry){
  try{
-   const buildVersion=document.querySelector('meta[name="build-version"]')?.content||'3.14.26';
+   const buildVersion=document.querySelector('meta[name="build-version"]')?.content||'3.15.1';
    const data=await leaderboardFetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...entry,clientVersion:buildVersion})});
    if(data.entry)mergeLeaderboardEntry(data.entry);
    persist();
@@ -2333,32 +2333,69 @@ function draw(){
  for(const s of game.shrines){ctx.strokeStyle=s.color;ctx.lineWidth=4;ctx.beginPath();ctx.arc(s.x,s.y,22,0,Math.PI*2);ctx.stroke();ctx.fillStyle=s.color;ctx.font='11px Arial';ctx.fillText(s.type.split(' ')[0],s.x-20,s.y+4)}
  for(const q of game.powerups){ctx.fillStyle=q.type==='heal'?'#65db74':q.type==='speed'?'#64b8ff':q.type==='damage'?'#ff6a62':'#d7b4ff';ctx.beginPath();ctx.arc(q.x,q.y,12,0,Math.PI*2);ctx.fill();const pi={heal:'+ ',speed:'↯',damage:'⚔',shield:'⬟'}[q.type]||'?';ctx.fillStyle='#101820';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pi.trim(),q.x,q.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
  for(const b of game.bullets){drawWeaponProjectile(b)}
- for(const e of game.enemies){
-   // Zombie-style enemies: head, body, arms, and legs. Bosses keep a larger, distinct zombie silhouette.
-   const zc=e.boss?'#7e55b5':e.kind==='elite'?'#a86b35':e.kind==='tank'?'#65706b':e.kind==='fast'?'#3f9f78':e.kind==='ranged'?'#a85a5a':'#6b8f63';
-   const r=e.r;
-   ctx.save();ctx.translate(e.x,e.y);
-   ctx.strokeStyle='#243022';ctx.lineWidth=Math.max(3,r*.13);ctx.lineCap='round';
-   ctx.fillStyle=e.hitFlash>0?'#fff':zc;
-   // legs
-   ctx.beginPath();ctx.moveTo(-r*.30,r*.25);ctx.lineTo(-r*.42,r*.78);ctx.moveTo(r*.30,r*.25);ctx.lineTo(r*.42,r*.78);ctx.stroke();
-   // arms
-   ctx.beginPath();ctx.moveTo(-r*.52,-r*.08);ctx.lineTo(-r*.92,r*.14);ctx.moveTo(r*.52,-r*.08);ctx.lineTo(r*.92,r*.14);ctx.stroke();
-   // body
-   ctx.fillRect(-r*.42,-r*.02,r*.84,r*.58);
-   // head
-   ctx.beginPath();ctx.arc(0,-r*.48,r*.40,0,Math.PI*2);ctx.fill();
-   // eyes / zombie face
-   ctx.fillStyle='#d7e69a';
-   ctx.beginPath();ctx.arc(-r*.14,-r*.52,r*.075,0,Math.PI*2);ctx.arc(r*.14,-r*.52,r*.075,0,Math.PI*2);ctx.fill();
-   ctx.fillStyle='#2a3525';ctx.fillRect(-r*.16,-r*.33,r*.32,Math.max(2,r*.05));
-   if(e.boss){
-     ctx.strokeStyle='#f0d26b';ctx.lineWidth=Math.max(2,r*.08);ctx.beginPath();ctx.moveTo(-r*.45,-r*.78);ctx.lineTo(-r*.20,-r*1.03);ctx.lineTo(0,-r*.80);ctx.lineTo(r*.20,-r*1.03);ctx.lineTo(r*.45,-r*.78);ctx.stroke();
-   }
-   ctx.restore();
-   ctx.fillStyle='#222';ctx.fillRect(e.x-e.r,e.y-e.r-14,e.r*2,5);ctx.fillStyle='#74e06d';ctx.fillRect(e.x-e.r,e.y-e.r-14,e.r*2*Math.max(0,e.hp/e.max),5)
- }
- const p=game.player;if(p){
+ function drawZombieVisual(e){
+  const r=Math.max(6,e.r||15), k=String(e.kind||'normal').toLowerCase();
+  const pulse=.5+.5*Math.sin(performance.now()/180+e.x*.01);
+  let body='#60715f',dark='#263229',glow='#9ee66d',head='#7f9274',eye='#d9f59b';
+  if(e.boss){body='#4b315f';dark='#1d1328';glow='#ff5b76';head='#654273';eye='#ffe08a';}
+  else if(k==='golden'){body='#b88724';dark='#5d4210';glow='#ffe27a';head='#e0ae35';eye='#fff4b0';}
+  else if(k==='elite'){body='#8b4f35';dark='#321d18';glow='#ffb36b';head='#a96645';eye='#fff0b0';}
+  else if(['tank','armored','brute','juggernaut'].includes(k)){body='#4e5960';dark='#20272c';glow='#a9c4cf';head='#68777d';eye='#d9f8ff';}
+  else if(['fast','runner','charger','leaper'].includes(k)){body='#397d67';dark='#18382f';glow='#6fffd1';head='#4c9b7f';eye='#c8ffe9';}
+  else if(['ranged','spitter','volt'].includes(k)){body='#79484e';dark='#321d22';glow=k==='volt'?'#78eaff':'#e66d7a';head='#965960';eye='#ffe0e5';}
+  else if(['toxic','volatile'].includes(k)){body='#496f42';dark='#1d321c';glow='#b6ff54';head='#639b54';eye='#eaffae';}
+  else if(['phantom','mimic'].includes(k)){body='#3b365b';dark='#171526';glow='#c58cff';head='#514875';eye='#f1d7ff';}
+  else if(k==='frostbitten'){body='#4b7488';dark='#203744';glow='#9eeaff';head='#6a9caf';eye='#dfffff';}
+  else if(['screamer','siren'].includes(k)){body='#6c3d5d';dark='#2d1827';glow='#ff7ac8';head='#8c5175';eye='#ffd1ee';}
+  else if(k==='leech'){body='#5d4d3d';dark='#2b2119';glow='#d6a56b';head='#765f4b';eye='#ffe2b4';}
+  else if(k==='swarm'){body='#3d4934';dark='#182018';glow='#ffdf58';head='#536247';eye='#fff2a0';}
+  ctx.save();ctx.translate(e.x,e.y);ctx.lineCap='round';ctx.lineJoin='round';
+  const hurt=e.hitFlash>0;
+  if(k==='crawler'||k==='swarm'){
+    ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(0,r*.48,r*1.05,r*.28,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=dark;ctx.lineWidth=Math.max(2,r*.16);
+    for(const s of [-1,1]){ctx.beginPath();ctx.moveTo(s*r*.35,0);ctx.lineTo(s*r*.72,r*.45);ctx.stroke();ctx.beginPath();ctx.moveTo(s*r*.08,r*.12);ctx.lineTo(s*r*.58,r*.08);ctx.stroke();}
+    ctx.fillStyle=hurt?'#fff':body;ctx.beginPath();ctx.ellipse(0,0,r*.78,r*.48,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=head;ctx.beginPath();ctx.arc(r*.48,-r*.12,r*.36,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=eye;ctx.beginPath();ctx.arc(r*.57,-r*.19,r*.07,0,Math.PI*2);ctx.fill();
+  }else if(e.boss){
+    const br=r*1.35;
+    ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(0,br*.72,br*1.05,br*.28,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=dark;ctx.lineWidth=Math.max(4,br*.13);
+    ctx.beginPath();ctx.moveTo(-br*.38,br*.22);ctx.lineTo(-br*.58,br*.78);ctx.moveTo(br*.38,br*.22);ctx.lineTo(br*.58,br*.78);ctx.stroke();
+    ctx.fillStyle=hurt?'#fff':body;ctx.fillRect(-br*.52,-br*.18,br*1.04,br*.85);
+    ctx.fillStyle=head;ctx.beginPath();ctx.arc(0,-br*.48,br*.47,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=glow;ctx.globalAlpha=.2+.12*pulse;ctx.beginPath();ctx.arc(0,0,br*1.05,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle=eye;ctx.beginPath();ctx.arc(-br*.18,-br*.54,br*.07,0,Math.PI*2);ctx.arc(br*.18,-br*.54,br*.07,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=glow;ctx.lineWidth=Math.max(2,br*.09);ctx.beginPath();ctx.moveTo(-br*.48,-br*.83);ctx.lineTo(-br*.25,-br*1.25);ctx.lineTo(0,-br*.92);ctx.lineTo(br*.25,-br*1.25);ctx.lineTo(br*.48,-br*.83);ctx.stroke();
+    ctx.strokeStyle=dark;ctx.lineWidth=Math.max(2,br*.08);ctx.beginPath();ctx.moveTo(-br*.22,-br*.30);ctx.lineTo(0,-br*.18);ctx.lineTo(br*.22,-br*.30);ctx.stroke();
+  }else{
+    ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(0,r*.72,r*.72,r*.22,0,0,Math.PI*2);ctx.fill();
+    const lean=(['fast','runner','charger','leaper'].includes(k))?.10*Math.sin(performance.now()/110+e.y):0;ctx.rotate(lean);
+    ctx.strokeStyle=dark;ctx.lineWidth=Math.max(2.5,r*.14);
+    ctx.beginPath();ctx.moveTo(-r*.25,r*.30);ctx.lineTo(-r*.40,r*.82);ctx.moveTo(r*.25,r*.30);ctx.lineTo(r*.40,r*.82);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-r*.45,-r*.02);ctx.lineTo(-r*.86,r*.22);ctx.moveTo(r*.45,-r*.02);ctx.lineTo(r*.86,r*.22);ctx.stroke();
+    ctx.fillStyle=hurt?'#fff':body;ctx.fillRect(-r*.42,-r*.05,r*.84,r*.62);
+    ctx.fillStyle=head;ctx.beginPath();ctx.arc(0,-r*.52,r*.39,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=eye;ctx.beginPath();ctx.arc(-r*.14,-r*.55,r*.065,0,Math.PI*2);ctx.arc(r*.14,-r*.55,r*.065,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=dark;ctx.fillRect(-r*.18,-r*.36,r*.36,Math.max(2,r*.05));
+    if(['tank','armored','brute','juggernaut'].includes(k)){ctx.strokeStyle=glow;ctx.lineWidth=Math.max(2,r*.08);ctx.strokeRect(-r*.50,-r*.12,r,r*.62);ctx.fillStyle=dark;ctx.fillRect(-r*.62,-r*.08,r*.12,r*.36);ctx.fillRect(r*.50,-r*.08,r*.12,r*.36);}
+    if(['ranged','spitter','volt'].includes(k)){ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,r*.22,r*.16,0,Math.PI*2);ctx.fill();ctx.strokeStyle=glow;ctx.lineWidth=Math.max(2,r*.07);ctx.beginPath();ctx.moveTo(r*.60,r*.05);ctx.lineTo(r*.98,-r*.20);ctx.stroke();if(k==='volt'){ctx.beginPath();ctx.moveTo(-r*.25,r*.20);ctx.lineTo(-r*.05,r*.02);ctx.lineTo(r*.08,r*.20);ctx.stroke();}}
+    if(k==='golden'){ctx.strokeStyle=glow;ctx.lineWidth=Math.max(2,r*.08);ctx.beginPath();ctx.arc(0,-r*.52,r*.48,Math.PI,Math.PI*2);ctx.stroke();ctx.fillStyle=glow;ctx.globalAlpha=.18+.12*pulse;ctx.beginPath();ctx.arc(0,0,r*1.15,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
+    if(['elite','brute','screamer','siren'].includes(k)){ctx.strokeStyle=glow;ctx.lineWidth=Math.max(2,r*.08);ctx.beginPath();ctx.moveTo(-r*.38,-r*.76);ctx.lineTo(-r*.18,-r*1.02);ctx.lineTo(0,-r*.80);ctx.lineTo(r*.18,-r*1.02);ctx.lineTo(r*.38,-r*.76);ctx.stroke();}
+    if(['screamer','siren'].includes(k)){ctx.strokeStyle=glow;ctx.lineWidth=Math.max(2,r*.07);ctx.beginPath();ctx.arc(0,-r*.34,r*.18,0,Math.PI*2);ctx.stroke();}
+    if(['toxic','volatile'].includes(k)){ctx.fillStyle=glow;ctx.globalAlpha=.75;ctx.beginPath();ctx.arc(-r*.35,r*.18,r*.10,0,Math.PI*2);ctx.arc(r*.35,r*.18,r*.10,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,r*(.75+.08*pulse),0,Math.PI*2);ctx.stroke();}
+    if(['phantom','mimic'].includes(k)){ctx.globalAlpha=.65+.15*pulse;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,r*.92,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}
+    if(k==='frostbitten'){ctx.strokeStyle=glow;ctx.lineWidth=2;for(const a of [-.8,0,.8]){ctx.beginPath();ctx.moveTo(Math.cos(a)*r*.35,Math.sin(a)*r*.35);ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r);ctx.stroke();}}
+    if(['charger','leaper'].includes(k)){ctx.strokeStyle=glow;ctx.lineWidth=Math.max(2,r*.09);ctx.beginPath();ctx.moveTo(-r*.55,r*.08);ctx.lineTo(-r*.88,-r*.20);ctx.moveTo(r*.55,r*.08);ctx.lineTo(r*.88,-r*.20);ctx.stroke();}
+    if(k==='mimic'){ctx.fillStyle=dark;ctx.fillRect(-r*.48,-r*.82,r*.96,r*.15);}
+  }
+  ctx.restore();
+  ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(e.x-e.r,e.y-e.r-16,e.r*2,5);
+  ctx.fillStyle=glow;ctx.fillRect(e.x-e.r,e.y-e.r-16,e.r*2*Math.max(0,e.hp/e.max),5);
+}
+for(const e of game.enemies){drawZombieVisual(e);}
+const p=game.player;if(p){
    // Draw the equipped pet beside the player so it is visible during the run.
    const petVisuals={Dog:'●',Cat:'◇',Robot:'▤',Dragon:'♜',Ghost:'◌',Hawk:'➤'};
    if(save.selectedPet && save.selectedPet!=='None'){
@@ -3115,6 +3152,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
   ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Legendary and Mythic choices use a rolling reveal before they can be selected.'],
 
@@ -3175,7 +3213,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.14.26 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
+  ['v3.15.1 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
   ['v3.14.23 — Full Event Expansion','Expanded the October event into a complete progression: shared community signal, event investigation, broadcasts, missions, Event Coins, limited shop, achievements, live event terminal, Rift Pumpkin boss encounter, event leaderboard, finale, and permanent aftermath.'],
   ['v3.14.20 — Event Build-Up','Added the full event buildup: countdown, broadcasts, investigation clues, pre-event rewards, progress tracking, event access, final warning phase, and activation sequence.'],
   ['v3.14.22 — Event UI Placement','Kept the full event buildup system, but moved its home-screen indicator to a small unobtrusive bottom-corner pill so it no longer takes over the hub.'],['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],
@@ -3282,10 +3320,12 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const BUGFIX_UPDATE_ENTRY=['v3.14.26 — Maintenance & Reliability','Fixed stale leaderboard build metadata, hardened leaderboard saving for older saves, and synchronized the in-game update/version metadata across the main game pages.'];
+const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboard build metadata, hardened leaderboard saving for older saves, and synchronized the in-game update/version metadata across the main game pages.'];
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.26';
-const CURRENT_UPDATE_INFO={title:'v3.14.26 — Maintenance & Reliability',summary:'A small maintenance release focused on leaderboard reliability and version synchronization.',items:['Leaderboard submissions now report the current game build instead of stale version metadata.','Leaderboard saving is hardened for older saves that are missing leaderboard data.','The in-game version, Update Log, and update popup are synchronized to v3.14.26.']};
+const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
+try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
+const CURRENT_UPDATE_VERSION='3.16.0';
+const CURRENT_UPDATE_INFO={title:'v3.16.0 — Survivor & Zombie Visual Overhaul',summary:'A visual overhaul for survivors and every zombie class while keeping gameplay mechanics unchanged.',items:['All zombie classes now have distinct silhouettes, colors, gear, faces, and visual effects.','Bosses have a larger, more recognizable silhouette with animated energy and crown-like armor.','Player characters now have clearer armor, helmets, visors, backpacks, class-specific gear, and skin-colored energy trim.','Gameplay stats, weapons, controls, progression, and save data are unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4011,9 +4051,34 @@ function drawAvatarPreview(targetCtx,v,accent='#5e9fff'){
 function renderInventoryPreview(){const canvas=document.getElementById('inventoryPreviewCanvas');if(!canvas)return;const pctx=canvas.getContext('2d');const ch=chars[save.selectedChar]||chars.Survivor;const sk=skins[save.selectedSkin]||skins.Classic;drawAvatarPreview(pctx,{...(ch.visual||{}),body:sk.color},sk.color||'#5e9fff');const n=document.getElementById('inventoryPreviewName');if(n)n.textContent=save.selectedChar;const d=document.getElementById('inventoryPreviewDesc');if(d)d.textContent=ch.desc||'';}
 function drawPlayerAvatar(p,accent,isP2){
  const v=p.characterVisual||{};const body=p.skinColor||v.body||accent||'#5e9fff',head=v.head||'#e8c39e',visor=v.visor||'#dbeeff',style=v.style||'survivor';
- ctx.save();ctx.translate(p.x,p.y);ctx.lineCap='round';ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(0,21,15,6,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#17202a';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-6,8);ctx.lineTo(-9,18);ctx.moveTo(6,8);ctx.lineTo(9,18);ctx.stroke();ctx.beginPath();ctx.moveTo(-11,-2);ctx.lineTo(-19,5);ctx.moveTo(11,-2);ctx.lineTo(19,5);ctx.stroke();ctx.fillStyle=body;
- if(['paladin','warden','warlord','tank'].includes(style)){ctx.fillRect(-12,-7,24,18);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.strokeRect(-12,-7,24,18)}else if(['mage','chrono'].includes(style)){ctx.beginPath();ctx.moveTo(-10,-7);ctx.lineTo(0,12);ctx.lineTo(10,-7);ctx.closePath();ctx.fill()}else if(['ninja','shadow','void'].includes(style)){ctx.beginPath();ctx.arc(0,2,12,0,Math.PI*2);ctx.fill()}else if(style==='exo'){ctx.fillRect(-12,-8,24,19);ctx.fillStyle='#9fa8b5';ctx.fillRect(-15,-2,4,8);ctx.fillRect(11,-2,4,8)}else{ctx.fillRect(-10,-6,20,17)}
- if(style==='medic'){ctx.fillStyle='#e24e58';ctx.fillRect(-3,-5,6,12);ctx.fillRect(-6,-2,12,6)}ctx.fillStyle=head;ctx.beginPath();ctx.arc(0,-14,8,0,Math.PI*2);ctx.fill();ctx.fillStyle=visor;ctx.fillRect(-8,-19,16,5);ctx.fillRect(-5,-18,10,3);if(style==='paladin'){ctx.strokeStyle='#fff3c7';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,-14,10,Math.PI,Math.PI*2);ctx.stroke()}if(['ninja','shadow','void'].includes(style)){ctx.fillStyle='#1b1e28';ctx.fillRect(-9,-19,18,7)}if(['mage','chrono'].includes(style)){ctx.fillStyle=body;ctx.beginPath();ctx.moveTo(-9,-18);ctx.lineTo(0,-28);ctx.lineTo(9,-18);ctx.closePath();ctx.fill()}if(style==='engineer'){ctx.fillStyle='#d3a43a';ctx.fillRect(-10,-22,20,4)}if(style==='ranger'){ctx.strokeStyle='#d5ffd9';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,-14,10,0,Math.PI*2);ctx.stroke()}if(style==='exo'){ctx.strokeStyle='#79e6ff';ctx.lineWidth=2;ctx.strokeRect(-11,-20,22,13)}if(style==='medic'){ctx.fillStyle='#e24e58';ctx.fillRect(-3,-23,6,6)}if(style==='pyromancer'){ctx.fillStyle='#ff8a35';ctx.beginPath();ctx.arc(13,2,4+2*Math.sin(game.time*8),0,Math.PI*2);ctx.fill()}if(style==='warlord'){ctx.strokeStyle='#ffcead';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(14,-2);ctx.lineTo(22,5);ctx.stroke()}if(style==='assassin'){ctx.fillStyle='#f0d7ff';ctx.fillRect(-14,-1,4,3);ctx.fillRect(10,-1,4,3)}if(isP2){ctx.shadowColor='#ff4d5d';ctx.shadowBlur=14;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,25,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('P2',0,-34)}ctx.restore();
+ const pulse=.5+.5*Math.sin(performance.now()/200);
+ ctx.save();ctx.translate(p.x,p.y);ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.fillStyle='rgba(0,0,0,.30)';ctx.beginPath();ctx.ellipse(0,22,18,7,0,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#17202a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-7,8);ctx.lineTo(-10,20);ctx.moveTo(7,8);ctx.lineTo(10,20);ctx.stroke();
+ ctx.fillStyle='#1b2630';ctx.fillRect(-16,-5,5,15);ctx.fillRect(11,-5,5,15);ctx.fillStyle=body;
+ if(['paladin','warden','warlord','tank','commander','exo'].includes(style)){ctx.fillRect(-14,-8,28,20);ctx.strokeStyle=accent;ctx.lineWidth=2.5;ctx.strokeRect(-14,-8,28,20);ctx.fillStyle='#26343f';ctx.fillRect(-17,-4,5,10);ctx.fillRect(12,-4,5,10);}
+ else if(['mage','chrono'].includes(style)){ctx.beginPath();ctx.moveTo(-12,-8);ctx.lineTo(0,13);ctx.lineTo(12,-8);ctx.closePath();ctx.fill();}
+ else if(['ninja','shadow','void','assassin'].includes(style)){ctx.beginPath();ctx.arc(0,2,14,0,Math.PI*2);ctx.fill();}
+ else if(style==='medic'){ctx.fillRect(-12,-7,24,19);ctx.fillStyle='#e24e58';ctx.fillRect(-3,-5,6,14);ctx.fillRect(-8,0,16,5);}
+ else{ctx.fillRect(-11,-7,22,18);}
+ ctx.strokeStyle=body;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(-12,-2);ctx.lineTo(-21,6);ctx.moveTo(12,-2);ctx.lineTo(21,6);ctx.stroke();
+ ctx.fillStyle=head;ctx.beginPath();ctx.arc(0,-16,9,0,Math.PI*2);ctx.fill();ctx.fillStyle=visor;ctx.globalAlpha=.95;ctx.fillRect(-9,-21,18,6);ctx.fillRect(-6,-20,12,3);ctx.globalAlpha=1;
+ if(style==='paladin'||style==='warden'){ctx.strokeStyle=accent;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,-16,12,Math.PI,Math.PI*2);ctx.stroke();ctx.fillStyle=accent;ctx.fillRect(-2,-29,4,8);}
+ if(style==='tank'||style==='warlord'){ctx.fillStyle='#29333b';ctx.fillRect(-11,-24,22,5);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.strokeRect(-12,-25,24,7);}
+ if(['ninja','shadow','void','assassin'].includes(style)){ctx.fillStyle='#171a22';ctx.fillRect(-11,-24,22,8);ctx.fillStyle=visor;ctx.fillRect(-6,-20,12,2);}
+ if(['mage','chrono'].includes(style)){ctx.fillStyle=body;ctx.beginPath();ctx.moveTo(-11,-22);ctx.lineTo(0,-34);ctx.lineTo(11,-22);ctx.closePath();ctx.fill();ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.stroke();}
+ if(style==='engineer'){ctx.fillStyle='#d6a33b';ctx.fillRect(-13,-27,26,5);ctx.fillStyle='#79e6ff';ctx.fillRect(7,-26,4,3);}
+ if(style==='ranger'||style==='scout'){ctx.strokeStyle='#bfffd7';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,-16,12,0,Math.PI*2);ctx.stroke();}
+ if(style==='commander'){ctx.fillStyle='#d7b64f';ctx.fillRect(-10,-29,20,4);ctx.fillStyle=accent;ctx.fillRect(-2,-25,4,4);}
+ if(style==='pyromancer'){ctx.fillStyle='#ff8a35';ctx.shadowColor='#ff8a35';ctx.shadowBlur=10;ctx.beginPath();ctx.arc(18,4,4+2*pulse,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
+ if(style==='exo'){ctx.strokeStyle='#79e6ff';ctx.lineWidth=2;ctx.strokeRect(-15,-21,30,18);ctx.fillStyle='#79e6ff';ctx.fillRect(-18,0,4,6);ctx.fillRect(14,0,4,6);}
+ if(style==='warlord'){ctx.strokeStyle='#ffcead';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(15,-2);ctx.lineTo(25,6);ctx.stroke();}
+ if(style==='void'||style==='chrono'){ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.globalAlpha=.7+.3*pulse;ctx.beginPath();ctx.arc(0,0,22+3*pulse,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}
+ ctx.strokeStyle=accent;ctx.lineWidth=1.5;ctx.globalAlpha=.65;ctx.strokeRect(-11,-6,22,17);ctx.globalAlpha=1;
+ if(isP2){ctx.shadowColor='#ff4d5d';ctx.shadowBlur=14;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,27,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#fff';ctx.font='bold 13px Arial';ctx.textAlign='center';ctx.fillText('P2',0,-35);}
+ const playerLabel=String(p===game.player?(currentUsername||'Player'):(p.username||p.name||'P2')).slice(0,18);
+ if(playerLabel){ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(-64,-53,128,19);ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.fillText(playerLabel,0,-38);}
+ ctx.restore();
 }
 function restoreAvatarRendering(){
  const original=draw;
@@ -4380,7 +4445,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
-</script><script src="outlast-v3.9.7.js?v=3.14.26"></script>
+</script><script src="outlast-v3.9.7.js?v=3.15.1"></script>
 <script src="outlast-v3.14.0.js?v=3.14.18"></script>
 
 <script id="outlast-v3143-skin-button-fix">
@@ -4912,6 +4977,6 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   };
 })();
 </script><script src="outlast-v3.14.18-upgrades.js?v=3.14.18"></script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
-<script src="outlast-v3.14.23-event-expansion.js?v=3.14.26"></script>
+<script src="outlast-v3.14.23-event-expansion.js?v=3.16.0"></script>
 </body>
 </html>

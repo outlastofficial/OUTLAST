@@ -3251,7 +3251,7 @@ const helpArticles=[
   ['How do I use my Active Skill?','Active Skill','Press Q during a run to activate your equipped Active Skill.'],
   ['How do I use my Ultimate?','Ultimate','Press R during a run to use your equipped Ultimate when it is available.'],  ['What do Frost Aura and Cryo Burst do?','Aura Upgrades','Frost Aura creates a visible slowing aura around the survivor. Repeating it increases the aura radius and slow strength. Cryo Burst further increases both.'],
   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run to talk with other connected OUTLAST players. Messages are shared live across the server, with automatic reconnect and an HTTP fallback if the live connection drops.'],
-  ['How do I pause?','Pause','Press Esc during a run to open the pause screen and view your current run stats.'],
+  ['How do I pause?','Pause','Press Esc during a run to open the pause screen and view your current run stats. Zombie spawning continues normally after you resume; if a run ever has no enemies, the game now restores the normal spawn flow automatically.'],
   ['How do I exit a run?','Exit','Press X during a run and confirm the exit prompt to return to the menu.'],
   ['How do I change my character?','Inventory Character','Open Inventory, choose Character, then select the survivor you want to equip.'],
   ['How do I change my weapon?','Inventory Weapon','Open Inventory, choose Weapons, then select your weapon. Use Back to return to Inventory.'],
@@ -3303,6 +3303,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.26.2 — Zombie Spawn Recovery','Restored reliable zombie spawning during normal runs and added a safety recovery for a run that becomes empty.'],
    ['v3.25.5 — Chat Connection Fix','Fixed Global Chat connection status and strengthened the HTTP fallback when the live connection is unavailable.'],
    ['v3.25.2 — Version & Chat Fix','Fixed the visible game version marker and Global Chat interface.'],
   ['v3.24.0 — Quality & Reliability Update','Added Quality & Recovery tools, Practice Mode, Run History, Favorites, automatic-context bug reporting, objective history, accessibility controls, input double-tap protection, responsive quality UI, and additional save-safe recovery handling.'],

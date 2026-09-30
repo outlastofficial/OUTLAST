@@ -1649,7 +1649,7 @@ function finishUsernameLogin(){
 
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',1500)}
-function updateMenuSummary(){const ownerBtn=document.getElementById('ownerPanelCard');if(ownerBtn)ownerBtn.style.display=isOwner()?'':'none';const adminLabel=(isAdmin()&&currentUsername===ADMIN_TEST_USERNAME)?' • TESTING ACCOUNT':'';document.getElementById('menuSummary').textContent=`Player: ${currentUsername}${adminLabel}  •  Coins: ● ${Math.round(Number(save.coins)||0)}  •  Keys: 🔑 ${save.worldKeys||0}  •  High Score: ${save.stats.highScore}  •  Best Level: ${save.stats.bestLevel}  •  Skin: ${save.selectedSkin}`}
+function updateMenuSummary(){const ownerBtn=document.getElementById('ownerPanelCard');if(ownerBtn)ownerBtn.style.display='';const adminLabel=(isAdmin()&&currentUsername===ADMIN_TEST_USERNAME)?' • TESTING ACCOUNT':'';document.getElementById('menuSummary').textContent=`Player: ${currentUsername}${adminLabel}  •  Coins: ● ${Math.round(Number(save.coins)||0)}  •  Keys: 🔑 ${save.worldKeys||0}  •  High Score: ${save.stats.highScore}  •  Best Level: ${save.stats.bestLevel}  •  Skin: ${save.selectedSkin}`}
 
 
 updateMenuSummary();

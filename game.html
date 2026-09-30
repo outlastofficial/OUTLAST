@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.23.1">
+<meta name="outlast-build" content="3.23.2">
 <meta name="build-version" content="3.23.1">
-<title>OUTLAST v3.23.1</title>
+<title>OUTLAST v3.23.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.23.1 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.23.2 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3270,7 +3270,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.23.1 — Global Chat Fix','Fixed chat delivery when the WebSocket is unavailable by adding automatic reconnect, message retry, and an HTTP fallback.'],
+  ['v3.23.2 — Small Bug Fixes','Fixed Owner Panel session locking so closing the panel no longer requires another unlock during the same page session.'], ['v3.23.1 — Global Chat Fix','Fixed chat delivery when the WebSocket is unavailable by adding automatic reconnect, message retry, and an HTTP fallback.'],
   ['v3.23.0 — Global Chat','Added a live Global Chat for connected players with a compact in-game chat box.'],
   ['v3.22.0 — Aura & Stability Update','Fixed aura upgrades so Frost Aura and Cryo Burst now apply their radius, slow, and chill effects consistently.'],
   ['v3.21.0 — Aura Upgrade Fix','Fixed Frost Aura and Cryo Burst so their radius and slow strength now stack, affect nearby enemies, and display a visible aura around the survivor.'],
@@ -4867,7 +4867,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     return el;
   }
   function show(){root().style.display='flex';document.body.style.overflow='hidden';}
-  function closePanel(){unlocked=false;password='';tab='overview';const el=document.getElementById('outlastOwnerRemake');if(el)el.style.display='none';document.body.style.overflow='';}
+  function closePanel(){const el=document.getElementById('outlastOwnerRemake');if(el)el.style.display='none';document.body.style.overflow='';}
   function loginView(){
     const el=root();show();
     const nav=document.getElementById('outlastOwnerNav'),content=document.getElementById('outlastOwnerContent');
@@ -4905,7 +4905,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     const n=document.getElementById('outlastOwnerNav');if(!n)return;
     const tabs=[['overview','⌂ Overview'],['players','👥 Players'],['events','🌎 Events'],['abuse','⚡ Admin Abuse'],['rewards','🎁 Rewards'],['raffle','🎟️ Raffle'],['announce','📣 Announce']];
     n.innerHTML=tabs.map(x=>'<button type="button" class="owner-nav-btn '+(tab===x[0]?'active':'')+'" data-owner-remake="tab" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+
-      '<button type="button" class="owner-nav-btn" data-owner-remake="refresh">↻ Refresh</button><button type="button" class="owner-nav-btn" data-owner-remake="lock">🔒 Lock Panel</button>';
+      '<button type="button" class="owner-nav-btn" data-owner-remake="refresh">↻ Refresh</button>';
   }
   function content(html){const c=document.getElementById('outlastOwnerContent');if(c)c.innerHTML=html;}
   async function render(){
@@ -4948,7 +4948,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     try{
       if(name==='tab'){tab=value;await render();return;}
       if(name==='refresh'){await render();return;}
-      if(name==='lock'){closePanel();toast?.('🔒 Owner Panel locked');return;}
+      if(name==='lock'){closePanel();return;}
       if(name==='close'){closePanel();return;}
       if(name==='login'){await login();return;}
       if(!unlocked||!isOwnerName()){closePanel();return;}

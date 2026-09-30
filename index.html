@@ -3290,8 +3290,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.17.1';
-const CURRENT_UPDATE_INFO={title:'v3.17.1 — Maintenance Update',summary:'Small maintenance and presentation fixes for the latest release.',items:['Refined player-facing update messaging.','Improved release information consistency across the main game pages.']};
+const CURRENT_UPDATE_VERSION='3.18.0';
+const CURRENT_UPDATE_INFO={title:'v3.18.0 — Settings Update',summary:'Expanded Settings with time, display, motion, and focus controls.',items:['Added Automatic or manual time-zone selection.','Added 12/24-hour clock and date-format options.','Added a live menu clock, Reduced Motion, and High Contrast settings.','Added Auto-Pause on Tab Switch while a run is active.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

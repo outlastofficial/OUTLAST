@@ -1666,7 +1666,7 @@ function startGame(fromRoom=false){
     game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
   }
   game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
-  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';syncExtractUI();c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
+  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
  }catch(err){
    fatalGameError=err?.message||String(err);
    fatalErrorShown=true;
@@ -1692,7 +1692,6 @@ function exitGame(){
   document.getElementById('menu').style.display='flex';
   const exit=document.getElementById('exitGameBtn');
   if(exit)exit.style.display='none';
-  syncExtractUI();
   updateMenuSummary();
 }
 function resetPVPRound(){
@@ -3437,9 +3436,7 @@ document.getElementById('subContent').addEventListener('click',e=>{
  
 });
 const ex=document.createElement('button');ex.id='exitGameBtn';ex.textContent='✕ EXIT GAME';ex.className='danger';ex.style.position='fixed';ex.style.right='18px';ex.style.top='18px';ex.style.display='none';ex.style.zIndex='10';ex.onclick=e=>{e.preventDefault();e.stopPropagation();exitGame();};ex.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});document.body.appendChild(ex);
-const extractBtn=document.createElement('button');extractBtn.id='extractRunBtn';extractBtn.textContent='⛑ EXTRACT & KEEP REWARDS';extractBtn.className='green';extractBtn.style.position='fixed';extractBtn.style.left='50%';extractBtn.style.bottom='26px';extractBtn.style.transform='translateX(-50%)';extractBtn.style.display='none';extractBtn.style.zIndex='11';extractBtn.onclick=()=>{if(game.running){endRun(true,true,true);}};document.body.appendChild(extractBtn);
-function syncExtractUI(){const b=document.getElementById('extractRunBtn');if(!b)return;b.style.display=(game.running&&game.paused&&save.mode!=='1v1 Arena'&&!game.over)?'block':'none';}
-const _togglePause=togglePause; togglePause=function(){_togglePause();syncExtractUI();};
+
 function useActiveSkill(){
   if(!game.running||game.paused||game.upgradeOpen||!game.player)return;
   const p=game.player, s=p.activeSkill||'Nova', def=activeSkills[s];

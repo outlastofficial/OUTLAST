@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.19.1">
+<meta name="outlast-build" content="3.19.2">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.19.1">
-<title>OUTLAST v3.19.1</title>
+<meta name="build-version" content="3.19.2">
+<title>OUTLAST v3.19.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.19.1 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.19.2 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3188,6 +3188,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.19.2 — HUD Cleanup','Moved the boss countdown out of the top HUD so it stays readable without covering the play area.'],
   ['v3.19.1 — Small Bug Fixes','Fixed a skin-selection button issue, a Claim Coins stall path, and release-version synchronization.'],
   ['v3.19.0 — Boss Fight Overhaul','Remade bosses into three-phase encounters with readable attack telegraphs, dash/shockwave/stagger patterns, a dedicated boss display, and safer processing. Also fixed a Claim Coins stall path and release-version synchronization.'],
   ['v3.18.0 — Settings Update','Expanded Settings with time-zone selection, clock/date formatting, a menu clock, Reduced Motion, High Contrast, and Auto-Pause on Tab Switch.'],
@@ -3302,8 +3303,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.19.1';
-const CURRENT_UPDATE_INFO={title:'v3.19.1 — Small Bug Fixes',summary:'Small bug fixes and stability improvements.',items:['Fixed a skin-selection button issue.','Fixed a Claim Coins stall path.','Synchronized the patch version across the game interface and update notice.']};
+const CURRENT_UPDATE_VERSION='3.19.2';
+const CURRENT_UPDATE_INFO={title:'v3.19.2 — HUD Cleanup',summary:'Small UI cleanup and stability improvements.',items:['Moved the boss countdown away from the top play area.','Kept the timer readable in a compact HUD pill.','Updated the in-game version marker to v3.19.2.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

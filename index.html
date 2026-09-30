@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.14.26">
+<meta name="outlast-build" content="3.16.0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.14.26">
-<title>OUTLAST v3.14.26</title>
+<meta name="build-version" content="3.16.0">
+<title>OUTLAST v3.16.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.26 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.16.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1749,7 +1749,7 @@ function mergeLeaderboardEntry(entry){
 }
 async function submitServerLeaderboard(entry){
  try{
-   const buildVersion=document.querySelector('meta[name="build-version"]')?.content||'3.14.26';
+   const buildVersion=document.querySelector('meta[name="build-version"]')?.content||'3.15.1';
    const data=await leaderboardFetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...entry,clientVersion:buildVersion})});
    if(data.entry)mergeLeaderboardEntry(data.entry);
    persist();
@@ -3177,8 +3177,8 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.14.26 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
-  ['v3.14.26 — Nightfall Event Timing Fix','Fixed the frozen/synchronized countdown behavior and delayed Nightfall event activation until October 1 at 10:00 AM.'],
+  ['v3.15.1 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
+  ['v3.15.1 — Nightfall Event Timing Fix','Fixed the frozen/synchronized countdown behavior and delayed Nightfall event activation until October 1 at 10:00 AM.'],
   ['v3.14.23 — Full Event Expansion','Expanded the October event into a complete progression: shared community signal, event investigation, broadcasts, missions, Event Coins, limited shop, achievements, live event terminal, Rift Pumpkin boss encounter, event leaderboard, finale, and permanent aftermath.'],
   ['v3.14.20 — Event Build-Up','Added the full event buildup: countdown, broadcasts, investigation clues, pre-event rewards, progress tracking, event access, final warning phase, and activation sequence.'],
   ['v3.14.22 — Event UI Placement','Kept the full event buildup system, but moved its home-screen indicator to a small unobtrusive bottom-corner pill so it no longer takes over the hub.'],['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],
@@ -3283,10 +3283,12 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.17 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const BUGFIX_UPDATE_ENTRY=['v3.14.26 — Maintenance & Reliability','Fixed stale leaderboard build metadata, hardened leaderboard saving for older saves, and synchronized the in-game update/version metadata across the main game pages.'];
+const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboard build metadata, hardened leaderboard saving for older saves, and synchronized the in-game update/version metadata across the main game pages.'];
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.26';
-const CURRENT_UPDATE_INFO={title:'v3.14.26 — Maintenance & Reliability',summary:'A small maintenance release focused on leaderboard reliability and version synchronization.',items:['Leaderboard submissions now report the current game build instead of stale version metadata.','Leaderboard saving is hardened for older saves that are missing leaderboard data.','The in-game version, Update Log, and update popup are synchronized to v3.14.26.']};
+const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
+try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
+const CURRENT_UPDATE_VERSION='3.16.0';
+const CURRENT_UPDATE_INFO={title:'v3.16.0 — Survivor & Zombie Visual Overhaul',summary:'A visual overhaul for survivors and every zombie class while keeping gameplay mechanics unchanged.',items:['All zombie classes now have distinct silhouettes, colors, gear, faces, and visual effects.','Bosses have a larger, more recognizable silhouette with animated energy and crown-like armor.','Player characters now have clearer armor, helmets, visors, backpacks, class-specific gear, and skin-colored energy trim.','Gameplay stats, weapons, controls, progression, and save data are unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4316,7 +4318,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
 </script>
-<script src="outlast-v3.9.7.js?v=3.14.26"></script>
+<script src="outlast-v3.9.7.js?v=3.16.0"></script>
 <script src="outlast-v3.14.0.js?v=3.14.19"></script>
 
 <script id="outlast-v3143-skin-button-fix">
@@ -4403,7 +4405,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.26</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.15.1</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);
@@ -4598,6 +4600,6 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 </script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>
-<script src="outlast-v3.14.23-event-expansion.js?v=3.14.26"></script>
+<script src="outlast-v3.14.23-event-expansion.js?v=3.15.1"></script>
 </body>
 </html>

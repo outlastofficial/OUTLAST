@@ -5697,9 +5697,15 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
  function init(){
   const root=document.getElementById('outlastEverywhereChat');if(!root||root.dataset.ready)return;root.dataset.ready='1';
   const panel=root.querySelector('.gec-panel'),msgs=document.getElementById('gecMessages'),input=document.getElementById('gecInput');
-  document.getElementById('gecToggle').onclick=()=>{panel.style.display=panel.style.display==='none'?'':'none';};
-  document.getElementById('gecClose').onclick=()=>{panel.style.display='none';};
-  panel.style.display='none';
+  let chatOpen=false;
+  function setChatOpen(open){
+   chatOpen=!!open;
+   panel.style.display=chatOpen?'block':'none';
+   root.classList.toggle('chat-open',chatOpen);
+  }
+  document.getElementById('gecToggle').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(!chatOpen);};
+  document.getElementById('gecClose').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(false);};
+  setChatOpen(false);
   function render(){
    const source=document.getElementById('globalChatMessages')||document.getElementById('chatMessages');
    if(source&&source!==msgs) msgs.innerHTML=source.innerHTML;
@@ -5713,7 +5719,7 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
    input.value='';setTimeout(render,120);
   };
   input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('gecSend').click();}});
-  setInterval(()=>{render();const visible=document.body&&getComputedStyle(root).display!=='none';if(!visible)root.style.display='block';},500);
+  setInterval(()=>{render();if(document.body&&getComputedStyle(root).display==='none')root.style.display='block';},500);
   root.style.display='block';
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();

@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.14.18">
+<meta name="outlast-build" content="3.14.19">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.14.18">
-<title>OUTLAST v3.14.18</title>
+<meta name="build-version" content="3.14.19">
+<title>OUTLAST v3.14.19</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -787,7 +787,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.18 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.19 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3107,7 +3107,7 @@ document.getElementById('extrasBtn').onclick=renderExtras;
 document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
-const helpArticles=[
+const helpArticles=[\n  ['What animations are in OUTLAST?','Animations','Level-ups, upgrades, Legendary/Mythic reveals, hits, critical hits, XP and coin pickups, dashes, Ultimates, bosses, rewards, synergies, Daily Shop cards, menus, and events now have animated feedback. Reduced-motion preferences are respected.'],
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
   ['How do I dash?','Dash','Press Shift during a run to dash. Your dash follows the current movement direction.'],
   ['How do I use my Active Skill?','Active Skill','Press Q during a run to activate your equipped Active Skill.'],
@@ -3162,7 +3162,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[
+const updates=[\n  ['v3.14.19 — Animation & Juice Pass','Added the unified OUTLAST animation layer: level-up bursts, XP/coin pickups, hit and crit feedback, dash/Ultimate effects, boss entrances and defeats, upgrade/reveal animations, synergy reveals, reward/chest effects, menu transitions, and event feedback.'];
   ['v3.13.2 — Countdown Fix','Restored the Nightfall/October event countdown, fixed a multiplayer UI script syntax error that could stop later UI systems from running, and removed the duplicate owner script load.'],
   ['v3.13.3 — Maintenance Update','Routine release maintenance and control-routing updates.'],
   ['v3.11.0 — Global Events','Added the synchronized global-event system, including timed global events that can be started and stopped for connected players.'],
@@ -3263,8 +3263,8 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.18';
-const CURRENT_UPDATE_INFO={title:'v3.14.18 — Legendary Roll Reveal',summary:'Legendary and Mythic upgrades now roll into view with a dramatic animated reveal before they can be claimed.',items:['Legendary upgrades use a rolling, spinning reveal before showing the real upgrade.','Mythic upgrades get a longer, more intense reveal with the existing Mythic FX.','Upgrade selection is temporarily locked during Legendary/Mythic reveals so the animation can finish.','Existing rarity auras, rays, orbiting particles, rings, and card pulses remain active.']};function showUpdatePopup(force=false){
+const CURRENT_UPDATE_VERSION='3.14.19';
+const CURRENT_UPDATE_INFO={title:'v3.14.19 — OUTLAST Animation & Juice Pass',summary:'OUTLAST now has a unified animation layer that adds responsive feedback across gameplay, upgrades, rewards, bosses, events, and menus.',items:['Level-ups now get a burst, ring, particles, and LEVEL UP reveal.','Hits, critical hits, XP, coins, dashes, and Ultimates have responsive feedback effects.','Boss spawns and defeats get warning, health-bar, impact, and reward effects.','Upgrade, Legendary/Mythic reveal, synergy, chest, mission, Daily Shop, and menu interactions receive animated feedback.','The animation layer respects reduced-motion settings and does not change core gameplay values.']};function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;
@@ -4574,5 +4574,5 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
-</script></body>
+</script><script src="outlast-v3.14.19-juice.js?v=3.14.19"></script>\n</body>
 </html>

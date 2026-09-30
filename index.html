@@ -3207,6 +3207,13 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['How do I use the Quality Center?','Quality & Recovery','Open More → Quality & Recovery for the current objective, run history, favorites, bug reporting, accessibility controls, and Practice Mode.'],
+  ['How does Practice Mode work?','Practice Mode','Practice Mode starts a separate no-enemy session for learning the controls and exploring the current setup. Practice sessions do not keep normal rewards or progression.'],
+  ['How do I report a bug?','Bug Reporting','Open More → Report a Bug. The report automatically includes the current OUTLAST version, map, mode, and difficulty. Reports are saved locally and sent to the OUTLAST server when available.'],
+  ['Where can I see previous runs?','Run History','Open Progress → Run History to review recent map, mode, difficulty, result, level, duration, and date.'],
+  ['How do Favorites work?','Favorites','Open Progress → Favorites to save the current map, mode, or challenge. Favorites are stored on this device for quick reference.'],
+  ['How do I change accessibility settings?','Accessibility','Open More → Quality & Recovery → Quality Settings to change UI size, brightness, and separate music, SFX, voice, and ambient volume preferences.'],
+
   ['How do I use Settings?','Settings','Open More → Settings to choose your time zone, clock/date format, menu clock, Screen Shake, Damage Numbers, Reduced Motion, High Contrast, device controls, joystick behavior, Auto-Pause on Tab Switch, fullscreen, and Reset Settings.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
@@ -3270,6 +3277,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.24.0 — Quality & Reliability Update','Added Quality & Recovery tools, Practice Mode, Run History, Favorites, automatic-context bug reporting, objective history, accessibility controls, input double-tap protection, responsive quality UI, and additional save-safe recovery handling.'],
   ['v3.23.6 — Small Bug Fixes','Applied small input and interaction fixes.'], ['v3.23.2 — Small Bug Fixes','Applied small session-handling fixes and refreshed the current build metadata.'], ['v3.23.1 — Global Chat Fix','Fixed chat delivery when the WebSocket is unavailable by adding automatic reconnect, message retry, and an HTTP fallback.'],
   ['v3.23.0 — Global Chat','Added a live Global Chat for connected players with a compact in-game chat box.'],
   ['v3.22.0 — Aura & Stability Update','Fixed aura upgrades so Frost Aura and Cryo Burst now apply their radius, slow, and chill effects consistently.'],

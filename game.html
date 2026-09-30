@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.17">
-<title>OUTLAST v3.14.17</title>
+<meta name="outlast-build" content="3.14.18">
+<title>OUTLAST v3.14.18</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -786,7 +786,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.17 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.18 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3103,6 +3103,8 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Legendary and Mythic choices use a rolling reveal before they can be selected.'],
+
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
   ['How do I dash?','Dash','Press Shift during a run to dash. Your dash follows the current movement direction.'],
   ['How do I use my Active Skill?','Active Skill','Press Q during a run to activate your equipped Active Skill.'],
@@ -3158,6 +3160,8 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.14.18 — Upgrade System Rebuild','Expanded in-run upgrades with clearer categories, beginner-friendly early choices, new build-defining upgrades, build synergies, stronger Luck influence, and improved upgrade explanations. Legendary/Mythic rolling remains intact.'],
+
   ['v3.14.4 — Nightfall & Hub Polish','Rebuilt the current build from the v3.14.3 Survivor Hub baseline. Nightfall now targets October 1, 2026 at 12:00 PM local time, Daily Shop stock gets a fresh rotation seed for the new build, and the existing Admin Event Preview and Skin button fixes are preserved.'],
   ['v3.1.4 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
   ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],
@@ -3254,10 +3258,10 @@ const updates=[
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
-const TUTORIAL_UPDATE_ENTRY=['v3.14.17 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
+const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.17';
-const CURRENT_UPDATE_INFO={title:'v3.14.17 — Legendary Roll Reveal',summary:'Legendary and Mythic upgrades now roll into view with a dramatic animated reveal before they can be claimed.',items:['Legendary upgrades use a rolling, spinning reveal before showing the real upgrade.','Mythic upgrades get a longer, more intense reveal with the existing Mythic FX.','Upgrade selection is temporarily locked during Legendary/Mythic reveals so the animation can finish.','Existing rarity auras, rays, orbiting particles, rings, and card pulses remain active.']};
+const CURRENT_UPDATE_VERSION='3.14.18';
+const CURRENT_UPDATE_INFO={title:'v3.14.18 — Legendary Roll Reveal',summary:'Legendary and Mythic upgrades now roll into view with a dramatic animated reveal before they can be claimed.',items:['Legendary upgrades use a rolling, spinning reveal before showing the real upgrade.','Mythic upgrades get a longer, more intense reveal with the existing Mythic FX.','Upgrade selection is temporarily locked during Legendary/Mythic reveals so the animation can finish.','Existing rarity auras, rays, orbiting particles, rings, and card pulses remain active.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4353,7 +4357,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
 </script><script src="outlast-v3.9.7.js"></script>
-<script src="outlast-v3.14.0.js?v=3.14.17"></script>
+<script src="outlast-v3.14.0.js?v=3.14.18"></script>
 
 <script id="outlast-v3143-skin-button-fix">
 (function(){
@@ -4581,7 +4585,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.17</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.14.18</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);
@@ -4774,6 +4778,114 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(menu && getComputedStyle(menu).display!=='none' && old!=='1')setTimeout(show,600);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+</script><script id="outlast-v318-upgrade-system">
+/* OUTLAST v3.14.18 — Upgrade System Expansion */
+(function(){
+  const META={
+    'Power Shot':'Damage','Rapid Fire':'Weapon','Vitality':'Survival','Swift Feet':'Survival',
+    'Magnet':'Economy','Regeneration':'Survival','Piercing':'Weapon','Multi-Shot':'Weapon',
+    'Frost Aura':'Ability','Berserker':'Survival','Big Bullets':'Weapon','Lucky Hunter':'Luck',
+    'Overcharge':'Ability','Second Wind':'Survival','Heavy Rounds':'Damage','Swift Aim':'Weapon',
+    'Crit Chance':'Damage','Chain Reaction':'Weapon','Lucky Coins':'Economy','Adrenaline':'Survival',
+    'Shield Core':'Survival','Rapid Recovery':'Survival','Poison Rounds':'Weapon','Stun Rounds':'Weapon',
+    'Lifesteal':'Survival','Armor Pierce':'Weapon','Double Tap':'Weapon','Treasure Radar':'Luck',
+    'Shockwave':'Ability','Lucky Charm':'Luck','Fortune':'Luck','Treasure Luck':'Luck',
+    'Scavenger Luck':'Luck','Vampiric Surge':'Survival','Overheat':'Weapon','Fortified Core':'Survival',
+    'Deadeye':'Damage','Rift Pierce':'Weapon','Cryo Core':'Ability','Ammo Surge':'Weapon',
+    'Coin Magnetism':'Economy','Heavy Impact':'Damage','Emergency Shield':'Survival','Second Heart':'Survival',
+    'Fortune Engine':'Luck',
+    'Final Swarm':'Weapon','Glass Reactor':'Damage','Overdrive':'Ability','Guardian Core':'Survival',
+    'Treasure Hunter':'Economy','Weapon Mastery':'Weapon'
+  };
+  const NEW=[
+    ['Final Swarm',v=>`+${Math.max(3,Math.round(3*v))} projectiles • +${Math.round(12*v)}% damage`,v=>{
+      game.player.multiShot=(game.player.multiShot||0)+Math.max(3,Math.round(3*v));
+      game.player.damage*=1+.12*v; game.player.finalSwarm=(game.player.finalSwarm||0)+1;
+    }],
+    ['Glass Reactor',v=>`+${Math.round(25*v)}% damage • +${Math.round(15*v)}% attack speed • -${Math.round(8*v)}% max HP`,v=>{
+      game.player.damage*=1+.25*v;
+      game.player.fireRate=Math.max(.16,(game.player.fireRate||.45)*(1-.15*v));
+      game.player.max=Math.max(1,game.player.max*(1-.08*v));game.player.hp=Math.min(game.player.hp,game.player.max);
+      game.player.glassReactor=(game.player.glassReactor||0)+1;
+    }],
+    ['Overdrive',v=>`+${Math.round(35*v)}% ultimate damage • +${Math.round(10*v)}% attack speed`,v=>{
+      game.player.ultDamage=(game.player.ultDamage||1)*(1+.35*v);
+      game.player.fireRate=Math.max(.16,(game.player.fireRate||.45)*(1-.10*v));
+      game.player.overdrive=(game.player.overdrive||0)+1;
+    }],
+    ['Guardian Core',v=>`+${Math.round(65*v)} max HP • gain a shield on elite/boss kills`,v=>{
+      game.player.max+=65*v;game.player.hp=Math.min(game.player.max,game.player.hp+65*v);
+      game.player.guardianCore=(game.player.guardianCore||0)+1;
+    }],
+    ['Treasure Hunter',v=>`+${Math.round(30*v)}% coins • +${Math.round(20*v)} Treasure Luck`,v=>{
+      game.player.coinMult*=1+.30*v;
+      game.player.treasureLuck=(game.player.treasureLuck||0)+20*v;
+      game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);
+    }],
+    ['Weapon Mastery',v=>`+${Math.round(30*v)}% weapon damage • +${Math.max(1,Math.round(v))} pierce`,v=>{
+      game.player.damage*=1+.30*v;game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(v));
+      game.player.weaponMastery=(game.player.weaponMastery||0)+1;
+    }]
+  ];
+  if(Array.isArray(tempUp)){
+    for(const entry of NEW) if(!tempUp.some(x=>x[0]===entry[0])) tempUp.push(entry);
+  }
+  function category(name){return META[name]||'Special';}
+  function pick(list,n,used){
+    const pool=list.filter(x=>!used.has(x[0]));
+    if(!pool.length)return null;
+    const x=pool[Math.floor(Math.random()*pool.length)];used.add(x[0]);return x;
+  }
+  const oldMake=makeChoices;
+  makeChoices=function(){
+    const used=new Set(),out=[];
+    const beginner=game.level<=3;
+    const targetCats=beginner?['Damage','Survival','Weapon']:null;
+    if(targetCats){
+      for(const cat of targetCats){
+        const p=tempUp.filter(x=>category(x[0])===cat);
+        const x=pick(p,1,used); if(x){
+          const rarity=rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;
+          out.push([x[0],x[1](mult),()=>x[2](mult),rarity,cat]);
+        }
+      }
+    }
+    const remaining=tempUp.filter(x=>!used.has(x[0]));
+    while(out.length<3){
+      const x=pick(remaining,1,used);if(!x)break;
+      const rarity=rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;
+      out.push([x[0],x[1](mult),()=>x[2](mult),rarity,category(x[0])]);
+    }
+    return out.length===3?out:oldMake();
+  };
+  const oldChoose=chooseUpgrade;
+  chooseUpgrade=function(idx){
+    const chosen=game.upgradeChoices?.[idx];
+    if(!chosen)return;
+    const name=chosen[0];
+    oldChoose(idx);
+    game.__upgradeBuild=game.__upgradeBuild||{};
+    game.__upgradeBuild[name]=(game.__upgradeBuild[name]||0)+1;
+    const b=game.__upgradeBuild;
+    const grant=(key,fn,msg)=>{
+      if(!b[key]){b[key]=1;fn();toast(msg);}
+    };
+    if((b['Multi-Shot']||0)>=1&&(b['Piercing']||0)>=1)
+      grant('synergy:swarm',()=>{game.player.multiShot=(game.player.multiShot||0)+2;game.player.pierce=(game.player.pierce||0)+1},'⚡ BUILD SYNERGY: SPLITSHOT');
+    if((b['Power Shot']||0)>=1&&(b['Rapid Fire']||0)>=1)
+      grant('synergy:overclock',()=>{game.player.damage*=1.15;game.player.fireRate=Math.max(.16,(game.player.fireRate||.45)*.9)},'⚡ BUILD SYNERGY: OVERCLOCK');
+    if((b['Vitality']||0)>=1&&(b['Shield Core']||0)>=1)
+      grant('synergy:guardian',()=>{game.player.max+=40;game.player.hp=Math.min(game.player.max,game.player.hp+40)},'⚡ BUILD SYNERGY: GUARDIAN');
+    if((b['Treasure Hunter']||0)>=1&&(b['Lucky Charm']||0)+(b['Fortune']||0)>=1)
+      grant('synergy:treasure',()=>{game.player.coinMult*=1.2;game.player.treasureLuck=(game.player.treasureLuck||0)+15},'⚡ BUILD SYNERGY: TREASURE ENGINE');
+    if((b['Overdrive']||0)>=1&&(b['Final Swarm']||0)>=1)
+      grant('synergy:apex',()=>{game.player.ultDamage=(game.player.ultDamage||1)*1.2;game.player.damage*=1.1},'⚡ BUILD SYNERGY: APEX');
+  };
+  window.outlastUpgradeInfo=function(idx){
+    const u=game.upgradeChoices?.[idx];if(!u)return;
+    toast((u[0]||'Upgrade')+' • '+(u[4]||category(u[0]))+' • '+(u[1]||''));
+  };
 })();
 </script></body>
 </html>

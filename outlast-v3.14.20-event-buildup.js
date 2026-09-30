@@ -22,10 +22,14 @@
   function css(){
     if(document.getElementById('eventBuildCss'))return;
     const s=document.createElement('style');s.id='eventBuildCss';s.textContent=`
-      #outlastEventBuild{position:fixed;right:18px;bottom:18px;width:min(370px,calc(100vw - 36px));z-index:99980;font-family:inherit;color:#eaf5ff}
-      .oeb-card{background:linear-gradient(145deg,rgba(8,18,29,.98),rgba(13,30,43,.98));border:1px solid #315b73;border-radius:18px;box-shadow:0 16px 50px rgba(0,0,0,.45);padding:16px;backdrop-filter:blur(10px)}
-      .oeb-kicker{font-size:11px;letter-spacing:2px;color:#70d7c7;font-weight:800}.oeb-title{font-size:22px;font-weight:900;margin:5px 0}.oeb-count{font-size:26px;font-weight:900;letter-spacing:1px}.oeb-sub{font-size:12px;color:#9eb2c2;margin:5px 0 12px}.oeb-bar{height:9px;background:#101b25;border-radius:99px;overflow:hidden}.oeb-fill{height:100%;width:0;background:linear-gradient(90deg,#4fc7b5,#b8e66c);transition:width .5s}.oeb-row{display:flex;gap:8px;margin-top:10px}.oeb-btn{flex:1;border:1px solid #37627a;background:#142738;color:#eaf5ff;border-radius:10px;padding:9px;cursor:pointer;font-weight:800}.oeb-btn:hover{filter:brightness(1.18)}.oeb-muted{font-size:11px;color:#849aaa}.oeb-overlay{position:fixed;inset:0;background:rgba(2,7,12,.78);z-index:99990;display:flex;align-items:center;justify-content:center;padding:18px}.oeb-modal{width:min(620px,100%);max-height:88vh;overflow:auto;background:#0b1722;border:1px solid #41677b;border-radius:20px;padding:22px;box-shadow:0 20px 80px #000}.oeb-clue{padding:10px;border:1px solid #284456;border-radius:10px;margin:7px 0;background:#101f2c}.oeb-glitch{animation:oebPulse 1.2s infinite}@keyframes oebPulse{50%{filter:brightness(1.35);transform:translateY(-1px)}}`;
-    document.head.appendChild(s);
+      #outlastEventBuild{position:fixed;top:14px;right:14px;width:auto;z-index:99980;font-family:inherit;color:#eaf5ff}
+      .oeb-card{display:flex;align-items:center;gap:9px;background:rgba(8,18,29,.94);border:1px solid #315b73;border-radius:12px;padding:7px 9px;box-shadow:0 8px 25px rgba(0,0,0,.28);backdrop-filter:blur(8px)}
+      .oeb-kicker{font-size:9px;letter-spacing:1.3px;color:#70d7c7;font-weight:800;white-space:nowrap}.oeb-title{font-size:12px;font-weight:900;white-space:nowrap}.oeb-count{font-size:13px;font-weight:900;letter-spacing:.4px;white-space:nowrap}.oeb-sub,.oeb-bar,.oeb-fill,.oeb-muted{display:none}
+      .oeb-row{display:flex;gap:5px;margin:0}.oeb-btn{border:1px solid #37627a;background:#142738;color:#eaf5ff;border-radius:7px;padding:6px 8px;cursor:pointer;font-size:10px;font-weight:800;white-space:nowrap}.oeb-btn:hover{filter:brightness(1.15)}
+      .oeb-overlay{position:fixed;inset:0;background:rgba(2,7,12,.78);z-index:99990;display:flex;align-items:center;justify-content:center;padding:18px}.oeb-modal{width:min(620px,100%);max-height:88vh;overflow:auto;background:#0b1722;border:1px solid #41677b;border-radius:20px;padding:22px;box-shadow:0 20px 80px #000}.oeb-clue{padding:10px;border:1px solid #284456;border-radius:10px;margin:7px 0;background:#101f2c}
+      .oeb-glitch{animation:oebPulse 1.2s infinite}@keyframes oebPulse{50%{filter:brightness(1.35);transform:translateY(-1px)}}
+      @media(max-width:700px){#outlastEventBuild{top:8px;right:8px;left:8px}.oeb-card{justify-content:center;flex-wrap:wrap}.oeb-kicker{display:none}.oeb-title{font-size:11px}.oeb-count{font-size:12px}.oeb-btn{padding:6px 7px}}
+    `;document.head.appendChild(s);
   }
   function format(ms){let sec=Math.floor(ms/1000),d=Math.floor(sec/86400);sec%=86400;let h=Math.floor(sec/3600);sec%=3600;let m=Math.floor(sec/60);sec%=60;return d+'d '+pad(h)+'h '+pad(m)+'m '+pad(sec)+'s'}
   function currentBroadcast(){
@@ -69,21 +73,23 @@
     css();
     let root=document.getElementById('outlastEventBuild');
     if(!root){root=document.createElement('div');root.id='outlastEventBuild';document.body.appendChild(root)}
-    const p=phase(),r=remaining(),pct=Math.min(100,state.contrib);
-    const b=currentBroadcast();
-    let title=p==='LIVE'?'EVENT ACTIVE':p==='FINAL'?'FINAL WARNING':'EVENT INCOMING';
-    let sub=p==='LIVE'?'The access point is active.':p==='FINAL'?'Final 24-hour phase is active.':'Prepare the hub. Something is coming.';
-    root.innerHTML='<div class="oeb-card '+(p==='FINAL'?'oeb-glitch':'')+'"><div class="oeb-kicker">'+title+'</div><div class="oeb-title">EVENT COUNTDOWN</div><div class="oeb-count">'+(p==='LIVE'?'00d 00h 00m 00s':format(r))+'</div><div class="oeb-sub">'+sub+'</div><div class="oeb-kicker">COMMUNITY PROGRESS</div><div class="oeb-bar"><div class="oeb-fill" style="width:'+pct+'%"></div></div><div class="oeb-sub">'+pct+'% • Investigation clues '+state.clues+'/5</div><div class="oeb-row"><button class="oeb-btn" data-investigate>INVESTIGATE</button><button class="oeb-btn" data-signal>BROADCAST</button></div><div class="oeb-row"><button class="oeb-btn" data-reward>REWARDS</button><button class="oeb-btn" data-trailer>'+(p==='LIVE'?'EVENT ACCESS':'FINAL TRANSMISSION')+'</button></div><div class="oeb-muted" style="margin-top:9px">'+(b?b[0]:'SIGNAL STANDBY')+'</div></div>';
-    root.querySelector('[data-investigate]').onclick=investigate;root.querySelector('[data-signal]').onclick=showBroadcast;root.querySelector('[data-reward]').onclick=reward;root.querySelector('[data-trailer]').onclick=trailer;
+    const p=phase(),r=remaining();
+    const title=p==='LIVE'?'EVENT LIVE':p==='FINAL'?'FINAL WARNING':'EVENT';
+    root.innerHTML='<div class="oeb-card '+(p==='FINAL'?'oeb-glitch':'')+'"><span class="oeb-title">'+title+'</span><span class="oeb-count">'+(p==='LIVE'?'LIVE':format(r))+'</span><div class="oeb-row"><button class="oeb-btn" data-open>DETAILS</button></div></div>';
+    root.querySelector('[data-open]').onclick=()=>openDetails();
   }
-  function injectHub(){
-    const menu=document.querySelector('#menu');
-    if(!menu||document.getElementById('oebHubCard'))return;
-    const host=document.createElement('div');host.id='oebHubCard';host.className='quick-card';host.innerHTML='<h3>⚠ EVENT PROTOCOL</h3><p>Something is approaching. Track the countdown, investigate signals, and prepare for activation.</p><div class="oeb-row"><button class="oeb-btn" id="oebHubInvestigate">OPEN INVESTIGATION</button></div>';
-    menu.prepend(host);host.querySelector('button').onclick=investigate;
+  function openDetails(){
+    const p=phase(),r=remaining(),pct=Math.min(100,state.contrib),b=currentBroadcast();
+    openModal('EVENT PROTOCOL','<p><b>'+(p==='LIVE'?'EVENT ACTIVE':p==='FINAL'?'FINAL 24-HOUR WARNING':'EVENT INCOMING')+'</b></p><p>Countdown: <b>'+(p==='LIVE'?'LIVE':format(r))+'</b></p><div class="oeb-clue">Investigation: <b>'+state.clues+'/5 clues</b></div><div class="oeb-clue">Community progress: <b>'+pct+'%</b></div><p class="oeb-muted" style="display:block">'+(b?b[0]:'SIGNAL STANDBY')+'</p><div class="oeb-row"><button class="oeb-btn" data-investigate>INVESTIGATE</button><button class="oeb-btn" data-signal>BROADCAST</button><button class="oeb-btn" data-reward>REWARD</button><button class="oeb-btn" data-trailer>ACCESS</button></div>');
+    const m=document.querySelector('.oeb-overlay:last-child');
+    if(!m)return;
+    m.querySelector('[data-investigate]').onclick=()=>{m.remove();investigate()};
+    m.querySelector('[data-signal]').onclick=()=>{m.remove();showBroadcast()};
+    m.querySelector('[data-reward]').onclick=()=>{m.remove();reward()};
+    m.querySelector('[data-trailer]').onclick=()=>{m.remove();trailer()};
   }
   let last=0;
-  function tick(){render();injectHub();if(phase()==='LIVE'&&last!=='LIVE'){last='LIVE';trailer()}else last=phase()}
+  function tick(){render();if(phase()==='LIVE'&&last!=='LIVE'){last='LIVE';trailer()}else last=phase()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{tick();setInterval(tick,1000)},{once:true});else{tick();setInterval(tick,1000)}
   window.OUTLAST_EVENT_BUILDUP={investigate,showBroadcast,addClue};
 })();

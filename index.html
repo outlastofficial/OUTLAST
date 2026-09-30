@@ -5601,7 +5601,7 @@ function startPractice(){
 function recordRun(victory){
  const q=ensure(),r={...meta(),result:victory?'Completed':'Failed',level:game?.level||1,time:game?.time||0,kills:run?.kills||0,date:new Date().toLocaleString()};
  q.runHistory.push(r);q.runHistory=q.runHistory.slice(-50);
- q.mapsPlayed=(q.mapsPlayed||0)+1;q.modesPlayed=(q.modesPlayed||0)+1;q.difficultiesPlayed=(q.difficultiesPlayed||0)+1;
+ q.mapsPlayed=(q.mapsPlayed||0)+1;q.modesPlayed=(q.modesPlayed||0)+1;q.difficultiesPlayed=(q.difficultiesPlayed||0)+1;if(!victory)q.failedRuns=(q.failedRuns||0)+1;
  if(victory&&game?.objectiveComplete)q.completedChallenges=(q.completedChallenges||0)+1;
  write(q);
 }
@@ -5649,7 +5649,7 @@ function install(){
        const snapshot=JSON.stringify(save);
        const result=oldEnd(victory,false,showEnd);
        try{save=JSON.parse(snapshot);persist()}catch(_){}
-       game.practiceMode=false;save.practiceMode=false;return result;
+       game.practiceMode=false;save.practiceMode=false;write(ensure());return result;
      }
      const result=oldEnd(victory,recordScore,showEnd);try{recordRun(!!victory)}catch(_){}
      return result;
@@ -5658,12 +5658,12 @@ function install(){
  const oldSpawn=window.spawnEnemy;
  if(typeof oldSpawn==='function'&&!window.__v324SpawnWrapped){
    window.__v324SpawnWrapped=true;
-   window.spawnEnemy=function(type){if(game?.practiceMode)return;return oldSpawn(type)}
+   window.spawnEnemy=function(type){if(game?.practiceMode||save?.practiceMode)return;return oldSpawn(type)}
  }
  const oldBoss=window.spawnBoss;
  if(typeof oldBoss==='function'&&!window.__v324BossWrapped){
    window.__v324BossWrapped=true;
-   window.spawnBoss=function(){if(game?.practiceMode)return;return oldBoss()}
+   window.spawnBoss=function(){if(game?.practiceMode||save?.practiceMode)return;return oldBoss()}
  }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();

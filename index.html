@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.25.5">
-<meta name="build-version" content="3.25.5">
-<title>OUTLAST v3.25.5</title>
+<meta name="outlast-build" content="3.26.0">
+<meta name="build-version" content="3.26.0">
+<title>OUTLAST v3.26.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3209,15 +3209,15 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['How do I use the Quality Center?','Quality & Recovery','Open More → Quality & Recovery for the current objective, run history, favorites, bug reporting, accessibility controls, and Practice Mode.'],
+  ['How do I use the Quality Center?','Quality & Recovery','Open Settings → Quality & Recovery for the current objective, run history, favorites, bug reporting, and Practice Mode.'],
   ['How does Practice Mode work?','Practice Mode','Practice Mode starts a separate no-enemy session for learning the controls and exploring the current setup. Practice sessions do not keep normal rewards or progression.'],
-  ['How do I report a bug?','Bug Reporting','Open More → Report a Bug. The report automatically includes the current OUTLAST version, map, mode, and difficulty. Reports are saved locally and sent to the OUTLAST server when available.'],
+  ['How do I report a bug?','Bug Reporting','Open Settings → Quality & Recovery → Report a Bug. The report automatically includes the current OUTLAST version, map, mode, and difficulty. Reports are saved locally and sent to the OUTLAST server when available.'],
   ['Where can I see previous runs?','Run History','Open Progress → Run History to review recent map, mode, difficulty, result, level, duration, and date.'],
   ['How do Favorites work?','Favorites','Open Progress → Favorites to save the current map, mode, or challenge. Favorites are stored on this device for quick reference.'],
-  ['How do I change accessibility settings?','Accessibility','Open More → Settings to change UI size, brightness, music, SFX, voice, and ambient volume along with all other player settings.'],
+  ['How do I change accessibility settings?','Accessibility','Open Settings to change UI size, brightness, music, SFX, voice, and ambient volume along with all other player settings.'],
 
   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run or from the main menu. Chat now uses the live connection when available and automatically falls back to the HTTP chat service if the live connection drops.'],
-   ['How do I use Settings?','Settings','Open More → Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings.'],
+   ['How do I use Settings?','Settings','Open Settings. All player settings and controls are in this one area, including time zone, clock/date format, menu clock, display/accessibility options, PC/mobile controls, joystick, Auto-Pause on Tab Switch, fullscreen, and Reset Settings.'],
   ['What changed in the visual overhaul?','Visual Overhaul','Every zombie class now has its own visual identity, including runners, crawlers, ranged zombies, armored enemies, elites, special variants, and bosses. Survivors now use more detailed class-specific armor, helmets, visors, backpacks, and animated energy accents. These changes are cosmetic and do not change gameplay stats.'],
   ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
   ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Projectile Speed is a possible level-up choice that makes fired projectiles travel faster. Legendary and Mythic choices use a rolling reveal before they can be selected. Legendary and Mythic rolling is optimized to use lightweight canvas effects so the reveal stays smooth.'],
@@ -3403,8 +3403,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.25.5';
-const CURRENT_UPDATE_INFO={title:'v3.25.5 — Ultimate Key Change',summary:'Changed the Ultimate keyboard control so Space no longer activates it.',items:['R activates the Ultimate on PC.','Space no longer controls the Ultimate.','Updated the How To and control hints.']};
+const CURRENT_UPDATE_VERSION='3.26.0';
+const CURRENT_UPDATE_INFO={title:'v3.26.0 — Menu Organization',summary:'Reorganized player tools and cleaned up the main menu.',items:['Quality & Recovery is now accessed from Settings.','The More tab is kept focused on help, community, updates, and general extras.','Updated the How To directions for the new layout.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -5406,6 +5406,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
           '<div class="outlast-setting">'+toggleButton('autoPauseOnTab','Auto-Pause on Tab Switch',s.autoPauseOnTab===true)+'</div>'+
           '<div class="outlast-setting"><strong>Current Time Zone</strong><div class="small">'+esc(zoneLabel())+'</div></div>'+
         '</div></div>'+
+        '<div class="outlast-settings-section"><button type="button" class="outlast-settings-btn" data-quality-open="1">🛠️ Quality & Recovery</button></div>'+
         '<div class="outlast-settings-section"><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">'+
           '<button type="button" class="outlast-settings-btn" data-setting-fullscreen="1">🖥️ Toggle Fullscreen</button>'+
           '<button type="button" class="outlast-settings-btn reset" data-setting-reset="1">↩️ Reset Settings</button>'+
@@ -5429,6 +5430,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
       render();
     });
     sub.querySelectorAll('[data-quality-setting]').forEach(el=>{el.oninput=el.onclick=function(e){e.preventDefault();e.stopPropagation();const q=ensure();const k=el.dataset.qualitySetting;if(k==='ui')q.uiScale=q.uiScale==='large'?'normal':'large';else if(k==='brightness')q.brightness=Number(el.value)||100;saveQ(q);apply();if(k==='ui')render();};});
+    const qualityOpen=sub.querySelector('[data-quality-open]'); if(qualityOpen)qualityOpen.onclick=function(e){e.preventDefault();e.stopPropagation();try{qualityHub();}catch(_){}};
     sub.querySelectorAll('[data-quality-volume]').forEach(el=>el.oninput=function(){const q=ensure();q.audio=q.audio||{music:100,sfx:100,voice:100,ambient:100};q.audio[el.dataset.qualityVolume]=Number(el.value)||0;saveQ(q);apply();});
     const full=sub.querySelector('[data-setting-fullscreen]');
     if(full)full.onclick=function(e){e.preventDefault();e.stopPropagation();try{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.();}catch(_){}};
@@ -5624,11 +5626,11 @@ function install(){
  ensure();apply();
  const badge=document.createElement('div');badge.id='outlastQualityBadge';badge.textContent=VERSION+' • QUALITY';document.body.appendChild(badge);
  const more=document.querySelector('[data-page-content="more"] .menu-cards'),progress=document.querySelector('[data-page-content="progress"] .menu-cards'),play=document.querySelector('[data-page-content="play"] .menu-cards');
- if(more&&!document.getElementById('qualityHubBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Quality Center</h3><button class="menu-btn" id="qualityHubBtn">🛠️ Quality & Recovery</button>';more.appendChild(d)}
+ document.getElementById('qualityHubBtn')?.closest('.menu-card')?.remove();
  if(progress&&!document.getElementById('runHistoryBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Run History</h3><button class="menu-btn" id="runHistoryBtn">🗂️ Run History</button>';progress.appendChild(d)}
  if(progress&&!document.getElementById('favoritesBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Favorites</h3><button class="menu-btn" id="favoritesBtn">★ Favorites</button>';progress.appendChild(d)}
  if(play&&!document.getElementById('practiceBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Practice</h3><button class="menu-btn good" id="practiceBtn">🎓 Practice Mode</button>';play.appendChild(d)}
- if(more&&!document.getElementById('bugReportBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Bug Reporting</h3><button class="menu-btn" id="bugReportBtn">🐞 Report a Bug</button>';more.appendChild(d)}
+ document.getElementById('bugReportBtn')?.closest('.menu-card')?.remove();
  document.addEventListener('click',function(e){
    const b=e.target.closest?.('[data-quality],#qualityHubBtn,#runHistoryBtn,#favoritesBtn,#practiceBtn,#bugReportBtn');if(!b)return;
    if(b.id==='qualityHubBtn'){e.preventDefault();qualityHub();return}

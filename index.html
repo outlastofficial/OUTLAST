@@ -4217,7 +4217,7 @@ const OUTLAST_HTTP_URL='https://outlast-server.onrender.com';
 let outlastChatMessages=[];
 let outlastChatOpen=false;
 let outlastChatUnread=0;
-let outlastSocket=null,outlastOnline=false,outlastOnlineUsers=0,roomCode='',roomClientId='',roomPlayers={},roomStarted=false,coopLaunchActive=false;
+let outlastSocket=null,outlastOnline=false,outlastChatHttpOnline=false,outlastOnlineUsers=0,roomCode='',roomClientId='',roomPlayers={},roomStarted=false,coopLaunchActive=false;
 let roomShots=[];
 let pendingRoomAction='';
 let pendingOutlastChat=[];
@@ -4239,7 +4239,7 @@ function pushOutlastChatMessage(entry){
 function mergeOutlastChatMessages(messages){if(!Array.isArray(messages))return;messages.forEach(pushOutlastChatMessage);renderOutlastChat();}
 function renderOutlastChat(){
  const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus'),toggle=document.getElementById('outlastChatToggle');if(!box)return;
- if(status)status.textContent=outlastOnline?'🟢 Online':'🔴 Offline';
+ if(status)status.textContent=(outlastOnline||outlastChatHttpOnline)?'🟢 Online':'🔴 Offline';
  box.textContent='';
  const msgs=outlastChatMessages.slice(-80);
  if(!msgs.length){const empty=document.createElement('div');empty.className='chat-empty';empty.textContent='No messages yet.';box.appendChild(empty);}
@@ -4277,7 +4277,7 @@ async function postOutlastChatMessage(message){
   const res=await fetch(OUTLAST_HTTP_URL+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',signal:ctrl.signal,body:JSON.stringify({username:currentUsername||'Player',message:String(message||'').slice(0,180)})});
   clearTimeout(timer);if(!res.ok)throw new Error('HTTP '+res.status);
   const data=await res.json();if(!data?.ok||!data?.entry)throw new Error('Invalid chat response');
-  pushOutlastChatMessage(data.entry);return true;
+  outlastChatHttpOnline=true;pushOutlastChatMessage(data.entry);renderOutlastChat();return true;
  }catch(_){return false}
 }
 async function pollOutlastChat(){

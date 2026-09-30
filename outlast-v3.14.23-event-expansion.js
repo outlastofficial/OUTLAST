@@ -148,7 +148,7 @@
     state.missions['claim'+i]=true;state.coins+=40;state.missions.coins=state.coins;saveState();contribute(2,'mission');toastMsg('🎁 Mission reward: +40 Event Coins');checkAchievements();
   }
   function showMissions(){
-    const cards=missions.map((m,i)=>{const v=Math.min(m[2],Number(m[3]())||0),done=v>=m[2];return '<div class="oeb23-card"><h4>'+esc(m[0])+'</h4><div class="oeb23-muted">'+esc(m[1])+'</div><div class="oeb23-progress"><div class="oeb23-fill" style="width:'+Math.floor(v/m[2]*100)+'%"></div></div><div>'+v+'/'+m[2]+' '+(done?'✓ COMPLETE':'')+'</div><div class="oeb23-actions">'+(done?'<button class="oeb23-btn gold" data-mission="'+i+'">'+(state.missions['claim'+i]?'CLAIMED':'CLAIM +40')</button>':'')+'</div></div>'}).join('');
+    const cards=missions.map((m,i)=>{const v=Math.min(m[2],Number(m[3]())||0),done=v>=m[2];return '<div class="oeb23-card"><h4>'+esc(m[0])+'</h4><div class="oeb23-muted">'+esc(m[1])+'</div><div class="oeb23-progress"><div class="oeb23-fill" style="width:'+Math.floor(v/m[2]*100)+'%"></div></div><div>'+v+'/'+m[2]+' '+(done?'✓ COMPLETE':'')+'</div><div class="oeb23-actions">'+(done?'<button class="oeb23-btn gold" data-mission="'+i+'">'+(state.missions['claim'+i]?'CLAIMED':'CLAIM +40')+'</button>':'')+'</div></div>'}).join('');
     const m=openModal('EVENT MISSIONS','<div class="oeb23-grid">'+cards+'</div><p><b>Event Coins: '+state.coins+'</b></p>');
     m.querySelectorAll('[data-mission]').forEach(b=>b.onclick=()=>{rewardForMission(Number(b.dataset.mission));m.remove();showMissions()});
   }

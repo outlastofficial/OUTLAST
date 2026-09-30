@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.19.1">
-<meta name="build-version" content="3.19.1">
-<title>OUTLAST v3.19.1</title>
+<meta name="outlast-build" content="3.19.2">
+<meta name="build-version" content="3.19.2">
+<title>OUTLAST v3.19.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2423,7 +2423,7 @@ const p=game.player;if(p){
    if(game.event)ctx.fillText('Event '+game.event+' • '+Math.ceil(game.eventTimer)+'s',20,116);
    const bossRemaining=Math.max(0,game.stats.bossEvery-game.bossClock);
    const bossMin=String(Math.floor(bossRemaining/60)).padStart(2,'0'),bossSec=String(Math.ceil(bossRemaining%60)).padStart(2,'0');
-   ctx.fillStyle='#fff';ctx.font='bold 13px Arial';ctx.fillText('Boss '+bossMin+':'+bossSec+' • '+save.selectedWeapon,CW-288,30);
+   ctx.save();ctx.fillStyle='rgba(5,8,12,.72)';ctx.fillRect(CW-188,CH-42,178,28);ctx.strokeStyle='rgba(105,192,255,.32)';ctx.strokeRect(CW-188,CH-42,178,28);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.fillText('Boss '+bossMin+':'+bossSec+' • '+save.selectedWeapon,CW-178,CH-24);ctx.restore();
    ctx.font='12px Arial';ctx.fillText('Skill '+(game.player.skillCooldown>0?Math.ceil(game.player.skillCooldown)+'s':'READY')+' • Ult '+Math.floor(game.player.ult)+'%',CW-288,52);
    if(game.worldEvent)ctx.fillText('World '+game.worldEvent+' • '+Math.ceil(game.worldEventTimer)+'s',CW-288,74);
    if(game.objective)ctx.fillText('Obj '+game.objective+(worldObjectives[game.objective]?' '+Math.floor(game.objectiveProgress||0)+'/'+worldObjectives[game.objective].target:''),CW-288,92);
@@ -3221,6 +3221,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+  ['v3.19.2 — HUD Cleanup','Moved the boss countdown out of the top HUD so it stays readable without covering the play area.'],
   ['v3.19.1 — Small Bug Fixes','Removed the Extract button from the run UI.'];
   ['v3.18.0 — Settings Update','Expanded Settings with time-zone selection, clock/date formatting, a menu clock, Reduced Motion, High Contrast, and Auto-Pause on Tab Switch.'],
   ['v3.17.1 — Update Notice Fix','Removed owner-only tools from player-facing update notices and corrected release messaging consistency.'],

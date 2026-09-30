@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.14.25">
-<title>OUTLAST v3.14.25</title>
+<meta name="outlast-build" content="3.14.26">
+<title>OUTLAST v3.14.26</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -795,7 +795,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.14.25 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.14.26 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1741,7 +1741,8 @@ function mergeLeaderboardEntry(entry){
 }
 async function submitServerLeaderboard(entry){
  try{
-   const data=await leaderboardFetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...entry,clientVersion:'3.14.3'})});
+   const buildVersion=document.querySelector('meta[name="build-version"]')?.content||'3.14.26';
+   const data=await leaderboardFetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...entry,clientVersion:buildVersion})});
    if(data.entry)mergeLeaderboardEntry(data.entry);
    persist();
    return data;
@@ -1808,6 +1809,7 @@ function endRun(victory,recordScore=true,showEnd=true){
  if(victory){let keyReward=1;if(game.objectiveComplete)keyReward+=2;if(game.raidBoss)keyReward+=3;save.worldKeys=(save.worldKeys||0)+keyReward;toast('🔑 +'+keyReward+' World Keys');}
  if(game.raidBoss && victory){const rd=raidBossDefs[game.raidBoss];save.coins+=rd?rd.reward:0;save.raidClears=(save.raidClears||0)+1;toast('♛ Raid cleared! +'+(rd?rd.reward:0)+' bonus coins');}
  if(recordScore && currentUsername!==ADMIN_TEST_USERNAME){
+   save.leaderboard=Array.isArray(save.leaderboard)?save.leaderboard:[];
    const name=currentUsername.slice(0,18);
    const entry={name,score:Math.floor(game.score),level:game.level,kills:run.kills,mode:save.mode,difficulty:save.difficulty,date:new Date().toLocaleDateString()};
    const existingIndex=save.leaderboard.findIndex(r=>String(r.name||'').trim().toLowerCase()===name.toLowerCase());
@@ -3112,6 +3114,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['How does leaderboard saving work?','Leaderboard Reliability','OUTLAST keeps one best saved record per player name. A new run is submitted when it beats that player’s existing score, and the submission reports the current game build. If the server is unavailable, the locally saved leaderboard remains available.'],
   ['How do upgrades and Luck work?','Upgrades & Luck','Level-ups pause the run and offer three choices. Early levels favor Damage, Survival, and Weapon choices to reduce beginner overload. Upgrade Luck improves the chance of higher rarities; Loot Luck and Treasure Luck affect their own reward systems. Legendary and Mythic choices use a rolling reveal before they can be selected.'],
 
   ['How do I use the Halloween Event?','Halloween Event','Watch the countdown from the small event pill in the corner. Open DETAILS to investigate clues, read broadcasts, complete missions, earn Event Coins, shop limited rewards, view the event leaderboard, and enter the event when it goes live. During the live event, event runs can trigger signal encounters and the Rift Pumpkin boss. After the finale, permanent event rewards and aftermath content remain available.'],
@@ -3171,7 +3174,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.14.25 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
+  ['v3.14.26 — Nightfall Event Center','Fixed the Nightfall Event Center countdown to use the live countdown timer and changed the event time to October 1, 2026 at 10:00 AM local time.'],
   ['v3.14.23 — Full Event Expansion','Expanded the October event into a complete progression: shared community signal, event investigation, broadcasts, missions, Event Coins, limited shop, achievements, live event terminal, Rift Pumpkin boss encounter, event leaderboard, finale, and permanent aftermath.'],
   ['v3.14.20 — Event Build-Up','Added the full event buildup: countdown, broadcasts, investigation clues, pre-event rewards, progress tracking, event access, final warning phase, and activation sequence.'],
   ['v3.14.22 — Event UI Placement','Kept the full event buildup system, but moved its home-screen indicator to a small unobtrusive bottom-corner pill so it no longer takes over the hub.'],['v3.14.21 — Event UI Cleanup','Redesigned the event buildup into a compact home-screen event bar. Investigation, broadcasts, rewards, progress, and activation details now open only when requested instead of filling the home screen.'],
@@ -3273,14 +3276,15 @@ const updates=[
   ['v3.14.8 — Upgrade Rarity Expansion','Expanded level-up choices with 19 new upgrades and stronger animated rarity presentations.'],
   ['v3.0.0 — Gameplay & Systems Fixes','Fixed remaining buttons and menu routing, weapon damage and projectile upgrades, weapon selling, coin rounding, level-up pausing, World Event effects, zombie variants, enemy HUD counting, Settings/Controls consolidation, leaderboard placement, Quest/Challenge/Raid/Endgame actions, and Update Log synchronization.'],
  ];
- openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
+ openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.14.23';
-const CURRENT_UPDATE_INFO={title:'v3.14.23 — Full Event Expansion',summary:'The October event is now expanded into a full event progression from countdown to aftermath.',items:['Track the compact countdown from the hub.','Investigate 5 clues and decode the event signal.','Complete event missions and earn Event Coins.','Spend Event Coins in the limited-time event shop.','Contribute to the shared community signal and view the event leaderboard.','Enter the live event terminal and fight the Rift Pumpkin boss.','Unlock event achievements, rewards, cosmetics, and the permanent aftermath.']};
-/* CURRENT_UPDATE_ITEMS_REPLACED */
+const BUGFIX_UPDATE_ENTRY=['v3.14.26 — Maintenance & Reliability','Fixed stale leaderboard build metadata, hardened leaderboard saving for older saves, and synchronized the in-game update/version metadata across the main game pages.'];
+try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
+const CURRENT_UPDATE_VERSION='3.14.26';
+const CURRENT_UPDATE_INFO={title:'v3.14.26 — Maintenance & Reliability',summary:'A small maintenance release focused on leaderboard reliability and version synchronization.',items:['Leaderboard submissions now report the current game build instead of stale version metadata.','Leaderboard saving is hardened for older saves that are missing leaderboard data.','The in-game version, Update Log, and update popup are synchronized to v3.14.26.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4375,7 +4379,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
-</script><script src="outlast-v3.9.7.js?v=3.14.25"></script>
+</script><script src="outlast-v3.9.7.js?v=3.14.26"></script>
 <script src="outlast-v3.14.0.js?v=3.14.18"></script>
 
 <script id="outlast-v3143-skin-button-fix">

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.23.2">
+<meta name="outlast-build" content="3.23.3">
 <meta name="build-version" content="3.23.1">
-<title>OUTLAST v3.23.2</title>
+<title>OUTLAST v3.23.3</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -699,7 +699,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 
 <style id="daily-shop-v316">
 .daily-shop-wrap{display:grid;gap:12px}.daily-shop-banner{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px;border:1px solid #3b5265;border-radius:14px;background:linear-gradient(135deg,#132433,#0c141c)}.daily-shop-banner b{letter-spacing:.06em}.daily-shop-timer{text-align:right;font-size:10px;color:#8197a8;white-space:nowrap}.daily-shop-timer strong{font-size:17px;color:#8fe0b0}.daily-shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.daily-shop-card{min-height:135px!important;display:flex!important;flex-direction:column!important;justify-content:space-between!important;padding:13px!important;background:linear-gradient(150deg,#14212b,#0e151d)!important;border:1px solid #304758!important;text-align:left!important}.daily-shop-card:hover:not(:disabled){border-color:#5aa9c7!important;transform:translateY(-2px)}.daily-shop-card:disabled{opacity:.58}.daily-shop-top{display:flex;justify-content:space-between;align-items:center}.daily-shop-rank{font-size:10px;color:#6f8798}.daily-shop-tag{font-size:9px;padding:3px 6px;border:1px solid #36556a;border-radius:999px;color:#8fc8e4}.daily-shop-price{font-weight:800;color:#e8c85a;margin-top:7px}.daily-shop-bought .daily-shop-price{color:#7ee7a0}.daily-shop-footer{text-align:center;padding:8px;color:#718695}@media(max-width:700px){.daily-shop-grid{grid-template-columns:1fr 1fr}.daily-shop-banner{align-items:flex-start}.daily-shop-timer{font-size:9px}}@media(max-width:460px){.daily-shop-grid{grid-template-columns:1fr}.daily-shop-banner{flex-direction:column}.daily-shop-timer{text-align:left}}
-</style><style id="outlast-v323-chat">
+</style><style id="outlast-v3233-action-animation-removal">#mobileActions button[data-mobile-action="dash"],#mobileActions button[data-mobile-action="ult"]{animation:none!important;transition:none!important;transform:none!important}#mobileActions button[data-mobile-action="dash"]:active,#mobileActions button[data-mobile-action="ult"]:active{animation:none!important;transform:none!important;filter:none!important}</style><style id="outlast-v323-chat">
 #outlastChat{position:fixed;right:16px;bottom:105px;width:min(330px,30vw);z-index:43;display:none;pointer-events:auto;font-family:inherit}
 #outlastChat.open{display:block}
 #outlastChat .chat-card{background:rgba(8,14,20,.94);border:1px solid rgba(92,136,166,.55);border-radius:14px;box-shadow:0 16px 45px rgba(0,0,0,.42);overflow:hidden;backdrop-filter:blur(7px)}
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.23.2 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.23.3 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3270,7 +3270,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-  ['v3.23.2 — Small Bug Fixes','Applied small session-handling fixes and refreshed the current build metadata.'], ['v3.23.1 — Global Chat Fix','Fixed chat delivery when the WebSocket is unavailable by adding automatic reconnect, message retry, and an HTTP fallback.'],
+  ['v3.23.3 — Small Bug Fixes','Applied small input, chat, and interaction fixes.'], ['v3.23.2 — Small Bug Fixes','Applied small session-handling fixes and refreshed the current build metadata.'], ['v3.23.1 — Global Chat Fix','Fixed chat delivery when the WebSocket is unavailable by adding automatic reconnect, message retry, and an HTTP fallback.'],
   ['v3.23.0 — Global Chat','Added a live Global Chat for connected players with a compact in-game chat box.'],
   ['v3.22.0 — Aura & Stability Update','Fixed aura upgrades so Frost Aura and Cryo Burst now apply their radius, slow, and chill effects consistently.'],
   ['v3.21.0 — Aura Upgrade Fix','Fixed Frost Aura and Cryo Burst so their radius and slow strength now stack, affect nearby enemies, and display a visible aura around the survivor.'],
@@ -3390,8 +3390,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.23.2';
-const CURRENT_UPDATE_INFO={title:'v3.23.2 — Small Bug Fixes',summary:'Applied small session-handling fixes and refreshed the current build metadata.',items:['Applied small session-handling improvements.','Refreshed the current build metadata.','Updated the in-game version marker to v3.23.2.']};
+const CURRENT_UPDATE_VERSION='3.23.3';
+const CURRENT_UPDATE_INFO={title:'v3.23.3 — Small Bug Fixes',summary:'Applied small input, chat, and interaction fixes.',items:['Improved text-input handling.','Improved chat availability and interaction.','Applied small interaction and animation cleanup.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3539,7 +3539,7 @@ function useActiveSkill(){
 function dash(){if(!game.running||game.paused||game.upgradeOpen||!game.player)return;if((game.player.dashCooldown||0)>0)return;let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);if(!dx&&!dy)dy=-1;const len=Math.hypot(dx,dy)||1;const oldX=game.player.x,oldY=game.player.y;game.player.x=Math.max(30,Math.min(W-30,game.player.x+dx/len*220));game.player.y=Math.max(30,Math.min(H-30,game.player.y+dy/len*220));burst(oldX,oldY,'#9bdcff',12,110);ring(game.player.x,game.player.y,'#9bdcff',36,.25);game.shake=.18;game.player.dashCooldown=4;save.records.totalDodges=(save.records.totalDodges||0)+1;toast('💨 DASH!')}
 let last=performance.now(), fatalGameError='',fatalErrorShown=false;
 function drawFatal(){syncMobileControls();ctx.fillStyle='#10141a';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='42px Arial';ctx.fillText('RECOVERED FROM GAME ERROR',CW/2,235);ctx.font='20px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('The run was safely stopped.',CW/2,275);ctx.fillText('Return to the menu to keep playing.',CW/2,310);ctx.textAlign='left';showGameOverActions(false);const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');if(title)title.textContent='Game error recovered';if(stats)stats.innerHTML='<div class=\"game-over-stat\">The game was stopped safely so it could recover.</div>';}
-function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
+function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown&&!game.__outlastTypingActive)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
 showUpdatePopup();
 requestAnimationFrame(loop);
 </script>
@@ -4252,8 +4252,10 @@ function toggleOutlastChat(force){
 }
 function syncOutlastChatUI(){
  const active=!!game?.running&&!game?.over&&!game?.upgradeOpen&&!fatalErrorShown;
+ const menu=document.getElementById('menu'),menuOpen=!!menu&&getComputedStyle(menu).display!=='none';
  const panel=document.getElementById('outlastChat'),toggle=document.getElementById('outlastChatToggle');
- if(!active){if(panel)panel.classList.remove('open');if(toggle)toggle.classList.remove('chat-visible');return;}
+ const canUse=active||menuOpen;
+ if(!canUse){if(panel)panel.classList.remove('open');if(toggle)toggle.classList.remove('chat-visible');return;}
  if(outlastChatOpen){if(panel)panel.classList.add('open');if(toggle)toggle.classList.remove('chat-visible');}
  else if(toggle)toggle.classList.add('chat-visible');
  renderOutlastChat();
@@ -4285,12 +4287,15 @@ function setupOutlastChat(){
  document.getElementById('outlastChatClose')?.addEventListener('click',()=>toggleOutlastChat(false));
  document.getElementById('outlastChatSend')?.addEventListener('click',sendOutlastChatMessage);
  document.getElementById('outlastChatInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendOutlastChatMessage();}});
+ const markTyping=active=>{game.__outlastTypingActive=!!active;if(active){for(const k of Object.keys(keys||{}))keys[k]=false;for(const k of Object.keys(keyCodes||{}))keyCodes[k]=false;}};
+ document.addEventListener('focusin',e=>{const t=e.target;if(t?.matches?.('input,textarea,[contenteditable="true"]'))markTyping(true);},true);
+ document.addEventListener('focusout',e=>{const t=e.target;if(t?.matches?.('input,textarea,[contenteditable="true"]'))markTyping(false);},true);
 }
 setupOutlastChat();
 function flushPendingOutlastChat(){if(!outlastOnline||outlastSocket?.readyState!==WebSocket.OPEN||!pendingOutlastChat.length)return;const pending=pendingOutlastChat.splice(0,pendingOutlastChat.length);pending.forEach(message=>roomSend({type:'chat_message',message}));}
 function scheduleOutlastReconnect(){
  if(outlastReconnectTimer||outlastOnline)return;
- const shouldReconnect=!!game?.running||outlastChatOpen;if(!shouldReconnect)return;
+ const menu=document.getElementById('menu'),menuOpen=!!menu&&getComputedStyle(menu).display!=='none'; const shouldReconnect=!!game?.running||menuOpen||outlastChatOpen;if(!shouldReconnect)return;
  const delay=Math.min(10000,2000*Math.max(1,outlastReconnectAttempts+1));
  outlastReconnectTimer=setTimeout(()=>{outlastReconnectTimer=null;if(!outlastOnline)connectOutlastServer()},delay);
 }
@@ -4858,7 +4863,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.23.2</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.23.3</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);

@@ -3041,6 +3041,8 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     '<button class="danger" data-owner-action="logout">🔒 Lock</button></div><div id="ownerPanelBody"></div>';
   }
   function open(){
+    /* Route the old owner launcher into the rebuilt Owner Control Center. */
+    if(window.openOwnerPanel){ window.openOwnerPanel(); return; }
     if(!owner()){openSub('👑 Owner Panel','<div class="option"><b>Owner access required.</b><div class="small">Use an owner account to access this control center.</div></div>');return;}
     if(unlocked){if(typeof connectOutlastServer==='function')connectOutlastServer();openSub('👑 Owner Panel',shell());render(tab);return;}
     openSub('🔐 Owner Panel Unlock','<div class="option"><b style="font-size:24px">OWNER VERIFICATION</b><div class="small" style="margin:8px 0 12px">Enter the owner password to unlock all owner controls.</div><input id="ownerPasswordInput" type="password" autocomplete="off" placeholder="Owner password" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:2px solid #3b4d60;background:#0f151c;color:#fff;font-size:18px;margin-bottom:10px><button class="gold" data-owner-action="login">🔓 UNLOCK OWNER PANEL</button><div id="ownerLoginError" class="small" style="color:#ff8c8c;min-height:20px;margin-top:8px"></div></div>');

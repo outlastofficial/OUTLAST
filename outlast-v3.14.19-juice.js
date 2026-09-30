@@ -87,7 +87,7 @@
   function bossDefeat(){flash('gold');particles(innerWidth/2,innerHeight*.45,35,'gold');screenShake();text('BOSS DEFEATED',innerWidth/2,innerHeight*.42,'gold')}
   function ultimate(){flash('gold');ring(innerWidth/2,innerHeight*.55,'gold');particles(innerWidth/2,innerHeight*.55,35,'blue');screenShake()}
   function eventStart(name='EVENT'){flash();reveal(name,'EVENT')}
-  const api={version:'3.14.19',install,flash,ring,particles,text,pulse,screenShake,levelUp,reveal,boss,bossDefeat,reward,chest,synergy,dash,hit,crit,coin,xp,pickup,menuTransition,ultimate,eventStart};
+  const api={version:'3.18.0',install,flash,ring,particles,text,pulse,screenShake,levelUp,reveal,boss,bossDefeat,reward,chest,synergy,dash,hit,crit,coin,xp,pickup,menuTransition,ultimate,eventStart};
 
   function hook(){
     document.addEventListener('pointerdown',e=>{

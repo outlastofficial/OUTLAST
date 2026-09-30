@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.16.2">
-<meta name="build-version" content="3.16.2">
-<title>OUTLAST v3.16.2</title>
+<meta name="outlast-build" content="3.17.0">
+<meta name="build-version" content="3.17.0">
+<title>OUTLAST v3.17.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.16.2 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.17.0 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3333,8 +3333,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.16.2';
-const CURRENT_UPDATE_INFO={title:'v3.16.2 — Owner Raffle Giveaway',summary:'Added a free owner-only raffle giveaway tool to the Owner Panel.',items:['Owner Panel now includes a dedicated Raffle tab.','Owners can select eligible players and set a coin prize.','The raffle randomly selects one eligible player and sends the prize through the existing server-backed reward system.','The raffle has no player entry fee and does not replace the existing Rewards tools.']};
+const CURRENT_UPDATE_VERSION='3.17.0';
+const CURRENT_UPDATE_INFO={title:'v3.17.0 — Active Player Raffle',summary:'The Owner Panel now has a live raffle that spins through active players and lands on one winner.',items:['Added an Owner-only Active Player Raffle tab.','The player list is refreshed immediately when the spin starts.','Only currently active players are eligible.','The wheel cycles through the active names, slows down, and lands on the randomly selected winner.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4728,7 +4728,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   function nav(){
     const n=document.getElementById('outlastOwnerNav');if(!n)return;
-    const tabs=[['overview','⌂ Overview'],['players','👥 Players'],['events','🌎 Events'],['abuse','⚡ Admin Abuse'],['rewards','🎁 Rewards'],['announce','📣 Announce']];
+    const tabs=[['overview','⌂ Overview'],['players','👥 Players'],['events','🌎 Events'],['abuse','⚡ Admin Abuse'],['rewards','🎁 Rewards'],['raffle','🎟️ Raffle'],['announce','📣 Announce']];
     n.innerHTML=tabs.map(x=>'<button type="button" class="owner-nav-btn '+(tab===x[0]?'active':'')+'" data-owner-remake="tab" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+
       '<button type="button" class="owner-nav-btn" data-owner-remake="refresh">↻ Refresh</button><button type="button" class="owner-nav-btn" data-owner-remake="lock">🔒 Lock Panel</button>';
   }
@@ -4756,6 +4756,9 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
       }else if(tab==='abuse'){
         const actions=[['boss','👹 Boss Spawn'],['blackout','🌑 Blackout'],['speed','💨 Enemy Speed Surge'],['chaos','⚡ Chaos'],['powerup','✨ Power-Up Rain'],['waves','🧟 Rapid Waves'],['stop','■ Stop Abuse']];
         content('<div class="owner-card"><h3>⚡ Admin Abuse Controls</h3><div class="owner-muted">Temporary server-wide effects. Duration applies to effects that support it.</div><div style="height:10px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeAbuseMinutes" type="number" min="1" max="60" value="5" style="margin-top:6px"><div class="owner-grid" style="margin-top:10px">'+actions.map(x=>'<button type="button" class="'+(x[0]==='stop'?'danger':'option')+'" data-owner-remake="abuse" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+'</div></div>');
+      }else if(tab==='raffle'){
+        const d=await api('/api/owner/players'),ps=(Array.isArray(d.players)?d.players:[]).filter(p=>p&&p.online&&String(p.username||'').trim());
+        content('<div class="owner-card"><h3>🎟️ Active Player Raffle</h3><div class="owner-muted">Only players active when the draw starts enter. The wheel cycles through every active name, slows down, and lands on one randomly selected winner.</div><div id="ownerRaffleStatus" style="margin-top:14px;text-align:center;font-size:18px;font-weight:800;min-height:28px">'+(ps.length?esc(ps.length+' active player'+(ps.length===1?'':'s')):'No active players')+'</div><div id="ownerRaffleWheel" style="margin:14px auto;padding:22px 12px;max-width:560px;text-align:center;border:2px solid #3b5368;border-radius:16px;background:#0b131b;font-size:30px;font-weight:900;min-height:42px;display:flex;align-items:center;justify-content:center">READY</div><div class="owner-actions" style="justify-content:center"><button type="button" class="gold" data-owner-remake="raffleDraw" '+(ps.length?'':'disabled')+'>🎟️ SPIN ACTIVE PLAYERS</button><button type="button" class="option" data-owner-remake="refresh">↻ Refresh Players</button></div><div id="ownerRaffleWinner" class="owner-ok" style="margin-top:14px;text-align:center;min-height:24px"></div></div>');
       }else if(tab==='rewards'){
         content('<div class="owner-grid"><div class="owner-card"><h3>🎁 Gift Coins</h3><div class="owner-muted">Queues coins server-side for a player to claim.</div><input id="ownerRemakeGiftUser" maxlength="18" placeholder="Player username" style="margin-top:10px"><input id="ownerRemakeGiftAmount" type="number" min="1" max="10000000" value="1000" style="margin-top:8px"><button type="button" class="gold" data-owner-remake="gift" style="margin-top:8px">● Gift Coins</button></div><div class="owner-card"><h3>🎁 Reward All</h3><div class="owner-muted">Queues the same reward for all known players.</div><input id="ownerRemakeAllAmount" type="number" min="1" max="100000" value="100" style="margin-top:10px"><button type="button" class="green" data-owner-remake="rewardAll" style="margin-top:8px">🎁 Reward All Players</button></div></div>');
       }else{
@@ -4778,6 +4781,40 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
       if(name==='stopEvent'){await api('/api/owner/global-event','POST',{action:'stop'});toast?.('■ Global event stopped');await render();return;}
       if(name==='abuse'){const minutes=Math.floor(Number(document.getElementById('ownerRemakeAbuseMinutes')?.value)||5),d=await api('/api/owner/admin-abuse','POST',{action:value,durationMinutes:minutes});toast?.((d.label||'Admin abuse updated'));await render();return;}
       if(name==='gift'){const target=String(document.getElementById('ownerRemakeGiftUser')?.value||'').trim(),amount=Math.floor(Number(document.getElementById('ownerRemakeGiftAmount')?.value)||0),d=await api('/api/owner/gift-coins','POST',{targetUsername:target,amount});toast?.('● '+d.amount+' coins queued for '+d.username);await render();return;}
+      if(name==='raffleDraw'){
+        if(window.__outlastOwnerRaffleSpinning)return;
+        window.__outlastOwnerRaffleSpinning=true;
+        const wheel=document.getElementById('ownerRaffleWheel'),status=document.getElementById('ownerRaffleStatus'),winnerEl=document.getElementById('ownerRaffleWinner'),button=document.querySelector('[data-owner-remake="raffleDraw"]');
+        try{
+          const d=await api('/api/owner/players');
+          const active=(Array.isArray(d.players)?d.players:[]).filter(p=>p&&p.online&&String(p.username||'').trim()).map(p=>String(p.username).trim());
+          if(!active.length){if(wheel)wheel.textContent='NO ACTIVE PLAYERS';if(status)status.textContent='No active players to draw from.';return;}
+          if(button)button.disabled=true;
+          if(winnerEl)winnerEl.textContent='';
+          if(status)status.textContent=active.length+' active player'+(active.length===1?'':'s')+' entered';
+          const winnerIndex=Math.floor(Math.random()*active.length);
+          const totalSteps=Math.max(40,active.length*8),duration=5200,start=performance.now();
+          let lastIndex=-1;
+          await new Promise(resolve=>{
+            function frame(now){
+              const t=Math.min(1,(now-start)/duration),eased=1-Math.pow(1-t,4);
+              const step=Math.min(totalSteps-1,Math.floor(eased*totalSteps)),idx=step%active.length;
+              if(idx!==lastIndex){if(wheel)wheel.textContent=active[idx];lastIndex=idx;}
+              if(t<1){requestAnimationFrame(frame);return;}
+              const winner=active[winnerIndex];
+              if(wheel)wheel.textContent='🏆 '+winner;
+              if(winnerEl)winnerEl.textContent='🎉 Raffle winner: '+winner;
+              resolve();
+            }
+            requestAnimationFrame(frame);
+          });
+          toast?.('🎟️ Raffle winner: '+active[winnerIndex]);
+        }finally{
+          window.__outlastOwnerRaffleSpinning=false;
+          if(button)button.disabled=false;
+        }
+        return;
+      }
       if(name==='rewardAll'){const amount=Math.floor(Number(document.getElementById('ownerRemakeAllAmount')?.value)||0),d=await api('/api/owner/global-reward','POST',{amount});toast?.('🎁 '+d.amount+' coins queued for '+d.players+' players');await render();return;}
       if(name==='announce'){const message=String(document.getElementById('ownerRemakeAnnouncement')?.value||'').trim();await api('/api/owner/announcement','POST',{message});toast?.('📣 Announcement sent');await render();return;}
     }catch(e){toast?.('⚠️ '+(e.message||'Owner action failed'));await render();}

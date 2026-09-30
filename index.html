@@ -3427,8 +3427,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.26.2';
-const CURRENT_UPDATE_INFO={title:'v3.26.2 — Zombie Spawn Recovery',summary:'Restored reliable zombie spawning during normal runs.',items:['Zombie spawning now has a recovery check so a run cannot get stuck with an empty map.','The existing enemy spawn pacing and difficulty scaling are preserved.','Updated the How To and update information.']};
+const CURRENT_UPDATE_VERSION='3.26.3';
+const CURRENT_UPDATE_INFO={title:'v3.26.3 — Small Bug Fixes',summary:'Applied small bug fixes and reliability improvements.',items:['Improved feedback and report handling.','Applied owner-panel reliability improvements.','Updated the How To and update information.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4945,7 +4945,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   function nav(){
     const n=document.getElementById('outlastOwnerNav');if(!n)return;
-    const tabs=[['overview','⌂ Overview'],['players','👥 Players'],['events','🌎 Events'],['abuse','⚡ Admin Abuse'],['rewards','🎁 Rewards'],['raffle','🎟️ Raffle'],['announce','📣 Announce']];
+    const tabs=[['overview','⌂ Overview'],['players','👥 Players'],['bugs','🐛 Bug Reports'],['events','🌎 Events'],['abuse','⚡ Admin Abuse'],['rewards','🎁 Rewards'],['raffle','🎟️ Raffle'],['announce','📣 Announce']];
     n.innerHTML=tabs.map(x=>'<button type="button" class="owner-nav-btn '+(tab===x[0]?'active':'')+'" data-owner-remake="tab" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+
       '<button type="button" class="owner-nav-btn" data-owner-remake="refresh">↻ Refresh</button>';
   }
@@ -4967,6 +4967,20 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
         const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[];
         const rows=ps.map(p=>'<div class="owner-table-row"><b>'+esc(p.username)+'</b><span class="'+(p.online?'owner-ok':'owner-muted')+'">'+(p.online?'🟢 Online':'⚪ Offline')+'</span><span class="owner-muted">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent activity')+'</span></div>').join('');
         content('<div class="owner-card"><h3>👥 Players</h3><div class="owner-muted">Live online players plus players known by the server.</div><div style="margin-top:10px">'+(rows||'<div class="owner-muted">No players recorded.</div>')+'</div></div>');
+      }else if(tab==='bugs'){
+        let d;
+        try{
+          d=await api('/api/feedback');
+        }catch(_){
+          d=await api('/api/owner/feedback');
+        }
+        const reports=Array.isArray(d.reports)?d.reports:(Array.isArray(d.feedback)?d.feedback:[]);
+        const bugs=reports.filter(x=>String(x.type||'bug').toLowerCase()==='bug').sort((a,b)=>(Number(b.date||b.createdAt)||0)-(Number(a.date||a.createdAt)||0));
+        const rows=bugs.map(x=>{
+          const status=String(x.status||'Pending');
+          return '<div class="owner-card" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><h3 style="margin:0">🐛 '+esc(x.title||'Untitled bug')+'</h3><span class="owner-muted">'+esc(status)+'</span></div><div class="owner-muted" style="margin-top:6px">Player: '+esc(x.user||x.username||'Unknown')+' • '+(x.date?esc(new Date(Number(x.date)).toLocaleString()):'No date')+' • Build '+esc(x.version||'unknown')+'</div><div style="margin-top:10px;white-space:pre-wrap">'+esc(x.body||'No description')+'</div></div>';
+        }).join('');
+        content('<div class="owner-card"><h3>🐛 Bug Reports</h3><div class="owner-muted">Server-submitted player bug reports. Only the verified Owner Panel can load this list.</div><div style="margin-top:10px">'+(rows||'<div class="owner-muted">No bug reports found.</div>')+'</div><button type="button" class="option" data-owner-remake="tab" data-value="bugs" style="margin-top:10px">↻ Refresh Bug Reports</button></div>');
       }else if(tab==='events'){
         const d=await api('/api/owner/global-event');const current=d.active?String(d.label||'Active'):'None';
         content('<div class="owner-card"><h3>🌎 Global Event Controller</h3><div class="owner-muted">Current: '+esc(current)+'</div><div style="height:12px"></div><label class="owner-muted">Event</label><select id="ownerRemakeEvent" style="margin-top:6px">'+['october','double_coins','double_xp','chaos','blackout','boss_rush'].map(x=>'<option value="'+x+'">'+x.replace(/_/g,' ')+'</option>').join('')+'</select><div style="height:8px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeEventMinutes" type="number" min="1" max="1440" value="30" style="margin-top:6px"><div class="owner-actions"><button type="button" class="gold" data-owner-remake="startEvent">▶ Start Event</button><button type="button" class="danger" data-owner-remake="stopEvent">■ Stop Event</button></div></div>');

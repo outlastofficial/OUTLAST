@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.25.2">
-<meta name="build-version" content="3.25.2">
-<title>OUTLAST v3.25.2</title>
+<meta name="outlast-build" content="3.25.3">
+<meta name="build-version" content="3.25.3">
+<title>OUTLAST v3.25.3</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -816,7 +816,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
           <button class="menu-nav-btn" data-page="progress">★ Progress</button>
           <button class="menu-nav-btn" data-page="more">▦ More</button>
         </nav>
-        <div class="menu-side-bottom small">WASD / Arrows • Shift Dash • Q Skill • Space Ultimate • Esc Pause</div>
+        <div class="menu-side-bottom small">WASD / Arrows • Shift Dash • Q Skill • R Ultimate • Esc Pause</div>
       </aside>
 
       <main class="menu-main">
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.25.2 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.25.3 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1041,11 +1041,11 @@ addEventListener('keydown',e=>{
   const target=e.target;
   const typing=!!target && ((target.tagName||'').toLowerCase()==='input' || (target.tagName||'').toLowerCase()==='textarea' || target.isContentEditable);
   if(typing) return;
-  if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift','q'].includes(k)||['Space','ShiftLeft','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ'].includes(code)) e.preventDefault();
+  if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift','q','r'].includes(k)||['ShiftLeft','KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyQ','KeyR'].includes(code)) e.preventDefault();
   keys[k]=true; keyCodes[code]=true;
   if(k==='escape' && game.running) togglePause();
   if(game.upgradeOpen && ['1','2','3'].includes(k)) chooseUpgrade(Number(k)-1);
-  if(game.running && code==='Space') useUltimate();
+  if(game.running && (code==='KeyR'||k==='r')) useUltimate();
   if(game.running && (code==='ShiftLeft'||k==='shift')) dash();
   if(game.running && (code==='KeyQ'||k==='q')) useActiveSkill();
 },{passive:false});
@@ -3225,7 +3225,7 @@ const helpArticles=[
   ['How do I move?','Move','Use WASD or the Arrow Keys during a normal run.'],
   ['How do I dash?','Dash','Press Shift during a run to dash. Your dash follows the current movement direction.'],
   ['How do I use my Active Skill?','Active Skill','Press Q during a run to activate your equipped Active Skill.'],
-  ['How do I use my Ultimate?','Ultimate','Press Space during a run to use your equipped Ultimate when it is available.'],  ['What do Frost Aura and Cryo Burst do?','Aura Upgrades','Frost Aura creates a visible slowing aura around the survivor. Repeating it increases the aura radius and slow strength. Cryo Burst further increases both.'],
+  ['How do I use my Ultimate?','Ultimate','Press R during a run to use your equipped Ultimate when it is available.'],  ['What do Frost Aura and Cryo Burst do?','Aura Upgrades','Frost Aura creates a visible slowing aura around the survivor. Repeating it increases the aura radius and slow strength. Cryo Burst further increases both.'],
   ['How does Global Chat work?','Global Chat','Open the CHAT button during a run to talk with other connected OUTLAST players. Messages are shared live across the server, with automatic reconnect and an HTTP fallback if the live connection drops.'],
   ['How do I pause?','Pause','Press Esc during a run to open the pause screen and view your current run stats.'],
   ['How do I exit a run?','Exit','Press X during a run and confirm the exit prompt to return to the menu.'],
@@ -3343,7 +3343,7 @@ const updates=[
   ['Game Scaling','Added level-based enemy HP, speed, damage, and spawn-pressure scaling.'],
   ['Exit Flow Fix','Improved the exit-from-run flow so the player can return to the main menu safely.'],
   ['Movement & Combat Fixes','Fixed player movement, combat flow, focus handling, game freezing/runtime protection, and run-start stability.'],
-  ['Core Run Controls','Added WASD / Arrow Keys movement, Shift dash, Q active skill, Space ultimate, Esc pause, and X exit.'],
+  ['Core Run Controls','Added WASD / Arrow Keys movement, Shift dash, Q active skill, R ultimate, Esc pause, and X exit.'],
   ['Username Login','Restored a simple username login so each player can load their own local save and leaderboard identity.'],
   ['Main Menu Systems','Added Start & Settings, Build & Loadout, More Systems, Progress & Rewards, and Ultimate Systems menus.'],
   ['v1.0.0 — Initial Release','Officially set the first OUTLAST release version to v1.0.0.'],
@@ -3401,8 +3401,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.25.2';
-const CURRENT_UPDATE_INFO={title:'v3.25.2 — Version & Chat Fix',summary:'Fixed the visible build version and Global Chat interface.',items:['Removed the remaining Space/Shift action visuals.','Kept the controls and gameplay behavior unchanged.','Applied small interaction cleanup.']};
+const CURRENT_UPDATE_VERSION='3.25.3';
+const CURRENT_UPDATE_INFO={title:'v3.25.3 — Ultimate Key Change',summary:'Changed the Ultimate keyboard control so Space no longer activates it.',items:['R activates the Ultimate on PC.','Space no longer controls the Ultimate.','Updated the How To and control hints.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4874,7 +4874,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(el)return el;
     el=document.createElement('div');el.id='outlastOwnerRemake';
     el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.25.2</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
+      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.25.3</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
       '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click',handleClick,true);
@@ -5058,7 +5058,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   const KEY='outlastNewPlayerTutorialV317';
   const steps=[
     {title:'Start your first run',body:'OUTLAST can look like a lot at first. You only need a few things to get started.',tip:'Tap PLAY, then START RUN. You can explore the other systems later.',target:'#startBtn'},
-    {title:'Move and survive',body:'Once the run begins, move around and stay alive while enemies come after you.',tip:'PC: WASD / Arrow Keys • Dash: Shift • Skill: Q • Ultimate: Space • Mobile: use the joystick and on-screen controls.',target:'#game'},
+    {title:'Move and survive',body:'Once the run begins, move around and stay alive while enemies come after you.',tip:'PC: WASD / Arrow Keys • Dash: Shift • Skill: Q • Ultimate: R • Mobile: use the joystick and on-screen controls.',target:'#game'},
     {title:'Defeat enemies and earn XP',body:'Defeating enemies gives you XP. Keep playing to level up and unlock stronger choices.',tip:'Focus on surviving and learning the controls first.',target:'#game'},
     {title:'Choose an upgrade',body:'When you level up, the game pauses and gives you three upgrade choices. Pick one and keep going.',tip:'Legendary and Mythic choices use their rolling reveal animation.',target:'#game'},
     {title:'Explore when you are ready',body:'After your first run, explore Loadout, Gear, Progress, Challenges, World Events, and the other systems from the menu.',tip:'Your first goal is simple: START RUN → SURVIVE → LEVEL UP.',target:'.menu-nav-btn[data-page="more"]'}
@@ -5452,7 +5452,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.25.2';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');else if(e.code==='Space')flash('ULTIMATE')},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.25.2';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.25.2';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Game quality, reliability, recovery, accessibility, practice mode, player history, favorites, and bug reporting improvements.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.25.3';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');else if(e.code==='Space')flash('ULTIMATE')},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.25.2';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.25.2';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Game quality, reliability, recovery, accessibility, practice mode, player history, favorites, and bug reporting improvements.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -5474,7 +5474,7 @@ html.outlast-brightness-high #game{filter:brightness(1.16)}
 <script id="outlast-v324-quality-layer">
 (function(){
 'use strict';
-const VERSION='v3.25.2', KEY='outlastQualityV324';
+const VERSION='v3.25.3', KEY='outlastQualityV324';
 const root=()=>window.outlastStorage||window.localStorage;
 function read(){try{const x=JSON.parse(root().getItem(KEY)||'{}');return x&&typeof x==='object'?x:{}}catch(_){return {}}}
 function write(x){try{root().setItem(KEY,JSON.stringify(x))}catch(_){}}

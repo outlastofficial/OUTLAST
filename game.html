@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.16.1">
-<meta name="build-version" content="3.16.1">
-<title>OUTLAST v3.16.1</title>
+<meta name="outlast-build" content="3.16.2">
+<meta name="build-version" content="3.16.2">
+<title>OUTLAST v3.16.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -796,7 +796,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.16.1 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.16.2 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -2989,6 +2989,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     '<button class="option" data-owner-action="tab" data-value="events">Global Events</button>'+
     '<button class="option" data-owner-action="tab" data-value="abuse">Admin Abuse</button>'+
     '<button class="option" data-owner-action="tab" data-value="rewards">Rewards</button>'+
+    '<button class="option" data-owner-action="tab" data-value="raffle">🎟️ Raffle</button>'+
     '<button class="option" data-owner-action="tab" data-value="announce">Announcements</button>'+
     '<button class="danger" data-owner-action="logout">🔒 Lock</button></div><div id="ownerPanelBody"></div>';
   }
@@ -3019,6 +3020,10 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
       }else if(tab==='abuse'){
         const a=[['boss','👹 Boss Spawn'],['blackout','🌑 Blackout'],['speed','💨 Enemy Speed Surge'],['chaos','⚡ Chaos'],['powerup','✨ Power-Up Rain'],['waves','🧟 Rapid Waves']];
         b.innerHTML='<div class="option"><b>⚠ Admin Abuse Controller</b><div class="small">Temporary server-wide event effects.</div></div><div class="grid" style="margin-top:10px">'+a.map(x=>'<button class="option" data-owner-action="abuse" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+'<button class="danger" data-owner-action="abuse" data-value="stop">■ Stop Admin Abuse</button></div><div class="option" style="margin-top:10px"><label class="small">Duration (minutes)</label><input id="ownerAbuseDuration" type="number" min="1" max="60" value="5" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"></div>';
+      }else if(tab==='raffle'){
+        const d=await api('/api/owner/players'),ps=(Array.isArray(d.players)?d.players:[]).filter(p=>p&&String(p.username||'').trim());
+        const rows=ps.length?ps.map((p,i)=>'<label class="option" style="display:flex;align-items:center;gap:10px;cursor:pointer"><input type="checkbox" class="ownerRaffleEntry" value="'+esc(p.username)+'" '+(p.online?'checked':'')+'><span><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+'</div></span></label>').join(''):'<div class="option">No known players yet.</div>';
+        b.innerHTML='<div class="option"><b>🎟️ Free Raffle Giveaway</b><div class="small">Owner-only raffle. Players do not pay to enter. Select eligible players, choose a coin prize, then draw one winner.</div></div><div class="option" style="margin-top:10px"><label class="small">Prize (coins)</label><input id="ownerRafflePrize" type="number" min="1" max="10000000" value="1000" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><div class="row" style="justify-content:flex-start;margin-top:10px"><button class="option" data-owner-action="raffleAll">☑️ Select All</button><button class="option" data-owner-action="raffleNone">☐ Clear</button><button class="gold" data-owner-action="raffleDraw">🎟️ DRAW WINNER</button></div></div><div class="option" style="margin-top:10px"><b>Eligible Players</b><div class="small">Online players are selected by default.</div></div><div style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><div id="ownerRaffleResult" class="option" style="margin-top:10px;display:none"></div>';
       }else if(tab==='rewards'){
         b.innerHTML='<div class="option"><b>🎁 Player Rewards</b><div class="small">Gifts are stored server-side until the player claims them.</div></div><div class="option" style="margin-top:10px"><h3 style="margin:0 0 8px">Gift Coins</h3><input id="ownerGiftUser" maxlength="18" placeholder="Player username" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60;margin-bottom:8px"><input id="ownerGiftAmount" type="number" min="1" max="10000000" value="1000" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><button class="gold" data-owner-action="gift">● Gift Coins</button></div><div class="option" style="margin-top:10px"><h3 style="margin:0 0 8px">Global Reward</h3><input id="ownerGlobalAmount" type="number" min="1" max="100000" value="100" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><button class="green" data-owner-action="globalReward">🎁 Reward All Known Players</button></div>';
       }else{
@@ -3035,6 +3040,19 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
       if(a==='stopEvent'){await api('/api/owner/global-event','POST',{action:'stop'});toast('■ Global event stopped');render('events');return;}
       if(a==='abuse'){const duration=Math.floor(Number(document.getElementById('ownerAbuseDuration')?.value)||5),d=await api('/api/owner/admin-abuse','POST',{action:v,durationMinutes:duration});toast(d.label||'Admin abuse updated');render('abuse');return;}
       if(a==='gift'){const target=document.getElementById('ownerGiftUser')?.value?.trim()||'',amount=Math.floor(Number(document.getElementById('ownerGiftAmount')?.value)||0),d=await api('/api/owner/gift-coins','POST',{targetUsername:target,amount});toast('● '+d.amount+' coins gifted to '+d.username);render('rewards');return;}
+      if(a==='raffleAll'){document.querySelectorAll('.ownerRaffleEntry').forEach(x=>x.checked=true);return;}
+      if(a==='raffleNone'){document.querySelectorAll('.ownerRaffleEntry').forEach(x=>x.checked=false);return;}
+      if(a==='raffleDraw'){
+        const entries=[...document.querySelectorAll('.ownerRaffleEntry:checked')].map(x=>String(x.value||'').trim()).filter(Boolean);
+        const prize=Math.floor(Number(document.getElementById('ownerRafflePrize')?.value)||0);
+        if(!entries.length)throw new Error('Select at least one raffle entrant.');
+        if(prize<1)throw new Error('Enter a valid prize amount.');
+        const winner=entries[Math.floor(Math.random()*entries.length)];
+        const d=await api('/api/owner/gift-coins','POST',{targetUsername:winner,amount:prize});
+        const out=document.getElementById('ownerRaffleResult');if(out){out.style.display='block';out.innerHTML='<b>🎉 Winner: '+esc(d.username||winner)+'</b><div class="small">Prize: '+Number(d.amount||prize).toLocaleString()+' coins • Entrants: '+entries.length+'</div>';}
+        toast('🎉 Raffle winner: '+(d.username||winner));
+        return;
+      }
       if(a==='globalReward'){const amount=Math.floor(Number(document.getElementById('ownerGlobalAmount')?.value)||0),d=await api('/api/owner/global-reward','POST',{amount});toast('🎁 '+d.amount+' coins queued for '+d.players+' players');render('rewards');return;}
       if(a==='announce'){const message=document.getElementById('ownerAnnouncementText')?.value?.trim()||'';await api('/api/owner/announcement','POST',{message});toast('📣 Announcement sent');render('announce');return;}
     }catch(err){toast('⚠️ '+(err.message||'Owner action failed'));render(tab);}
@@ -3314,8 +3332,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.16.1';
-const CURRENT_UPDATE_INFO={title:'v3.16.1 — Upgrade Roll & Overlay Performance Fix',summary:'A small maintenance release that makes Legendary/Mythic upgrade rolls much lighter and fixes the upgrade screen layering.',items:['Legendary and Mythic rolling now uses a lightweight animation with no canvas blur filters or large shadow buffers.','The special roll is shorter and remains fully selectable after the reveal completes.','The upgrade screen now resets to screen-space before drawing, so the player and world cannot appear over the upgrade choices.','How-To and update information are synchronized with this maintenance release.']};
+const CURRENT_UPDATE_VERSION='3.16.2';
+const CURRENT_UPDATE_INFO={title:'v3.16.2 — Owner Raffle Giveaway',summary:'Added a free owner-only raffle giveaway tool to the Owner Panel.',items:['Owner Panel now includes a dedicated Raffle tab.','Owners can select eligible players and set a coin prize.','The raffle randomly selects one eligible player and sends the prize through the existing server-backed reward system.','The raffle has no player entry fee and does not replace the existing Rewards tools.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

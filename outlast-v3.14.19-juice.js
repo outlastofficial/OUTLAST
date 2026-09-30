@@ -130,18 +130,20 @@
     document.addEventListener('outlast:dash',dash);
     document.addEventListener('outlast:ultimate',ultimate);
     const observer=new MutationObserver(list=>{
+      /* Only inspect the actual toast channel. Watching document.body caused the
+         Update Log text "boss spawn effects" to be misread as a live boss spawn. */
       for(const m of list){
-        for(const n of m.addedNodes||[]){
-          if(n.nodeType!==1)continue;
-          const s=(n.textContent||'').trim().toLowerCase();
-          if(s==='level up!'||s==='level up')levelUp();
-          if(/boss (spawn|incoming|appeared)/.test(s))boss('BOSS');
-          if(/boss defeated|boss down/.test(s))bossDefeat();
-          if(/synergy activated/.test(s))synergy(s.replace(/synergy activated/i,'').trim()||'SYNERGY ACTIVATED');
-        }
+        const root=m.target?.closest?.('#toast') || (m.target?.id==='toast'?m.target:null);
+        if(!root)continue;
+        const s=(root.textContent||'').trim().toLowerCase();
+        if(s==='level up!'||s==='level up')levelUp();
+        if(/boss (spawn|incoming|appeared)/.test(s))boss('BOSS');
+        if(/boss defeated|boss down/.test(s))bossDefeat();
+        if(/synergy activated/.test(s))synergy(s.replace(/synergy activated/i,'').trim()||'SYNERGY ACTIVATED');
       }
     });
-    observer.observe(document.body,{childList:true,subtree:true});
+    const toastRoot=document.getElementById('toast');
+    if(toastRoot)observer.observe(toastRoot,{childList:true,subtree:true});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{install();hook()},{once:true});else{install();hook()}
   window.OUTLASTFX=api;

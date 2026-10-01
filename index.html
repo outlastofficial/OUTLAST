@@ -3609,8 +3609,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.39';
-const CURRENT_UPDATE_INFO={title:'v3.27.39 — Core HTML Integrity Fix',summary:'Small bug fixes and game stability improvements.',items:['Removed corrupted duplicate HTML/script content that could cause unpredictable browser behavior.','Kept the working game logic intact while restoring a clean document ending.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.40';
+const CURRENT_UPDATE_INFO={title:'v3.27.40 — Version Marker Regression Fix',summary:'Small bug fixes and game stability improvements.',items:['Fixed an older compatibility override that could replace the current build version after loading.','Synchronized the visible Survivor Hub marker and build metadata to v3.27.40.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.31">
-<meta name="build-version" content="3.27.31">
-<title>OUTLAST v3.27.31</title>
+<meta name="outlast-build" content="3.27.30">
+<meta name="build-version" content="3.27.30">
+<title>OUTLAST v3.27.30</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3533,8 +3533,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.31';
-const CURRENT_UPDATE_INFO={title:'v3.27.31 — Event Preview UI Fix',summary:'Small bug fixes and event preview reliability improvements.',items:['Event Preview now shows the new event UI and visual presentation.','Preview remains isolated from the live event and current run.','Login was restored from the last working build.']};
+const CURRENT_UPDATE_VERSION='3.27.30';
+const CURRENT_UPDATE_INFO={title:'v3.27.30 — Event Preview Fix',summary:'Small bug fixes and event preview reliability improvements.',items:['Improved the upcoming event preview presentation.','Kept the live event and player systems unchanged.','Restored the previous working game base.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3810,11 +3810,11 @@ window.adminEventPreview=function(){
   if(!isAdmin())return;
   const entries=Object.entries(worldEvents||{});
   const cards=entries.length?entries.map(([name,desc])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+String(name).replace(/"/g,'&quot;')+'"><b>🌎 '+name+'</b><div class="small">'+desc+'</div><div class="small" style="margin-top:5px;color:#f2d06b">PREVIEW ONLY • Does not trigger the event</div></button>').join(''):'<div class="option">No upcoming events are configured.</div>';
-  openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT — UI / VISUAL PREVIEW</b><div class="small">Shows the new event presentation without starting or saving the live event.</div><div style="margin-top:10px;padding:12px;border:1px solid #315b73;border-radius:12px;background:linear-gradient(145deg,#101e2a,#0a1219)"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:18px">🌎 '+(entries[0]?.[0]||'Nightfall Event')+'</b><span class="small" style="color:#9eb8ca">2d 03h 14m</span></div><div style="margin-top:10px;padding:10px;border-radius:10px;background:#08121a;border:1px solid #29475b"><b>EVENT PROTOCOL</b><div class="small" style="margin-top:5px">Countdown • Community Signal • Investigation • Missions • Broadcasts</div></div><div class="grid" style="margin-top:8px"><div class="option"><b>📡 Broadcasts</b><div class="small">Incoming transmission UI</div></div><div class="option"><b>🔎 Investigation</b><div class="small">5-clue event interface</div></div><div class="option"><b>🎯 Event Missions</b><div class="small">Progress + claim rewards</div></div><div class="option"><b>🛒 Event Shop</b><div class="small">Limited event cosmetics</div></div></div><div style="margin-top:8px;padding:12px;border-radius:10px;border:1px solid #7c3b45;background:linear-gradient(145deg,#2a1015,#101820)"><b style="font-size:17px">🎃 RIFT PUMPKIN</b><div class="small" style="margin-top:4px">Event boss warning + boss HUD presentation</div><div style="height:8px;background:#071017;border:1px solid #263e50;border-radius:99px;overflow:hidden;margin-top:8px"><span style="display:block;width:72%;height:100%;background:#4ca7cc"></span></div></div></div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');
+  openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT PREVIEW</b><div class="small">Preview an event without starting, triggering, or saving it.</div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');
   document.getElementById('subContent')?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{
     const name=btn.dataset.adminPreviewEvent,desc=worldEvents[name]||'No description available.';
     const result=document.getElementById('adminEventPreviewResult');
-    if(result)result.innerHTML='<div style="font-size:26px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged. This screen is only a visual/UI preview.</div></div>';
+    if(result)result.innerHTML='<div style="font-size:28px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged.</div></div>';
   }));
 };
 window.adminLock=leaveAdminSandbox;
@@ -6122,6 +6122,7 @@ window.__outlastSkinAreaVersion=VERSION;
   window.addEventListener('beforeunload',clearSpeed);
 })();
 </script>
+<script src="event-admin-preview-v3.27.30.js"></script>
 </body>
 </html>
 </html>});

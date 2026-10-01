@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.14">
-<meta name="build-version" content="3.27.14">
-<title>OUTLAST v3.27.14</title>
+<meta name="outlast-build" content="3.27.15">
+<meta name="build-version" content="3.27.15">
+<title>OUTLAST v3.27.15</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -719,7 +719,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 #outlastChat .chat-status{font-size:10px;color:#8ea8bb}
 #outlastChat .chat-messages{height:150px;overflow:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
 #outlastChat .chat-msg{font-size:11px;line-height:1.35;word-break:break-word}
-#outlastChat .chat-msg .name{font-weight:900;color:#b8dbef}
+#outlastChat .chat-msg .name{font-weight:900;color:#b8dbef}.owner-chat-tag{display:inline-block;margin-left:5px;padding:2px 6px;border-radius:999px;background:rgba(168,132,43,.18);border:1px solid #8f7430;color:#f1d36b;font-size:8px;line-height:1.1;font-weight:900;letter-spacing:.05em;vertical-align:middle;text-transform:uppercase}
 #outlastChat .chat-msg .time{font-size:9px;color:#6f8797;margin-left:5px}
 #outlastChat .chat-empty{font-size:11px;color:#718795;text-align:center;margin:auto}
 #outlastChat .chat-compose{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(92,136,166,.24)}
@@ -3086,7 +3086,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     const msgs=(typeof outlastChatMessages!=='undefined'?outlastChatMessages:[]).slice(-80);
     if(!msgs.length){const e=document.createElement('div');e.className='small';e.style.color='#718795';e.textContent='No live chat messages yet.';box.appendChild(e);return;}
     msgs.forEach(m=>{const row=document.createElement('div');row.style.cssText='font-size:11px;line-height:1.35;padding:4px 0;border-bottom:1px solid rgba(92,136,166,.12)';
-      const name=document.createElement('b');name.textContent=String(m.username||'Player');
+      const name=document.createElement('b');name.textContent=String(m.username||'Player');if(isOutlastOwnerChatMessage(m)){const tag=document.createElement('span');tag.className='owner-chat-tag';tag.textContent='👑 OWNER';name.appendChild(tag);}
       const tm=document.createElement('span');tm.style.cssText='font-size:9px;color:#6f8797;margin-left:6px';tm.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
       const msg=document.createElement('span');msg.textContent=': '+String(m.message||'');
       row.append(name,tm,msg);box.appendChild(row);});
@@ -3273,6 +3273,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['How do Owner Chat Tags work?','Global Chat','Recognized OUTLAST owner usernames display an 👑 OWNER tag next to the username in Global Chat.'],
   ['How do I use the Quality Center?','Quality & Recovery','Open Settings → Quality & Recovery for the current objective, run history, favorites, bug reporting, and Practice Mode.'],
   ['How does Practice Mode work?','Practice Mode','Practice Mode starts a separate no-enemy session for learning the controls and exploring the current setup. Practice sessions do not keep normal rewards or progression.'],
   ['How do I report a bug?','Bug Reporting','Open Settings → Quality & Recovery → Report a Bug. The report automatically includes the current OUTLAST version, map, mode, and difficulty. Reports are saved locally and sent to the OUTLAST server when available.'],
@@ -3346,6 +3347,7 @@ function openHelp(){
 
 function renderUpdates(){
  
+const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
    ['v3.27.14 — Skin Area Rebuild','Small bug fixes and Skin Area reliability.'],
    ['v3.27.13 — Event Countdown Fix','Small bug fixes and event countdown reliability.'],
@@ -4374,13 +4376,18 @@ function pushOutlastChatMessage(entry){
  if(!entry||!entry.message)return;
  const id=String(entry.id||'');
  if(id&&outlastChatMessages.some(m=>String(m.id||'')===id))return;
- outlastChatMessages.push({id:id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),username:String(entry.username||'Player'),message:String(entry.message||'').slice(0,180),at:Number(entry.at)||Date.now()});
+ outlastChatMessages.push({id:id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),username:String(entry.username||'Player'),message:String(entry.message||'').slice(0,180),at:Number(entry.at)||Date.now(),role:String(entry.role||'')});
  if(outlastChatMessages.length>200)outlastChatMessages.splice(0,outlastChatMessages.length-200);
  if(!outlastChatOpen&&game?.running)outlastChatUnread++;
  renderOutlastChat();
  if(typeof renderOwnerChatBox==='function')renderOwnerChatBox();
 }
 function mergeOutlastChatMessages(messages){if(!Array.isArray(messages))return;messages.forEach(pushOutlastChatMessage);renderOutlastChat();}
+function isOutlastOwnerChatMessage(m){
+ const role=String(m?.role||'').toLowerCase();
+ if(role==='owner')return true;
+ try{const name=String(m?.username||'').trim().toLowerCase();return typeof OWNER_USERNAMES!=='undefined'&&OWNER_USERNAMES instanceof Set&&OWNER_USERNAMES.has(name);}catch(_){return false;}
+}
 function renderOutlastChat(){
  const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus'),toggle=document.getElementById('outlastChatToggle');if(!box)return;
  if(status)status.textContent=(outlastOnline||outlastChatHttpOnline)?'🟢 Online':'🔴 Offline';
@@ -4390,6 +4397,7 @@ function renderOutlastChat(){
  else msgs.forEach(m=>{
    const row=document.createElement('div');row.className='chat-msg';
    const name=document.createElement('span');name.className='name';name.textContent=String(m.username||'Player');
+   if(isOutlastOwnerChatMessage(m)){const tag=document.createElement('span');tag.className='owner-chat-tag';tag.textContent='👑 OWNER';name.appendChild(tag);}
    const tm=document.createElement('span');tm.className='time';tm.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
    const body=document.createElement('span');body.textContent=': '+String(m.message||'');
    row.append(name,tm,body);box.appendChild(row);

@@ -997,7 +997,7 @@ document.addEventListener('click',e=>{const b=e.target?.closest?.('#discordBtn')
       runSettingButton(b);
       return;
     }
-    const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit');
+    const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit') && b.id!=='skinBtn';
     if(!hasRoute)return;
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -2810,7 +2810,7 @@ function openSkinMenu(){
  let ownedHtml=Object.keys(skins).map(n=>{const v=skins[n],ok=!!save.skins[n];return `<button class="option ${save.selectedSkin===n?'selected':''}" data-action="skin" data-value="${n}"><b>${n}</b><div class="small">${v.rarity} • ${v.bonus}</div><div class="small">${ok?'Owned':'Case only'}</div></button>`}).join('');
  openSub('✦ Skin Cases',`<div class="option"><b>◆ Skin Case</b><div class="small">Costs 250 coins or 1 Case Voucher • Random skin</div><button class="gold" data-action="case">OPEN CASE — 250 ● / 1 Voucher</button></div><h3>Skins</h3><div class="grid">${ownedHtml}</div>`);
 }
-document.getElementById('skinBtn').onclick=openSkinMenu;
+document.getElementById('skinBtn').onclick=null;
 window.selectSkin=(n)=>{if(!save.skins[n])return toast('Open Skin Cases to unlock this skin');save.selectedSkin=n;persist();openSkinMenu()};
 window.openSkinCase=()=>{const usedVoucher=save.caseCredits>0;if(usedVoucher)save.caseCredits--;else{if(save.coins<250)return toast('Not enough coins');save.coins-=250}const r=Math.random();let rarity='Common',acc=0;for(const [name,pct] of skinCaseOdds){acc+=pct;if(r<=acc){rarity=name;break}}let pool=Object.keys(skins).filter(n=>!save.skins[n]&&skins[n].rarity===rarity);if(!pool.length)pool=Object.keys(skins).filter(n=>!save.skins[n]);if(!pool.length){if(!usedVoucher)save.coins+=250;save.forgeCores++;persist();toast('◆ All skins owned — +1 Forge Core!');return}const got=pool[Math.floor(Math.random()*pool.length)];save.skins[got]=true;save.selectedSkin=got;persist();toast('✦ Unlocked '+got+'!');openSkinMenu()};
 
@@ -3298,7 +3298,7 @@ const helpArticles=[
   ['How do I exit a run?','Exit','Press X during a run and confirm the exit prompt to return to the menu.'],
   ['How do I change my character?','Inventory Character','Open Inventory, choose Character, then select the survivor you want to equip.'],
   ['How do I change my weapon?','Inventory Weapon','Open Inventory, choose Weapons, then select your weapon. Use Back to return to Inventory.'],
-  ['How do I change my skin?','Inventory Skin','Open Inventory, choose Skin, then equip a skin. The preview and player appearance update to match.'],
+  ['How do I change my skin?','Skin Area','Open Loadout → Skins. The rebuilt Skin Area shows your equipped skin, preview, owned skins, and Skin Case. Click any owned skin to equip it; the preview and player appearance update to match.'],
   ['How do I equip a pet?','Inventory Pet','Open Inventory, choose Pet, and select an owned pet. Equipped pets follow you during runs.'],
   ['How do I equip a relic?','Inventory Relic','Open Inventory, choose Relic, and select an owned relic to equip it.'],
   ['How do I equip a charm?','Inventory Charm','Open Inventory, choose Charm, and select an owned charm to equip it.'],
@@ -3482,8 +3482,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.13';
-const CURRENT_UPDATE_INFO={title:'v3.27.13 — Event Countdown Fix',summary:'Small bug fixes and event countdown reliability.',items:['The event countdown now uses one canonical Saturday, October 3, 2026 at 11:00 AM ET target.','The event calendar and countdown stay synchronized to the same target time.','Stale legacy countdown UI is cleared when the current build loads.']};
+const CURRENT_UPDATE_VERSION='3.27.14';
+const CURRENT_UPDATE_INFO={title:'v3.27.14 — Skin Area Rebuild',summary:'Small bug fixes and Skin Area reliability.',items:['Rebuilt the Skin Area with a dedicated, isolated button system.','Skin selection and equipping now use a dedicated Skin interface instead of the conflicting global button routers.','Skin previews, owned-skin states, and Skin Case actions remain available.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4535,7 +4535,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     loginBtn:()=>finishUsernameLogin(),startBtn:()=>{newRunStats();startGame();setTimeout(()=>document.getElementById('game')?.focus(),0)},
     switchUserBtn:()=>showUsernameLogin(),mapBtn:()=>openMapMenu(),difficultyBtn:()=>openDifficultyMenu(),modeBtn:()=>openModeMenu(),
     runBuilderBtn:()=>renderRunBuilder(),challengeBtn:()=>challengeOpen(),challengeModeBtn:()=>renderChallenges(),fullscreenBtn:()=>toggleFullscreen(),
-    upgradeBtn:()=>renderUpgradeTree(),charBtn:()=>openCharacterMenu(),weaponBtn:()=>openWeaponMenu(),skinBtn:()=>openSkinMenu(),
+    upgradeBtn:()=>renderUpgradeTree(),charBtn:()=>openCharacterMenu(),weaponBtn:()=>openWeaponMenu(),skinBtn:()=>{},
     petBtn:()=>openPets(),skillBtn:()=>openSkills(),elementBtn:()=>renderElements(),relicBtn:()=>openRelics(),charmBtn:()=>openCharms(),
     forgeBtn:()=>forgeOpen(),shopBtn:()=>shopOpen(),inventoryBtn:()=>renderInventory(),craftBtn:()=>renderCrafting(),progressionBtn:()=>renderProgression(),
     modifierBtn:()=>modifierOpen(),statsBtn:()=>openStats(),leaderBtn:()=>openServerLeaderboard(),achBtn:()=>openAchievements(),missionBtn:()=>openMissions(),
@@ -4543,14 +4543,14 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     worldBtn:()=>renderWorld(),world2Btn:()=>renderWorld2(),helpBtn:()=>openHelp(),updatesBtn:()=>renderUpdates(),adminBtn:()=>openAdminPanel(),
     onlineBtn:()=>renderOnlinePanel(),settingsNewBtn:()=>openSettingsSafe(),controlsBtn:()=>openControlsSafe(),closeSubBtn:()=>closeSub()
   };
-  const aliases={openMapMenu:()=>document.getElementById('mapBtn')?.onclick?.(),openDifficultyMenu:()=>document.getElementById('difficultyBtn')?.onclick?.(),openModeMenu:()=>document.getElementById('modeBtn')?.onclick?.(),openCharacterMenu:()=>document.getElementById('charBtn')?.onclick?.(),openWeaponMenu:()=>document.getElementById('weaponBtn')?.onclick?.(),openSkinMenu:()=>document.getElementById('skinBtn')?.onclick?.(),openSkills:()=>document.getElementById('skillBtn')?.onclick?.(),openStats:()=>document.getElementById('statsBtn')?.onclick?.(),openAchievements:()=>document.getElementById('achBtn')?.onclick?.(),openMissions:()=>document.getElementById('missionBtn')?.onclick?.(),openDailyReward:()=>document.getElementById('dailyBtn')?.onclick?.(),openAdminPanel:()=>document.getElementById('adminBtn')?.onclick?.()};
+  const aliases={openMapMenu:()=>document.getElementById('mapBtn')?.onclick?.(),openDifficultyMenu:()=>document.getElementById('difficultyBtn')?.onclick?.(),openModeMenu:()=>document.getElementById('modeBtn')?.onclick?.(),openCharacterMenu:()=>document.getElementById('charBtn')?.onclick?.(),openWeaponMenu:()=>document.getElementById('weaponBtn')?.onclick?.(),openSkinMenu:()=>{},openSkills:()=>document.getElementById('skillBtn')?.onclick?.(),openStats:()=>document.getElementById('statsBtn')?.onclick?.(),openAchievements:()=>document.getElementById('achBtn')?.onclick?.(),openMissions:()=>document.getElementById('missionBtn')?.onclick?.(),openDailyReward:()=>document.getElementById('dailyBtn')?.onclick?.(),openAdminPanel:()=>document.getElementById('adminBtn')?.onclick?.()};
   Object.assign(routes,{mapBtn:aliases.openMapMenu,difficultyBtn:aliases.openDifficultyMenu,modeBtn:aliases.openModeMenu,charBtn:aliases.openCharacterMenu,weaponBtn:aliases.openWeaponMenu,skinBtn:aliases.openSkinMenu,skillBtn:aliases.openSkills,statsBtn:aliases.openStats,achBtn:aliases.openAchievements,missionBtn:aliases.openMissions,dailyBtn:aliases.openDailyReward,adminBtn:aliases.openAdminPanel});
   document.addEventListener('click',e=>{
     const nav=e.target.closest?.('.menu-nav-btn');
     if(nav){e.preventDefault();e.stopImmediatePropagation();setMenuPage(nav.dataset.page);return;}
     const b=e.target.closest?.('button'); if(!b||b.disabled)return;
     const id=b.id;
-    if(routes[id]){e.preventDefault();e.stopImmediatePropagation();run(routes[id]);return;}
+    if(id!=='skinBtn'&&routes[id]){e.preventDefault();e.stopImmediatePropagation();run(routes[id]);return;}
     const a=b.dataset.action;
     if(a){
       const v=b.dataset.value; e.preventDefault();e.stopImmediatePropagation();
@@ -5926,5 +5926,50 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
-</script></body>
+</script>
+<script id="outlast-v32714-skin-area-rebuild">
+(function(){
+'use strict';
+const VERSION='3.27.14';
+function esc(v){return String(v??'').replace(/[&<>"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));}
+function openSkinArea(){
+ const names=Object.keys(skins||{});
+ const owned=names.filter(n=>!!(save.skins&&save.skins[n]));
+ const cards=names.map(n=>{
+  const v=skins[n]||{},isOwned=!!(save.skins&&save.skins[n]),selected=save.selectedSkin===n;
+  return '<button type="button" class="option outlast-skin-card '+(selected?'selected':'')+'" data-outlast-skin="'+esc(n)+'" '+(!isOwned?'disabled':'')+'>'+
+   '<div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b>'+esc(n)+'</b><span class="small">'+esc(v.rarity||'Common')+'</span></div>'+
+   '<div class="small">'+esc(v.bonus||'Cosmetic skin')+'</div>'+
+   '<div class="small">'+(selected?'✓ EQUIPPED':isOwned?'OWNED • CLICK TO EQUIP':'🔒 CASE ONLY')+'</div></button>';
+ }).join('');
+ const current=skins[save.selectedSkin]||skins.Classic||{};
+ openSub('🎨 Skin Area',
+  '<div class="option" style="margin-bottom:12px"><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">'+
+  '<canvas id="outlastSkinPreviewCanvas" width="180" height="220" style="width:150px;height:183px;border-radius:14px;border:1px solid #354858;background:#091016"></canvas>'+
+  '<div><h3 style="margin:0 0 6px">Equipped Skin</h3><div style="font-size:20px;font-weight:900">'+esc(save.selectedSkin||'Classic')+'</div><div class="small">'+esc(current.rarity||'Common')+' • '+esc(current.bonus||'Base appearance')+'</div><div class="small" style="margin-top:8px">Select any owned skin below to equip it immediately.</div></div></div></div>'+
+  '<div class="option" style="margin-bottom:12px"><b>◆ Skin Cases</b><div class="small">Open a case for a random unowned skin. Cost: 250 coins or 1 Case Voucher.</div><button type="button" class="gold" id="outlastSkinCaseBtn">OPEN SKIN CASE</button><div class="small" style="margin-top:6px">Case Vouchers: '+Number(save.caseCredits||0)+'</div></div>'+
+  '<div class="small" style="margin:8px 0">Owned: '+owned.length+'/'+names.length+'</div><div class="grid" id="outlastSkinGrid">'+cards+'</div>');
+ const grid=document.getElementById('outlastSkinGrid');
+ grid?.addEventListener('click',e=>{
+  const b=e.target.closest('[data-outlast-skin]');if(!b)return;
+  const n=b.getAttribute('data-outlast-skin');if(!save.skins?.[n])return;
+  save.selectedSkin=n;persist();toast('🎨 Equipped '+n+'!');openSkinArea();
+ });
+ document.getElementById('outlastSkinCaseBtn')?.addEventListener('click',e=>{
+  e.preventDefault();e.stopPropagation();if(typeof window.openSkinCase==='function')window.openSkinCase();
+ });
+ setTimeout(()=>{
+  try{const cv=document.getElementById('outlastSkinPreviewCanvas');if(cv&&typeof drawAvatarPreview==='function'){const pctx=cv.getContext('2d'),ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;drawAvatarPreview(pctx,{...(ch.visual||{}),body:sk.color},sk.color||'#5e9fff');}}catch(err){console.error('OUTLAST Skin preview error',err);}
+ },0);
+}
+const button=document.getElementById('skinBtn');
+if(button){
+ button.onclick=e=>{e.preventDefault();e.stopPropagation();openSkinArea();};
+ button.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen'){e.preventDefault();e.stopPropagation();openSkinArea();}},{passive:false});
+}
+window.openSkinMenu=openSkinArea;
+window.__outlastSkinAreaVersion=VERSION;
+})();
+</script>
+</body>
 </html>

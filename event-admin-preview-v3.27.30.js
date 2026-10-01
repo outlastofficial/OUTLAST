@@ -9,8 +9,15 @@
       const name=entries[0]?.[0]||'Nightfall Event';
       const desc=entries[0]?.[1]||'Upcoming event';
       const safe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+      const launchMs=Date.parse('2026-10-03T11:00:00-04:00');
+      const countdown=()=>{
+        const ms=launchMs-Date.now();
+        if(ms<=0)return 'LIVE';
+        const total=Math.floor(ms/1000),d=Math.floor(total/86400),h=Math.floor(total%86400/3600),m=Math.floor(total%3600/60),s=total%60;
+        return (d?d+'d ':'')+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
+      };
       const visual='<div class="option" style="padding:14px;background:linear-gradient(145deg,#101e2a,#0a1219);border:1px solid #315b73">'+
-        '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:20px">🌎 '+safe(name)+'</b><span class="small">2d 03h 14m</span></div>'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:20px">🌎 '+safe(name)+'</b><span class="small" id="adminPreviewCountdown">'+countdown()+'</span></div>'+
         '<div class="small" style="margin-top:6px">'+safe(desc)+'</div>'+
         '<div style="margin-top:12px;padding:11px;border:1px solid #29475b;border-radius:10px;background:#08121a"><b>📡 EVENT PROTOCOL</b><div class="small" style="margin-top:5px">Countdown • Community Signal • Investigation • Missions</div></div>'+
         '<div class="grid" style="margin-top:9px">'+

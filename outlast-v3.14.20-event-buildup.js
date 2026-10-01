@@ -3,7 +3,7 @@
   'use strict';
   if(window.__OUTLAST_EVENT_BUILDUP__) return;
   window.__OUTLAST_EVENT_BUILDUP__=true;
-  const EVENT_AT=new Date('2026-10-01T10:00:00').getTime();
+  const EVENT_AT=new Date('2026-10-03T15:00:00Z').getTime();
   const FINAL_WINDOW=24*60*60*1000;
   const KEY='outlastEventBuildupV320';
   const state=JSON.parse(localStorage.getItem(KEY)||'{"clues":0,"contrib":0,"rewardClaimed":false,"broadcasts":[]}');

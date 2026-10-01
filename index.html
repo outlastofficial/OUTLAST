@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="outlast-build" content="3.27.23">
-<meta name="build-version" content="3.27.22">
-<title>OUTLAST v3.27.23</title>
+<meta name="build-version" content="3.27.24">
+<title>OUTLAST v3.27.24</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3087,7 +3087,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     const msgs=(typeof outlastChatMessages!=='undefined'?outlastChatMessages:[]).slice(-80);
     if(!msgs.length){const e=document.createElement('div');e.className='small';e.style.color='#718795';e.textContent='No live chat messages yet.';box.appendChild(e);return;}
     msgs.forEach(m=>{const row=document.createElement('div');row.style.cssText='font-size:11px;line-height:1.35;padding:4px 0;border-bottom:1px solid rgba(92,136,166,.12)';
-      const name=document.createElement('b');name.textContent=String(m.username||'Player');if(isOutlastOwnerChatMessage(m)){const tag=document.createElement('span');tag.className='owner-chat-tag';tag.textContent='👑 OWNER';name.appendChild(tag);}else if(isOutlastTesterChatMessage(m)){const tag=document.createElement('span');tag.className='tester-chat-tag';tag.textContent='🧪 TESTER';name.appendChild(tag);}
+      const name=document.createElement('b');name.textContent=outlastDisplayChatUsername(m.username);if(isOutlastOwnerChatMessage(m)){const tag=document.createElement('span');tag.className='owner-chat-tag';tag.textContent='👑 OWNER';name.appendChild(tag);}else if(isOutlastTesterChatMessage(m)){const tag=document.createElement('span');tag.className='tester-chat-tag';tag.textContent='🧪 TESTER';name.appendChild(tag);}
       const tm=document.createElement('span');tm.style.cssText='font-size:9px;color:#6f8797;margin-left:6px';tm.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
       const msg=document.createElement('span');msg.textContent=': '+String(m.message||'');
       row.append(name,tm,msg);box.appendChild(row);});
@@ -4401,7 +4401,9 @@ function isOutlastOwnerChatMessage(m){
  if(role==='owner')return true;
  try{const name=String(m?.username||'').trim().toLowerCase();return typeof OWNER_USERNAMES!=='undefined'&&OWNER_USERNAMES instanceof Set&&OWNER_USERNAMES.has(name);}catch(_){return false;}
 }
-function isOutlastTesterChatMessage(m){const role=String(m?.role||'').toLowerCase();if(role==='tester')return true;const name=String(m?.username||'').trim().toLowerCase();return name==='max'||name==='ss';}
+function normalizeOutlastChatBadgeName(v){return String(v??'').trim().toLowerCase().replace(/[^a-z0-9]/g,'');}
+function isOutlastTesterChatMessage(m){const role=String(m?.role||'').trim().toLowerCase();if(role==='tester')return true;const name=normalizeOutlastChatBadgeName(m?.username);return name==='max'||name==='ss';}
+function outlastDisplayChatUsername(v){const raw=String(v??'').trim()||'Player';const normalized=normalizeOutlastChatBadgeName(raw);if(normalized==='max')return 'Max';if(normalized==='ss')return 'SS';return raw;}
 function renderOutlastChat(){
  const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus'),toggle=document.getElementById('outlastChatToggle');if(!box)return;
  if(status)status.textContent=(outlastOnline||outlastChatHttpOnline)?'🟢 Online':'🔴 Offline';

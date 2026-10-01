@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.30">
-<meta name="build-version" content="3.27.30">
-<title>OUTLAST v3.27.30</title>
+<meta name="outlast-build" content="3.27.31">
+<meta name="build-version" content="3.27.31">
+<title>OUTLAST v3.27.31</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3432,7 +3432,8 @@ const updates=[
 
   ['v3.14.4 — Nightfall & Hub Polish','Rebuilt the current build from the v3.14.3 Survivor Hub baseline. Nightfall now targets October 1, 2026 at 12:00 PM local time, Daily Shop stock gets a fresh rotation seed for the new build, and the existing Admin Event Preview and Skin button fixes are preserved.'],
   ['v3.1.4 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
-  ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],\n  ['Event Preview','Admins can open Event Preview to inspect the upcoming event UI and visual presentation without activating the live event.'],
+  ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],
+  ['Event Preview','Admins can use Event Preview to inspect the upcoming event UI and visual presentation without activating it.'],
   ['Version Display','Added the current game version to the main menu and Update Log.'],
   ['Menu Categories','Reorganized buttons into Play, Loadout, Systems, Progress, and More so features are easier to find.'],
   ['Modern Menu','Redesigned the main menu with compact categories, sidebar navigation, and grouped buttons.'],
@@ -3532,8 +3533,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.30';
-const CURRENT_UPDATE_INFO={title:'v3.27.30 — Event Preview Visual Fix',summary:'Small bug fixes and event preview reliability improvements.',items:['Admin Event Preview now shows the new event UI and visual layer.','Preview remains isolated from the live event, countdown, saves, and broadcasts.','Refreshed the visible game build marker.']};
+const CURRENT_UPDATE_VERSION='3.27.31';
+const CURRENT_UPDATE_INFO={title:'v3.27.31 — Event Preview UI Fix',summary:'Small bug fixes and event preview reliability improvements.',items:['Event Preview now shows the new event UI and visual presentation.','Preview remains isolated from the live event and current run.','Login was restored from the last working build.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3807,51 +3808,14 @@ window.adminLogin=function(){
 };
 window.adminEventPreview=function(){
   if(!isAdmin())return;
-  const overlayId='adminEventVisualPreview';
-  document.getElementById(overlayId)?.remove();
-  const escPreview=(s)=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const entries=Object.entries(worldEvents||{});
-  const eventName=entries[0]?.[0]||'Nightfall / October Event';
-  const eventDesc=entries[0]?.[1]||'Upcoming event visual preview';
-  const o=document.createElement('div');o.id=overlayId;
-  o.innerHTML=`<style>
-#${overlayId}{position:fixed;inset:0;z-index:99996;background:rgba(2,7,12,.84);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
-#${overlayId} .avp-shell{width:min(1040px,96vw);max-height:92vh;overflow:auto;background:linear-gradient(145deg,#0b1722,#071018);border:1px solid #426579;border-radius:20px;box-shadow:0 24px 90px #000;padding:18px;color:#eaf5ff}
-#${overlayId} .avp-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #233d4d;padding-bottom:12px}
-#${overlayId} .avp-kicker{font-size:10px;letter-spacing:1.5px;color:#70d7c7;font-weight:900}
-#${overlayId} h2{margin:3px 0;font-size:24px}#${overlayId} .avp-note,#${overlayId} .avp-muted{font-size:12px;color:#91a8b9;line-height:1.45}
-#${overlayId} .avp-close{border:1px solid #496477;background:#132433;color:#fff;border-radius:9px;padding:8px 11px;font-weight:900;cursor:pointer}
-#${overlayId} .avp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-#${overlayId} .avp-card{background:#0d1c28;border:1px solid #29485a;border-radius:14px;padding:13px}
-#${overlayId} .avp-card h3{margin:0 0 7px;font-size:14px}
-#${overlayId} .avp-pill{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(8,18,29,.96);border:1px solid #315b73;border-radius:999px;padding:8px 10px}
-#${overlayId} .avp-btn{display:inline-block;border:1px solid #37627a;background:#142738;color:#eaf5ff;border-radius:8px;padding:7px 9px;font-size:10px;font-weight:900}
-#${overlayId} .avp-btn.gold{background:#5d491a;border-color:#8a6a19}.#${overlayId} .avp-btn.green{background:#275d43;border-color:#4a936c}
-#${overlayId} .avp-progress{height:8px;background:#071017;border:1px solid #263e50;border-radius:99px;overflow:hidden;margin:8px 0}
-#${overlayId} .avp-progress>i{display:block;width:58%;height:100%;background:#4ca7cc}
-#${overlayId} .avp-shop{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-#${overlayId} .avp-shop>div{border:1px solid #29475b;background:#101f2b;border-radius:10px;padding:9px}
-#${overlayId} .avp-boss{background:linear-gradient(145deg,#2a1015,#101820);border-color:#7c3b45}
-@media(max-width:700px){#${overlayId}{padding:8px}#${overlayId} .avp-shell{width:100%;max-height:95vh;padding:13px}#${overlayId} .avp-grid{grid-template-columns:1fr}#${overlayId} .avp-shop{grid-template-columns:1fr}#${overlayId} h2{font-size:20px}}
-</style><div class="avp-shell" role="dialog" aria-modal="true" aria-label="Admin event visual preview">
-<div class="avp-head"><div><div class="avp-kicker">ADMIN-ONLY VISUAL PREVIEW</div><h2>🌎 ${escPreview(eventName)} — New Event UI</h2></div><button class="avp-close" type="button" data-avp-close>✕ CLOSE</button></div>
-<div class="avp-note" style="margin:10px 0 14px">Visual mock only. Does not start the event, alter the countdown, save progress, broadcast announcements, or modify the current run.</div>
-<div class="avp-card" style="margin-bottom:12px"><h3>Home / Hub Event Indicator</h3><div class="avp-pill"><b>EVENT</b><span>2d 03h 14m 22s</span><span class="avp-btn">DETAILS</span></div><div class="avp-muted" style="margin-top:9px">${escPreview(eventDesc)} • compact event indicator.</div></div>
-<div class="avp-grid">
-<div class="avp-card"><h3>📡 Event Protocol</h3><div class="avp-muted">EVENT INCOMING</div><div class="avp-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:8px"><div class="avp-card"><b>Countdown</b><div>2d 03h 14m</div></div><div class="avp-card"><b>Community Signal</b><div>58%</div><div class="avp-progress"><i></i></div></div><div class="avp-card"><b>Investigation</b><div>3 / 5 clues</div></div><div class="avp-card"><b>Missions</b><div>2 / 5 complete</div></div></div><div style="margin-top:9px"><span class="avp-btn">INVESTIGATE</span> <span class="avp-btn">BROADCAST</span> <span class="avp-btn gold">MISSIONS</span> <span class="avp-btn gold">SHOP</span> <span class="avp-btn green">ACCESS</span></div></div>
-<div class="avp-card"><h3>📻 Incoming Transmission</h3><div style="font-size:18px;font-weight:900">SIGNAL DETECTED...</div><div class="avp-muted" style="margin-top:7px">Something has started transmitting beneath the OUTLAST network.</div><div class="avp-card" style="margin-top:10px"><b>Event Calendar</b><div class="avp-muted">Exact event time • shared countdown source</div></div></div>
-<div class="avp-card"><h3>🔎 Investigation</h3><div class="avp-shop"><div>✓ Broken Signal</div><div>✓ Coordinate</div><div>✓ Access Key</div><div>□ Warning</div><div>□ Symbol</div></div><div class="avp-muted" style="margin-top:8px">Five-clue investigation presentation.</div></div>
-<div class="avp-card"><h3>🎯 Event Missions</h3><div class="avp-card"><b>Signal Hunter</b><div class="avp-progress"><i></i></div><div class="avp-muted">3 / 5 clues</div></div><div class="avp-card" style="margin-top:7px"><b>Breach Protocol</b><div class="avp-progress"><i style="width:100%"></i></div><div class="avp-muted">✓ COMPLETE • CLAIM +40</div></div></div>
-<div class="avp-card"><h3>🛒 Limited Event Shop</h3><div class="avp-shop"><div>🎃 Badge<br><b>50</b></div><div>📡 Frame<br><b>75</b></div><div>⚡ Title<br><b>100</b></div><div>🎃 Effect<br><b>125</b></div><div>🌀 Weapon Skin<br><b>175</b></div></div></div>
-<div class="avp-card avp-boss"><h3>🎃 Event Gameplay Visual</h3><div style="font-size:42px">🎃</div><b>RIFT PUMPKIN — EVENT BOSS</b><div class="avp-progress"><i style="width:72%"></i></div><div class="avp-muted">Event boss presentation, warning state, and event-specific HUD treatment.</div></div>
-</div>
-<div class="avp-card" style="margin-top:12px"><h3>Preview coverage</h3><div class="avp-muted">Event indicator • protocol • countdown/calendar • investigation • transmissions • missions • limited shop • boss visuals • mobile layout.</div></div>
-</div>`;
-  document.body.appendChild(o);
-  const close=()=>o.remove();
-  o.querySelector('[data-avp-close]')?.addEventListener('click',close);
-  o.addEventListener('click',e=>{if(e.target===o)close()});
-  document.addEventListener('keydown',function onKey(e){if(e.key==='Escape'){close();document.removeEventListener('keydown',onKey)}});
+  const cards=entries.length?entries.map(([name,desc])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+String(name).replace(/"/g,'&quot;')+'"><b>🌎 '+name+'</b><div class="small">'+desc+'</div><div class="small" style="margin-top:5px;color:#f2d06b">PREVIEW ONLY • Does not trigger the event</div></button>').join(''):'<div class="option">No upcoming events are configured.</div>';
+  openSub('👁️ Event Preview','<div class="option"><b>UPCOMING EVENT — UI / VISUAL PREVIEW</b><div class="small">Shows the new event presentation without starting or saving the live event.</div><div style="margin-top:10px;padding:12px;border:1px solid #315b73;border-radius:12px;background:linear-gradient(145deg,#101e2a,#0a1219)"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><b style="font-size:18px">🌎 '+(entries[0]?.[0]||'Nightfall Event')+'</b><span class="small" style="color:#9eb8ca">2d 03h 14m</span></div><div style="margin-top:10px;padding:10px;border-radius:10px;background:#08121a;border:1px solid #29475b"><b>EVENT PROTOCOL</b><div class="small" style="margin-top:5px">Countdown • Community Signal • Investigation • Missions • Broadcasts</div></div><div class="grid" style="margin-top:8px"><div class="option"><b>📡 Broadcasts</b><div class="small">Incoming transmission UI</div></div><div class="option"><b>🔎 Investigation</b><div class="small">5-clue event interface</div></div><div class="option"><b>🎯 Event Missions</b><div class="small">Progress + claim rewards</div></div><div class="option"><b>🛒 Event Shop</b><div class="small">Limited event cosmetics</div></div></div><div style="margin-top:8px;padding:12px;border-radius:10px;border:1px solid #7c3b45;background:linear-gradient(145deg,#2a1015,#101820)"><b style="font-size:17px">🎃 RIFT PUMPKIN</b><div class="small" style="margin-top:4px">Event boss warning + boss HUD presentation</div><div style="height:8px;background:#071017;border:1px solid #263e50;border-radius:99px;overflow:hidden;margin-top:8px"><span style="display:block;width:72%;height:100%;background:#4ca7cc"></span></div></div></div></div><div class="grid" style="margin-top:12px">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event above.</b></div>');
+  document.getElementById('subContent')?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{
+    const name=btn.dataset.adminPreviewEvent,desc=worldEvents[name]||'No description available.';
+    const result=document.getElementById('adminEventPreviewResult');
+    if(result)result.innerHTML='<div style="font-size:26px;font-weight:900">🌎 '+name+'</div><div class="small" style="margin-top:8px">'+desc+'</div><div style="margin-top:12px;padding:10px;border:1px solid #8a6a19;border-radius:10px;background:#17130a"><b>PREVIEW MODE</b><div class="small">The live event is unchanged. This screen is only a visual/UI preview.</div></div>';
+  }));
 };
 window.adminLock=leaveAdminSandbox;
 window.adminCoins=function(amount){if(!isAdmin())return;save.coins+=Number(amount)||0;updateMenuSummary();toast('🪙 Temporary coins added');document.getElementById('adminBtn').click()};

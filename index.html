@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.24">
-<meta name="build-version" content="3.27.24">
-<title>OUTLAST v3.27.24</title>
+<meta name="outlast-build" content="3.27.25">
+<meta name="build-version" content="3.27.25">
+<title>OUTLAST v3.27.25</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1810,13 +1810,14 @@ async function leaderboardFetch(path,options={},timeoutMs=7000){
  try{const res=await fetch('https://outlast-server.onrender.com'+path,{...options,cache:'no-store',signal:controller.signal});const data=await res.json().catch(()=>({ok:false,error:'Invalid server response'}));if(!res.ok)throw new Error(data.error||('HTTP '+res.status));return data;}
  finally{clearTimeout(timer);}
 }
+function leaderboardRecordKey(entry){return String(entry?.name||'').trim().toLowerCase()+'|'+String(entry?.mode||'Classic').trim().toLowerCase()+'|'+String(entry?.difficulty||'Normal').trim().toLowerCase();}
 function mergeLeaderboardEntry(entry){
  if(!entry||!entry.name)return;
  save.leaderboard=Array.isArray(save.leaderboard)?save.leaderboard:[];
- const key=String(entry.name).trim().toLowerCase(),i=save.leaderboard.findIndex(x=>String(x.name||'').trim().toLowerCase()===key);
+ const key=leaderboardRecordKey(entry),i=save.leaderboard.findIndex(x=>leaderboardRecordKey(x)===key);
  if(i<0)save.leaderboard.push(entry);else if(Number(entry.score||0)>=Number(save.leaderboard[i].score||0))save.leaderboard[i]=entry;
  save.leaderboard.sort((a,b)=>Number(b.score||0)-Number(a.score||0));
- save.leaderboard=save.leaderboard.slice(0,100);
+ save.leaderboard=save.leaderboard.slice(0,500);
 }
 async function submitServerLeaderboard(entry){
  try{
@@ -1827,29 +1828,41 @@ async function submitServerLeaderboard(entry){
    return data;
  }catch(err){console.warn('Leaderboard submit failed',err);return null;}
 }
-async function fetchServerLeaderboard(){
+async function fetchServerLeaderboard(mode=save.mode,difficulty=save.difficulty){
  try{
-   const data=await leaderboardFetch('/api/leaderboard?limit=100');
+   const params=new URLSearchParams({limit:'100'});
+   if(mode)params.set('mode',mode);
+   if(difficulty)params.set('difficulty',difficulty);
+   const data=await leaderboardFetch('/api/leaderboard?'+params.toString());
    const entries=Array.isArray(data.entries)?data.entries:[];
    entries.forEach(mergeLeaderboardEntry);persist();
    return entries.sort((a,b)=>Number(b.score||0)-Number(a.score||0));
  }catch(err){
    console.warn('Leaderboard server unavailable',err);
-   return Array.isArray(save.leaderboard)?save.leaderboard.slice().sort((a,b)=>Number(b.score||0)-Number(a.score||0)):null;
+   const m=String(mode||'Classic').toLowerCase(),d=String(difficulty||'Normal').toLowerCase();
+   return Array.isArray(save.leaderboard)?save.leaderboard.filter(x=>String(x.mode||'Classic').toLowerCase()===m&&String(x.difficulty||'Normal').toLowerCase()===d).sort((a,b)=>Number(b.score||0)-Number(a.score||0)):null;
  }
 }
-function renderServerLeaderboard(entries){
+function renderServerLeaderboard(entries,mode=save.mode,difficulty=save.difficulty){
  const host=document.getElementById('leaderboardRows');if(!host)return;
  if(entries===null){host.innerHTML='<p class="small dangerText">No leaderboard data is available right now.</p>';return;}
- const rows=entries.length?entries.map((r,i)=>'<div class="option"><b>#'+(i+1)+' '+String(r.name||'Player')+'</b><div class="small">Score '+Number(r.score||0).toLocaleString()+' • Level '+Number(r.level||1)+' • Kills '+Number(r.kills||0)+'</div><div class="small">'+String(r.mode||'Classic')+' • '+String(r.difficulty||'Normal')+' • '+String(r.date||'')+'</div></div>').join(''):'<p>No scores yet. Be the first record.</p>';
- host.innerHTML='<div class="small" style="margin-bottom:8px">Server records • top '+Math.min(entries.length,100)+' players</div>'+rows;
+ const rows=entries.length?entries.map((r,i)=>'<div class="option"><b>#'+(i+1)+' '+String(r.name||'Player')+'</b><div class="small">Score '+Number(r.score||0).toLocaleString()+' • Level '+Number(r.level||1)+' • Kills '+Number(r.kills||0)+'</div><div class="small">'+String(r.mode||'Classic')+' • '+String(r.difficulty||'Normal')+' • '+String(r.date||'')+'</div></div>').join(''):'<p>No scores yet for this mode and difficulty.</p>';
+ host.innerHTML='<div class="small" style="margin-bottom:8px">Server records • '+String(mode||'Classic')+' • '+String(difficulty||'Normal')+' • top '+Math.min(entries.length,100)+' players</div>'+rows;
 }
 async function openServerLeaderboard(){
- openSub('★ Leaderboard','<p class="small">Server leaderboard • one best record per player name.</p><div class="row"><button class="green" id="refreshLeaderboardBtn">↻ Refresh</button></div><div id="leaderboardRows" style="margin-top:10px;display:grid;gap:8px"><p class="small">Loading leaderboard…</p></div>');
+ const initialMode=save.mode||'Classic',initialDifficulty=save.difficulty||'Normal';
+ openSub('★ Leaderboard','<p class="small">Separate leaderboard for every mode and difficulty.</p><div id="leaderboardFilters" class="row" style="justify-content:flex-start;gap:7px;margin-bottom:8px"></div><div class="row"><button class="green" id="refreshLeaderboardBtn">↻ Refresh</button></div><div id="leaderboardRows" style="margin-top:10px;display:grid;gap:8px"><p class="small">Loading leaderboard…</p></div>');
+ const filters=document.getElementById('leaderboardFilters');
+ const modes=Object.keys(modeDefs||{}),diffs=Object.keys(diffDefs||{});
+ let selectedMode=initialMode,selectedDifficulty=initialDifficulty;
+ if(filters){
+   filters.innerHTML='<select id="leaderboardModeSelect" aria-label="Leaderboard mode" style="padding:8px;border-radius:9px;background:#101820;color:#fff;border:1px solid #385064">'+modes.map(m=>'<option value="'+String(m).replace(/"/g,'&quot;')+'" '+(m===selectedMode?'selected':'')+'>'+String(m)+'</option>').join('')+'</select><select id="leaderboardDifficultySelect" aria-label="Leaderboard difficulty" style="padding:8px;border-radius:9px;background:#101820;color:#fff;border:1px solid #385064">'+diffs.map(d=>'<option value="'+String(d).replace(/"/g,'&quot;')+'" '+(d===selectedDifficulty?'selected':'')+'>'+String(d)+'</option>').join('')+'</select>';
+   document.getElementById('leaderboardModeSelect')?.addEventListener('change',async e=>{selectedMode=e.target.value;renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);});
+   document.getElementById('leaderboardDifficultySelect')?.addEventListener('change',async e=>{selectedDifficulty=e.target.value;renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);});
+ }
  const refresh=document.getElementById('refreshLeaderboardBtn');
- if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='Loading…';renderServerLeaderboard(await fetchServerLeaderboard());refresh.disabled=false;refresh.textContent='↻ Refresh';};
- renderServerLeaderboard(Array.isArray(save.leaderboard)?save.leaderboard.slice().sort((a,b)=>Number(b.score||0)-Number(a.score||0)):[]);
- renderServerLeaderboard(await fetchServerLeaderboard());
+ if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='Loading…';renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);refresh.disabled=false;refresh.textContent='↻ Refresh';};
+ renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);
 }
 function updateWorldObjective(dt){
   const o=worldObjectives[game.objective]; if(!o||game.objectiveComplete)return;
@@ -1891,7 +1904,8 @@ function endRun(victory,recordScore=true,showEnd=true){
    save.leaderboard=Array.isArray(save.leaderboard)?save.leaderboard:[];
    const name=currentUsername.slice(0,18);
    const entry={name,score:Math.floor(game.score),level:game.level,kills:run.kills,mode:save.mode,difficulty:save.difficulty,date:new Date().toLocaleDateString()};
-   const existingIndex=save.leaderboard.findIndex(r=>String(r.name||'').trim().toLowerCase()===name.toLowerCase());
+   const entryKey=leaderboardRecordKey(entry);
+   const existingIndex=save.leaderboard.findIndex(r=>leaderboardRecordKey(r)===entryKey);
    let shouldSubmit=false;
    if(existingIndex>=0){
      if(entry.score>Number(save.leaderboard[existingIndex].score||0)){
@@ -3499,8 +3513,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.24';
-const CURRENT_UPDATE_INFO={title:'v3.27.24 — Small Bug Fix',summary:'Small bug fixes and Global Chat reliability.',items:['Tester names now stay visible with the 🧪 TESTER tag in Global Chat.']};
+const CURRENT_UPDATE_VERSION='3.27.25';
+const CURRENT_UPDATE_INFO={title:'v3.27.25 — Leaderboard Bug Fix',summary:'Small bug fixes and leaderboard reliability.',items:['Leaderboards are separated by game mode and difficulty.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

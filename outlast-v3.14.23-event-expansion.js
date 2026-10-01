@@ -7,7 +7,7 @@
   const EVENT_CONFIG={
     id:'nightfall-october-2026',
     name:'Nightfall / October Event',
-    startAt:new Date('2026-10-01T10:00:00').getTime()
+    startAt:new Date('2026-10-03T15:00:00Z').getTime()
   };
   const EVENT_AT=EVENT_CONFIG.startAt;
   const API='https://outlast-server.onrender.com';

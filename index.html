@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.38">
-<meta name="build-version" content="3.27.38">
-<title>OUTLAST v3.27.38</title>
+<meta name="outlast-build" content="3.27.39">
+<meta name="build-version" content="3.27.39">
+<title>OUTLAST v3.27.39</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3446,6 +3446,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.27.39 — Core HTML Integrity Fix','Small bug fixes and game stability improvements.'],
    ['v3.27.38 — Remove Bottom Chat Button','Small bug fixes and chat UI cleanup.'],
    ['v3.27.38 — Dead Chat Button Fix','Small bug fixes and chat UI cleanup.'],
    ['v3.27.38 — Boss Timer Fix','Small bug fixes and boss countdown visibility improvements.'],
@@ -3605,8 +3606,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.38';
-const CURRENT_UPDATE_INFO={title:'v3.27.38 — Laser Visual Fix',summary:'Small bug fixes and weapon presentation reliability.',items:['Laser now fires visible projectile bolts in the run.','Laser damage remains handled by its existing instant-hit system, so the visual bolts do not double damage.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.39';
+const CURRENT_UPDATE_INFO={title:'v3.27.39 — Core HTML Integrity Fix',summary:'Small bug fixes and game stability improvements.',items:['Removed corrupted duplicate HTML/script content that could cause unpredictable browser behavior.','Kept the working game logic intact while restoring a clean document ending.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6138,94 +6139,5 @@ window.__outlastSkinAreaVersion=VERSION;
 })();
 </script>
 <script src="event-admin-preview-v3.27.30.js"></script>
-</body>
-</html>
-</html>});
-      for(let i=0;i<2&&game.gems.length<MAX_PICKUPS;i++)game.gems.push({x:p.x+(Math.random()-.5)*450,y:p.y+(Math.random()-.5)*320,value:5+Math.floor(Math.random()*10),icon:'✦'});
-    });
-    if(s.action==='meteor')pulse('meteor',2300,()=>{
-      const mx=p.x+(Math.random()-.5)*520,my=p.y+(Math.random()-.5)*380;
-      game.effects.push({x:mx,y:my,t:.55,r:42,color:'#ff6d4d',fill:true});
-      for(const e of game.enemies){
-        if(Math.hypot(e.x-mx,e.y-my)<58){
-          damageEnemy(e,p.damage*2.25);
-          if(e.hp<=0){const i=game.enemies.indexOf(e);if(i>=0)killEnemy(i);}
-        }
-      }
-    });
-    if(s.action==='chaos')pulse('chaos',1300,()=>{spawnEnemy();if(Math.random()<.65)spawnEnemy();});
-    if(s.action==='speed'||s.action==='frenzy'){
-      const mult=s.action==='speed'?1.55:1.30;
-      game.enemies.forEach(e=>{
-        if(!e)return;
-        if(!Number.isFinite(e.__outlastBaseSpeed))e.__outlastBaseSpeed=Number(e.speed)||0;
-        if(e.__outlastBaseSpeed>0)e.speed=e.__outlastBaseSpeed*mult;
-      });
-    }else clearSpeed();
-    if(s.action==='frenzy')pulse('frenzy',1500,()=>spawnEnemy(Math.random()<.25?'elite':'normal'));
-  }
-  setInterval(apply,250);
-  window.addEventListener('beforeunload',clearSpeed);
-})();
-</script>
-</body>
-</html>});
-      for(let i=0;i<2&&game.gems.length<MAX_PICKUPS;i++)game.gems.push({x:p.x+(Math.random()-.5)*450,y:p.y+(Math.random()-.5)*320,value:5+Math.floor(Math.random()*10),icon:'✦'});
-    });
-    if(s.action==='meteor')pulse('meteor',2300,()=>{
-      const mx=p.x+(Math.random()-.5)*520,my=p.y+(Math.random()-.5)*380;
-      game.effects.push({x:mx,y:my,t:.55,r:42,color:'#ff6d4d',fill:true});
-      for(const e of game.enemies){
-        if(Math.hypot(e.x-mx,e.y-my)<58){
-          damageEnemy(e,p.damage*2.25);
-          if(e.hp<=0){const i=game.enemies.indexOf(e);if(i>=0)killEnemy(i);}
-        }
-      }
-    });
-    if(s.action==='chaos')pulse('chaos',1300,()=>{spawnEnemy();if(Math.random()<.65)spawnEnemy();});
-    if(s.action==='speed'||s.action==='frenzy'){
-      const mult=s.action==='speed'?1.55:1.30;
-      game.enemies.forEach(e=>{
-        if(!e)return;
-        if(!Number.isFinite(e.__outlastBaseSpeed))e.__outlastBaseSpeed=Number(e.speed)||0;
-        if(e.__outlastBaseSpeed>0)e.speed=e.__outlastBaseSpeed*mult;
-      });
-    }else clearSpeed();
-    if(s.action==='frenzy')pulse('frenzy',1500,()=>spawnEnemy(Math.random()<.25?'elite':'normal'));
-  }
-  setInterval(apply,250);
-  window.addEventListener('beforeunload',clearSpeed);
-})();
-</script>
-</body>
-</html>
-</html>});
-      for(let i=0;i<2&&game.gems.length<MAX_PICKUPS;i++)game.gems.push({x:p.x+(Math.random()-.5)*450,y:p.y+(Math.random()-.5)*320,value:5+Math.floor(Math.random()*10),icon:'✦'});
-    });
-    if(s.action==='meteor')pulse('meteor',2300,()=>{
-      const mx=p.x+(Math.random()-.5)*520,my=p.y+(Math.random()-.5)*380;
-      game.effects.push({x:mx,y:my,t:.55,r:42,color:'#ff6d4d',fill:true});
-      for(const e of game.enemies){
-        if(Math.hypot(e.x-mx,e.y-my)<58){
-          damageEnemy(e,p.damage*2.25);
-          if(e.hp<=0){const i=game.enemies.indexOf(e);if(i>=0)killEnemy(i);}
-        }
-      }
-    });
-    if(s.action==='chaos')pulse('chaos',1300,()=>{spawnEnemy();if(Math.random()<.65)spawnEnemy();});
-    if(s.action==='speed'||s.action==='frenzy'){
-      const mult=s.action==='speed'?1.55:1.30;
-      game.enemies.forEach(e=>{
-        if(!e)return;
-        if(!Number.isFinite(e.__outlastBaseSpeed))e.__outlastBaseSpeed=Number(e.speed)||0;
-        if(e.__outlastBaseSpeed>0)e.speed=e.__outlastBaseSpeed*mult;
-      });
-    }else clearSpeed();
-    if(s.action==='frenzy')pulse('frenzy',1500,()=>spawnEnemy(Math.random()<.25?'elite':'normal'));
-  }
-  setInterval(apply,250);
-  window.addEventListener('beforeunload',clearSpeed);
-})();
-</script>
 </body>
 </html>

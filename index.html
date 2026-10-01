@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.37">
-<meta name="build-version" content="3.27.37">
-<title>OUTLAST v3.27.37</title>
+<meta name="outlast-build" content="3.27.38">
+<meta name="build-version" content="3.27.38">
+<title>OUTLAST v3.27.38</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -725,11 +725,8 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 #outlastChat .chat-compose{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(92,136,166,.24)}
 #outlastChat .chat-compose input{min-width:0;flex:1;padding:9px 10px;border-radius:9px;border:1px solid #3b5263;background:#0b131a;color:#fff;outline:none}
 #outlastChat .chat-compose button{padding:9px 11px;border-radius:9px;border:1px solid #4d748e;background:#173244;color:#eaf7ff;font-weight:800;cursor:pointer}
-#outlastChatToggle{position:fixed;right:16px;bottom:105px;z-index:43;display:none;border:1px solid #4d748e;border-radius:999px;background:rgba(12,24,34,.92);color:#eaf7ff;padding:9px 13px;font:800 11px Arial;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3)}
-#outlastChatToggle.chat-visible{display:block}
 @media(max-width:760px){
  #outlastChat{right:10px;bottom:154px;width:min(360px,calc(100vw - 20px))}
- #outlastChatToggle{right:10px;bottom:154px}
  #outlastChat .chat-messages{height:125px}
 }
 </style><style id="outlast-v324-key-action-animation-removal">#mobileActions button[data-mobile-action="dash"],#mobileActions button[data-mobile-action="ult"]{animation:none!important;transition:none!important;transform:none!important;filter:none!important}#mobileActions button[data-mobile-action="dash"]:active,#mobileActions button[data-mobile-action="ult"]:active{animation:none!important;transition:none!important;transform:none!important;filter:none!important}</style><style id="outlast-v325-key-action-animation-removal">#mobileActions button[data-mobile-action="dash"],#mobileActions button[data-mobile-action="ult"],#mobileActions button[data-mobile-action="dash"]:active,#mobileActions button[data-mobile-action="ult"]:active{animation:none!important;transition:none!important;transform:none!important;filter:none!important}</style><style id="boss-timer-hud-v32736">
@@ -742,7 +739,6 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
 <div id="bossTimerHud" aria-live="polite" aria-label="Boss countdown"><span class="bth-label">BOSS</span><span class="bth-time" id="bossTimerHudTime">00:00</span><span class="bth-state" id="bossTimerHudState">NEXT</span></div>
-<button id="outlastChatToggle" type="button">💬 CHAT</button>
 <div id="outlastChat" aria-label="OUTLAST global chat">
   <div class="chat-card">
     <div class="chat-head"><span class="chat-title">GLOBAL CHAT</span><span class="chat-status" id="outlastChatStatus">Offline</span><button id="outlastChatClose" type="button" style="background:none;border:0;color:#9eb3c1;font-size:15px;cursor:pointer">×</button></div>
@@ -3367,7 +3363,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 const helpArticles=[
   ['What changed in v3.27.28?','Updates','This maintenance update contains small bug fixes and event launch reliability improvements.'],
   ['Where is the boss timer?','Boss Timer','During a live non-1v1 run, the BOSS countdown stays in a dedicated HUD at the lower-right of the game screen and counts down to the next boss.'],
-  ['Why was a chat button removed?','Global Chat','The duplicate bottom-corner chat toggle was removed. The main OUTLAST Global Chat control remains available without the duplicate button.'],
+  ['Why was the bottom chat button removed?','Global Chat','The bottom-corner chat button was removed from the game screen. Use the 💬 CHAT button in the menu to open Global Chat.'],
   ['How do I check the event before launch?','Halloween Event','Open the event details to review the countdown, calendar, event status, and available event information. The event uses one canonical launch timestamp so the countdown and event schedule stay synchronized.'],
   ['How does the Tester Chat tag work?','Global Chat','The recognized Max account displays a 🧪 TESTER tag next to the username in Global Chat.'],
   ['How does the online player count work?','Online / Multiplayer','The Players online number and the named player list use the same connected-player data. Server connection totals are tracked separately.'],
@@ -3450,8 +3446,9 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.37 — Dead Chat Button Fix','Small bug fixes and chat UI cleanup.'],
-   ['v3.27.37 — Boss Timer Fix','Small bug fixes and boss countdown visibility improvements.'],
+   ['v3.27.38 — Remove Bottom Chat Button','Small bug fixes and chat UI cleanup.'],
+   ['v3.27.38 — Dead Chat Button Fix','Small bug fixes and chat UI cleanup.'],
+   ['v3.27.38 — Boss Timer Fix','Small bug fixes and boss countdown visibility improvements.'],
    ['v3.27.35 — Laser Visual Fix','Small bug fixes and weapon visual reliability improvements.'],
    ['v3.27.34 — Weapon Performance Fix','Small bug fixes and weapon performance improvements.'],
    ['v3.27.33 — Update Log Fix','Small bug fixes and update-log reliability improvements.'],   ['v3.27.32 — Enemy Spawn Fix','Small bug fixes and gameplay reliability improvements.'],
@@ -3608,8 +3605,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.37';
-const CURRENT_UPDATE_INFO={title:'v3.27.37 — Laser Visual Fix',summary:'Small bug fixes and weapon presentation reliability.',items:['Laser now fires visible projectile bolts in the run.','Laser damage remains handled by its existing instant-hit system, so the visual bolts do not double damage.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.38';
+const CURRENT_UPDATE_INFO={title:'v3.27.38 — Laser Visual Fix',summary:'Small bug fixes and weapon presentation reliability.',items:['Laser now fires visible projectile bolts in the run.','Laser damage remains handled by its existing instant-hit system, so the visual bolts do not double damage.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4515,7 +4512,7 @@ function normalizeOutlastChatBadgeName(v){return String(v??'').trim().toLowerCas
 function isOutlastTesterChatMessage(m){const role=String(m?.role||'').trim().toLowerCase();if(role==='tester')return true;const name=normalizeOutlastChatBadgeName(m?.username);return name==='max'||name==='ss';}
 function outlastDisplayChatUsername(v){const raw=String(v??'').trim()||'Player';const normalized=normalizeOutlastChatBadgeName(raw);if(normalized==='max')return 'Max';if(normalized==='ss')return 'SS';return raw;}
 function renderOutlastChat(){
- const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus'),toggle=document.getElementById('outlastChatToggle');if(!box)return;
+ const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus');if(!box)return;
  if(status)status.textContent=(outlastOnline||outlastChatHttpOnline)?'🟢 Online':'🔴 Offline';
  box.textContent='';
  const msgs=outlastChatMessages.slice(-80);
@@ -4529,24 +4526,21 @@ function renderOutlastChat(){
    row.append(name,tm,body);box.appendChild(row);
  });
  box.scrollTop=box.scrollHeight;
- if(toggle)toggle.textContent=outlastChatUnread>0?'💬 CHAT • '+Math.min(99,outlastChatUnread):'💬 CHAT';
 }
 function toggleOutlastChat(force){
  outlastChatOpen=typeof force==='boolean'?force:!outlastChatOpen;outlastChatUnread=outlastChatOpen?0:outlastChatUnread;
- const panel=document.getElementById('outlastChat'),toggle=document.getElementById('outlastChatToggle');
+ const panel=document.getElementById('outlastChat');
  if(panel)panel.classList.toggle('open',!!outlastChatOpen);
- if(toggle)toggle.classList.toggle('chat-visible',!!game?.running&&!outlastChatOpen);
  if(outlastChatOpen){document.getElementById('outlastChatInput')?.focus();if(!outlastOnline&&!outlastSocket)connectOutlastServer();}
  renderOutlastChat();
 }
 function syncOutlastChatUI(){
  const active=!!game?.running&&!game?.over&&!game?.upgradeOpen&&!fatalErrorShown;
  const menu=document.getElementById('menu'),menuOpen=!!menu&&getComputedStyle(menu).display!=='none';
- const panel=document.getElementById('outlastChat'),toggle=document.getElementById('outlastChatToggle');
+ const panel=document.getElementById('outlastChat');
  const canUse=active||menuOpen;
- if(!canUse){if(panel)panel.classList.remove('open');if(toggle)toggle.classList.remove('chat-visible');return;}
- if(outlastChatOpen){if(panel)panel.classList.add('open');if(toggle)toggle.classList.remove('chat-visible');}
- else if(toggle)toggle.classList.add('chat-visible');
+ if(!canUse){if(panel)panel.classList.remove('open');return;}
+ if(outlastChatOpen){if(panel)panel.classList.add('open');}
  renderOutlastChat();
 }
 async function postOutlastChatMessage(message){
@@ -4572,7 +4566,6 @@ async function sendOutlastChatMessage(){
 }
 function setupOutlastChat(){
  document.getElementById('menuChatBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();toggleOutlastChat(true);});
- document.getElementById('outlastChatToggle')?.addEventListener('click',()=>toggleOutlastChat(true));
  document.getElementById('outlastChatClose')?.addEventListener('click',()=>toggleOutlastChat(false));
  document.getElementById('outlastChatSend')?.addEventListener('click',sendOutlastChatMessage);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOutlastAnnouncement();},true);

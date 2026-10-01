@@ -1,12 +1,13 @@
-/* OUTLAST v3.27.12 — canonical event countdown
+/* OUTLAST v3.27.28 — canonical event countdown
  * Single source of truth for the October event target.
  * Scheduled: Saturday, October 3, 2026 at 11:00 AM ET (15:00 UTC).
  */
 (() => {
   'use strict';
 
-  const EVENT_TARGET_MS = Date.UTC(2026, 9, 3, 15, 0, 0, 0);
+  const EVENT_TARGET_MS = Date.UTC(2026, 9, 3, 15, 0, 0, 0); // Launch schedule unchanged; canonical event timestamp.
   window.OUTLAST_EVENT_TARGET_MS = EVENT_TARGET_MS;
+  window.OUTLAST_EVENT_TARGET_ISO = new Date(EVENT_TARGET_MS).toISOString();
 
   function formatCountdown(ms) {
     ms = Math.max(0, Number(ms) || 0);

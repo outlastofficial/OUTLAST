@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.12">
-<meta name="build-version" content="3.27.12">
-<title>OUTLAST v3.27.12</title>
+<meta name="outlast-build" content="3.27.13">
+<meta name="build-version" content="3.27.13">
+<title>OUTLAST v3.27.13</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3347,7 +3347,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.27.12 — Event Countdown Fix','Small bug fixes and event countdown reliability.'],
+   ['v3.27.13 — Event Countdown Fix','Small bug fixes and event countdown reliability.'],
    ['v3.27.11 — Event Schedule Fix','Small bug fixes and event schedule synchronization.'],
    ['v3.27.9 — Small Account & Access Fix','Small bug fixes and account access reliability improvements.'],
    ['v3.27.7 — Announcement & Multiplayer Fix','Announcement notifications now close automatically after 10 seconds, and incoming announcements no longer open the Online / Multiplayer panel.'],
@@ -3482,8 +3482,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.12';
-const CURRENT_UPDATE_INFO={title:'v3.27.12 — Event Countdown Fix',summary:'Small bug fixes and event countdown reliability.',items:['The event countdown now uses one canonical Saturday, October 3, 2026 at 11:00 AM ET target.','The event calendar and countdown stay synchronized to the same target time.','Stale legacy countdown UI is cleared when the current build loads.']};
+const CURRENT_UPDATE_VERSION='3.27.13';
+const CURRENT_UPDATE_INFO={title:'v3.27.13 — Event Countdown Fix',summary:'Small bug fixes and event countdown reliability.',items:['The event countdown now uses one canonical Saturday, October 3, 2026 at 11:00 AM ET target.','The event calendar and countdown stay synchronized to the same target time.','Stale legacy countdown UI is cleared when the current build loads.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4798,9 +4798,31 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
-</script><script src="outlast-v3.9.7.js?v=3.27.12"></script>
-<script src="outlast-v3.14.0.js?v=3.27.12"></script>
-<script src="event-timer-v3.27.12.js?v=3.27.12"></script>
+</script><script src="outlast-v3.9.7.js?v=3.27.13"></script>
+<script src="outlast-v3.14.0.js?v=3.27.13"></script>
+<script src="event-timer-v3.27.13.js?v=3.27.13"></script>
+<script id="outlast-v32713-chat-space-fix">
+(function(){
+  'use strict';
+  const chatIds=new Set(['outlastChatInput','gecInput','globalChatInput','chatInput']);
+  function isChatInput(target){
+    return !!target && chatIds.has(target.id);
+  }
+  document.addEventListener('keydown',function(e){
+    if(!isChatInput(e.target)) return;
+    if(e.code==='Space'||e.key===' '){
+      e.stopImmediatePropagation();
+    }
+  },true);
+  document.addEventListener('keypress',function(e){
+    if(!isChatInput(e.target)) return;
+    if(e.code==='Space'||e.key===' '){
+      e.stopImmediatePropagation();
+    }
+  },true);
+})();
+</script>
+
 
 <script id="outlast-v3143-skin-button-fix">
 (function(){

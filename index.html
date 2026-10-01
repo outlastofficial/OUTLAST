@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.35">
-<meta name="build-version" content="3.27.35">
-<title>OUTLAST v3.27.35</title>
+<meta name="outlast-build" content="3.27.36">
+<meta name="build-version" content="3.27.36">
+<title>OUTLAST v3.27.36</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -732,9 +732,16 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
  #outlastChatToggle{right:10px;bottom:154px}
  #outlastChat .chat-messages{height:125px}
 }
-</style><style id="outlast-v324-key-action-animation-removal">#mobileActions button[data-mobile-action="dash"],#mobileActions button[data-mobile-action="ult"]{animation:none!important;transition:none!important;transform:none!important;filter:none!important}#mobileActions button[data-mobile-action="dash"]:active,#mobileActions button[data-mobile-action="ult"]:active{animation:none!important;transition:none!important;transform:none!important;filter:none!important}</style><style id="outlast-v325-key-action-animation-removal">#mobileActions button[data-mobile-action="dash"],#mobileActions button[data-mobile-action="ult"],#mobileActions button[data-mobile-action="dash"]:active,#mobileActions button[data-mobile-action="ult"]:active{animation:none!important;transition:none!important;transform:none!important;filter:none!important}</style></head>
+</style><style id="outlast-v324-key-action-animation-removal">#mobileActions button[data-mobile-action="dash"],#mobileActions button[data-mobile-action="ult"]{animation:none!important;transition:none!important;transform:none!important;filter:none!important}#mobileActions button[data-mobile-action="dash"]:active,#mobileActions button[data-mobile-action="ult"]:active{animation:none!important;transition:none!important;transform:none!important;filter:none!important}</style><style id="outlast-v325-key-action-animation-removal">#mobileActions button[data-mobile-action="dash"],#mobileActions button[data-mobile-action="ult"],#mobileActions button[data-mobile-action="dash"]:active,#mobileActions button[data-mobile-action="ult"]:active{animation:none!important;transition:none!important;transform:none!important;filter:none!important}</style><style id="boss-timer-hud-v32736">
+#bossTimerHud{position:fixed;right:18px;bottom:16px;z-index:55;display:none;align-items:center;gap:10px;min-width:138px;padding:9px 12px;box-sizing:border-box;border:1px solid rgba(105,192,255,.38);border-radius:12px;background:rgba(5,10,15,.88);box-shadow:0 10px 28px rgba(0,0,0,.28);pointer-events:none;font-family:Arial,sans-serif}
+#bossTimerHud .bth-label{font-size:10px;font-weight:900;letter-spacing:.12em;color:#8fb6cf}
+#bossTimerHud .bth-time{font-size:17px;font-weight:900;color:#fff;min-width:54px;text-align:right}
+#bossTimerHud .bth-state{font-size:10px;font-weight:800;color:#ffcf70;white-space:nowrap}
+@media(max-width:760px){#bossTimerHud{right:10px;bottom:78px;min-width:130px;padding:8px 10px}#bossTimerHud .bth-time{font-size:15px}}
+</style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
+<div id="bossTimerHud" aria-live="polite" aria-label="Boss countdown"><span class="bth-label">BOSS</span><span class="bth-time" id="bossTimerHudTime">00:00</span><span class="bth-state" id="bossTimerHudState">NEXT</span></div>
 <button id="outlastChatToggle" type="button">💬 CHAT</button>
 <div id="outlastChat" aria-label="OUTLAST global chat">
   <div class="chat-card">
@@ -2475,7 +2482,24 @@ function drawWeaponProjectile(b){
   ctx.restore();
 }
 function drawMinimap(){if(!game.running||game.upgradeOpen)return;const mw=Math.min(165,Math.max(135,CW*.17)),mh=mw*H/W,mx=10,my=145,sx=mw/W,sy=mh/H;ctx.save();ctx.fillStyle='rgba(5,10,15,.92)';ctx.fillRect(mx-5,my-5,mw+10,mh+10);ctx.strokeStyle='#5c7185';ctx.lineWidth=2;ctx.strokeRect(mx-5,my-5,mw+10,mh+10);ctx.fillStyle='rgba(35,50,62,.9)';ctx.fillRect(mx,my,mw,mh);for(const o of obstacleRects()){ctx.fillStyle='rgba(150,165,175,.65)';ctx.fillRect(mx+o.x*sx,my+o.y*sy,Math.max(2,o.w*sx),Math.max(2,o.h*sy));}for(const g of game.gems){ctx.fillStyle='#55d8ff';ctx.fillRect(mx+g.x*sx-1,my+g.y*sy-1,3,3);}for(const q of game.coins){ctx.fillStyle='#ffd24d';ctx.fillRect(mx+q.x*sx-1,my+q.y*sy-1,3,3);}for(const q of game.powerups){ctx.fillStyle=q.type==='xpVacuum'?'#ffe16b':'#d7b4ff';ctx.beginPath();ctx.arc(mx+q.x*sx,my+q.y*sy,3,0,Math.PI*2);ctx.fill();}for(const s of game.shrines){ctx.fillStyle=s.color||'#fff';ctx.fillRect(mx+s.x*sx-2,my+s.y*sy-2,4,4);}for(const e of game.enemies){ctx.fillStyle=e.boss?'#ff5a5a':'#e86a6a';ctx.fillRect(mx+e.x*sx-1.5,my+e.y*sy-1.5,e.boss?5:3,e.boss?5:3);}if(game.player){ctx.fillStyle='#69c0ff';ctx.beginPath();ctx.arc(mx+game.player.x*sx,my+game.player.y*sy,5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();}if(game.player2){ctx.fillStyle='#ff5f69';ctx.beginPath();ctx.arc(mx+game.player2.x*sx,my+game.player2.y*sy,4,0,Math.PI*2);ctx.fill();}ctx.fillStyle='#fff';ctx.font='bold 11px Arial';ctx.fillText('MAP',mx+7,my+14);ctx.font='10px Arial';ctx.fillStyle='#8fa3b5';ctx.fillText('● Player  ● Enemies  ● Loot',mx+7,my+mh-7);ctx.restore();}
+function updateBossTimerHud(){
+ const hud=document.getElementById('bossTimerHud'),timeEl=document.getElementById('bossTimerHudTime'),stateEl=document.getElementById('bossTimerHudState');
+ if(!hud||!timeEl||!stateEl)return;
+ const running=!!game?.running&&!game.over&&save.mode!=='1v1 Arena';
+ if(!running){hud.style.display='none';return;}
+ const every=Number(game.stats?.bossEvery);
+ const clock=Number(game.bossClock);
+ if(!(every>0)||!Number.isFinite(clock)){hud.style.display='none';return;}
+ const remaining=Math.max(0,every-Math.max(0,clock));
+ const min=String(Math.floor(remaining/60)).padStart(2,'0');
+ const sec=String(Math.ceil(remaining%60)).padStart(2,'0');
+ timeEl.textContent=min+':'+sec;
+ stateEl.textContent=remaining<=1?'INCOMING':'NEXT';
+ stateEl.style.color=remaining<=10?'#ff8f72':'#ffcf70';
+ hud.style.display='flex';
+}
 function draw(){
+ updateBossTimerHud();
  syncGameAdminUI();
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
  if(save.mode==='1v1 Arena'&&game.player2&&!game.paused&&!game.upgradeOpen){drawSurvivalSplit();drawMinimap();return;}
@@ -3342,6 +3366,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['What changed in v3.27.28?','Updates','This maintenance update contains small bug fixes and event launch reliability improvements.'],
+  ['Where is the boss timer?','Boss Timer','During a live non-1v1 run, the BOSS countdown stays in a dedicated HUD at the lower-right of the game screen and counts down to the next boss.'],
   ['How do I check the event before launch?','Halloween Event','Open the event details to review the countdown, calendar, event status, and available event information. The event uses one canonical launch timestamp so the countdown and event schedule stay synchronized.'],
   ['How does the Tester Chat tag work?','Global Chat','The recognized Max account displays a 🧪 TESTER tag next to the username in Global Chat.'],
   ['How does the online player count work?','Online / Multiplayer','The Players online number and the named player list use the same connected-player data. Server connection totals are tracked separately.'],
@@ -3424,7 +3449,10 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.32 — Enemy Spawn Fix','Small bug fixes and gameplay reliability improvements.'],
+   ['v3.27.36 — Boss Timer Fix','Small bug fixes and boss countdown visibility improvements.'],
+   ['v3.27.36 — Laser Visual Fix','Small bug fixes and weapon visual reliability improvements.'],
+   ['v3.27.34 — Weapon Performance Fix','Small bug fixes and weapon performance improvements.'],
+   ['v3.27.33 — Update Log Fix','Small bug fixes and update-log reliability improvements.'],   ['v3.27.32 — Enemy Spawn Fix','Small bug fixes and gameplay reliability improvements.'],
    ['v3.27.31 — Forge Button Fix','Small bug fixes and gear-system reliability improvements.'],
    ['v3.27.30 — Event Preview Fix','Small bug fixes and event preview reliability improvements.'],
    ['v3.27.29 — Owner Panel Bug Fix','Small bug fixes and event reliability.'],   ['v3.27.28 — Event Readiness Fix','Small bug fixes and event launch reliability.'],
@@ -3578,8 +3606,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.35';
-const CURRENT_UPDATE_INFO={title:'v3.27.35 — Laser Visual Fix',summary:'Small bug fixes and weapon presentation reliability.',items:['Laser now fires visible projectile bolts in the run.','Laser damage remains handled by its existing instant-hit system, so the visual bolts do not double damage.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.36';
+const CURRENT_UPDATE_INFO={title:'v3.27.36 — Laser Visual Fix',summary:'Small bug fixes and weapon presentation reliability.',items:['Laser now fires visible projectile bolts in the run.','Laser damage remains handled by its existing instant-hit system, so the visual bolts do not double damage.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

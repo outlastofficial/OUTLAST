@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.33">
-<meta name="build-version" content="3.27.33">
-<title>OUTLAST v3.27.33</title>
+<meta name="outlast-build" content="3.27.34">
+<meta name="build-version" content="3.27.34">
+<title>OUTLAST v3.27.34</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1975,6 +1975,8 @@ function spawnShrine(){
 
 const bossEmojis=['♛','♜','☠','▣','▤','☠','♞','♜'];
 function burst(x,y,color,count=8,speed=90){
+ const load=(game?.particles?.length||0)+(game?.effects?.length||0);
+ if(load>260)count=Math.min(count,2);else if(load>170)count=Math.min(count,4);
  for(let i=0;i<count;i++){
   const a=Math.random()*Math.PI*2,sp=speed*(.45+Math.random()*.8);
   game.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,t:.35+Math.random()*.35,max:.7,size:2+Math.random()*3,color});
@@ -2023,10 +2025,10 @@ function shoot(){
  const multiBonus=Math.max(0,Number(p.multiShot)||0);
  if(weapon==='OrbitBlades'){}
  speed*=Math.max(.1,Number(p.projectileSpeed)||1); if(!['Laser','FrostNova'].includes(weapon)){const shotsToFire=count+(p.doubleTap&&Math.random()<.20?1:0);for(let i=0;i<shotsToFire;i++){let a=ang+(i-(shotsToFire-1)/2)*spread;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult)?Math.max(1,p.damage*mult):Math.max(1,p.damage||1),hits:0,type:weapon,pierce});}} if(!['Laser','FrostNova'].includes(weapon)){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
- if(weapon==='Laser'){const targets=game.enemies.filter(e=>Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,Math.min(game.enemies.length,4+Math.max(0,Math.floor(p.multiShot||0))));targets.forEach(e=>{damageEnemy(e,p.damage*3.2);applyElement(e);game.effects.push({x:e.x,y:e.y,t:.35,r:18});if(e.hp<=0)killEnemy(e)});}
+ if(weapon==='Laser'){const limit=Math.min(game.enemies.length,4+Math.max(0,Math.floor(p.multiShot||0))),targets=[];for(const e of game.enemies){const dx=e.x-p.x,dy=e.y-p.y,d2=dx*dx+dy*dy;if(d2>=p.range*p.range)continue;if(targets.length<limit){targets.push({e,d2});continue;}let far=0;for(let ti=1;ti<targets.length;ti++)if(targets[ti].d2>targets[far].d2)far=ti;if(d2<targets[far].d2)targets[far]={e,d2};}targets.sort((a,b)=>a.d2-b.d2);for(const t of targets){const e=t.e;damageEnemy(e,p.damage*3.2);applyElement(e);game.effects.push({x:e.x,y:e.y,t:.35,r:18});if(e.hp<=0)killEnemy(e);}}
  if(weapon==='FrostNova'){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(e.x-p.x,e.y-p.y)<210){damageEnemy(e,p.damage*1.9);applyElement(e);e.burn=Math.max(e.burn||0,0);e.slowTimer=3;if(e.hp<=0)killEnemy(e)}}game.effects.push({x:p.x,y:p.y,t:.45,r:210})}
  // Lightning is projectile-count driven; no extra chain shots are spawned here.
- if(weapon==='OrbitBlades'){for(let k=0;k<3+Math.max(0,Number(p.multiShot)||0);k++){let a=game.time*2+k*Math.PI*2/3;let x=p.x+Math.cos(a)*70,y=p.y+Math.sin(a)*70;game.effects.push({x,y,t:.15,r:22});for(let j=game.enemies.length-1;j>=0;j--){let e=game.enemies[j];if(Math.hypot(e.x-x,e.y-y)<e.r+22){damageEnemy(e,p.damage*.8);if(e.hp<=0)killEnemy(e)}}}}
+ if(weapon==='OrbitBlades'){for(let k=0;k<3+Math.max(0,Number(p.multiShot)||0);k++){let a=game.time*2+k*Math.PI*2/3;let x=p.x+Math.cos(a)*70,y=p.y+Math.sin(a)*70;game.effects.push({x,y,t:.15,r:22});for(let j=game.enemies.length-1;j>=0;j--){let e=game.enemies[j],rr=e.r+22,dx=e.x-x,dy=e.y-y;if(dx*dx+dy*dy<rr*rr){damageEnemy(e,p.damage*.8);if(e.hp<=0)killEnemy(e)}}}}
  if(weapon==='Flame'){const flameBursts=1+Math.floor((Math.max(0,Number(p.multiShot)||0))/2);for(let fb=0;fb<flameBursts;fb++){const fa=ang+(fb-(flameBursts-1)/2)*.12;for(const e of game.enemies){let d=Math.hypot(e.x-p.x,e.y-p.y);let a=Math.atan2(e.y-p.y,e.x-p.x);let diff=Math.atan2(Math.sin(a-ang),Math.cos(a-ang));if(d<190&&Math.abs(diff)<.6){damageEnemy(e,p.damage*.55);e.burn=2}}}}
 }
 function useUltimate(){const p=game.player;if(!p||p.ult<100)return;p.ult=0;for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];damageEnemy(e,120*(p.ultDamage||1));if(e.hp<=0)killEnemy(e)}/* v3.23.6: Space ultimate visual pulse removed. */}
@@ -2292,6 +2294,8 @@ for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(
   if(p.shrineTimer>0){p.shrineTimer-=dt;if(p.shrineTimer<=0){p.tempDamage=0;p.tempSpeed=0;p.tempMagnet=0}}
   if(p.xpBonusTimer>0)p.xpBonusTimer-=dt;
   for(let i=game.powerups.length-1;i>=0;i--){const q=game.powerups[i];if(Math.hypot(q.x-p.x,q.y-p.y)<35){if(q.type==='heal')p.hp=Math.min(p.max,p.hp+35*(p.healMult||1));if(q.type==='speed')p.speed=Math.min(p.speedCap||p.speed*1.2,p.speed*1.18);if(q.type==='damage')p.damage+=4;if(q.type==='shield')p.shield=4.5;if(q.type==='xpVacuum'){let vacuumXP=0;for(const g of game.gems)vacuumXP+=Number(g.value)||0;game.gems=[];game.xp+=vacuumXP*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;if(vacuumXP>0)toast('★ XP VACUUM — ALL XP COLLECTED!');if(game.xp>=game.xpNeed)levelUp();}game.powerups.splice(i,1)}}
+ if(game.particles.length>280)game.particles.splice(0,game.particles.length-280);
+ if(game.effects.length>180)game.effects.splice(0,game.effects.length-180);
  for(let i=game.particles.length-1;i>=0;i--){const a=game.particles[i];a.t-=dt;a.x+=a.vx*dt;a.y+=a.vy*dt;a.vx*=.96;a.vy*=.96;if(a.t<=0)game.particles.splice(i,1);}for(let i=game.effects.length-1;i>=0;i--){game.effects[i].t-=dt;if(game.effects[i].t<=0)game.effects.splice(i,1);}for(const e of game.enemies){if(e.hitFlash>0)e.hitFlash-=dt;}if(game.shake>0)game.shake-=dt;
  if(game.enemies.length>MAX_ENEMIES)game.enemies.length=MAX_ENEMIES;
  if(game.bullets.length>MAX_BULLETS)game.bullets.splice(0,game.bullets.length-MAX_BULLETS);
@@ -3451,6 +3455,7 @@ const updates=[
   ['v3.14.4 — Nightfall & Hub Polish','Rebuilt the current build from the v3.14.3 Survivor Hub baseline. Nightfall now targets October 1, 2026 at 12:00 PM local time, Daily Shop stock gets a fresh rotation seed for the new build, and the existing Admin Event Preview and Skin button fixes are preserved.'],
   ['v3.1.4 — BLACKSITE UI Overhaul','Completely redesigned the OUTLAST menu interface with a new Blacksite command aesthetic, command-rail navigation, refreshed run-deployment panel, redesigned cards/buttons, updated transitions, and a responsive mobile layout.'],
   ['Update Log','Added this Update Log screen so the game records the updates made over the project.'],
+  ['Weapon Performance','Heavy weapon effects are automatically reduced under high visual load, while weapon mechanics remain unchanged.'],
   ['Enemy Spawns','Enemies and enemy teleports are redirected away from solid map obstacles so they do not appear inside walls or objects.'],
   ['Forge Buttons','Forge Bundle and Forge Refinement buttons use the existing Forge purchase/refinement actions.'],
   ['Event Preview','Admins can use Event Preview to inspect the upcoming event UI and visual presentation without activating it.'],
@@ -3553,8 +3558,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.33';
-const CURRENT_UPDATE_INFO={title:'v3.27.33 — Update Log Fix',summary:'Small bug fixes and update-history reliability.',items:['Restored the missing recent entries in the Update Log.','The v3.27.30, v3.27.31, and v3.27.32 fixes are now visible in the history.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.34';
+const CURRENT_UPDATE_INFO={title:'v3.27.34 — Weapon Performance Fix',summary:'Small bug fixes and gameplay reliability improvements.',items:['Reduced heavy weapon visual-effect load during intense runs.','Optimized high-cost Laser targeting and Orbit Blade checks.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

@@ -4304,7 +4304,7 @@ const OUTLAST_HTTP_URL='https://outlast-server.onrender.com';
 let outlastChatMessages=[];
 let outlastChatOpen=false;
 let outlastChatUnread=0;
-let outlastSocket=null,outlastOnline=false,outlastChatHttpOnline=false,outlastOnlineUsers=0,outlastOnlinePlayers=[],roomCode='',roomClientId='',roomPlayers={},roomStarted=false,coopLaunchActive=false;
+let outlastSocket=null,outlastOnline=false,outlastChatHttpOnline=false,outlastOnlineUsers=0,outlastServerConnections=0,outlastOnlinePlayers=[],roomCode='',roomClientId='',roomPlayers={},roomStarted=false,coopLaunchActive=false;
 let roomShots=[];
 let pendingRoomAction='';
 let pendingOutlastChat=[];
@@ -4487,7 +4487,7 @@ function connectOutlastServer(){
    try{
     m=JSON.parse(e.data);
     if(!m||typeof m!=='object')return;
-    if(m.type==='player_count'){outlastOnlineUsers=Number(m.players)||0;outlastOnlinePlayers=Array.isArray(m.onlinePlayers)?m.onlinePlayers.map(p=>({username:String(p?.username||'Player')})):[];if(onlinePanelIsOpen())renderOnlinePanel();}
+    if(m.type==='player_count'){outlastOnlineUsers=Number(m.players)||0;outlastServerConnections=Number(m.connections)||outlastOnlineUsers;outlastOnlinePlayers=Array.isArray(m.onlinePlayers)?m.onlinePlayers.map(p=>({username:String(p?.username||'Player')})):[];if(onlinePanelIsOpen())renderOnlinePanel();}
     if(m.type==='chat_history'&&Array.isArray(m.messages))mergeOutlastChatMessages(m.messages);
     if(m.type==='chat_message'&&m.message)pushOutlastChatMessage(m);
     if(m.type==='owner_announcement'&&m.message)receiveOutlastAnnouncement(m);
@@ -4533,7 +4533,7 @@ function renderOnlinePanel(){
  }).join('')||'<span class="small">No named players are currently connected.</span>';
  const roomList=Object.values(roomPlayers).map(p=>'<div class="statpill">'+outlastEscapeOnlineName(p.username||'Player')+' '+(p.id===roomClientId?'(You)':'')+'</div>').join('')||'<span class="small">Nobody in room yet.</span>';
  openSub('🌐 Online / Multiplayer',
-   '<div class="option"><b>Server:</b> outlast-server.onrender.com<div class="small">Status: '+onlineStatus()+'</div><div class="small">Players online: '+outlastOnlineUsers+'</div><div class="small">Active connections: '+(Number(outlastOnlineUsers)||0)+'</div></div>'+
+   '<div class="option"><b>Server:</b> outlast-server.onrender.com<div class="small">Status: '+onlineStatus()+'</div><div class="small">Players online: '+outlastOnlineUsers+'</div><div class="small">Active server connections: '+outlastServerConnections+'</div></div>'+
    '<div class="option" style="margin-top:12px"><b>Players Online</b><div class="small" style="margin:8px 0">Actual named players currently connected:</div><div class="grid">'+onlineList+'</div></div>'+
    '<div class="option" style="margin-top:12px"><b>Co-op Room</b><div class="small">Create a room and share its 4-character code. Up to 4 players.</div>'+
    (roomCode?'<div style="font-size:30px;font-weight:900;letter-spacing:.18em;margin:10px 0;color:#ffd84d">'+roomCode+'</div><div>'+roomList+'</div><div class="row" style="margin-top:10px"><button class="green" data-action="roomStart">▶ START CO-OP RUN</button><button class="danger" data-action="roomLeave">LEAVE ROOM</button></div>':

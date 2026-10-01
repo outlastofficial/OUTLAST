@@ -30,6 +30,12 @@
         '<div class="small" style="margin-top:10px;color:#9eb8ca">VISUAL PREVIEW ONLY • Does not activate, save, broadcast, or alter the live event.</div>';
       const cards=entries.length?entries.map(([n,d])=>'<button class="option" style="text-align:left" data-admin-preview-event="'+safe(n)+'"><b>🌎 '+safe(n)+'</b><div class="small">'+safe(d)+'</div></button>').join(''):'<div class="option">No upcoming events are configured.</div>';
       openSub('👁️ Event Preview',visual+'<div class="small" style="margin:12px 0 7px"><b>EVENTS</b></div><div class="grid">'+cards+'</div><div id="adminEventPreviewResult" class="option" style="margin-top:12px"><b>Select an event to inspect its preview.</b></div>');
+      if(window.__outlastAdminPreviewTimer)clearInterval(window.__outlastAdminPreviewTimer);
+      window.__outlastAdminPreviewTimer=setInterval(()=>{
+        const el=document.getElementById('adminPreviewCountdown');
+        if(!el){clearInterval(window.__outlastAdminPreviewTimer);window.__outlastAdminPreviewTimer=null;return;}
+        el.textContent=countdown();
+      },1000);
       document.getElementById('subContent')?.querySelectorAll('[data-admin-preview-event]').forEach(btn=>btn.addEventListener('click',()=>{
         const n=btn.dataset.adminPreviewEvent||'Event',d=(window.worldEvents&&window.worldEvents[n])||'No description available.';
         const r=document.getElementById('adminEventPreviewResult');

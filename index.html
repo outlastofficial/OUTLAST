@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.36">
-<meta name="build-version" content="3.27.36">
-<title>OUTLAST v3.27.36</title>
+<meta name="outlast-build" content="3.27.37">
+<meta name="build-version" content="3.27.37">
+<title>OUTLAST v3.27.37</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3367,6 +3367,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 const helpArticles=[
   ['What changed in v3.27.28?','Updates','This maintenance update contains small bug fixes and event launch reliability improvements.'],
   ['Where is the boss timer?','Boss Timer','During a live non-1v1 run, the BOSS countdown stays in a dedicated HUD at the lower-right of the game screen and counts down to the next boss.'],
+  ['Why was a chat button removed?','Global Chat','The duplicate bottom-corner chat toggle was removed. The main OUTLAST Global Chat control remains available without the duplicate button.'],
   ['How do I check the event before launch?','Halloween Event','Open the event details to review the countdown, calendar, event status, and available event information. The event uses one canonical launch timestamp so the countdown and event schedule stay synchronized.'],
   ['How does the Tester Chat tag work?','Global Chat','The recognized Max account displays a 🧪 TESTER tag next to the username in Global Chat.'],
   ['How does the online player count work?','Online / Multiplayer','The Players online number and the named player list use the same connected-player data. Server connection totals are tracked separately.'],
@@ -3449,7 +3450,8 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.36 — Boss Timer Fix','Small bug fixes and boss countdown visibility improvements.'],
+   ['v3.27.37 — Dead Chat Button Fix','Small bug fixes and chat UI cleanup.'],
+   ['v3.27.37 — Boss Timer Fix','Small bug fixes and boss countdown visibility improvements.'],
    ['v3.27.35 — Laser Visual Fix','Small bug fixes and weapon visual reliability improvements.'],
    ['v3.27.34 — Weapon Performance Fix','Small bug fixes and weapon performance improvements.'],
    ['v3.27.33 — Update Log Fix','Small bug fixes and update-log reliability improvements.'],   ['v3.27.32 — Enemy Spawn Fix','Small bug fixes and gameplay reliability improvements.'],
@@ -3606,8 +3608,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.36';
-const CURRENT_UPDATE_INFO={title:'v3.27.36 — Laser Visual Fix',summary:'Small bug fixes and weapon presentation reliability.',items:['Laser now fires visible projectile bolts in the run.','Laser damage remains handled by its existing instant-hit system, so the visual bolts do not double damage.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.37';
+const CURRENT_UPDATE_INFO={title:'v3.27.37 — Laser Visual Fix',summary:'Small bug fixes and weapon presentation reliability.',items:['Laser now fires visible projectile bolts in the run.','Laser damage remains handled by its existing instant-hit system, so the visual bolts do not double damage.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6038,60 +6040,7 @@ function install(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugReport:bugReport};
 })();
-</script><style id="globalChatEverywhereStyles">
-#outlastEverywhereChat{position:fixed;right:18px;bottom:76px;width:min(360px,calc(100vw - 36px));z-index:99990;display:none;pointer-events:none}
-#outlastEverywhereChat .gec-panel{pointer-events:auto;background:rgba(7,12,18,.96);border:1px solid #385064;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);overflow:hidden}
-#outlastEverywhereChat .gec-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #293b49}
-#outlastEverywhereChat .gec-title{font-weight:800}
-#outlastEverywhereChat .gec-messages{height:190px;overflow:auto;padding:9px;font-size:13px}
-#outlastEverywhereChat .gec-row{display:flex;gap:7px;padding:8px;border-top:1px solid #243440}
-#outlastEverywhereChat input{flex:1;min-width:0;background:#101820;color:#fff;border:1px solid #385064;border-radius:9px;padding:9px}
-#outlastEverywhereChat button{border:1px solid #385064;background:#16232d;color:#fff;border-radius:9px;padding:9px 11px;cursor:pointer}
-#outlastEverywhereChat .gec-toggle{position:fixed;right:18px;bottom:18px;border-radius:999px;font-weight:800}
-@media(max-width:600px){#outlastEverywhereChat{right:10px;bottom:68px;width:calc(100vw - 20px)}#outlastEverywhereChat .gec-messages{height:150px}}
-</style>
-<div id="outlastEverywhereChat">
- <div class="gec-panel">
-  <div class="gec-head"><span class="gec-title">💬 Global Chat</span><button id="gecClose">×</button></div>
-  <div id="gecMessages" class="gec-messages"><div class="small">Connecting to chat…</div></div>
-  <div class="gec-row"><input id="gecInput" maxlength="180" placeholder="Type a message…"><button id="gecSend">Send</button></div>
- </div>
- <button class="gec-toggle" id="gecToggle">💬 Chat</button>
-</div>
-<script>
-(function(){
- function init(){
-  const root=document.getElementById('outlastEverywhereChat');if(!root||root.dataset.ready)return;root.dataset.ready='1';
-  const panel=root.querySelector('.gec-panel'),msgs=document.getElementById('gecMessages'),input=document.getElementById('gecInput');
-  let chatOpen=false;
-  function setChatOpen(open){
-   chatOpen=!!open;
-   panel.style.display=chatOpen?'block':'none';
-   root.classList.toggle('chat-open',chatOpen);
-  }
-  document.getElementById('gecToggle').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(!chatOpen);};
-  document.getElementById('gecClose').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(false);};
-  setChatOpen(false);
-  function render(){
-   const source=document.getElementById('globalChatMessages')||document.getElementById('chatMessages');
-   if(source&&source!==msgs) msgs.innerHTML=source.innerHTML;
-  }
-  document.getElementById('gecSend').onclick=()=>{
-   const text=input.value.trim();if(!text)return;
-   const candidates=[document.getElementById('globalChatInput'),document.getElementById('chatInput')];
-   const target=candidates.find(x=>x);
-   if(target){target.value=text;target.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true}));}
-   else if(typeof window.sendGlobalChatMessage==='function')window.sendGlobalChatMessage(text);
-   input.value='';setTimeout(render,120);
-  };
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('gecSend').click();}});
-  setInterval(()=>{render();if(document.body&&getComputedStyle(root).display==='none')root.style.display='block';},500);
-  root.style.display='block';
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-})();
-</script>
-<script id="outlast-v32714-skin-area-rebuild">
+</script><script id="outlast-v32714-skin-area-rebuild">
 (function(){
 'use strict';
 const VERSION='3.27.14';

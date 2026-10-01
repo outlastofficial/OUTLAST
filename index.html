@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.26">
-<meta name="build-version" content="3.27.26">
-<title>OUTLAST v3.27.26</title>
+<meta name="outlast-build" content="3.28.0">
+<meta name="build-version" content="3.28.0">
+<title>OUTLAST v3.28.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3384,7 +3384,8 @@ const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now 
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
    ['v3.27.26 — Small Bug Fix','Small bug fixes and interface reliability.'],
-      ['v3.27.24 — Small Bug Fix','Small bug fixes and Global Chat reliability.'],
+      ['v3.28.0 — Small Bug Fix','Small bug fixes and reliability improvements.'],
+   ['v3.27.24 — Small Bug Fix','Small bug fixes and Global Chat reliability.'],
    ['v3.27.23 — Small Bug Fix','Small bug fixes and Global Chat reliability.'],
    ['v3.27.22 — Small Bug Fix','Small bug fixes and Global Chat reliability.'],
    ['v3.27.21 — Update Popup Fix','Fixed the new-update popup so it appears for new versions without interfering with login or device setup.'],
@@ -3528,8 +3529,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.26';
-const CURRENT_UPDATE_INFO={title:'v3.27.26 — Small Bug Fix',summary:'Small bug fixes and interface reliability.',items:['General interface and reliability fixes.']};
+const CURRENT_UPDATE_VERSION='3.28.0';
+const CURRENT_UPDATE_INFO={title:'v3.28.0 — Small Bug Fix',summary:'Small bug fixes and reliability improvements.',items:['General interface and reliability fixes.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4534,6 +4535,7 @@ function connectOutlastServer(){
     if(m.type==='chat_history'&&Array.isArray(m.messages))mergeOutlastChatMessages(m.messages);
     if(m.type==='chat_message'&&m.message)pushOutlastChatMessage(m);
     if(m.type==='owner_announcement'&&m.message)receiveOutlastAnnouncement(m);
+    if(m.type==='owner_admin_abuse')window.__OUTLAST_ADMIN_ABUSE_STATE=m;
     if(m.type==='chat_error')toast('⚠️ '+(m.error||'Chat error'));
     if(m.type==='room_created'||m.type==='room_joined'){roomCode=String(m.code||'').toUpperCase();roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);toast('🏠 Room '+roomCode);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}
     if(m.type==='room_state'){roomStarted=!!m.started;roomPlayers={};(m.players||[]).forEach(x=>roomPlayers[x.id]=x);if(roomStarted&&!game.running){coopLaunchActive=true;document.getElementById('subPanel').style.display='none';startGame(true)}}
@@ -5206,8 +5208,22 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
         const d=await api('/api/owner/global-event');const current=d.active?String(d.label||'Active'):'None';
         content('<div class="owner-card"><h3>🌎 Global Event Controller</h3><div class="owner-muted">Current: '+esc(current)+'</div><div style="height:12px"></div><label class="owner-muted">Event</label><select id="ownerRemakeEvent" style="margin-top:6px">'+['october','double_coins','double_xp','chaos','blackout','boss_rush'].map(x=>'<option value="'+x+'">'+x.replace(/_/g,' ')+'</option>').join('')+'</select><div style="height:8px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeEventMinutes" type="number" min="1" max="1440" value="30" style="margin-top:6px"><div class="owner-actions"><button type="button" class="gold" data-owner-remake="startEvent">▶ Start Event</button><button type="button" class="danger" data-owner-remake="stopEvent">■ Stop Event</button></div></div>');
       }else if(tab==='abuse'){
-        const actions=[['boss','👹 Boss Spawn'],['blackout','🌑 Blackout'],['speed','💨 Enemy Speed Surge'],['chaos','⚡ Chaos'],['powerup','✨ Power-Up Rain'],['waves','🧟 Rapid Waves'],['stop','■ Stop Abuse']];
-        content('<div class="owner-card"><h3>⚡ Admin Abuse Controls</h3><div class="owner-muted">Temporary server-wide effects. Duration applies to effects that support it.</div><div style="height:10px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeAbuseMinutes" type="number" min="1" max="60" value="5" style="margin-top:6px"><div class="owner-grid" style="margin-top:10px">'+actions.map(x=>'<button type="button" class="'+(x[0]==='stop'?'danger':'option')+'" data-owner-remake="abuse" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+'</div></div>');
+        const current=await api('/api/owner/admin-abuse'),active=!!current.active&&Number(current.endsAt||0)>Date.now();
+        const actions=[
+          ['boss','👹 Boss Spawn','Repeated boss pressure'],
+          ['blackout','🌑 Blackout','Reduce visibility'],
+          ['speed','💨 Enemy Speed Surge','Increase enemy movement speed'],
+          ['chaos','⚡ Chaos','Increase spawn pressure'],
+          ['powerup','✨ Power-Up Rain','Drop extra power-ups'],
+          ['waves','🧟 Rapid Waves','Send repeated mixed waves'],
+          ['meteor','☄️ Meteor Shower','Repeated area strikes'],
+          ['swarm','🧟 Mega Swarm','Repeated runner swarms'],
+          ['lootstorm','💎 Loot Storm','Extra coins and gems'],
+          ['frenzy','🔥 Enemy Frenzy','Speed plus heavier spawning']
+        ];
+        const status=active?String(current.label||'Active effect')+' • ends '+new Date(Number(current.endsAt)).toLocaleString():'No Admin Abuse active';
+        const remaining=active?Math.max(1,Math.min(60,Math.ceil((Number(current.endsAt)-Date.now())/60000))):5;
+        content('<div class="owner-card"><h3>⚡ Admin Abuse Controls</h3><div class="owner-muted">Owner-only temporary server-wide effects. Starting another effect replaces the current one.</div><div class="option" style="margin-top:10px"><b>Current Status</b><div class="'+(active?'owner-warn':'owner-muted')+'" style="margin-top:5px">'+esc(status)+'</div></div><div style="height:10px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeAbuseMinutes" type="number" min="1" max="60" value="'+remaining+'" style="margin-top:6px"><div class="owner-grid" style="margin-top:10px">'+actions.map(x=>'<button type="button" class="option" data-owner-remake="abuse" data-value="'+x[0]+'">'+x[1]+'<div class="owner-muted" style="font-size:10px;margin-top:4px">'+x[2]+'</div></button>').join('')+'</div><div class="owner-actions"><button type="button" class="danger" data-owner-remake="abuse" data-value="stop">■ Stop Abuse</button><button type="button" class="option" data-owner-remake="refresh">↻ Refresh Status</button></div></div>');
       }else if(tab==='raffle'){
         const d=await api('/api/owner/players'),ps=(Array.isArray(d.players)?d.players:[]).filter(p=>p&&p.online&&String(p.username||'').trim());
         content('<div class="owner-card"><h3>🎟️ Active Player Raffle</h3><div class="owner-muted">Only players active when the draw starts enter. The wheel cycles through every active name, slows down, and lands on one randomly selected winner.</div><div id="ownerRaffleStatus" style="margin-top:14px;text-align:center;font-size:18px;font-weight:800;min-height:28px">'+(ps.length?esc(ps.length+' active player'+(ps.length===1?'':'s')):'No active players')+'</div><div id="ownerRaffleWheel" style="margin:14px auto;padding:22px 12px;max-width:560px;text-align:center;border:2px solid #3b5368;border-radius:16px;background:#0b131b;font-size:30px;font-weight:900;min-height:42px;display:flex;align-items:center;justify-content:center">READY</div><div class="owner-actions" style="justify-content:center"><button type="button" class="gold" data-owner-remake="raffleDraw" '+(ps.length?'':'disabled')+'>🎟️ SPIN ACTIVE PLAYERS</button><button type="button" class="option" data-owner-remake="refresh">↻ Refresh Players</button></div><div id="ownerRaffleWinner" class="owner-ok" style="margin-top:14px;text-align:center;min-height:24px"></div></div>');
@@ -5231,7 +5247,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
       if(!unlocked||!isOwnerName()){closePanel();return;}
       if(name==='startEvent'){const type=document.getElementById('ownerRemakeEvent')?.value||'october',minutes=Math.floor(Number(document.getElementById('ownerRemakeEventMinutes')?.value)||30),d=await api('/api/owner/global-event','POST',{action:'start',eventType:type,durationMinutes:minutes});toast?.('🌎 '+(d.event?.label||'Event started'));await render();return;}
       if(name==='stopEvent'){await api('/api/owner/global-event','POST',{action:'stop'});toast?.('■ Global event stopped');await render();return;}
-      if(name==='abuse'){const minutes=Math.floor(Number(document.getElementById('ownerRemakeAbuseMinutes')?.value)||5),d=await api('/api/owner/admin-abuse','POST',{action:value,durationMinutes:minutes});toast?.((d.label||'Admin abuse updated'));await render();return;}
+      if(name==='abuse'){const minutes=Math.max(1,Math.min(60,Math.floor(Number(document.getElementById('ownerRemakeAbuseMinutes')?.value)||5))),d=await api('/api/owner/admin-abuse','POST',{action:value,durationMinutes:minutes});window.__OUTLAST_ADMIN_ABUSE_STATE=d;toast?.((d.label||'Admin abuse updated'));await render();return;}
       if(name==='gift'){const target=String(document.getElementById('ownerRemakeGiftUser')?.value||'').trim(),amount=Math.floor(Number(document.getElementById('ownerRemakeGiftAmount')?.value)||0),d=await api('/api/owner/gift-coins','POST',{targetUsername:target,amount});toast?.('● '+d.amount+' coins queued for '+d.username);await render();return;}
       if(name==='raffleDraw'){
         if(window.__outlastOwnerRaffleSpinning)return;
@@ -5725,7 +5741,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.26';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.27.26';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.27.26';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and Skin Area reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.28.0';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content='3.28.0';const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content='3.28.0';let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and Skin Area reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -6040,6 +6056,67 @@ if(button){
 }
 window.openSkinMenu=openSkinArea;
 window.__outlastSkinAreaVersion=VERSION;
+})();
+</script>
+<script id="outlast-admin-abuse-effects-v328">
+(function(){
+  'use strict';
+  window.__OUTLAST_ADMIN_ABUSE_STATE=window.__OUTLAST_ADMIN_ABUSE_STATE||{active:false,action:'',label:'',startedAt:0,endsAt:0};
+  let lastStateKey='',lastPulse={};
+  function active(){const s=window.__OUTLAST_ADMIN_ABUSE_STATE;return !!(s&&s.active&&Number(s.endsAt||0)>Date.now());}
+  function clearSpeed(){
+    if(typeof game==='undefined'||!Array.isArray(game.enemies))return;
+    game.enemies.forEach(e=>{if(e&&Number.isFinite(e.__outlastBaseSpeed)){e.speed=e.__outlastBaseSpeed;delete e.__outlastBaseSpeed;}});
+  }
+  function pulse(name,ms,fn){
+    const now=Date.now();
+    if(!lastPulse[name]||now-lastPulse[name]>=ms){lastPulse[name]=now;try{fn()}catch(_){}}
+  }
+  function apply(){
+    const s=window.__OUTLAST_ADMIN_ABUSE_STATE;
+    if(!s||!active()){
+      if(typeof game!=='undefined'&&game.player)game.player.blackout=0;
+      clearSpeed();lastStateKey='';return;
+    }
+    if(lastStateKey!==String(s.action||'')){lastPulse={};lastStateKey=String(s.action||'');}
+    if(typeof game==='undefined'||!game.running||!game.player)return;
+    const p=game.player;
+    p.blackout=s.action==='blackout'?1:0;
+    if(s.action==='boss')pulse('boss',10000,()=>spawnBoss());
+    if(s.action==='waves')pulse('waves',4000,()=>{for(let i=0;i<4;i++)spawnEnemy(i===0?'elite':'normal');});
+    if(s.action==='swarm')pulse('swarm',4500,()=>{for(let i=0;i<7;i++)spawnEnemy('runner');});
+    if(s.action==='powerup')pulse('powerup',5000,()=>{
+      const types=['shield','heal','speed','damage','xpVacuum'];
+      for(let i=0;i<3&&game.powerups.length<MAX_PICKUPS;i++)game.powerups.push({x:p.x+(Math.random()-.5)*420,y:p.y+(Math.random()-.5)*320,type:types[Math.floor(Math.random()*types.length)]});
+    });
+    if(s.action==='lootstorm')pulse('lootstorm',4000,()=>{
+      for(let i=0;i<5&&game.coins.length<MAX_PICKUPS;i++)game.coins.push({x:p.x+(Math.random()-.5)*500,y:p.y+(Math.random()-.5)*350,value:15+Math.floor(Math.random()*40),icon:'
+</html>});
+      for(let i=0;i<2&&game.gems.length<MAX_PICKUPS;i++)game.gems.push({x:p.x+(Math.random()-.5)*450,y:p.y+(Math.random()-.5)*320,value:5+Math.floor(Math.random()*10),icon:'✦'});
+    });
+    if(s.action==='meteor')pulse('meteor',2300,()=>{
+      const mx=p.x+(Math.random()-.5)*520,my=p.y+(Math.random()-.5)*380;
+      game.effects.push({x:mx,y:my,t:.55,r:42,color:'#ff6d4d',fill:true});
+      for(const e of game.enemies){
+        if(Math.hypot(e.x-mx,e.y-my)<58){
+          damageEnemy(e,p.damage*2.25);
+          if(e.hp<=0){const i=game.enemies.indexOf(e);if(i>=0)killEnemy(i);}
+        }
+      }
+    });
+    if(s.action==='chaos')pulse('chaos',1300,()=>{spawnEnemy();if(Math.random()<.65)spawnEnemy();});
+    if(s.action==='speed'||s.action==='frenzy'){
+      const mult=s.action==='speed'?1.55:1.30;
+      game.enemies.forEach(e=>{
+        if(!e)return;
+        if(!Number.isFinite(e.__outlastBaseSpeed))e.__outlastBaseSpeed=Number(e.speed)||0;
+        if(e.__outlastBaseSpeed>0)e.speed=e.__outlastBaseSpeed*mult;
+      });
+    }else clearSpeed();
+    if(s.action==='frenzy')pulse('frenzy',1500,()=>spawnEnemy(Math.random()<.25?'elite':'normal'));
+  }
+  setInterval(apply,250);
+  window.addEventListener('beforeunload',clearSpeed);
 })();
 </script>
 </body>

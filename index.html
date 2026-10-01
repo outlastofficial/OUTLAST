@@ -6090,7 +6090,36 @@ window.__outlastSkinAreaVersion=VERSION;
       for(let i=0;i<3&&game.powerups.length<MAX_PICKUPS;i++)game.powerups.push({x:p.x+(Math.random()-.5)*420,y:p.y+(Math.random()-.5)*320,type:types[Math.floor(Math.random()*types.length)]});
     });
     if(s.action==='lootstorm')pulse('lootstorm',4000,()=>{
-      for(let i=0;i<5&&game.coins.length<MAX_PICKUPS;i++)game.coins.push({x:p.x+(Math.random()-.5)*500,y:p.y+(Math.random()-.5)*350,value:15+Math.floor(Math.random()*40),icon:'
+      for(let i=0;i<5&&game.coins.length<MAX_PICKUPS;i++)game.coins.push({x:p.x+(Math.random()-.5)*500,y:p.y+(Math.random()-.5)*350,value:15+Math.floor(Math.random()*40),icon:'</html>});
+      for(let i=0;i<2&&game.gems.length<MAX_PICKUPS;i++)game.gems.push({x:p.x+(Math.random()-.5)*450,y:p.y+(Math.random()-.5)*320,value:5+Math.floor(Math.random()*10),icon:'✦'});
+    });
+    if(s.action==='meteor')pulse('meteor',2300,()=>{
+      const mx=p.x+(Math.random()-.5)*520,my=p.y+(Math.random()-.5)*380;
+      game.effects.push({x:mx,y:my,t:.55,r:42,color:'#ff6d4d',fill:true});
+      for(const e of game.enemies){
+        if(Math.hypot(e.x-mx,e.y-my)<58){
+          damageEnemy(e,p.damage*2.25);
+          if(e.hp<=0){const i=game.enemies.indexOf(e);if(i>=0)killEnemy(i);}
+        }
+      }
+    });
+    if(s.action==='chaos')pulse('chaos',1300,()=>{spawnEnemy();if(Math.random()<.65)spawnEnemy();});
+    if(s.action==='speed'||s.action==='frenzy'){
+      const mult=s.action==='speed'?1.55:1.30;
+      game.enemies.forEach(e=>{
+        if(!e)return;
+        if(!Number.isFinite(e.__outlastBaseSpeed))e.__outlastBaseSpeed=Number(e.speed)||0;
+        if(e.__outlastBaseSpeed>0)e.speed=e.__outlastBaseSpeed*mult;
+      });
+    }else clearSpeed();
+    if(s.action==='frenzy')pulse('frenzy',1500,()=>spawnEnemy(Math.random()<.25?'elite':'normal'));
+  }
+  setInterval(apply,250);
+  window.addEventListener('beforeunload',clearSpeed);
+})();
+</script>
+</body>
+</html>
 </html>});
       for(let i=0;i<2&&game.gems.length<MAX_PICKUPS;i++)game.gems.push({x:p.x+(Math.random()-.5)*450,y:p.y+(Math.random()-.5)*320,value:5+Math.floor(Math.random()*10),icon:'✦'});
     });

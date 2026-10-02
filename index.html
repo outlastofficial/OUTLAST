@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.60">
-<meta name="build-version" content="3.27.60">
-<title>OUTLAST v3.27.60</title>
+<meta name="outlast-build" content="3.27.61">
+<meta name="build-version" content="3.27.61">
+<title>OUTLAST v3.27.61</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1287,6 +1287,42 @@ function findOpenEnemyPoint(x,y,r=15,spread=180){
  }
  return {x:baseX,y:baseY};
 }
+
+function findSafePlayerSpawn(x,y,r=20,avoidX=null,avoidY=null){
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const baseX=clamp(x,r+14,W-r-14),baseY=clamp(y,r+14,H-r-14);
+  const candidates=[];
+  const add=(px,py)=>{
+    px=clamp(px,r+14,W-r-14);py=clamp(py,r+14,H-r-14);
+    if(blocked(px,py,r))return;
+    if(avoidX!==null&&avoidY!==null&&Math.hypot(px-avoidX,py-avoidY)<r*3.2)return;
+    candidates.push({x:px,y:py,d:Math.hypot(px-baseX,py-baseY)});
+  };
+  add(baseX,baseY);
+  // Deterministic radial search first: keeps each map's intended layout while
+  // moving the spawn only as far as necessary from blocking geometry.
+  for(let ring=24;ring<=1400;ring+=24){
+    for(let step=0;step<48;step++){
+      const a=(step/48)*Math.PI*2;
+      add(baseX+Math.cos(a)*ring,baseY+Math.sin(a)*ring);
+    }
+    if(candidates.length)break;
+  }
+  // Large obstacles can block every radial sample around one side; use a
+  // coarse arena sweep as a final fallback.
+  if(!candidates.length){
+    for(let py=r+20;py<=H-r-20;py+=80){
+      for(let px=r+20;px<=W-r-20;px+=80){
+        add(px,py);
+        if(candidates.length>=8)break;
+      }
+      if(candidates.length>=8)break;
+    }
+  }
+  if(!candidates.length)return {x:baseX,y:baseY};
+  candidates.sort((a,b)=>a.d-b.d);
+  return {x:candidates[0].x,y:candidates[0].y};
+}
 function rescueEnemyFromObstacle(e){
  if(!e)return;
  const r=e.r||15;
@@ -1873,11 +1909,13 @@ function startGame(fromRoom=false){
   const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
   const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
   coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
-  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
+  const playerSpawn=findSafePlayerSpawn(W/2,H/2,20);
+  game.player={x:playerSpawn.x,y:playerSpawn.y,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
   game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
   game.player2=null;
   if(save.mode==='1v1 Arena'){
-    game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
+    const player2Spawn=findSafePlayerSpawn(W-120,H/2,20,game.player.x,game.player.y);
+    game.player2={x:player2Spawn.x,y:player2Spawn.y,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
   }
   game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
   fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();if(typeof connectOutlastServer==='function')connectOutlastServer();syncOutlastChatUI();
@@ -3537,6 +3575,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.27.61?','Updates','Fixed map spawn positions so players no longer start inside solid obstacles.'],
   ['What changed in v3.27.60?','Updates','Rebuilt map geometry and map-specific ground patterns so maps are structurally different, not copy-pasted layouts with different objects.'],
   ['What changed in v3.27.59?','Updates','Fixed Daily Shop purchase buttons being overridden by an older shop handler. All six current offers now purchase through the live Daily Shop system.'],
   ['What changed in v3.27.58?','Updates','Maps now have genuinely different landmark layouts and traversal patterns. Wasteland also has its own layout instead of using the Forest fallback.'],
@@ -3635,6 +3674,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.27.61 — Safe Map Spawn Fix','Player spawn placement now checks map collision geometry and moves the player to the nearest safe open position.'],
    ['v3.27.60 — Genuine Map Layout Overhaul','Rebuilt map geometry and map-specific ground patterns so every map has a distinct traversal layout.'],
    ['v3.27.59 — Daily Shop Button Fix','Fixed the Daily Shop purchase buttons so they use the current daily stock handler and correct item rewards.'],
    ['v3.27.58 — Unique Map Layouts','Reworked every map with its own landmark placement and traversal pattern, and added a dedicated Wasteland layout.'],
@@ -3809,8 +3849,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.60';
-const CURRENT_UPDATE_INFO={title:'v3.27.60 — Genuine Map Layout Overhaul',summary:'Rebuilt map geometry so maps differ by route structure, obstacle placement, and environmental pattern rather than only by object types.',items:['Each map now has a distinct traversal topology and landmark arrangement.','Added different layout styles including winding cover, corridors, zigzags, ring rooms, street blocks, tunnel lines, islands, and crater fields.','Ground-detail generation now uses a map-specific visual pattern instead of the same repeated detail coordinates.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.61';
+const CURRENT_UPDATE_INFO={title:'v3.27.61 — Safe Map Spawn Fix',summary:'Fixed player spawn positions so survivors cannot start inside map obstacles.',items:['Player 1 now gets the nearest safe open spawn point for the selected map.','1v1 Player 2 now also gets a collision-safe spawn point separated from Player 1.','Spawn placement uses the active map collision geometry, including the newly unique layouts.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6037,7 +6077,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.60';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.61';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

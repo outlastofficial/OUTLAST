@@ -1,4 +1,4 @@
-/* OUTLAST v3.27.30 — isolated Admin Event Preview visual layer */
+/* OUTLAST TEST v3.27.45 — isolated Admin Event Preview visual layer */
 (function(){
   'use strict';
   function install(){
@@ -9,7 +9,7 @@
       const name=entries[0]?.[0]||'Nightfall Event';
       const desc=entries[0]?.[1]||'Upcoming event';
       const safe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-      const launchMs=Date.parse('2026-10-03T11:00:00-04:00');
+      const launchMs=Date.now()+60000;
       const countdown=()=>{
         const ms=launchMs-Date.now();
         if(ms<=0)return 'LIVE';

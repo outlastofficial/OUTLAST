@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.70">
-<meta name="build-version" content="3.27.70">
-<title>OUTLAST v3.27.70</title>
+<meta name="outlast-build" content="3.27.69">
+<meta name="build-version" content="3.27.69">
+<title>OUTLAST v3.27.69</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1805,7 +1805,7 @@ function ensureMegaSave(){
   if(typeof save.worldKeys!=='number')save.worldKeys=0;
   if(!save.skillTree||typeof save.skillTree!=='object')save.skillTree={fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0};
   for(const k of ['fieldTraining','combatTraining','scavenger','xpResearch','petBond'])save.skillTree[k]=Math.max(0,Math.min(5,Math.floor(Number(save.skillTree[k])||0)));
-  if(!save.quests||typeof save.quests!=='object')save.quests={};\n  if(!Array.isArray(save.pendingLeaderboard))save.pendingLeaderboard=[];
+  if(!save.quests||typeof save.quests!=='object')save.quests={};
   if(typeof save.questDay!=='string')save.questDay='';
   if(typeof save.selectedZone!=='string'||!worldZones[save.selectedZone])save.selectedZone='Greenbelt';
   if(typeof save.currentObjective!=='string'||!worldObjectives[save.currentObjective])save.currentObjective='Zombie Hunt';
@@ -2062,29 +2062,12 @@ function mergeLeaderboardEntry(entry){
 }
 async function submitServerLeaderboard(entry){
  try{
-   const buildVersion=document.querySelector('meta[name="build-version"]')?.content||'3.27.70';
+   const buildVersion=document.querySelector('meta[name="build-version"]')?.content||'3.15.1';
    const data=await leaderboardFetch('/api/leaderboard',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...entry,clientVersion:buildVersion})});
    if(data.entry)mergeLeaderboardEntry(data.entry);
-   save.pendingLeaderboard=(save.pendingLeaderboard||[]).filter(x=>leaderboardRecordKey(x)!==leaderboardRecordKey(entry));
    persist();
    return data;
- }catch(err){
-   console.warn('Leaderboard submit failed; queued for retry',err);
-   save.pendingLeaderboard=Array.isArray(save.pendingLeaderboard)?save.pendingLeaderboard:[];
-   const key=leaderboardRecordKey(entry);
-   if(!save.pendingLeaderboard.some(x=>leaderboardRecordKey(x)===key))save.pendingLeaderboard.push(entry);
-   save.pendingLeaderboard=save.pendingLeaderboard.slice(-100);
-   persist();
-   return null;
- }
-}
-async function flushPendingLeaderboards(){
- const q=Array.isArray(save.pendingLeaderboard)?save.pendingLeaderboard.slice():[];
- if(!q.length)return;
- for(const entry of q){
-   const result=await submitServerLeaderboard(entry);
-   if(!result)break;
- }
+ }catch(err){console.warn('Leaderboard submit failed',err);return null;}
 }
 async function fetchServerLeaderboard(mode=save.mode,difficulty=save.difficulty){
  try{
@@ -2600,20 +2583,7 @@ if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game
  }
  b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.survival){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.survivalWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
 for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.lootLuck||0)*.003))e.slowTimer=1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='PulseCannon'){for(let pi=game.enemies.length-1;pi>=0;pi--){if(pi===j)continue;const q=game.enemies[pi];if(Math.hypot(q.x-b.x,q.y-b.y)<115){damageEnemy(q,p.damage*1.35);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.42,r:115});burst(b.x,b.y,'#d65cff',14,130);}if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>p.pierce)break}}if((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
- for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1;let auraActive=p.frost&&d<(p.frostAuraRadius||130);let slow=auraActive?Math.max(.08,1-(p.frostSlow||.50)):1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}if(auraActive){e.frostAuraHitCooldown=Math.max(0,(Number(e.frostAuraHitCooldown)||0)-dt);if(e.frostAuraHitCooldown<=0){const auraDamage=Math.max(0,p.damage*(Number(p.frostAuraDps)||0));if(auraDamage>0){damageEnemy(e,auraDamage);e.frostAuraHitCooldown=.5;if(e.hp<=0){const deadIndex=game.enemies.indexOf(e);if(deadIndex>=0){killEnemy(deadIndex);continue;}}}}}const nearby=game.enemies.length>45?0:game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const moveSpeed=e.kind==='boss'?Math.min(e.speed,140):e.speed;const enx=e.x+ex/d*moveSpeed*slow*squadBoost*dt,eny=e.y+ey/d*moveSpeed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if(e.kind==='boss'){e.summonTimer=(e.summonTimer||6)-dt;if(e.summonTimer<=0){e.summonTimer=e.phase>=3?4.2:(e.phase===2?5:6.5);const count=e.phase>=3?6:(e.phase===2?5:4);for(let si=0;si<count;si++){const ang=Math.random()*Math.PI*2,rad=55+Math.random()*35;spawnEnemy(Math.random()<.35?'runner':(Math.random()<.5?'ranged':'zombie'));const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){const safe=findOpenEnemyPoint(e.x+Math.cos(ang)*rad,e.y+Math.sin(ang)*rad,m.r||15,140);m.x=safe.x;m.y=safe.y;m.summoned=true;}}burst(e.x,e.y,'#ff8a5b',12,130);toast('⚠ BOSS SUMMONED '+count+' MINIONS!');} e.bossAttackTimer=(e.bossAttackTimer||2.2)-dt;if(e.bossAttackTimer<=0&&game.bullets.length<MAX_BULLETS){const phase=e.phase||1;const shots=phase>=3?3:(phase===2?2:1);const spread=phase>=3?.24:(phase===2?.16:0);const baseAng=Math.atan2(p.y-e.y,p.x-e.x);for(let bi=0;bi<shots;bi++){const off=shots===1?0:(bi-(shots-1)/2)*spread;const aa=baseAng+off;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(aa)*(phase>=3?390:330),vy:Math.sin(aa)*(phase>=3?390:330),r:9,dmg:e.damage*.65});}e.bossAttackTimer=phase>=3?.9:(phase===2?1.25:1.9);burst(e.x,e.y,'#ff6b6b',5,80);} }if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){
- const contactBase=Math.max(2,(Number(e.damage)||0)*1.15);
- if(p.ghostGuardTimer>0)continue;
- const armorMult=Math.max(.15,Number(p.armor)||1);
- const shieldMult=p.shield>0?Math.max(.05,.15/(Number(p.shieldEfficiency)||1)):1;
- const actual=p.godMode?0:contactBase*armorMult*shieldMult*(Number(p.damageTakenMult)||1);
- e.contactDamageCooldown=Math.max(0,(Number(e.contactDamageCooldown)||0)-dt);
- if(e.contactDamageCooldown<=0){
-   p.hp-=actual*.25;
-   p.contactDamageFlash=.10;
-   e.contactDamageCooldown=.25;
-   p.shield=Math.max(0,p.shield-dt);
- }
-}
+ for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1;let auraActive=p.frost&&d<(p.frostAuraRadius||130);let slow=auraActive?Math.max(.08,1-(p.frostSlow||.50)):1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}if(auraActive){e.frostAuraHitCooldown=Math.max(0,(Number(e.frostAuraHitCooldown)||0)-dt);if(e.frostAuraHitCooldown<=0){const auraDamage=Math.max(0,p.damage*(Number(p.frostAuraDps)||0));if(auraDamage>0){damageEnemy(e,auraDamage);e.frostAuraHitCooldown=.5;if(e.hp<=0){const deadIndex=game.enemies.indexOf(e);if(deadIndex>=0){killEnemy(deadIndex);continue;}}}}}const nearby=game.enemies.length>45?0:game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const moveSpeed=e.kind==='boss'?Math.min(e.speed,140):e.speed;const enx=e.x+ex/d*moveSpeed*slow*squadBoost*dt,eny=e.y+ey/d*moveSpeed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if(e.kind==='boss'){e.summonTimer=(e.summonTimer||6)-dt;if(e.summonTimer<=0){e.summonTimer=e.phase>=3?4.2:(e.phase===2?5:6.5);const count=e.phase>=3?6:(e.phase===2?5:4);for(let si=0;si<count;si++){const ang=Math.random()*Math.PI*2,rad=55+Math.random()*35;spawnEnemy(Math.random()<.35?'runner':(Math.random()<.5?'ranged':'zombie'));const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){const safe=findOpenEnemyPoint(e.x+Math.cos(ang)*rad,e.y+Math.sin(ang)*rad,m.r||15,140);m.x=safe.x;m.y=safe.y;m.summoned=true;}}burst(e.x,e.y,'#ff8a5b',12,130);toast('⚠ BOSS SUMMONED '+count+' MINIONS!');} e.bossAttackTimer=(e.bossAttackTimer||2.2)-dt;if(e.bossAttackTimer<=0&&game.bullets.length<MAX_BULLETS){const phase=e.phase||1;const shots=phase>=3?3:(phase===2?2:1);const spread=phase>=3?.24:(phase===2?.16:0);const baseAng=Math.atan2(p.y-e.y,p.x-e.x);for(let bi=0;bi<shots;bi++){const off=shots===1?0:(bi-(shots-1)/2)*spread;const aa=baseAng+off;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(aa)*(phase>=3?390:330),vy:Math.sin(aa)*(phase>=3?390:330),r:9,dmg:e.damage*.65});}e.bossAttackTimer=phase>=3?.9:(phase===2?1.25:1.9);burst(e.x,e.y,'#ff6b6b',5,80);} }if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const contactBase=Math.max(2,(Number(e.damage)||0)*1.15);if(p.ghostGuardTimer>0)continue;const armorMult=Math.max(.15,Number(p.armor)||1);const shieldMult=p.shield>0?Math.max(.05,.15/(Number(p.shieldEfficiency)||1)):1;const actual=p.godMode?0:contactBase*armorMult*shieldMult*(Number(p.damageTakenMult)||1);p.hp-=actual*dt;p.contactDamageFlash=.10;p.shield=Math.max(0,p.shield-dt)}}
  // Safety cleanup: never render or process an enemy that has already been killed.
  for(let i=game.enemies.length-1;i>=0;i--){const e=game.enemies[i];if(!e||e.__dead||e.hp<=0){if(e&&!e.__dead)killEnemy(e);else game.enemies.splice(i,1);}}
  for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(!b.enemy)continue; b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue}if(Math.hypot(b.x-p.x,b.y-p.y)<b.r+18){if(p.ghostGuardTimer<=0)p.hp-=b.dmg;game.bullets.splice(i,1);continue}if(b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
@@ -3688,8 +3658,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-   ['What changed in v3.27.70?','Updates','Stability pass: fixed end-run/leaderboard argument handling, queued failed leaderboard saves for retry, hardened zombie contact damage ticks, and refreshed the visible build/update marker.'],
-  ['What changed in v3.27.70?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+  ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],
@@ -3792,7 +3761,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.70 — Progression Gameplay Hardening','Removed duplicate contact damage processing and made pet abilities (including Ghost guard, Wolf attack, and Hawk marking) work reliably.'], ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+   ['v3.27.69 — Progression Gameplay Hardening','Removed duplicate contact damage processing and made pet abilities (including Ghost guard, Wolf attack, and Hawk marking) work reliably.'], ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
    ['v3.27.64 — Game Start Recovery Fix','Fixed the Start Run crash caused by Pet/Relic/Charm scaling being referenced before initialization.'],
    ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
    ['v3.27.62 — Full Map Layout & Spawn Fix','Spread every map through the full arena and strengthened collision-safe player spawning.'],
@@ -3800,7 +3769,7 @@ const updates=[
    ['v3.27.60 — Genuine Map Layout Overhaul','Rebuilt map geometry and map-specific ground patterns so every map has a distinct traversal layout.'],
    ['v3.27.59 — Daily Shop Button Fix','Fixed the Daily Shop purchase buttons so they use the current daily stock handler and correct item rewards.'],
    ['v3.27.58 — Unique Map Layouts','Reworked every map with its own landmark placement and traversal pattern, and added a dedicated Wasteland layout.'],
-   ['v3.27.66 — Unique Weapon Projectiles','Every weapon now has its own distinct projectile identity and visual shape; weapons no longer share a generic projectile.'],['v3.27.57 — Projectile Size Consistency Fix','Fixed projectile-size scaling so Big Bullets consistently affects Laser and special weapon projectiles.'], ['v3.27.56 — World Event Countdown Fix','Fixed World Event durations so their countdown now decreases during a live run and expires cleanly at zero.'], ['v3.27.55 — Ultimate Reliability Fix','Hardened the Ultimate activation path so a charged Ultimate reliably fires and clearly confirms activation.'], [['v3.27.70 — Stability & Leaderboard Retry Fix','Fixed end-run argument handling, queued failed leaderboard saves for retry, hardened zombie contact damage ticks, and refreshed the visible build marker.'], ['v3.27.54 — Boss Health Bar Sync Fix','Boss health now stays synchronized with the active boss and the bar disappears when the boss is defeated.'], ['v3.27.53 — Projectile Travel Fix','Fixed short-lived projectile visuals, especially laser travel distance and beam visibility.'], ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
+   ['v3.27.66 — Unique Weapon Projectiles','Every weapon now has its own distinct projectile identity and visual shape; weapons no longer share a generic projectile.'],['v3.27.57 — Projectile Size Consistency Fix','Fixed projectile-size scaling so Big Bullets consistently affects Laser and special weapon projectiles.'], ['v3.27.56 — World Event Countdown Fix','Fixed World Event durations so their countdown now decreases during a live run and expires cleanly at zero.'], ['v3.27.55 — Ultimate Reliability Fix','Hardened the Ultimate activation path so a charged Ultimate reliably fires and clearly confirms activation.'], ['v3.27.54 — Boss Health Bar Sync Fix','Boss health now stays synchronized with the active boss and the bar disappears when the boss is defeated.'], ['v3.27.53 — Projectile Travel Fix','Fixed short-lived projectile visuals, especially laser travel distance and beam visibility.'], ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
    ['v3.27.51 — Boss Timer & HUD Fix','Removed the duplicate boss timer and improved top HUD spacing/clipping.'],
    ['v3.27.50 — Update Popup Fix','Fixed the update notification so the current update is shown on a new game build.'],
    ['v3.27.49 — Version Marker Fix','Fixed the late version override that was displaying v3.27.41 instead of the current game version.'],
@@ -4589,11 +4558,11 @@ window.claimWeeklyPrize=function(){
 function submitWeeklyScore(score){if(!score)return;const b=weeklyBoard().filter(x=>x.username!==currentUsername);b.push({username:currentUsername,name:currentUsername.slice(0,12),score:Math.floor(score),kills:run.kills,level:game.level,date:Date.now()});b.sort((a,c)=>c.score-a.score);setWeeklyBoard(b);}
 
 /* Override endRun to add weekly score, but retain original save/reward flow. */
-endRun=function(victory,recordScore=true,showEnd=true){
+endRun=function(victory){
   if(!game.running)return;
   const score=game.score;
-  realEndRun(victory,recordScore,showEnd);
-  if(recordScore&&!adminUnlocked&&score>0)submitWeeklyScore(score);
+  realEndRun(victory);
+  if(!adminUnlocked&&score>0)submitWeeklyScore(score);
 };
 
 /* ---------- Extraction rewards + anti-duplication ---------- */
@@ -6188,13 +6157,13 @@ html.outlast-high-contrast{filter:contrast(1.12)}
   window.settingsOpen=open;
   window.openSettingsSafe=open;
   window.openControlsSafe=open;
-  document.addEventListener('visibilitychange',autoPause);\ndocument.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&typeof flushPendingLeaderboards==='function')flushPendingLeaderboards();});
+  document.addEventListener('visibilitychange',autoPause);
   document.addEventListener('fullscreenchange',applySettings);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',applySettings,{once:true});else applySettings();
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.70';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.69';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

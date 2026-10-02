@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="outlast-build" content="3.27.52">
-<meta name="build-version" content="3.27.53">
-<title>OUTLAST v3.27.53</title>
+<meta name="build-version" content="3.27.54">
+<title>OUTLAST v3.27.54</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -752,10 +752,10 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
  #menu .menu-topbar .subtitle{font-size:9px!important;letter-spacing:.11em!important}
  #menu .menu-chip{font-size:9px!important}
 }
-</style></head>
+</style><style id="boss-health-hud-v32754">#bossHealthHud{position:fixed;left:50%;top:12px;transform:translateX(-50%);width:min(560px,72vw);padding:8px 11px;background:rgba(5,10,15,.92);border:1px solid rgba(255,91,118,.65);border-radius:11px;box-shadow:0 10px 30px rgba(0,0,0,.30);z-index:18;pointer-events:none;font-family:Arial,sans-serif;box-sizing:border-box}.bhh-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}.bhh-name{font-size:11px;font-weight:900;letter-spacing:.1em;color:#ffd1d8}.bhh-values{font-size:11px;font-weight:800;color:#e5edf4}.bhh-track{height:11px;background:#28151b;border:1px solid #5b2c36;border-radius:999px;overflow:hidden}.bhh-fill{height:100%;width:0%;background:#ff5b76;border-radius:999px;box-shadow:0 0 12px rgba(255,91,118,.45);transition:width .08s linear}@media(max-width:760px){#bossHealthHud{top:8px;width:min(88vw,520px);padding:7px 9px}.bhh-name,.bhh-values{font-size:10px}.bhh-track{height:9px}}</style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
-<div id="bossTimerHud" aria-live="polite" aria-label="Boss countdown"><span class="bth-label">BOSS</span><span class="bth-time" id="bossTimerHudTime">00:00</span><span class="bth-state" id="bossTimerHudState">NEXT</span></div>
+<div id="bossTimerHud" aria-live="polite" aria-label="Boss countdown"><span class="bth-label">BOSS</span><span class="bth-time" id="bossTimerHudTime">00:00</span><span class="bth-state" id="bossTimerHudState">NEXT</span></div> <div id="bossHealthHud" aria-live="polite" aria-label="Boss health" style="display:none"><div class="bhh-top"><span class="bhh-name" id="bossHealthHudName">BOSS</span><span class="bhh-values" id="bossHealthHudValues">0 / 0</span></div><div class="bhh-track"><div class="bhh-fill" id="bossHealthHudFill"></div></div></div>
 <div id="outlastChat" aria-label="OUTLAST global chat">
   <div class="chat-card">
     <div class="chat-head"><span class="chat-title">GLOBAL CHAT</span><span class="chat-status" id="outlastChatStatus">Offline</span><button id="outlastChatClose" type="button" style="background:none;border:0;color:#9eb3c1;font-size:15px;cursor:pointer">×</button></div>
@@ -2558,9 +2558,11 @@ function updateBossTimerHud(){
  stateEl.style.color=remaining<=10?'#ff8f72':'#ffcf70';
  hud.style.display='flex';
 }
+function updateBossHealthHud(){const hud=document.getElementById('bossHealthHud'),nameEl=document.getElementById('bossHealthHudName'),valuesEl=document.getElementById('bossHealthHudValues'),fillEl=document.getElementById('bossHealthHudFill');if(!hud||!nameEl||!valuesEl||!fillEl)return;const active=!!game?.running&&!game.over&&save.mode!=='1v1 Arena'?game.enemies.find(e=>e&&!e.__dead&&e.boss&&Number(e.hp)>0&&Number(e.max)>0):null;if(!active){hud.style.display='none';return;}const hp=Math.max(0,Number(active.hp)||0),max=Math.max(1,Number(active.max)||1),ratio=Math.max(0,Math.min(1,hp/max));nameEl.textContent=game.raidBoss||'BOSS';valuesEl.textContent=Math.ceil(hp).toLocaleString()+' / '+Math.ceil(max).toLocaleString();fillEl.style.width=(ratio*100).toFixed(2)+'%';hud.style.display='block';}
 function draw(){
  updateBossTimerHud();
- syncGameAdminUI();
+ updateBossHealthHud();
+ syncGameAdminUI;
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
  if(save.mode==='1v1 Arena'&&game.player2&&!game.paused&&!game.upgradeOpen){drawSurvivalSplit();drawMinimap();return;}
  const md=mapDefs[save.map];ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
@@ -2571,7 +2573,7 @@ function draw(){
  for(const s of game.shrines){ctx.strokeStyle=s.color;ctx.lineWidth=4;ctx.beginPath();ctx.arc(s.x,s.y,22,0,Math.PI*2);ctx.stroke();ctx.fillStyle=s.color;ctx.font='11px Arial';ctx.fillText(s.type.split(' ')[0],s.x-20,s.y+4)}
  for(const q of game.powerups){ctx.fillStyle=q.type==='xpVacuum'?'#ffe16b':q.type==='heal'?'#65db74':q.type==='speed'?'#64b8ff':q.type==='damage'?'#ff6a62':'#d7b4ff';ctx.beginPath();ctx.arc(q.x,q.y,12,0,Math.PI*2);ctx.fill();const pi={xpVacuum:'★',heal:'+ ',speed:'↯',damage:'⚔',shield:'⬟'}[q.type]||'?';ctx.fillStyle='#101820';ctx.font='bold 12px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(pi.trim(),q.x,q.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
  for(const b of game.bullets){drawWeaponProjectile(b)}
- function drawZombieVisual(e){
+ function drawZombieVisual(e){ if(!e||e.__dead||Number(e.hp)<=0)return;
   const r=Math.max(6,e.r||15), k=String(e.kind||'normal').toLowerCase();
   const pulse=.5+.5*Math.sin(performance.now()/180+e.x*.01);
   let body='#60715f',dark='#263229',glow='#9ee66d',head='#7f9274',eye='#d9f59b';
@@ -2629,8 +2631,10 @@ function draw(){
     if(k==='mimic'){ctx.fillStyle=dark;ctx.fillRect(-r*.48,-r*.82,r*.96,r*.15);}if(k==='wastelandstalker'){ctx.strokeStyle=glow;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-r*.8,r*.4);ctx.lineTo(r*.8,-r*.4);ctx.stroke();}if(k==='splitter'){ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-r*.7);ctx.lineTo(0,r*.55);ctx.stroke();}if(k==='leechking'){ctx.strokeStyle=glow;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,r*.75,0,Math.PI*2);ctx.stroke();}if(k==='riftbrute'){ctx.strokeStyle=glow;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,r*1.1,0,Math.PI*2);ctx.stroke();}
   }
   ctx.restore();
-  ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(e.x-e.r,e.y-e.r-16,e.r*2,5);
-  ctx.fillStyle=glow;ctx.fillRect(e.x-e.r,e.y-e.r-16,e.r*2*Math.max(0,e.hp/e.max),5);
+  if(!e.boss){
+    ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(e.x-e.r,e.y-e.r-16,e.r*2,5);
+    ctx.fillStyle=glow;ctx.fillRect(e.x-e.r,e.y-e.r-16,e.r*2*Math.max(0,e.hp/e.max),5);
+  }
 }
 for(const e of game.enemies){drawZombieVisual(e);}
 const p=game.player;if(p){
@@ -3425,7 +3429,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.27.53?','Updates','Laser visual projectiles now travel far enough to reach their targets, with a clearer beam-style visual. Other projectile behavior remains unchanged.'], ['What changed in v3.27.52?','Updates','Improved top-screen header wrapping and balanced level-up choices with more varied drafts and smoother rarity chances.'],
+  ['What changed in v3.27.54?','Updates','The boss health bar now follows the live boss HP and hides immediately when no active boss remains.'], ['What changed in v3.27.53?','Updates','Laser visual projectiles now travel far enough to reach their targets, with a clearer beam-style visual. Other projectile behavior remains unchanged.'], ['What changed in v3.27.52?','Updates','Improved top-screen header wrapping and balanced level-up choices with more varied drafts and smoother rarity chances.'],
   ['What changed in v3.27.51?','Updates','Removed the duplicate boss countdown and improved top HUD spacing so important information stays visible on smaller screens.'],
   ['What changed in v3.27.50?','Updates','The update notification now checks the current game build, so new update popups appear correctly. The visible version badge and Update Log stay synchronized.'],
   ['What changed in v3.27.46?','Updates','This maintenance update repaired malformed menu styling and improved UI stability. Existing protected-tool verification remains in place.'],
@@ -3519,7 +3523,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.53 — Projectile Travel Fix','Fixed short-lived projectile visuals, especially laser travel distance and beam visibility.'], ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
+   ['v3.27.54 — Boss Health Bar Sync Fix','Boss health now stays synchronized with the active boss and the bar disappears when the boss is defeated.'], ['v3.27.53 — Projectile Travel Fix','Fixed short-lived projectile visuals, especially laser travel distance and beam visibility.'], ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
    ['v3.27.51 — Boss Timer & HUD Fix','Removed the duplicate boss timer and improved top HUD spacing/clipping.'],
    ['v3.27.50 — Update Popup Fix','Fixed the update notification so the current update is shown on a new game build.'],
    ['v3.27.49 — Version Marker Fix','Fixed the late version override that was displaying v3.27.41 instead of the current game version.'],
@@ -3690,8 +3694,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.53';
-const CURRENT_UPDATE_INFO={title:'v3.27.53 — Projectile Travel Fix',summary:'Fixed short-lived weapon visuals so projectile shots, especially the laser, travel far enough to visibly reach their targets.',items:['Laser visual projectiles now stay alive long enough to travel to their targeted enemy instead of disappearing after a fixed 0.22 seconds.','Laser bolts now use a longer, clearer beam-style visual while preserving the existing instant damage behavior.','Other projectile weapons keep their existing collision, damage, and wall behavior.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.54';
+const CURRENT_UPDATE_INFO={title:'v3.27.54 — Boss Health Bar Sync Fix',summary:'Fixed the boss health display so it tracks the active boss HP and disappears immediately when that boss is defeated.',items:['The boss health bar now reads directly from the currently active boss HP and max HP values.','Defeated bosses are no longer rendered with a leftover health bar after their HP reaches zero.','The boss health display hides when no live boss exists, including between bosses and after a run ends.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -5898,7 +5902,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.53';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.54';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

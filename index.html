@@ -2588,23 +2588,23 @@ const p=game.player;if(p){
  ctx.restore();
  if(game.player?.blackout){ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(0,0,CW,CH);}
  if(game.running){
-   ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(10,10,285,126);ctx.fillRect(CW-300,10,290,92);
+   ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(10,10,300,170);ctx.fillRect(Math.max(300,CW-345),10,Math.min(335,CW-355),116);
    ctx.fillStyle='#fff';ctx.font='bold 14px Arial';
    ctx.fillText('LV '+game.level+' • HP '+Math.floor(game.player.hp)+'/'+Math.floor(game.player.max),20,30);
    ctx.fillStyle='#55d8ff';ctx.fillText('XP '+Math.floor(game.xp)+'/'+game.xpNeed,20,52);
    ctx.fillStyle='#ffd24d';ctx.fillText('◉ '+Math.round(run.coins)+' • ★ '+Math.floor(game.score),20,74);
-   ctx.fillStyle='#ffcf70';ctx.fillText('ENEMIES '+game.enemies.length,20,136);ctx.fillStyle=levelDifficultyRamp(game.level)>1?'#ff9b68':'#ffcf70';ctx.fillText('LV DIFFICULTY '+levelDifficultyLabel(game.level),20,156);
+   ctx.fillStyle='#ffcf70';ctx.fillText('ENEMIES '+game.enemies.length,20,136);ctx.fillStyle=levelDifficultyRamp(game.level)>1?'#ff9b68':'#ffcf70';ctx.fillText('LV DIFFICULTY '+String(levelDifficultyLabel(game.level)).slice(0,24),20,156);
    ctx.fillStyle='#d6e1eb';ctx.font='12px Arial';
    const threat=game.enemies.length>160?'EXTREME':game.enemies.length>90?'HIGH':'RISING';
    ctx.fillText((game.combo>1?'×'+game.combo+'  ':'')+'Threat '+threat+(save.mode==='Speed Run'?' • '+Math.max(0,Math.ceil(game.stats.timeLimit-game.time))+'s':''),20,96);
    if(game.event)ctx.fillText('Event '+game.event+' • '+Math.ceil(game.eventTimer)+'s',20,116);
    const bossRemaining=Math.max(0,game.stats.bossEvery-game.bossClock);
    const bossMin=String(Math.floor(bossRemaining/60)).padStart(2,'0'),bossSec=String(Math.ceil(bossRemaining%60)).padStart(2,'0');
-   ctx.save();ctx.fillStyle='rgba(5,8,12,.72)';ctx.fillRect(CW-188,CH-42,178,28);ctx.strokeStyle='rgba(105,192,255,.32)';ctx.strokeRect(CW-188,CH-42,178,28);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.fillText('Boss '+bossMin+':'+bossSec+' • '+save.selectedWeapon,CW-178,CH-24);ctx.restore();
-   ctx.font='12px Arial';ctx.fillText('Skill '+(game.player.skillCooldown>0?Math.ceil(game.player.skillCooldown)+'s':'READY')+' • Ult '+Math.floor(game.player.ult)+'%',CW-288,52);
-   if(game.worldEvent)ctx.fillText('World '+game.worldEvent+' • '+Math.ceil(game.worldEventTimer)+'s',CW-288,74);
-   if(game.objective)ctx.fillText('Obj '+game.objective+(worldObjectives[game.objective]?' '+Math.floor(game.objectiveProgress||0)+'/'+worldObjectives[game.objective].target:''),CW-288,92);
-   if(save.mode==='1v1 Arena'&&game.player2){ctx.fillStyle='#ff7c86';ctx.fillText('P2 HP '+Math.floor(game.player2.hp)+'/'+Math.floor(game.player2.max),20,126);ctx.fillStyle='#b8c6d6';ctx.fillText('P2 IJKL • auto',CW-288,92);ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.fillText('P2',CW-38,30);}
+   /* v3.27.51: the dedicated DOM boss timer is the single boss countdown; do not draw a second one on the canvas. */
+   ctx.font='12px Arial';const hudRightX=Math.max(312,CW-334);ctx.fillText('Skill '+(game.player.skillCooldown>0?Math.ceil(game.player.skillCooldown)+'s':'READY')+' • Ult '+Math.floor(game.player.ult)+'%',hudRightX,52);
+   if(game.worldEvent)ctx.fillText('World '+String(game.worldEvent).slice(0,24)+' • '+Math.ceil(game.worldEventTimer)+'s',hudRightX,74);
+   if(game.objective)ctx.fillText('Obj '+String(game.objective).slice(0,20)+(worldObjectives[game.objective]?' '+Math.floor(game.objectiveProgress||0)+'/'+worldObjectives[game.objective].target:''),hudRightX,92);
+   if(save.mode==='1v1 Arena'&&game.player2){ctx.fillStyle='#ff7c86';ctx.fillText('P2 HP '+Math.floor(game.player2.hp)+'/'+Math.floor(game.player2.max),20,126);ctx.fillStyle='#b8c6d6';ctx.fillText('P2 IJKL • auto',hudRightX,108);ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.fillText('P2',CW-38,30);}
    const exit=document.getElementById('exitGameBtn');if(exit)exit.style.display='block';
  }
  if(game.paused){

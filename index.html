@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="outlast-build" content="3.27.52">
-<meta name="build-version" content="3.27.48">
-<title>OUTLAST v3.27.52</title>
+<meta name="build-version" content="3.27.53">
+<title>OUTLAST v3.27.53</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2051,7 +2051,7 @@ function shoot(){
    const laserShots=Math.max(1,shotsToFire);
    for(let i=0;i<laserShots;i++){
      const a=ang+(i-(laserShots-1)/2)*spread;
-     game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*Math.max(1100,speed),vy:Math.sin(a)*Math.max(1100,speed),r:Math.max(5,size),dmg:0,hits:0,type:'Laser',pierce:0,visualOnly:true,life:.22});
+     const laserSpeed=Math.max(1100,speed); const laserMaxDistance=Math.min(p.range,Math.max(120,bd+40)); const laserLife=Math.max(.38,Math.min(1.6,laserMaxDistance/laserSpeed+.12)); game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*laserSpeed,vy:Math.sin(a)*laserSpeed,r:Math.max(5,size),dmg:0,hits:0,type:'Laser',pierce:0,visualOnly:true,life:laserLife,travel:0,maxDistance:laserMaxDistance});
    }
  }else if(weapon!=='FrostNova'){
    for(let i=0;i<shotsToFire;i++){
@@ -2347,8 +2347,11 @@ if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
  for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;
  if(b.visualOnly){
-   b.life=(Number(b.life)||0)-dt;b.x+=b.vx*dt;b.y+=b.vy*dt;
-   if(b.life<=0||bulletHitsObstacle(b.x,b.y,b.r)||b.x<-120||b.x>W+120||b.y<-120||b.y>H+120)game.bullets.splice(i,1);
+   b.life=(Number(b.life)||0)-dt;
+   const step=Math.hypot(b.vx||0,b.vy||0)*dt;
+   b.travel=(Number(b.travel)||0)+step;
+   b.x+=b.vx*dt;b.y+=b.vy*dt;
+   if(b.life<=0||(b.maxDistance>0&&b.travel>=b.maxDistance)||bulletHitsObstacle(b.x,b.y,b.r)||b.x<-120||b.x>W+120||b.y<-120||b.y>H+120)game.bullets.splice(i,1);
    continue;
  }
  b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.survival){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.survivalWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
@@ -2523,7 +2526,11 @@ function drawWeaponProjectile(b){
     ctx.fillStyle='#d9e6ff';ctx.strokeStyle='#8eb7ff';ctx.lineWidth=2;ctx.beginPath();for(let k=0;k<8;k++){const q=k*Math.PI/4;ctx.lineTo(Math.cos(q)*(k%2?r:r*1.7),Math.sin(q)*(k%2?r:r*1.7));}ctx.closePath();ctx.fill();ctx.stroke();
   }else if(t==='Boomerang'||t==='Chakram'){
     ctx.strokeStyle='#f7d46b';ctx.lineWidth=Math.max(2,r*.45);ctx.beginPath();ctx.arc(0,0,r*1.35,-1.15,1.15);ctx.stroke();ctx.beginPath();ctx.arc(0,0,r*.75,1.95,4.3);ctx.stroke();
-  }else if(t==='Railgun'||t==='Laser'||t==='StarRifle'){
+  }else if(t==='Laser'){
+    ctx.strokeStyle='#d7f0ff';ctx.lineWidth=Math.max(3,r*.72);ctx.shadowColor='#8fe8ff';ctx.shadowBlur=18;ctx.beginPath();ctx.moveTo(-r*5.5,0);ctx.lineTo(r*4.8,0);ctx.stroke();
+    ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(1.5,r*.28);ctx.shadowBlur=6;ctx.beginPath();ctx.moveTo(-r*4.6,0);ctx.lineTo(r*4.2,0);ctx.stroke();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(r*4.1,0,r*.55,0,Math.PI*2);ctx.fill();
+  }else if(t==='Railgun'||t==='StarRifle'){
     ctx.strokeStyle=t==='StarRifle'?'#fff3a8':'#d7f0ff';ctx.lineWidth=Math.max(2,r*.5);ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=10;ctx.beginPath();ctx.moveTo(-r*3,0);ctx.lineTo(r*2.4,0);ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(r*1.4,0,r*.5,0,Math.PI*2);ctx.fill();
   }else if(t==='StormBow'){
     ctx.strokeStyle='#7fd8ff';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-r*1.8,0);ctx.lineTo(r*1.5,0);ctx.stroke();ctx.beginPath();ctx.moveTo(-r*.5,-r*.8);ctx.lineTo(r*1.4,0);ctx.lineTo(-r*.5,r*.8);ctx.stroke();
@@ -3418,7 +3425,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.27.52?','Updates','Improved top-screen header wrapping and balanced level-up choices with more varied drafts and smoother rarity chances.'],
+  ['What changed in v3.27.53?','Updates','Laser visual projectiles now travel far enough to reach their targets, with a clearer beam-style visual. Other projectile behavior remains unchanged.'], ['What changed in v3.27.52?','Updates','Improved top-screen header wrapping and balanced level-up choices with more varied drafts and smoother rarity chances.'],
   ['What changed in v3.27.51?','Updates','Removed the duplicate boss countdown and improved top HUD spacing so important information stays visible on smaller screens.'],
   ['What changed in v3.27.50?','Updates','The update notification now checks the current game build, so new update popups appear correctly. The visible version badge and Update Log stay synchronized.'],
   ['What changed in v3.27.46?','Updates','This maintenance update repaired malformed menu styling and improved UI stability. Existing protected-tool verification remains in place.'],
@@ -3512,7 +3519,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
+   ['v3.27.53 — Projectile Travel Fix','Fixed short-lived projectile visuals, especially laser travel distance and beam visibility.'], ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
    ['v3.27.51 — Boss Timer & HUD Fix','Removed the duplicate boss timer and improved top HUD spacing/clipping.'],
    ['v3.27.50 — Update Popup Fix','Fixed the update notification so the current update is shown on a new game build.'],
    ['v3.27.49 — Version Marker Fix','Fixed the late version override that was displaying v3.27.41 instead of the current game version.'],
@@ -3683,8 +3690,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.52';
-const CURRENT_UPDATE_INFO={title:'v3.27.52 — Top HUD & Upgrade Balance Fix',summary:'Improved top-screen layout and balanced level-up choices for more varied, reasonable upgrade drafts.',items:['Improved the top menu/header wrapping so important text is not cut off on smaller screens.','Balanced level-up drafts with more varied categories and smoother rarity chances.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.53';
+const CURRENT_UPDATE_INFO={title:'v3.27.53 — Projectile Travel Fix',summary:'Fixed short-lived weapon visuals so projectile shots, especially the laser, travel far enough to visibly reach their targets.',items:['Laser visual projectiles now stay alive long enough to travel to their targeted enemy instead of disappearing after a fixed 0.22 seconds.','Laser bolts now use a longer, clearer beam-style visual while preserving the existing instant damage behavior.','Other projectile weapons keep their existing collision, damage, and wall behavior.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -5891,7 +5898,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.52';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.53';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -6215,7 +6222,7 @@ window.__outlastSkinAreaVersion=VERSION;
   window.addEventListener('beforeunload',clearSpeed);
 })();
 </script>
-<script src="settings-expansion-v3.27.48.js?v=3.27.49"></script>
+<script src="settings-expansion-v3.27.48.js?v=3.27.53"></script>
 <script src="event-admin-preview-v3.27.30.js"></script>
 </body>
 </html>

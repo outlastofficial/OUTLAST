@@ -3944,7 +3944,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='3.27.73';
-const CURRENT_UPDATE_INFO={title:'v3.27.73 — Rarity Chance Fix',summary:'Fixed rarity rolling so the full rarity ladder uses one canonical chance table.',items:['Upgrade rarity rolls now use Common through Omega without a stale six-tier override.', 'Upgrade Luck changes the same live odds displayed in the Rarity screen.','The Rarity screen continues to show exact current percentages.','Skin Case odds remain the same exact 100% table.','Login was not changed.'], 
+const CURRENT_UPDATE_INFO={title:'v3.27.73 — Rarity Chance Fix',summary:'Fixed rarity rolling so the full rarity ladder uses one canonical chance table.',items:['Upgrade rarity rolls now use Common through Omega without a stale six-tier override.','Upgrade Luck changes the same live odds displayed in the Rarity screen.','The Rarity screen continues to show exact current percentages.','Skin Case odds remain the same exact 100% table.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.74">
-<meta name="build-version" content="3.27.74">
-<title>OUTLAST v3.27.74</title>
+<meta name="outlast-build" content="3.27.75">
+<meta name="build-version" content="3.27.75">
+<title>OUTLAST v3.27.75</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3661,7 +3661,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['What changed in v3.27.70?','Updates','Expanded Settings with combat feedback, accessibility, performance, mobile controls, notifications, vibration, FPS, HUD, and aim-assist options while keeping login and progression data isolated.'],
-  ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+  ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.75?','Updates','Closed a late script-boundary gap so progression hardening executes correctly, and removed the obsolete duplicate Daily Shop implementation. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],
@@ -3763,7 +3763,7 @@ function renderUpdates(){
  
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
-const updates=[['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
+const updates=[['v3.27.75 — Script Boundary & Shop Hardening','Closed a late script-boundary gap and consolidated Daily Shop handling into one source of truth.'], ['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
    ['v3.27.69 — Progression Gameplay Hardening','Removed duplicate contact damage processing and made pet abilities (including Ghost guard, Wolf attack, and Hawk marking) work reliably.'], ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
    ['v3.27.64 — Game Start Recovery Fix','Fixed the Start Run crash caused by Pet/Relic/Charm scaling being referenced before initialization.'],
    ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
@@ -3943,8 +3943,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.74';
-const CURRENT_UPDATE_INFO={title:'v3.27.74 — Stability & Regression Hardening',summary:'Hardened several systems that could drift or regress as the game grows.',items:['Version markers now derive from the current build instead of an older hardcoded layer.','Autosave runs at a lower-risk interval and respects the Autosave setting.','Leaderboard retry processing is single-flight so slow servers cannot create overlapping retry loops.','Admin God Mode and Full Heal now use the same live player fields as gameplay.','Progression set bonuses use one canonical application path to prevent duplicate stacking.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.75';
+const CURRENT_UPDATE_INFO={title:'v3.27.75 — Script Boundary & Shop Hardening',summary:'Closed a late script-boundary gap and removed the obsolete duplicate Daily Shop implementation.',items:['Late progression hardening now executes inside a valid script block.','Daily Shop now has one live source of truth for stock, purchases, rewards, and refresh timing.','The v3.27.74 stability protections remain active for version sync, autosave, leaderboard retry timing, admin controls, and set bonuses.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4139,7 +4139,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.74';
+const OUTLAST_BUILD='3.27.75';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;
@@ -4426,104 +4426,10 @@ killEnemy=function(target){
  game.score=before+gain*factor;
 };
 
-/* ---------- Coin economy / daily shop ---------- */
-function dailySeed(){
-  /* Stable local-calendar seed: the same shop stays all day, then changes at midnight. */
-  const key=String(todayKey());
-  let seed=2166136261;
-  for(let i=0;i<key.length;i++)seed=Math.imul(seed^key.charCodeAt(i),16777619)>>>0;
-  return seed>>>0;
-}
-const shopPool=[
- ['core','Forge Core Pack',350,'+3 Forge Cores'],
- ['case','Case Credit',600,'+1 case opening credit'],
- ['xp','XP Token',400,'+1 Forge Core'],
- ['shield','Shield Cell',450,'+1 Shield charge'],
- ['luck','Lucky Cache',800,'+25 Luck for your next run'],
- ['upgrade','Upgrade Voucher',1200,'+1 level on a random permanent upgrade'],
- ['parts','Material Crate',500,'+10 crafting materials'],
- ['keys','Key Pack',900,'+2 progression keys'],
- ['dust','Mythic Dust',1100,'+5 Mythic Dust'],
- ['forge','Forge Bundle',1500,'+8 Forge Cores']
-];
-function getDailyShop(){
-  let seed=dailySeed(),arr=shopPool.slice(),out=[];
-  while(out.length<5&&arr.length){
-    seed=(Math.imul(seed,1664525)+1013904223)>>>0;
-    out.push(arr.splice(seed%arr.length,1)[0]);
-  }
-  return out;
-}
-function nextShopTime(){
-  const d=new Date();
-  return new Date(d.getFullYear(),d.getMonth(),d.getDate()+1,0,0,0).getTime();
-}
-function shopOpen(){
-  const key=todayKey();
-  if(save.shopDay!==key){save.shopDay=key;save.shopPurchases={};persist();}
-  const items=getDailyShop();
-  openSub('🛒 Daily Shop',
-    '<p class="note"><b>New offers every day.</b> Today: '+key+' • Next refresh: <b id="shopCountdown">calculating...</b></p>'+
-    '<div class="grid">'+items.map(x=>{
-      const bought=!!(save.shopPurchases&&save.shopPurchases[x[0]]);
-      return '<button class="option" data-action="shop" data-value="'+x[0]+'" '+(bought?'disabled':'')+'><b>'+x[1]+'</b><div class="small">'+x[3]+'</div><div class="small">'+(bought?'✅ Purchased today':'🪙 '+x[2]+' coins')+'</div></button>';
-    }).join('')+'</div>'
-  );
-  updateShopCountdown();
-}
-function updateShopCountdown(){
-  const c=document.getElementById('shopCountdown');
-  if(!c)return;
-  const ms=Math.max(0,nextShopTime()-Date.now());
-  const h=Math.floor(ms/3600000),m=Math.floor(ms/60000)%60,s=Math.floor(ms/1000)%60;
-  c.textContent=h+'h '+m+'m '+s+'s';
-}
-window.buyShop=function(k){
-  const items=typeof getDailyShopItems==='function'?getDailyShopItems():[];
-  const item=items.find(x=>x&&x.id===k);
-  if(!item)return toast('Shop item unavailable');
-  const day=todayKey();
-  ensureDailyShopStock();
-  if(save.shopDay!==day){save.shopDay=day;save.shopPurchases={};}
-  save.shopPurchases=save.shopPurchases||{};
-  if(save.shopPurchases[k])return toast('Already purchased today');
-  const price=Math.max(0,Math.floor(Number(item.price)||0));
-  if((Number(save.coins)||0)<price)return toast('Not enough coins');
+/* ---------- Daily Shop source-of-truth ---------- */
+/* The live Daily Shop implementation is defined above. All stock, purchase, reward,
+   and reset logic stays in that single implementation. */
 
-  save.coins=Math.max(0,(Number(save.coins)||0)-price);
-  switch(k){
-    case 'core': save.forgeCores=(save.forgeCores||0)+3; break;
-    case 'coins': save.coins=(save.coins||0)+900; break;
-    case 'case': save.caseCredits=(save.caseCredits||0)+1; break;
-    case 'xp': save.forgeCores=(save.forgeCores||0)+1; save.nextRunXP=(save.nextRunXP||0)+10; break;
-    case 'parts': save.materials=(save.materials||0)+10; break;
-    case 'key': save.worldKeys=(save.worldKeys||0)+2; break;
-    case 'dust': save.mythicDust=(save.mythicDust||0)+5; break;
-    case 'megaCore': save.forgeCores=(save.forgeCores||0)+8; break;
-    case 'shield': save.shieldCharges=(save.shieldCharges||0)+2; break;
-    case 'luck': save.nextRunLuck=(save.nextRunLuck||0)+25; break;
-    case 'upgrade': {
-      const names=typeof permanent!=='undefined'
-        ? permanent.filter(x=>(save.upgrades?.[x[0]]||0)<5)
-        : [];
-      if(names.length){
-        const n=names[Math.floor(Math.random()*names.length)][0];
-        save.upgrades[n]=(save.upgrades[n]||0)+1;
-        toast('📈 '+n+' upgraded!');
-      }
-      break;
-    }
-    case 'materials2': save.materials=(save.materials||0)+25; break;
-    default:
-      save.coins+=price;
-      return toast('Shop item unavailable');
-  }
-  save.shopPurchases[k]=true;
-  save.shopDay=day;
-  persist();
-  toast('🛒 '+item.name+' purchased!');
-  dailyShopOpen();
-};
 /* ---------- Weekly leaderboard + prizes ---------- */
 function weekId(){return weeklyKey();}
 function weekIdForDate(dt){const d=new Date(dt),start=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-W'+Math.ceil((((d-start)/86400000)+start.getDay()+1)/7)}
@@ -6774,7 +6680,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   openRelics=function(){oldOpenRelics();};
   openCharms=function(){oldOpenCharms();};
 })();
-</script>/* v3.27.68 progression/gameplay hardening */
+</script><script id="outlast-v32768-progression-hardening">/* v3.27.68 progression/gameplay hardening */
 (function(){
   window.__outlastGearRarity=function(cost){
     cost=Number(cost)||0;

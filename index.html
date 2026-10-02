@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.77">
-<meta name="build-version" content="3.27.77">
-<title>OUTLAST v3.27.77</title>
+<meta name="outlast-build" content="3.27.78">
+<meta name="build-version" content="3.27.78">
+<title>OUTLAST v3.27.78</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3661,7 +3661,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['What changed in v3.27.70?','Updates','Expanded Settings with combat feedback, accessibility, performance, mobile controls, notifications, vibration, FPS, HUD, and aim-assist options while keeping login and progression data isolated.'],
-  ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.77?','Updates','Repaired the update-log declaration so the main UI script parses cleanly after the runtime-structure hardening. Login flow was not changed.'], ['What changed in v3.27.76?','Updates','Closed the remaining script-tag mismatch and aligned current build references so future patches execute consistently. Login flow was not changed.'], ['What changed in v3.27.75?','Updates','Closed a late script-boundary gap so progression hardening executes correctly, and removed the obsolete duplicate Daily Shop implementation. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+  ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.78?','Updates','Serialized leaderboard submissions and retry submissions so slow requests cannot overlap. Login flow was not changed.'], ['What changed in v3.27.77?','Updates','Repaired the update-log declaration so the main UI script parses cleanly after the runtime-structure hardening. Login flow was not changed.'], ['What changed in v3.27.76?','Updates','Closed the remaining script-tag mismatch and aligned current build references so future patches execute consistently. Login flow was not changed.'], ['What changed in v3.27.75?','Updates','Closed a late script-boundary gap so progression hardening executes correctly, and removed the obsolete duplicate Daily Shop implementation. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],
@@ -3685,7 +3685,7 @@ const helpArticles=[
   ['How does the online player count work?','Online / Multiplayer','The Players online number and the named player list use the same connected-player data. Server connection totals are tracked separately.'],
   ['How do I see who is online?','Online / Multiplayer','Open Online / Multiplayer to see the actual named players currently connected to the OUTLAST server.'],
   ['How do Owner Chat Tags work?','Global Chat','Recognized OUTLAST owner usernames — including BestGamer, Landon, Phone Landon, and Poke — display an 👑 OWNER tag next to the username in Global Chat.'],
-  ['How does the stability guard work?','How To','OUTLAST now keeps one current build marker, a single Daily Shop implementation, protected autosave and leaderboard retry timers, and correctly bounded late progression code so future updates are less likely to create silent regressions.'],
+  ['How does the stability guard work?','How To','OUTLAST now keeps one current build marker, a single Daily Shop implementation, protected autosave and serialized leaderboard submissions/retries, and correctly bounded late progression code so future updates are less likely to create silent regressions.'],
    ['How do I use the Quality Center?','Quality & Recovery','Open Settings → Quality & Recovery for the current objective, run history, favorites, bug reporting, and Practice Mode.'],
   ['How does Practice Mode work?','Practice Mode','Practice Mode starts a separate no-enemy session for learning the controls and exploring the current setup. Practice sessions do not keep normal rewards or progression.'],
   ['How do I report a bug?','Bug Reporting','Open Settings → Quality & Recovery → Report a Bug. The report automatically includes the current OUTLAST version, map, mode, and difficulty. Reports are saved locally and sent to the OUTLAST server when available.'],
@@ -3944,8 +3944,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.77';
-const CURRENT_UPDATE_INFO={title:'v3.27.77 — Syntax & Regression Cleanup',summary:'Repaired the update-log declaration so the main UI script parses cleanly after the runtime-structure hardening pass.',items:['The update log no longer contains a duplicated const declaration.','The late progression hardening block remains correctly bounded inside a script tag.','The Daily Shop remains consolidated to one source of truth.','All previous v3.27.74–v3.27.76 stability protections remain active.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.78';
+const CURRENT_UPDATE_INFO={title:'v3.27.78 — Leaderboard Concurrency Guard',summary:'Serialized normal leaderboard submissions and retry submissions so slow network responses cannot overlap.',items:['Normal leaderboard submissions and background retries now share one submission chain.','Failed entries remain queued locally and are retried without concurrent duplicate requests.','The previous version, script-boundary, Daily Shop, autosave, admin-control, and set-bonus protections remain active.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4140,7 +4140,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.77';
+const OUTLAST_BUILD='3.27.78';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;
@@ -6506,8 +6506,14 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
     const readQ=()=>{try{const q=JSON.parse(outlastStorage.getItem(queueKey)||'[]');return Array.isArray(q)?q:[]}catch(_){return[]}};
     const writeQ=q=>{try{outlastStorage.setItem(queueKey,JSON.stringify(q.slice(-100)));}catch(_){}};
     const queued=(entry)=>{const q=readQ();const k=leaderboardRecordKey(entry);if(!q.some(x=>leaderboardRecordKey(x)===k))q.push(entry);writeQ(q);};
+    let leaderboardSubmitChain=Promise.resolve();
+    const serializedSubmit=(entry)=>{
+      const run=leaderboardSubmitChain.then(()=>oldSubmit(entry));
+      leaderboardSubmitChain=run.catch(()=>{});
+      return run;
+    };
     submitServerLeaderboard=async function(entry){
-      const result=await oldSubmit(entry);
+      const result=await serializedSubmit(entry);
       if(!result)queued(entry);else{
         const q=readQ().filter(x=>leaderboardRecordKey(x)!==leaderboardRecordKey(entry));writeQ(q);
       }
@@ -6522,7 +6528,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
         const q=readQ(); if(!q.length||!currentUsername)return;
         const next=[];
         for(const entry of q.slice(0,5)){
-          const result=await oldSubmit(entry);
+          const result=await serializedSubmit(entry);
           if(!result)next.push(entry);
         }
         writeQ(next.concat(q.slice(5)));

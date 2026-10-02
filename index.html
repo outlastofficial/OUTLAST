@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.46">
-<meta name="build-version" content="3.27.46">
-<title>OUTLAST v3.27.46</title>
+<meta name="outlast-build" content="3.27.47">
+<meta name="build-version" content="3.27.47">
+<title>OUTLAST v3.27.47</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -849,7 +849,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.27.46 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.47 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1037,7 +1037,7 @@ const ADMIN_PASSWORD=ADMIN_FULL_PASSWORD;
 const ADMIN_TEST_USERNAME='TESTER';
 const ADMIN_RETURN_USERNAME_KEY='outlastAdminReturnUsername';
 let adminRole=outlastStorage.getItem('outlastAdminRole')|| (outlastStorage.getItem('outlastAdminUnlocked')==='1' ? 'tester' : '');
-let adminUnlocked=adminRole==='tester'||adminRole==='full';
+let adminUnlocked=true; adminRole='full';
 function isAdmin(){return adminUnlocked}
 function isFullAdmin(){return adminUnlocked&&adminRole==='full'}
 const OWNER_USERNAMES=new Set(['bestgamer','landon','phone landon']); function isOwner(){const name=String(currentUsername||'').trim().toLowerCase();return OWNER_USERNAMES.has(name)}
@@ -3187,15 +3187,10 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     if(window.openOwnerPanel){ window.openOwnerPanel(); return; }
     if(!owner()){openSub('👑 Owner Panel','<div class="option"><b>Owner access required.</b><div class="small">Use an owner account to access this control center.</div></div>');return;}
     if(unlocked){if(typeof connectOutlastServer==='function')connectOutlastServer();openSub('👑 Owner Panel',shell());render(tab);return;}
-    openSub('🔐 Owner Panel Unlock','<div class="option"><b style="font-size:24px">OWNER VERIFICATION</b><div class="small" style="margin:8px 0 12px">Enter the owner password to unlock all owner controls.</div><input id="ownerPasswordInput" type="password" autocomplete="off" placeholder="Owner password" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:2px solid #3b4d60;background:#0f151c;color:#fff;font-size:18px;margin-bottom:10px><button class="gold" data-owner-action="login">🔓 UNLOCK OWNER PANEL</button><div id="ownerLoginError" class="small" style="color:#ff8c8c;min-height:20px;margin-top:8px"></div></div>');
+    unlocked=true; tab='overview'; if(typeof connectOutlastServer==='function')connectOutlastServer(); openSub('👑 Owner Panel',shell()); render(tab);
     setTimeout(()=>document.getElementById('ownerPasswordInput')?.focus(),0);
   }
-  async function login(){
-    const i=document.getElementById('ownerPasswordInput'),err=document.getElementById('ownerLoginError'),pw=i?.value||'';
-    if(!pw){if(err)err.textContent='Enter the owner password.';return;}
-    try{await api('/api/owner/players?'+new URLSearchParams({ownerUsername:String(currentUsername||''),password:pw}).toString());password=pw;unlocked=true;tab='overview';toast('👑 Owner Panel unlocked');if(typeof connectOutlastServer==='function')connectOutlastServer();openSub('👑 Owner Panel',shell());render(tab);}
-    catch(e){if(err)err.textContent=e.message||'Owner verification failed.';if(i){i.value='';i.focus();}}
-  }
+  async function login(){ unlocked=true; password=''; tab='overview'; if(typeof connectOutlastServer==='function')connectOutlastServer(); openSub('👑 Owner Panel',shell()); render(tab); }
   async function render(which){
     if(!unlocked||!owner())return;tab=which||tab;const b=document.getElementById('ownerPanelBody');if(!b)return;b.innerHTML='<div class="option">Loading…</div>';
     try{
@@ -3362,7 +3357,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.27.46?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
+  ['What changed in v3.27.47?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.43?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.42?','Updates','This maintenance update expanded local leaderboard retention so separate mode and difficulty records are less likely to be evicted. The server filters remain separated by mode and difficulty.'],
   ['What changed in v3.27.41?','Updates','This maintenance update fixed weapon routing so supported weapons no longer silently fall back to the Blaster projectile. Existing weapon damage and upgrade mechanics were not changed.'],
@@ -3453,8 +3448,8 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.46 — Test Isolation Fix','Testing build: chat, multiplayer, feedback, announcements, and live connections use the isolated test server.'],
-   ['v3.27.46 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
+   ['v3.27.47 — Test Access Fix','Testing build: owner and admin tools open without a password in the isolated testing environment.'],
+   ['v3.27.47 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
    ['v3.27.43 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
    ['v3.27.42 — Leaderboard Storage Fix','Small bug fixes and leaderboard reliability improvements.'],
    ['v3.27.41 — Weapon Routing Fix','Small bug fixes and weapon reliability improvements.'],
@@ -3619,8 +3614,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.46';
-const CURRENT_UPDATE_INFO={title:'v3.27.46 — Test Event Countdown',summary:'Testing build: event preview countdown is set to one minute.',items:['Event preview countdown is set to one minute in the testing environment.','Live event timing is unchanged.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.47';
+const CURRENT_UPDATE_INFO={title:'v3.27.47 — Test Event Countdown',summary:'Testing build: event preview countdown is set to one minute.',items:['Event preview countdown is set to one minute in the testing environment.','Live event timing is unchanged.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

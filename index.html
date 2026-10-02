@@ -1683,7 +1683,7 @@ function sanitizeUsername(name){
 }
 async function registerUsernameWithServer(name){
   try{
-    const base='https://outlast-server.onrender.com';
+    const base='https://outlast-test-server.onrender.com';
     await fetch(base+'/api/players/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:String(name||'').slice(0,18)})});
   }catch(_){}
 }
@@ -1827,7 +1827,7 @@ function triggerMapEvent(){
 
 async function leaderboardFetch(path,options={},timeoutMs=7000){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
- try{const res=await fetch('https://outlast-server.onrender.com'+path,{...options,cache:'no-store',signal:controller.signal});const data=await res.json().catch(()=>({ok:false,error:'Invalid server response'}));if(!res.ok)throw new Error(data.error||('HTTP '+res.status));return data;}
+ try{const res=await fetch('https://outlast-test-server.onrender.com'+path,{...options,cache:'no-store',signal:controller.signal});const data=await res.json().catch(()=>({ok:false,error:'Invalid server response'}));if(!res.ok)throw new Error(data.error||('HTTP '+res.status));return data;}
  finally{clearTimeout(timer);}
 }
 function leaderboardRecordKey(entry){return String(entry?.name||'').trim().toLowerCase()+'|'+String(entry?.mode||'Classic').trim().toLowerCase()+'|'+String(entry?.difficulty||'Normal').trim().toLowerCase();}
@@ -3144,7 +3144,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
 
 /* OUTLAST v3.14.2 OWNER CONTROL CENTER */
 (function(){
-  const OWNER_API='https://outlast-server.onrender.com';
+  const OWNER_API='https://outlast-test-server.onrender.com';
   let unlocked=false, password='', tab='overview';
   function esc(v){return String(v??'').split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&#39;');}
   function owner(){return typeof isOwner==='function'&&isOwner();}
@@ -4233,7 +4233,7 @@ function feedbackOpen(){openSub('💬 Bug Reports & Update Ideas',
  setTimeout(()=>{document.getElementById('reportBugChoice')?.addEventListener('pointerup',e=>{e.preventDefault();reportBugForm();});document.getElementById('ideaChoice')?.addEventListener('pointerup',e=>{e.preventDefault();ideaForm();});document.getElementById('reportBugChoice')?.addEventListener('click',e=>{e.preventDefault();reportBugForm();});document.getElementById('ideaChoice')?.addEventListener('click',e=>{e.preventDefault();ideaForm();});},0);}
 function reportBugForm(){openSub('🐛 Report a Bug','<input id="fbTitle" type="text" placeholder="Bug title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="What happened? What should have happened?" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold feedback-submit-btn" id="submitBugBtn">SUBMIT BUG REPORT</button>');setTimeout(()=>{document.getElementById('fbTitle')?.focus();document.getElementById('submitBugBtn')?.addEventListener('click',()=>storeFeedback('bug'));document.getElementById('submitBugBtn')?.addEventListener('pointerup',e=>{e.preventDefault();storeFeedback('bug');});},0);}
 function ideaForm(){openSub('💡 Submit Update Idea','<input id="fbTitle" type="text" placeholder="Idea title" style="width:100%;box-sizing:border-box;padding:10px;margin:5px 0"><textarea id="fbBody" placeholder="Describe your idea" style="width:100%;min-height:110px;box-sizing:border-box;padding:10px;margin:5px 0"></textarea><button type="button" class="gold feedback-submit-btn" id="submitIdeaBtn">SUBMIT IDEA</button>');setTimeout(()=>{document.getElementById('fbTitle')?.focus();document.getElementById('submitIdeaBtn')?.addEventListener('click',()=>storeFeedback('idea'));document.getElementById('submitIdeaBtn')?.addEventListener('pointerup',e=>{e.preventDefault();storeFeedback('idea');});},0);}
-const OUTLAST_HTTP_SERVER='https://outlast-server.onrender.com';
+const OUTLAST_HTTP_SERVER='https://outlast-test-server.onrender.com';
 async function syncFeedbackToServer(){
   let arr=[]; try{arr=JSON.parse(outlastStorage.getItem('outlastFeedback')||'[]');}catch(_){arr=[];}
   if(!Array.isArray(arr)||!arr.length)return;
@@ -4430,7 +4430,7 @@ if(!save.coinPurchases)save.coinPurchases={};
 setTimeout(()=>{if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();},1500);
 
 const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
-const OUTLAST_HTTP_URL='https://outlast-server.onrender.com';
+const OUTLAST_HTTP_URL='https://outlast-test-server.onrender.com';
 let outlastChatMessages=[];
 let outlastChatOpen=false;
 let outlastChatUnread=0;
@@ -4897,7 +4897,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 <script src="outlast-v3.4.js"></script>
 <script>
 (function installDiscordRewards(){
-  const API_BASE='https://outlast-server.onrender.com';
+  const API_BASE='https://outlast-test-server.onrender.com';
   async function discordFetch(path,options){
     const r=await fetch(API_BASE+path,options);
     const data=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));
@@ -5192,7 +5192,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 <script id="outlast-owner-remake-v31412">
 (function(){
   'use strict';
-  const API='https://outlast-server.onrender.com';
+  const API='https://outlast-test-server.onrender.com';
   const OWNER_NAMES=new Set(['bestgamer','landon','phone landon','poke']);
   let unlocked=false,password='',tab='overview',busy=false;
 

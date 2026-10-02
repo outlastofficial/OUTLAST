@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.51">
+<meta name="outlast-build" content="3.27.52">
 <meta name="build-version" content="3.27.48">
-<title>OUTLAST v3.27.51</title>
+<title>OUTLAST v3.27.52</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -736,6 +736,22 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 #bossTimerHud .bth-time{font-size:17px;font-weight:900;color:#fff;min-width:54px;text-align:right}
 #bossTimerHud .bth-state{font-size:10px;font-weight:800;color:#ffcf70;white-space:nowrap}
 @media(max-width:760px){#bossTimerHud{right:10px;bottom:78px;min-width:130px;padding:8px 10px}#bossTimerHud .bth-time{font-size:15px}}
+</style><style id="outlast-v32752-top-layout-fix">
+#menu .menu-topbar{min-width:0!important;box-sizing:border-box!important;padding-top:max(19px,calc(env(safe-area-inset-top,0px) + 10px))!important;padding-left:max(16px,calc(env(safe-area-inset-left,0px) + 14px))!important;padding-right:max(16px,calc(env(safe-area-inset-right,0px) + 14px))!important;gap:12px!important;overflow:visible!important}
+#menu .menu-topbar>div:first-child{min-width:0!important;flex:1 1 auto!important}
+#menu .menu-topbar .title{line-height:1.08!important;white-space:nowrap!important;overflow:visible!important}
+#menu .menu-topbar .subtitle{line-height:1.35!important;white-space:normal!important;overflow:visible!important}
+#menu .menu-chip{white-space:normal!important;max-width:min(42vw,280px)!important;line-height:1.25!important;text-align:right!important;overflow-wrap:anywhere!important}
+@media(max-width:760px){
+ #menu .menu-topbar{align-items:flex-start!important;flex-wrap:wrap!important}
+ #menu .menu-topbar>div:first-child{width:100%!important;flex-basis:100%!important}
+ #menu .menu-chip{max-width:100%!important;width:max-content!important;text-align:left!important}
+}
+@media(max-width:420px){
+ #menu .menu-topbar .title{font-size:31px!important}
+ #menu .menu-topbar .subtitle{font-size:9px!important;letter-spacing:.11em!important}
+ #menu .menu-chip{font-size:9px!important}
+}
 </style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
@@ -2127,12 +2143,12 @@ function killEnemy(target){
 }
 function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices();syncOutlastChatUI?.()}
 const upgradeRarities={
- Common:{mult:1,label:'COMMON',weight:52,glow:'#9aa5ad'},
- Uncommon:{mult:1.5,label:'UNCOMMON',weight:25,glow:'#71d68a'},
- Rare:{mult:2,label:'RARE',weight:13,glow:'#72a8ff'},
- Epic:{mult:2.75,label:'EPIC',weight:6.5,glow:'#d28cff'},
- Legendary:{mult:3.75,label:'LEGENDARY',weight:2.5,glow:'#ffd84d'},
- Mythic:{mult:5.5,label:'MYTHIC',weight:.5,glow:'#ff6bd6'}
+ Common:{mult:1,label:'COMMON',weight:48,glow:'#9aa5ad'},
+ Uncommon:{mult:1.5,label:'UNCOMMON',weight:27,glow:'#71d68a'},
+ Rare:{mult:2,label:'RARE',weight:15,glow:'#72a8ff'},
+ Epic:{mult:2.75,label:'EPIC',weight:7,glow:'#d28cff'},
+ Legendary:{mult:3.5,label:'LEGENDARY',weight:2.4,glow:'#ffd84d'},
+ Mythic:{mult:5.0,label:'MYTHIC',weight:.6,glow:'#ff6bd6'}
 };
 const tempUp=[
  ['Power Shot',v=>`+${Math.round(6*v)} damage`,v=>game.player.damage+=6*v],
@@ -2182,8 +2198,47 @@ const tempUp=[
   ,['Second Heart',v=>'+'+Math.round(55*v)+' max HP and healing',v=>{game.player.max+=55*v;game.player.hp=Math.min(game.player.max,game.player.hp+55*v);game.player.healMult=(game.player.healMult||1)+.15*v}]
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+Math.round(12*v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
-function rollUpgradeRarity(){const luck=Math.max(0,Number(game.player?.upgradeLuck||0));const bonus=Math.min(.8,luck/100);const weights={Common:52*(1-bonus*.65),Uncommon:25*(1-bonus*.5),Rare:13*(1+bonus*.8),Epic:6.5*(1+bonus*1.25),Legendary:2.5*(1+bonus*2.4),Mythic:.5*(1+bonus*4)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name];if(r<=0)return name}return 'Common'}
-function makeChoices(){const a=[...tempUp],out=[];while(out.length<3){const i=Math.floor(Math.random()*a.length);if(out.some(u=>u[0]===a[i][0]))continue;const [name,desc,apply]=a.splice(i,1)[0],rarity=game.level===3&&out.length===0?'Legendary':rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;out.push([name,desc(mult),()=>apply(mult),rarity])}return out}
+function rollUpgradeRarity(){const luck=Math.max(0,Number(game.player?.upgradeLuck||0));const bonus=Math.min(.65,luck/120);const weights={Common:48*(1-bonus*.55),Uncommon:27*(1-bonus*.35),Rare:15*(1+bonus*.7),Epic:7*(1+bonus*1.1),Legendary:2.4*(1+bonus*1.9),Mythic:.6*(1+bonus*3.1)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name];if(r<=0)return name}return 'Common'}
+const upgradeCategory=n=>{
+ const offense=new Set(['Power Shot','Rapid Fire','Piercing','Multi-Shot','Big Bullets','Projectile Speed','Overcharge','Heavy Rounds','Swift Aim','Crit Chance','Chain Reaction','Poison Rounds','Stun Rounds','Armor Pierce','Double Tap','Overheat','Deadeye','Rift Pierce','Ammo Surge','Heavy Impact','Fortune Engine']);
+ const defense=new Set(['Vitality','Regeneration','Second Wind','Berserker','Adrenaline','Shield Core','Rapid Recovery','Lifesteal','Vampiric Surge','Fortified Core','Cryo Core','Emergency Shield','Second Heart']);
+ const utility=new Set(['Swift Feet','Magnet','Frost Aura','Shockwave','Coin Magnetism']);
+ const luck=new Set(['Lucky Hunter','Lucky Coins','Treasure Radar','Lucky Charm','Fortune','Treasure Luck','Scavenger Luck']);
+ return luck.has(n)?'luck':defense.has(n)?'defense':utility.has(n)?'utility':offense.has(n)?'offense':'utility';
+};
+const oneTimeUpgrades=new Set(['Berserker','Adrenaline','Lucky Hunter','Overcharge','Poison Rounds','Stun Rounds','Double Tap','Treasure Radar','Shockwave']);
+function upgradeAlreadyActive(n){
+ const p=game.player||{};
+ return oneTimeUpgrades.has(n)&&((n==='Berserker'&&p.berserk)||(n==='Adrenaline'&&p.adrenaline)||(n==='Lucky Hunter'&&p.lucky)||(n==='Overcharge'&&Number(p.ultDamage||1)>1.01)||(n==='Poison Rounds'&&p.poison)||(n==='Stun Rounds'&&p.stun)||(n==='Double Tap'&&p.doubleTap)||(n==='Treasure Radar'&&p.treasure)||(n==='Shockwave'&&p.shockwave));
+}
+function makeChoices(){
+ const pool=[...tempUp].filter(u=>!upgradeAlreadyActive(u[0]));
+ const fallback=[...tempUp];
+ const out=[],usedCats=new Set();
+ const luck=Math.max(0,Number(game.player?.upgradeLuck||0));
+ while(out.length<3&&pool.length){
+   const candidates=pool.filter(u=>!out.some(x=>x[0]===u[0])&&!usedCats.has(upgradeCategory(u[0])));
+   const source=candidates.length?candidates:pool.filter(u=>!out.some(x=>x[0]===u[0]));
+   if(!source.length)break;
+   const item=source[Math.floor(Math.random()*source.length)];
+   const idx=pool.findIndex(u=>u[0]===item[0]);if(idx>=0)pool.splice(idx,1);
+   const [name,desc,apply]=item,cat=upgradeCategory(name);
+   let rarity=rollUpgradeRarity();
+   if(game.level<5&&rarity==='Mythic')rarity='Legendary';
+   if(game.level<3&&rarity==='Legendary')rarity='Epic';
+   const mult=upgradeRarities[rarity].mult;
+   out.push([name,desc(mult),()=>apply(mult),rarity]);usedCats.add(cat);
+ }
+ if(out.length<3){
+   for(const item of fallback){
+     if(out.length>=3)break;
+     if(out.some(x=>x[0]===item[0]))continue;
+     const [name,desc,apply]=item,rarity=rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;
+     out.push([name,desc(mult),()=>apply(mult),rarity]);
+   }
+ }
+ return out;
+}
 function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;const rolling=game.upgradeChoices.some(u=>u&&u[3]&&(u[3]==='Legendary'||u[3]==='Mythic'));if(rolling&&(!game.__upgradeRollKey||performance.now()<Number(game.__upgradeRollUnlockAt||0)))return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[];game.__upgradeRollKey='';game.__upgradeRollUnlockAt=0;game.__upgradeRollActive=false;game.paused=false;syncMobileControls?.();syncOutlastChatUI?.();}
 function upg(name){return save.upgrades[name]||0}
 function syncGameAdminUI(){
@@ -3363,6 +3418,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.27.52?','Updates','Improved top-screen header wrapping and balanced level-up choices with more varied drafts and smoother rarity chances.'],
   ['What changed in v3.27.51?','Updates','Removed the duplicate boss countdown and improved top HUD spacing so important information stays visible on smaller screens.'],
   ['What changed in v3.27.50?','Updates','The update notification now checks the current game build, so new update popups appear correctly. The visible version badge and Update Log stay synchronized.'],
   ['What changed in v3.27.46?','Updates','This maintenance update repaired malformed menu styling and improved UI stability. Existing protected-tool verification remains in place.'],
@@ -3456,6 +3512,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
    ['v3.27.51 — Boss Timer & HUD Fix','Removed the duplicate boss timer and improved top HUD spacing/clipping.'],
    ['v3.27.50 — Update Popup Fix','Fixed the update notification so the current update is shown on a new game build.'],
    ['v3.27.49 — Version Marker Fix','Fixed the late version override that was displaying v3.27.41 instead of the current game version.'],
@@ -3626,8 +3683,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.51';
-const CURRENT_UPDATE_INFO={title:'v3.27.51 — Boss Timer & HUD Fix',summary:'Cleaned up the duplicate boss countdown and improved top HUD spacing so information stays visible.',items:['Removed the duplicate canvas boss timer so only one boss countdown is shown.','Expanded and repositioned the top HUD areas to reduce clipping on smaller screens.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.52';
+const CURRENT_UPDATE_INFO={title:'v3.27.52 — Top HUD & Upgrade Balance Fix',summary:'Improved top-screen layout and balanced level-up choices for more varied, reasonable upgrade drafts.',items:['Improved the top menu/header wrapping so important text is not cut off on smaller screens.','Balanced level-up drafts with more varied categories and smoother rarity chances.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -5834,7 +5891,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.51';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.52';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

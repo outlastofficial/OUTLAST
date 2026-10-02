@@ -6495,7 +6495,7 @@ const P={Blaster:'BlasterCore',TwinShot:'TwinShard',Lightning:'LightningBolt',Or
 const oldShoot=shoot;
 shoot=function(){const n=game.bullets.length;oldShoot();const t=P[save.selectedWeapon]||save.selectedWeapon;for(let i=n;i<game.bullets.length;i++){const b=game.bullets[i];if(b&&!b.enemy)b.type=t;}};
 function drawUnique(b){
-const c=window.ctx;if(!c)return;const r=Math.max(2,b.r||5),t=b.type||'BlasterCore',a=b.a||Math.atan2(b.vy||0,b.vx||1);c.save();c.translate(b.x,b.y);c.rotate(a);c.lineCap='round';c.lineJoin='round';c.shadowBlur=10;
+const c=ctx;if(!c)return;const r=Math.max(2,b.r||5),t=b.type||'BlasterCore',a=b.a||Math.atan2(b.vy||0,b.vx||1);c.save();c.translate(b.x,b.y);c.rotate(a);c.lineCap='round';c.lineJoin='round';c.shadowBlur=10;
 switch(t){
 case'BlasterCore':c.fillStyle='#fff08a';c.shadowColor='#fff08a';c.beginPath();c.arc(0,0,r,0,Math.PI*2);c.fill();break;
 case'TwinShard':c.fillStyle='#7de7ff';c.shadowColor='#7de7ff';c.beginPath();c.moveTo(r*1.8,0);c.lineTo(-r,.9*r);c.lineTo(-r,-.9*r);c.closePath();c.fill();break;

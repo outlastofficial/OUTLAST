@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.62">
-<meta name="build-version" content="3.27.62">
-<title>OUTLAST v3.27.62</title>
+<meta name="outlast-build" content="3.27.63">
+<meta name="build-version" content="3.27.63">
+<title>OUTLAST v3.27.63</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1677,11 +1677,11 @@ const missions=[
   ['Warm Up','Kill 25 enemies',s=>s.runKills>=25,100],['Treasure Hunter','Collect 20 coins in one run',s=>s.runCoins>=20,120],['Boss Buster','Defeat 1 boss',s=>s.runBosses>=1,200],['Level Up','Reach level 10',s=>s.runLevel>=10,180]
 ];
 
-const pets={None:{cost:0,desc:'No pet',damage:0,speed:0,xp:0,coins:0,crit:0},Dog:{cost:700,desc:'+5% damage',damage:.05,speed:0,xp:0,coins:0,crit:0},Cat:{cost:900,desc:'+10% XP',damage:0,speed:0,xp:.10,coins:0,crit:0},Robot:{cost:1200,desc:'+8% fire speed',damage:0,speed:.08,xp:0,coins:0,crit:0},Dragon:{cost:2200,desc:'+12% damage +5% speed',damage:.12,speed:.05,xp:0,coins:0,crit:.02},Ghost:{cost:1800,desc:'+15% coins +80 pickup range',damage:0,speed:0,xp:0,coins:.15,crit:0},Hawk:{cost:1500,desc:'+8% crit',damage:0,speed:0,xp:0,coins:0,crit:.08},
+const pets={None:{cost:0,desc:'No pet',damage:0,speed:0,xp:0,coins:0,crit:0},Dog:{cost:700,desc:'+5% damage',damage:.05,speed:0,xp:0,coins:0,crit:0},Cat:{cost:900,desc:'+10% XP',damage:0,speed:0,xp:.10,coins:0,crit:0},Robot:{cost:1200,desc:'+8% fire speed',damage:0,speed:0,xp:0,coins:0,crit:0,fireRate:.08},Dragon:{cost:2200,desc:'+12% damage +5% speed',damage:.12,speed:.05,xp:0,coins:0,crit:.02},Ghost:{cost:1800,desc:'+15% coins +80 pickup range',damage:0,speed:0,xp:0,coins:.15,crit:0},Hawk:{cost:1500,desc:'+8% crit',damage:0,speed:0,xp:0,coins:0,crit:.08},
 Phoenix:{cost:5000,desc:'+20% XP and revive protection',damage:.05,speed:.05,xp:.20,coins:0,crit:0},
 Wolf:{cost:6200,desc:'+15% damage and +10% speed',damage:.15,speed:.10,xp:0,coins:0,crit:0},
 Seraph:{cost:9000,desc:'+15% crit and +15% coins',damage:0,speed:0,xp:0,coins:.15,crit:.15},
-VoidOrb:{cost:13000,desc:'+25% damage to bosses and +20% XP',damage:.10,speed:0,xp:.20,coins:0,crit:.03}};
+VoidOrb:{cost:13000,desc:'+25% damage to bosses and +20% XP',damage:.10,speed:0,xp:.20,coins:0,crit:.03,boss:.25}};
 const relics={None:{cost:0,desc:'No relic'},HeartOfStone:{cost:1200,desc:'+25 max HP',hp:25},TimeShard:{cost:1600,desc:'+10% score',score:.10},VoidCore:{cost:2100,desc:'+8% ultimate gain',ult:.08},BloodOrb:{cost:2400,desc:'+1 HP/sec',regen:1},GoldenIdol:{cost:2600,desc:'+15% coins',coins:.15},FrostGem:{cost:2000,desc:'Stronger slow',frost:.15},WarBanner:{cost:3000,desc:'+12% boss damage',boss:.12},TitanPlate:{cost:3400,desc:'+60 max HP',hp:60},StarCore:{cost:3800,desc:'+18% ultimate gain',ult:.18},FortuneRelic:{cost:4200,desc:'+30% coins',coins:.30},VampireCrown:{cost:4600,desc:'+2 HP/sec',regen:2},DragonSigil:{cost:5200,desc:'+20% boss damage',boss:.20},ChronoLens:{cost:5600,desc:'+15% score',score:.15},
 CelestialAegis:{cost:8000,desc:'+100 max HP and -15% damage taken',hp:100,armor:.15},
 EternalFlame:{cost:10500,desc:'+20% damage and +10% lifesteal',damage:.20,vampire:.10},
@@ -1961,14 +1961,18 @@ function startGame(fromRoom=false){
   const pet=pets[save.selectedPet]||pets.None,relic=relics[save.selectedRelic]||relics.None,charm=charms[save.selectedCharm]||charms.None;
   const hp=(ch.hp+15*up('Iron Heart')-8*up('Glass Cannon'))*(1+(sk.hp||0));
   const speedCap=ch.speed*1.4;
-  const speed=Math.min(speedCap,ch.speed*(1+.08*up('Quick Step')+.05*up('Fleet Foot'))*(1+(sk.speed||0))*(pet.speed?1+pet.speed:1)*(charm.speed?1+charm.speed:1));
+  const speed=Math.min(speedCap,ch.speed*(1+.08*up('Quick Step')+.05*up('Fleet Foot'))*(1+(sk.speed||0))*(pet.speed?1+pet.speed*petScale:1)*(charm.speed?1+charm.speed*charmScale:1));
   const weaponLevels=(save.weaponLevels&&typeof save.weaponLevels==='object')?save.weaponLevels:{};const weaponLevel=Number(weaponLevels[save.selectedWeapon])||0;
-  const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
-  const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
+  save.petLevels=save.petLevels||{};save.relicLevels=save.relicLevels||{};save.charmLevels=save.charmLevels||{};
+  const petLevel=Math.max(1,Math.min(5,Number(save.petLevels[save.selectedPet])||1)),relicLevel=Math.max(1,Math.min(5,Number(save.relicLevels[save.selectedRelic])||1)),charmLevel=Math.max(1,Math.min(5,Number(save.charmLevels[save.selectedCharm])||1));
+  const petScale=1+.12*(petLevel-1)+.05*skillBonus('petBond'),relicScale=1+.15*(relicLevel-1),charmScale=1+.15*(charmLevel-1);
+  const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;
+  const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0)+((pet.damage||0)*petScale)+((relic.damage||0)*relicScale)+((charm.damage||0)*charmScale))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
+  const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?Math.round(80*petScale):0)+(charm.magnet||0)*charmScale;
   coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
   const playerSpawn=findSafePlayerSpawn(W/2,H/2,28);
-  game.player={x:playerSpawn.x,y:playerSpawn.y,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
-  game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
+  game.player={x:playerSpawn.x,y:playerSpawn.y,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0)*relicScale,crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0)*relicScale,shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(relic.armor||0)*relicScale-(charm.armor||0)*charmScale),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)*petScale+(relic.coins||0)*relicScale+(charm.coins||0)*charmScale,bossMult:1+.08*up('Boss Hunter')+(relic.boss||0)*relicScale+(pet.boss||0)*petScale,vampire:.2*up('Vampire')+(relic.vampire||0)*relicScale,skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)*petScale+(relic.xp||0)*relicScale+(charm.xp||0)*charmScale,fireRate:Math.max(.12,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')-(pet.fireRate||0)*petScale)),petLevel,relicLevel,charmLevel,phoenixRevives:save.selectedPet==='Phoenix'?1:0};
+  game.player.max=hp+(relic.hp||0)*relicScale+(charm.hp||0)*charmScale;game.player.hp=game.player.max;
   game.player2=null;
   if(save.mode==='1v1 Arena'){
     const player2Spawn=findSafePlayerSpawn(W-120,H/2,28,game.player.x,game.player.y);
@@ -2345,12 +2349,34 @@ function killEnemy(target){
 function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices();syncOutlastChatUI?.()}
 const upgradeRarities={
  Common:{mult:1,label:'COMMON',weight:48,glow:'#9aa5ad'},
- Uncommon:{mult:1.5,label:'UNCOMMON',weight:27,glow:'#71d68a'},
- Rare:{mult:2,label:'RARE',weight:15,glow:'#72a8ff'},
- Epic:{mult:2.75,label:'EPIC',weight:7,glow:'#d28cff'},
- Legendary:{mult:3.5,label:'LEGENDARY',weight:2.4,glow:'#ffd84d'},
- Mythic:{mult:5.0,label:'MYTHIC',weight:.6,glow:'#ff6bd6'}
+ Uncommon:{mult:1.15,label:'UNCOMMON',weight:27,glow:'#71d68a'},
+ Rare:{mult:1.35,label:'RARE',weight:15,glow:'#72a8ff'},
+ Epic:{mult:1.6,label:'EPIC',weight:7,glow:'#d28cff'},
+ Legendary:{mult:1.9,label:'LEGENDARY',weight:2.4,glow:'#ffd84d'},
+ Mythic:{mult:2.25,label:'MYTHIC',weight:.6,glow:'#ff65e8'},
+ Divine:{mult:2.7,label:'DIVINE',weight:.12,glow:'#fff2a8'},
+ Celestial:{mult:3.2,label:'CELESTIAL',weight:.05,glow:'#7ce7ff'},
+ Transcendent:{mult:3.8,label:'TRANSCENDENT',weight:.02,glow:'#ff9cf2'},
+ Eternal:{mult:4.6,label:'ETERNAL',weight:.007,glow:'#b8a7ff'},
+ Omega:{mult:5.5,label:'OMEGA',weight:.002,glow:'#ff6b6b'}
 };
+const UPGRADE_RARITY_ORDER=Object.keys(upgradeRarities);
+function getUpgradeRarityOdds(){
+ const luck=Math.max(0,Number(game.player?.upgradeLuck||0));
+ const b=Math.min(1,luck/30);
+ const w={};
+ for(const name of UPGRADE_RARITY_ORDER)w[name]=upgradeRarities[name].weight;
+ w.Common*=1-b*.65;w.Uncommon*=1-b*.45;
+ w.Rare*=1+b*.50;w.Epic*=1+b*1.00;w.Legendary*=1+b*2.00;w.Mythic*=1+b*4.00;
+ w.Divine*=1+b*7.00;w.Celestial*=1+b*10.00;w.Transcendent*=1+b*14.00;w.Eternal*=1+b*20.00;w.Omega*=1+b*30.00;
+ const total=Object.values(w).reduce((a,v)=>a+v,0);
+ return {luck,b,total,weights:w,percent:Object.fromEntries(Object.entries(w).map(([n,v])=>[n,v/total*100]))};
+}
+function rollUpgradeRarity(){
+ const odds=getUpgradeRarityOdds();let r=Math.random()*odds.total;
+ for(const name of UPGRADE_RARITY_ORDER){r-=odds.weights[name];if(r<=0)return name}
+ return 'Common';
+}
 const tempUp=[
  ['Power Shot',v=>`+${Math.round(6*v)} damage`,v=>game.player.damage+=6*v],
  ['Rapid Fire',v=>`${Math.round(10*v)}% faster attacks`,v=>game.player.fireRate=Math.max(.2,(game.player.fireRate||.45)*(1-.10*v))],
@@ -2425,8 +2451,6 @@ function makeChoices(){
    const idx=pool.findIndex(u=>u[0]===item[0]);if(idx>=0)pool.splice(idx,1);
    const [name,desc,apply]=item,cat=upgradeCategory(name);
    let rarity=rollUpgradeRarity();
-   if(game.level<5&&rarity==='Mythic')rarity='Legendary';
-   if(game.level<3&&rarity==='Legendary')rarity='Epic';
    const mult=upgradeRarities[rarity].mult;
    out.push([name,desc(mult),()=>apply(mult),rarity]);usedCats.add(cat);
  }
@@ -2440,7 +2464,7 @@ function makeChoices(){
  }
  return out;
 }
-function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;const rolling=game.upgradeChoices.some(u=>u&&u[3]&&(u[3]==='Legendary'||u[3]==='Mythic'));if(rolling&&(!game.__upgradeRollKey||performance.now()<Number(game.__upgradeRollUnlockAt||0)))return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[];game.__upgradeRollKey='';game.__upgradeRollUnlockAt=0;game.__upgradeRollActive=false;game.paused=false;syncMobileControls?.();syncOutlastChatUI?.();}
+function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;const rolling=game.upgradeChoices.some(u=>u&&u[3]&&UPGRADE_RARITY_ORDER.indexOf(u[3])>=UPGRADE_RARITY_ORDER.indexOf('Legendary'));if(rolling&&(!game.__upgradeRollKey||performance.now()<Number(game.__upgradeRollUnlockAt||0)))return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[];game.__upgradeRollKey='';game.__upgradeRollUnlockAt=0;game.__upgradeRollActive=false;game.paused=false;syncMobileControls?.();syncOutlastChatUI?.();}
 function upg(name){return save.upgrades[name]||0}
 function syncGameAdminUI(){
  const toggle=document.getElementById('gameAdminToggle'),panel=document.getElementById('gameAdminPanel');
@@ -2588,7 +2612,7 @@ for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(
  if(game.coins.length>MAX_PICKUPS)game.coins.splice(0,game.coins.length-MAX_PICKUPS);
  if(game.powerups.length>MAX_PICKUPS)game.powerups.splice(0,game.powerups.length-MAX_PICKUPS);
  if(save.mode==='Speed Run' && game.time>=game.stats.timeLimit){endRun(true);return}
- if(p.hp<=0){p.hp=0;endRun(false);return}
+ if(p.hp<=0){if((p.phoenixRevives||0)>0){p.phoenixRevives--;p.hp=Math.max(1,p.max*.38);p.shield=4;game.shake=.5;burst(p.x,p.y,'#ffe8a1',24,190);ring(p.x,p.y,'#ffe8a1',95,.65);toast('🔥 PHOENIX REVIVE — '+Math.ceil(p.hp)+' HP');}else{p.hp=0;endRun(false);return}}
  game.camera.x=Math.max(0,Math.min(W-CW,p.x-CW/2));game.camera.y=Math.max(0,Math.min(H-CH,p.y-CH/2));
 }
 function worldPoint(x,y){return [x-game.camera.x,y-game.camera.y]}
@@ -2901,12 +2925,12 @@ const p=game.player;if(p){
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle='#071018';ctx.fillRect(0,0,CW,CH);
   const now=performance.now()/1000;
-  const fx={Common:{c:'#9aa5ad',r:0},Uncommon:{c:'#71d68a',r:1},Rare:{c:'#72a8ff',r:2},Epic:{c:'#d28cff',r:3},Legendary:{c:'#ffd84d',r:4},Mythic:{c:'#ff65e8',r:5}};
+  const fx=Object.fromEntries(UPGRADE_RARITY_ORDER.map((name,i)=>[name,{c:upgradeRarities[name].glow,r:i}]));
   const choiceKey=game.upgradeChoices.map(u=>String(u[0])+'|'+String(u[3]||'Common')).join('||');
   if(game.__upgradeRollKey!==choiceKey){
     game.__upgradeRollKey=choiceKey;
-    const hasMythic=game.upgradeChoices.some(u=>u&&u[3]==='Mythic');
-    const hasLegendary=game.upgradeChoices.some(u=>u&&u[3]==='Legendary');
+    const hasMythic=game.upgradeChoices.some(u=>u&&UPGRADE_RARITY_ORDER.indexOf(u[3])>=UPGRADE_RARITY_ORDER.indexOf('Mythic'));
+    const hasLegendary=game.upgradeChoices.some(u=>u&&UPGRADE_RARITY_ORDER.indexOf(u[3])>=UPGRADE_RARITY_ORDER.indexOf('Legendary'));
     // Shorter, lighter reveal timings keep the special roll exciting without
     // holding the game in an expensive animation for nearly two seconds.
     game.__upgradeRollDuration=hasMythic?1.15:(hasLegendary?0.95:0);
@@ -2914,12 +2938,13 @@ const p=game.player;if(p){
     game.__upgradeRollUnlockAt=(now+game.__upgradeRollDuration)*1000;
   }
   const rollStart=Number(game.__upgradeRollStart||now),rollDuration=Number(game.__upgradeRollDuration||0);
-  const hasRollingRarity=game.upgradeChoices.some(u=>u&&u[3]&&(u[3]==='Legendary'||u[3]==='Mythic'));
+  const hasRollingRarity=game.upgradeChoices.some(u=>u&&u[3]&&UPGRADE_RARITY_ORDER.indexOf(u[3])>=UPGRADE_RARITY_ORDER.indexOf('Legendary'));
   const rollProgress=hasRollingRarity&&rollDuration>0?Math.min(1,Math.max(0,(now-rollStart)/rollDuration)):1;
   game.__upgradeRollActive=hasRollingRarity&&rollProgress<1;
   ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',CW/2,76);
   ctx.font='20px Arial';ctx.fillStyle='#dbe9f5';ctx.fillText('Choose 1, 2, or 3',CW/2,110);
   ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0),CW/2,140);
+  ctx.font='12px Arial';ctx.fillStyle='#8ea4b5';const odds=getUpgradeRarityOdds();ctx.fillText('Upgrade Luck '+Math.floor(odds.luck)+' • Rarity odds scale with Luck • Highest tiers become more likely',CW/2,140);
   game.upgradeChoices.forEach((u,i)=>{
     const x=45+i*350,y=180,w=325,h=285,cx=x+w/2,cy=y+h/2;
     const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r;
@@ -2963,11 +2988,12 @@ const p=game.player;if(p){
       for(const word of words){const test=(line+' '+word).trim();if(line&&ctx.measureText(test).width>275){lines.push(line);line=word}else line=test}if(line)lines.push(line);
       ctx.fillStyle='#cbd7e2';lines.slice(0,3).forEach((txt,j)=>ctx.fillText(txt,cx,y+160+j*23));
     }
-    ctx.fillStyle=glow;ctx.font='bold 13px Arial';ctx.fillText(rank===5?'MYTHIC POWER • EXTREMELY RARE':rank===4?'LEGENDARY POWER • VERY RARE':rank===3?'EPIC POWER • POWER SURGE':rank===2?'RARE POWER • ENHANCED':rank===1?'UNCOMMON POWER • BOOSTED':'COMMON POWER • BASE',cx,y+244);
+    const powerText=rank>=10?'OMEGA POWER • ENDGAME':rank>=9?'ETERNAL POWER • ENDGAME':rank>=8?'TRANSCENDENT POWER • ENDGAME':rank>=7?'CELESTIAL POWER • ENDGAME':rank>=6?'DIVINE POWER • ENDGAME':rank===5?'MYTHIC POWER • EXTREMELY RARE':rank===4?'LEGENDARY POWER • VERY RARE':rank===3?'EPIC POWER • POWER SURGE':rank===2?'RARE POWER • ENHANCED':rank===1?'UNCOMMON POWER • BOOSTED':'COMMON POWER • BASE';ctx.fillStyle=glow;ctx.font='bold 13px Arial';ctx.fillText(powerText,cx,y+244);
     ctx.globalAlpha=.8;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+52,y+258);ctx.lineTo(x+w-52,y+258);ctx.stroke();
     ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='11px Arial';ctx.fillText(cardRolling?'ROLLING… WAIT':'SELECT TO CLAIM',cx,y+274);
     ctx.restore();
   });
+    ctx.font='11px Arial';ctx.fillStyle='#718695';ctx.fillText('Odds: '+UPGRADE_RARITY_ORDER.map(n=>n.slice(0,3)+' '+getUpgradeRarityOdds().percent[n].toFixed(getUpgradeRarityOdds().percent[n]<.1?3:1)+'%').join('  •  '),CW/2,CH-16);
   ctx.textAlign='left';
   ctx.restore();
 } drawMinimap();
@@ -3165,11 +3191,11 @@ document.getElementById('leaderBtn').onclick=openServerLeaderboard;
 document.getElementById('achBtn').onclick=()=>openSub('★ Achievements','<div class="grid">'+achievements.map(a=>`<div class="option ${save.ach[a[0]]?'selected':''}"><b>${save.ach[a[0]]?'✓':'□'} ${a[0]}</b><div class="small">${a[1]}</div></div>`).join('')+'</div>');
 document.getElementById('missionBtn').onclick=()=>openSub('🎯 Missions & Quests','<div class="grid">'+missions.map((m,i)=>`<div class="option"><b>${m[0]}</b><div class="small">${m[1]}</div><div class="small">Reward: ${m[3]} coins</div></div>`).join('')+'</div><p class="small">Mission progress is tracked during runs. More mission types can be added as you play.</p>');
 
-function openPets(){openSub('🐾 Pets','<div class="grid">'+Object.entries(pets).map(([n,v])=>`<button class="option ${save.selectedPet===n?'selected':''}" data-action="pet" data-value="${n}"><b>${n}</b><div class="small">${v.desc}</div><div class="small">${save.pets[n]?'Owned':'Unlock: '+v.cost+' coins'}</div></button>`).join('')+'</div>')}
+function openPets(){save.petLevels=save.petLevels||{};openSub('🐾 Pets','<div class="grid">'+Object.entries(pets).map(([n,v])=>{const lv=Math.max(1,Math.min(5,Number(save.petLevels[n])||1));const owned=!!save.pets[n];return `<div class="option ${save.selectedPet===n?'selected':''}"><b>${n}</b><div class="small">${v.desc}</div><div class="small">${owned?'Owned • Level '+lv+'/5':'Unlock: '+v.cost+' coins'}</div><button data-action="pet" data-value="${n}">${owned?'EQUIP':'UNLOCK'}</button>${owned&&lv<5?`<button class="gold" data-action="petLevelFor" data-value="${n}">LEVEL UP • ${250*lv} 🪙</button>`:''}</div>`}).join('')+'</div>')}
 window.selectPet=n=>{const v=pets[n];if(!save.pets[n]){if(save.coins<v.cost)return toast('Not enough coins');save.coins-=v.cost;save.pets[n]=true}save.selectedPet=n;persist();openPets()};
-function openRelics(){const owned=Object.keys(save.relics).filter(n=>save.relics[n]).length;openSub('🧿 Relics',`<p class="small">Owned: ${owned}/${Object.keys(relics).length}</p><div class="grid">${Object.entries(relics).map(([n,v])=>`<button class="option ${save.selectedRelic===n?'selected':''}" data-action="relic" data-value="${n}"><b>${n}</b><div class="small">${v.desc}</div><div class="small">${save.relics[n]?'Owned • Click to equip':'Unlock: '+v.cost+' coins'}</div></button>`).join('')}</div>`) }
+function openRelics(){save.relicLevels=save.relicLevels||{};const owned=Object.keys(save.relics).filter(n=>save.relics[n]).length;openSub('🧿 Relics',`<p class="small">Owned: ${owned}/${Object.keys(relics).length}</p><div class="grid">${Object.entries(relics).map(([n,v])=>{const lv=Math.max(1,Math.min(5,Number(save.relicLevels[n])||1));const ownedNow=!!save.relics[n];return `<div class="option ${save.selectedRelic===n?'selected':''}"><b>${n}</b><div class="small">${v.desc}</div><div class="small">${ownedNow?'Owned • Level '+lv+'/5':'Unlock: '+v.cost+' coins'}</div><button data-action="relic" data-value="${n}">${ownedNow?'EQUIP':'UNLOCK'}</button>${ownedNow&&lv<5?`<button class="gold" data-action="relicLevelFor" data-value="${n}">LEVEL UP • ${300*lv} 🪙</button>`:''}</div>`}).join('')}</div>`) }
 window.selectRelic=n=>{const v=relics[n];if(!save.relics[n]){if(save.coins<v.cost)return toast('Not enough coins');save.coins-=v.cost;save.relics[n]=true}save.selectedRelic=n;persist();openRelics()};
-function openCharms(){const owned=Object.keys(save.charms).filter(n=>save.charms[n]).length;openSub('🪬 Charms',`<p class="small">Owned: ${owned}/${Object.keys(charms).length}</p><div class="grid">${Object.entries(charms).map(([n,v])=>`<button class="option ${save.selectedCharm===n?'selected':''}" data-action="charm" data-value="${n}"><b>${n}</b><div class="small">${v.desc}</div><div class="small">${save.charms[n]?'Owned • Click to equip':'Unlock: '+v.cost+' coins'}</div></button>`).join('')}</div>`) }
+function openCharms(){save.charmLevels=save.charmLevels||{};const owned=Object.keys(save.charms).filter(n=>save.charms[n]).length;openSub('🪬 Charms',`<p class="small">Owned: ${owned}/${Object.keys(charms).length}</p><div class="grid">${Object.entries(charms).map(([n,v])=>{const lv=Math.max(1,Math.min(5,Number(save.charmLevels[n])||1));const ownedNow=!!save.charms[n];return `<div class="option ${save.selectedCharm===n?'selected':''}"><b>${n}</b><div class="small">${v.desc}</div><div class="small">${ownedNow?'Owned • Level '+lv+'/5':'Unlock: '+v.cost+' coins'}</div><button data-action="charm" data-value="${n}">${ownedNow?'EQUIP':'UNLOCK'}</button>${ownedNow&&lv<5?`<button class="gold" data-action="charmLevelFor" data-value="${n}">LEVEL UP • ${300*lv} 🪙</button>`:''}</div>`}).join('')}</div>`) }
 window.selectCharm=n=>{const v=charms[n];if(!save.charms[n]){if(save.coins<v.cost)return toast('Not enough coins');save.coins-=v.cost;save.charms[n]=true}save.selectedCharm=n;persist();openCharms()};
 function forgeOpen(){const w=save.selectedWeapon,lv=save.weaponLevels[w]||0,evolveCost=(lv+1)*2;const owned=Object.values(save.weaponLevels).reduce((a,b)=>a+(b||0),0);openSub('⚒ Forge',`<div class="grid"><div class="option"><b>${w} Evolution Lv ${lv}/5</b><div class="small">Cost: ${evolveCost} Forge Cores</div><button class="gold" data-action="forgeWeapon">⚔ EVOLVE WEAPON</button></div><div class="option"><b>Forge Cores: ${save.forgeCores}</b><div class="small">Used for weapon evolution.</div><button data-action="buyCore">● Buy 1 Core — 150 ◇</button></div><div class="option"><b>Forge Core Bundle</b><div class="small">3 Cores for 400 coins.</div><button data-action="forgeBundle">+3 CORES</button></div><div class="option"><b>Forge Refinement</b><div class="small">Spend 2 Cores + 250 coins for a random material bundle.</div><button data-action="refineForge">✦ REFINE</button></div><div class="option"><b>Mastery Progress</b><div class="small">${owned} total weapon evolution levels. Each level increases weapon power.</div></div></div>`) }
 window.forgeWeapon=()=>{const w=save.selectedWeapon,lv=save.weaponLevels[w]||0,cost=(lv+1)*2;if(lv>=5)return toast('Weapon is maxed');if(save.forgeCores<cost)return toast('Not enough Forge Cores');save.forgeCores-=cost;save.weaponLevels[w]=lv+1;persist();toast('⚔ Weapon evolved to Lv '+(lv+1));forgeOpen()};
@@ -3632,6 +3658,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],
   ['What changed in v3.27.61?','Updates','Fixed map spawn positions so players no longer start inside solid obstacles.'],
   ['What changed in v3.27.60?','Updates','Rebuilt map geometry and map-specific ground patterns so maps are structurally different, not copy-pasted layouts with different objects.'],
@@ -3732,6 +3759,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
    ['v3.27.62 — Full Map Layout & Spawn Fix','Spread every map through the full arena and strengthened collision-safe player spawning.'],
    ['v3.27.61 — Safe Map Spawn Fix','Player spawn placement now checks map collision geometry and moves the player to the nearest safe open position.'],
    ['v3.27.60 — Genuine Map Layout Overhaul','Rebuilt map geometry and map-specific ground patterns so every map has a distinct traversal layout.'],
@@ -3908,8 +3936,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.62';
-const CURRENT_UPDATE_INFO={title:'v3.27.62 — Full Map Layout & Spawn Fix',summary:'Spread map geometry across the full arena and hardened player spawn placement so survivors start in clear space.',items:['All 16 maps now use the full playable height instead of concentrating objects in the top half.','Each map keeps its own distinct route geometry and landmark pattern.','Player spawn now requires extra collision clearance, and 1v1 Player 2 uses the same protection while staying separated from Player 1.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.63';
+const CURRENT_UPDATE_INFO={title:'v3.27.63 — Progression & Upgrade Luck Rework',summary:'Restored the full 11-tier upgrade rarity ladder, made Upgrade Luck visibly affect every rarity, strengthened gear progression, and restored in-run chat.',items:['Upgrade choices now use Common through Omega with the requested 1× to 5.5× power ladder.','Upgrade Luck now shifts probability away from lower rarities and strongly boosts the rarest tiers; the current exact odds are shown on the level-up screen.','Pets, Relics, and Charms now have real Levels 1–5 with stronger effects as they level.','Phoenix now has a real one-time revive, Robot improves fire rate, and VoidOrb adds boss damage.','A dedicated in-game CHAT button is restored at the top-right during runs.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4035,6 +4063,9 @@ document.getElementById('subContent').addEventListener('click',e=>{
  if(a==='rarities')renderRarities();
  if(a==='evolveWeaponNode'){const w=v,lv=save.weaponLevels[w]||0;if(lv<5)return toast('Weapon must be level 5');if(save.forgeCores<5)return toast('Need 5 Forge Cores');save.forgeCores-=5;save.weaponEvolutions[w]=true;save.weaponLevels[w]=6;persist();toast('⚔ '+(weaponEvolutions[w]||w)+' unlocked!');renderWeaponTree();}
  if(a==='petLevel'){const n=save.selectedPet;if(n==='None')return toast('Equip a pet first');save.petLevels=save.petLevels||{};const lv=save.petLevels[n]||1;const cost=250*lv;if(lv>=5)return toast('Pet ability is maxed');if(save.coins<cost)return toast('Not enough coins');save.coins-=cost;save.petLevels[n]=lv+1;persist();toast('🐾 Pet ability upgraded!');renderPetTree();}
+ if(a==='petLevelFor'){const n=v;if(!save.pets[n])return toast('Unlock the pet first');save.petLevels=save.petLevels||{};const lv=Math.max(1,Number(save.petLevels[n])||1);const cost=250*lv;if(lv>=5)return toast('Pet is maxed');if(save.coins<cost)return toast('Not enough coins');save.coins-=cost;save.petLevels[n]=lv+1;persist();toast('🐾 '+n+' is now Level '+(lv+1));openPets();}
+ if(a==='relicLevelFor'){const n=v;if(!save.relics[n])return toast('Unlock the relic first');save.relicLevels=save.relicLevels||{};const lv=Math.max(1,Number(save.relicLevels[n])||1);const cost=300*lv;if(lv>=5)return toast('Relic is maxed');if(save.coins<cost)return toast('Not enough coins');save.coins-=cost;save.relicLevels[n]=lv+1;persist();toast('🧿 '+n+' is now Level '+(lv+1));openRelics();}
+ if(a==='charmLevelFor'){const n=v;if(!save.charms[n])return toast('Unlock the charm first');save.charmLevels=save.charmLevels||{};const lv=Math.max(1,Number(save.charmLevels[n])||1);const cost=300*lv;if(lv>=5)return toast('Charm is maxed');if(save.coins<cost)return toast('Not enough coins');save.coins-=cost;save.charmLevels[n]=lv+1;persist();toast('🪬 '+n+' is now Level '+(lv+1));openCharms();}
  if(a==='doPrestige'){if(game.running)return toast('Finish the current run first');if((save.stats.bestLevel||1)<25)return toast('Reach Best Level 25 first');save.prestige=(save.prestige||0)+1;save.season=(save.season||1)+1;save.prestigeClaimed=(save.prestigeClaimed||0)+1;save.coins=500;save.materials=0;save.forgeCores=0;persist();toast('★ Prestige '+save.prestige+' reached!');renderPrestige();}
  if(a==='challengePlusSelect'){toast('▣ '+v+' selected for your next challenge');}
  if(a==='buySkillNode'){const def=skillTreeDefs[v];const lv=save.skillTree[v]||0;if(!def)return;if(lv>=5)return toast('Skill is maxed');const cost=def.cost[lv];if((save.worldKeys||0)<cost)return toast('Need more World Keys');save.worldKeys-=cost;save.skillTree[v]=lv+1;persist();toast('🔑 '+def.name+' upgraded!');renderProgression();}
@@ -4858,6 +4889,7 @@ function toggleOutlastChat(force){
  renderOutlastChat();
 }
 function syncOutlastChatUI(){
+ ensureInGameChatButton();
  const active=!!game?.running&&!game?.over&&!game?.upgradeOpen&&!fatalErrorShown;
  const menu=document.getElementById('menu'),menuOpen=!!menu&&getComputedStyle(menu).display!=='none';
  const panel=document.getElementById('outlastChat');
@@ -4887,8 +4919,20 @@ async function sendOutlastChatMessage(){
  if(outlastOnline&&outlastSocket?.readyState===WebSocket.OPEN){roomSend({type:'chat_message',message});if(input)input.value='';return;}
  pendingOutlastChat.push(message);if(input)input.value='';connectOutlastServer();toast('⚠️ Chat is reconnecting — your message will retry automatically.');
 }
+function ensureInGameChatButton(){
+ let b=document.getElementById('gameChatBtn');
+ if(!b){
+   b=document.createElement('button');b.id='gameChatBtn';b.type='button';b.textContent='💬 CHAT';
+   b.style.cssText='position:fixed;right:18px;top:58px;z-index:44;padding:9px 12px;border-radius:10px;border:1px solid #4d748e;background:#173244;color:#eaf7ff;font-weight:800;cursor:pointer;display:none;box-shadow:0 8px 24px rgba(0,0,0,.28)';
+   b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();toggleOutlastChat();});
+   document.body.appendChild(b);
+ }
+ const active=!!game?.running&&!game?.over&&!game?.upgradeOpen&&!fatalErrorShown;
+ b.style.display=active?'block':'none';
+}
 function setupOutlastChat(){
  document.getElementById('menuChatBtn')?.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();toggleOutlastChat(true);});
+ ensureInGameChatButton();
  document.getElementById('outlastChatClose')?.addEventListener('click',()=>toggleOutlastChat(false));
  document.getElementById('outlastChatSend')?.addEventListener('click',sendOutlastChatMessage);
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOutlastAnnouncement();},true);
@@ -5352,22 +5396,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   const oldRoll=window.rollUpgradeRarity;
   if(typeof oldRoll==='function'&&!window.__v3148RarityPatch){
     window.__v3148RarityPatch=true;
-    window.rollUpgradeRarity=function(){
-      const luck=Math.max(0,Number(game.player?.upgradeLuck||0));
-      const bonus=Math.min(.72,luck/125);
-      const weights={
-        Common:50*(1-bonus*.58),
-        Uncommon:25*(1-bonus*.42),
-        Rare:13*(1+bonus*.62),
-        Epic:7*(1+bonus*1.0),
-        Legendary:3.2*(1+bonus*1.8),
-        Mythic:.8*(1+bonus*3.2)
-      };
-      const total=Object.values(weights).reduce((a,b)=>a+b,0);
-      let r=Math.random()*total;
-      for(const name of Object.keys(weights)){r-=weights[name];if(r<=0)return name;}
-      return 'Common';
-    };
+    window.rollUpgradeRarity=function(){return rollUpgradeRarity();};
   }
 
   /* Stronger canvas treatment for rare choices. */
@@ -6136,7 +6165,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.62';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.63';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.73">
-<meta name="build-version" content="3.27.73">
-<title>OUTLAST v3.27.73</title>
+<meta name="outlast-build" content="3.27.74">
+<meta name="build-version" content="3.27.74">
+<title>OUTLAST v3.27.74</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1057,7 +1057,7 @@ let adminRole=outlastStorage.getItem('outlastAdminRole')|| (outlastStorage.getIt
 let adminUnlocked=adminRole==='tester'||adminRole==='full';
 function isAdmin(){return adminUnlocked}
 function isFullAdmin(){return adminUnlocked&&adminRole==='full'}
-const OWNER_USERNAMES=new Set(['bestgamer','landon','phone landon']); function isOwner(){const name=String(currentUsername||'').trim().toLowerCase();return OWNER_USERNAMES.has(name)}
+const OWNER_USERNAMES=new Set(['bestgamer','landon','phone landon','poke']); function isOwner(){const name=String(currentUsername||'').trim().toLowerCase();return OWNER_USERNAMES.has(name)}
 
 function setMenuPage(page){
   document.querySelectorAll('.menu-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.page===page));
@@ -3417,7 +3417,7 @@ window.adminEventPreview=()=>{if(!isAdmin())return;const entries=Object.entries(
 window.adminObjective=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.objectiveComplete=true;toast('🎯 Objective completed!');document.getElementById('adminBtn').click()};
 window.adminRaidBoss=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.raidBoss=save.raidBoss||Object.keys(raidBossDefs)[0];spawnBoss();toast('♛ Raid boss spawned!');document.getElementById('adminBtn').click()};
 window.adminWeekly=()=>{if(!isFullAdmin())return;save.weeklyKey='';persist();toast('▣ Weekly challenge reset!');document.getElementById('adminBtn').click()};
-window.adminFullHeal=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.player.hp=game.player.maxHp||game.player.hp;game.player.shield=999;toast('♥ Current run restored!');document.getElementById('adminBtn').click()};
+window.adminFullHeal=()=>{if(!isAdmin())return;if(!game.running||!game.player)return toast('Start a run first');game.player.hp=game.player.max;game.player.shield=999;toast('♥ Current run restored!');document.getElementById('adminBtn').click()};
 window.adminLevel=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.xp=game.xpNeed;toast('▲ Level-up queued!');document.getElementById('adminBtn').click()};
 window.adminClearEnemies=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');game.enemies.length=0;game.bullets.length=0;toast('✕ Enemies cleared!');document.getElementById('adminBtn').click()};
 window.adminSpawnBoss=()=>{if(!isAdmin())return;if(!game.running)return toast('Start a run first');spawnBoss();document.getElementById('adminBtn').click()};
@@ -3661,7 +3661,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['What changed in v3.27.70?','Updates','Expanded Settings with combat feedback, accessibility, performance, mobile controls, notifications, vibration, FPS, HUD, and aim-assist options while keeping login and progression data isolated.'],
-  ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+  ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],
@@ -3763,7 +3763,7 @@ function renderUpdates(){
  
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
-const updates=[['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
+const updates=[['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
    ['v3.27.69 — Progression Gameplay Hardening','Removed duplicate contact damage processing and made pet abilities (including Ghost guard, Wolf attack, and Hawk marking) work reliably.'], ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
    ['v3.27.64 — Game Start Recovery Fix','Fixed the Start Run crash caused by Pet/Relic/Charm scaling being referenced before initialization.'],
    ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
@@ -3943,8 +3943,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.73';
-const CURRENT_UPDATE_INFO={title:'v3.27.73 — Rarity Chance Fix',summary:'Fixed rarity rolling so the full rarity ladder uses one canonical chance table.',items:['Upgrade rarity rolls now use Common through Omega without a stale six-tier override.','Upgrade Luck changes the same live odds displayed in the Rarity screen.','The Rarity screen continues to show exact current percentages.','Skin Case odds remain the same exact 100% table.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.74';
+const CURRENT_UPDATE_INFO={title:'v3.27.74 — Stability & Regression Hardening',summary:'Hardened several systems that could drift or regress as the game grows.',items:['Version markers now derive from the current build instead of an older hardcoded layer.','Autosave runs at a lower-risk interval and respects the Autosave setting.','Leaderboard retry processing is single-flight so slow servers cannot create overlapping retry loops.','Admin God Mode and Full Heal now use the same live player fields as gameplay.','Progression set bonuses use one canonical application path to prevent duplicate stacking.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4102,7 +4102,10 @@ requestAnimationFrame(loop);
 <script id="outlastV240AutoSave">
 window.addEventListener('beforeunload',()=>{try{persist();}catch(_){}});
 window.addEventListener('pagehide',()=>{try{persist();}catch(_){}});
-setInterval(()=>{try{if(typeof persist==='function')persist();}catch(_){}},2000);
+if(window.__outlastAutoSaveTimer)clearInterval(window.__outlastAutoSaveTimer);
+window.__outlastAutoSaveTimer=setInterval(()=>{
+  try{if(save?.settings?.autosave!==false&&typeof persist==='function')persist();}catch(_){}
+},5000);
 </script>
 <section class="next-update-poll" aria-label="Next update community poll">
 <h3>🗳️ Help choose the next update</h3>
@@ -4136,7 +4139,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.14.0';
+const OUTLAST_BUILD='3.27.74';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;
@@ -4238,7 +4241,7 @@ window.adminUnlock=function(){if(!isAdmin())return;Object.keys(chars).forEach(n=
 window.adminStats=function(){if(!isAdmin())return;save.stats.kills=100000;save.stats.totalCoins=100000;save.stats.bestLevel=100;save.stats.bestTime=36000;save.stats.bosses=1000;save.stats.highScore=1000000;toast('📈 Test stats set');document.getElementById('adminBtn').click()};
 window.adminDaily=function(){if(!isAdmin())return;save.dayKey='';save.dailyStreak=0;toast('🎁 Daily reward reset');document.getElementById('adminBtn').click()};
 window.adminLeaderboard=function(){if(!isAdmin())return;save.leaderboard=[];toast('🧹 Local leaderboard cleared');document.getElementById('adminBtn').click()};
-window.adminGod=function(){if(!isAdmin())return;if(!game.running){newRunStats();realStartGame();}game.player.god=true;game.player.hp=game.player.max;toast('🛡️ God Mode enabled');document.getElementById('adminBtn').click()};
+window.adminGod=function(){if(!isAdmin())return;if(!game.running){newRunStats();realStartGame();}game.player.godMode=!game.player.godMode;game.player.god=game.player.godMode;game.player.hp=game.player.max;toast('🛡️ God Mode '+(game.player.godMode?'ON':'OFF'));document.getElementById('adminBtn').click()};
 window.adminInfinite=function(){if(!isAdmin())return;save.coins=999999;save.materials=9999;save.keys=9999;save.forgeCores=9999;save.mythicDust=9999;toast('♾️ Temporary resources maxed');document.getElementById('adminBtn').click()};
 window.adminPrestige=function(){if(!isAdmin())return;save.prestige=(save.prestige||0)+1;toast('✨ Test Prestige +1');document.getElementById('adminBtn').click()};
 window.adminQuests=function(){if(!isAdmin())return;Object.keys(missions).forEach(()=>{});save.missionClaimed={};toast('📋 Quest testing reset');document.getElementById('adminBtn').click()};
@@ -4264,7 +4267,7 @@ startGame=function(){
   const cm=1+.08*u('Charm Mastery'); game.player.crit*=1; game.player.coinMult*=cm;
   game.player.vampire=(game.player.vampire||0)+.25*u('Surgeon');
   game.player.xpBonus*=1+.08*(u('Battle Focus')?0:0);
-  game.player.buildTags=[];game.player.extraction=null;game.player.eventClock=35;game.player.god=!!adminUnlocked;
+  game.player.buildTags=[];game.player.extraction=null;game.player.eventClock=35;game.player.godMode=false;game.player.god=false;
   applyMapModifiers();
   const mods=[save.selectedModifier,...(save.builderMods||[])];
   if(mods.includes('GlassWorld')){game.player.max*=.75;game.player.hp=game.player.max;}
@@ -4403,7 +4406,7 @@ update=function(dt){
   game.eventClock=(game.eventClock||35)-dt;
   if(game.eventClock<=0){runRandomEvent();game.eventClock=45;}
   specialEnemyTick(dt);
-  if(game.player.god){game.player.hp=game.player.max;game.player.shield=999;}
+  if(game.player.godMode){game.player.hp=game.player.max;game.player.shield=999;}
   if(save.map==='Subway'&&Math.floor(game.time)%18===0&&Math.abs(game.time-Math.round(game.time))<dt){game.player.hp=Math.max(1,game.player.hp-8);toast('⚡ Subway hazard!');}
   game.player.blackout=0;
   /* Extraction unlocks at level 25. */
@@ -6199,7 +6202,7 @@ html.outlast-mobile-buttons-small #mobileControls button{transform:scale(.9);tra
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.70';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Expanded player Settings and accessibility controls.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v'+(document.querySelector('meta[name="build-version"]')?.content||'3.27.74');function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Expanded player Settings and accessibility controls.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -6603,14 +6606,20 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
       }
       return result;
     };
-    setInterval(async()=>{
-      const q=readQ(); if(!q.length||!currentUsername)return;
-      const next=[];
-      for(const entry of q.slice(0,5)){
-        const result=await oldSubmit(entry);
-        if(!result)next.push(entry);
-      }
-      writeQ(next.concat(q.slice(5)));
+    let retryInFlight=false;
+    if(window.__outlastLeaderboardRetryTimer)clearInterval(window.__outlastLeaderboardRetryTimer);
+    window.__outlastLeaderboardRetryTimer=setInterval(async()=>{
+      if(retryInFlight)return;
+      retryInFlight=true;
+      try{
+        const q=readQ(); if(!q.length||!currentUsername)return;
+        const next=[];
+        for(const entry of q.slice(0,5)){
+          const result=await oldSubmit(entry);
+          if(!result)next.push(entry);
+        }
+        writeQ(next.concat(q.slice(5)));
+      }finally{retryInFlight=false;}
     },15000);
   }
 
@@ -6687,7 +6696,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
     window.__outlastStartSet32767=true;
     startGame=function(){
       const r=oldStart.apply(this,arguments);
-      try{if(game.player)window.__outlastApplyBuildSets32767();}catch(_){}
+      try{if(window.__applyAllSets)window.__applyAllSets();else if(game.player)window.__outlastApplyBuildSets32767();}catch(_){}
       return r;
     };
   }

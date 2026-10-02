@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.70">
-<meta name="build-version" content="3.27.70">
-<title>OUTLAST v3.27.70</title>
+<meta name="outlast-build" content="3.27.71">
+<meta name="build-version" content="3.27.71">
+<title>OUTLAST v3.27.71</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1948,7 +1948,7 @@ function closeAllOverlays(){
   try{document.querySelectorAll('.update-pop').forEach(el=>{if(el.id!=='loginPopup')el.style.display='none';});}catch(_){}
 }
 
-const game={running:false,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,time:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,upgradeChoices:[],player:null,player2:null,stats:null,survivalWinner:null,survival:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};
+const game={running:false,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,time:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,worldEventApplied:false,worldEventBaseFireRate:0,upgradeChoices:[],player:null,player2:null,stats:null,survivalWinner:null,survival:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};
 setupMobileControls();syncMobileControls();
 function startGame(fromRoom=false){
  try{
@@ -2522,22 +2522,24 @@ function update(dt){
  if(game.time>0&&Math.floor(game.time)%30===0&&Math.abs(game.time-Math.round(game.time))<dt&&save.challengeMode==='Chaos'){game.event=['XP FRENZY','COIN RUSH','BLOOD MOON'][Math.floor(Math.random()*3)];game.eventTimer=15;toast('🎲 CHAOS EVENT: '+game.event+'!')}
   
  if(game.time>0&&Math.floor(game.time)%55===0&&Math.abs(game.time-Math.round(game.time))<dt){
-   const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;game.worldEventClock=0;toast('🌎 WORLD EVENT: '+game.worldEvent+'!');
+   const keys=Object.keys(worldEvents);game.worldEvent=keys[Math.floor(Math.random()*keys.length)];game.worldEventTimer=20;game.worldEventClock=0;game.worldEventApplied=false;game.worldEventBaseFireRate=p.fireRate||.45;toast('🌎 WORLD EVENT: '+game.worldEvent+'!');
  }
  if(game.worldEvent){
    /* v3.27.56: World Event duration must tick down independently from the event sub-timer. */
    game.worldEventTimer=Math.max(0,(Number(game.worldEventTimer)||0)-dt);
    game.worldEventClock=(game.worldEventClock||0)-dt;
+   if(game.worldEvent==='PowerSurge' && !game.worldEventApplied){game.worldEventApplied=true;game.worldEventBaseFireRate=p.fireRate||.45;p.fireRate=Math.max(.16,game.worldEventBaseFireRate*.74);}
+   if(game.worldEvent==='TimeWarp' && !game.worldEventApplied){game.worldEventApplied=true;game.worldEventBaseFireRate=p.fireRate||.45;p.fireRate=Math.max(.18,game.worldEventBaseFireRate*.82);}
    if(game.worldEvent==='MeteorStorm' && Math.random()<dt*.55){const mx=p.x+(Math.random()-.5)*500,my=p.y+(Math.random()-.5)*500;game.effects.push({x:mx,y:my,t:.45,r:34,color:'#ff6d4d',fill:true});for(const e of game.enemies){if(Math.hypot(e.x-mx,e.y-my)<45){damageEnemy(e,p.damage*1.8);if(e.hp<=0)killEnemy(e);}}}
-   if(game.worldEvent==='PowerSurge') p.fireRate=Math.max(.16,(p.fireRate||.45)*.74);
+   
    if(game.worldEvent==='TreasureRain' && Math.random()<dt*.22 && game.coins.length<MAX_PICKUPS) game.coins.push({x:p.x+(Math.random()-.5)*700,y:p.y+(Math.random()-.5)*500,value:18+Math.floor(Math.random()*25)});
    
    if(game.worldEvent==='EliteInvasion' && game.worldEventClock<=0){for(let i=0;i<3;i++)spawnEnemy('elite');game.worldEventClock=5;}
    if(game.worldEvent==='BloodHarvest' && Math.random()<dt*.28 && game.gems.length<MAX_PICKUPS) game.gems.push({x:p.x+(Math.random()-.5)*500,y:p.y+(Math.random()-.5)*500,value:6+Math.floor(Math.random()*8),icon:'✦'});
    if(game.worldEvent==='SupplyDrop' && game.worldEventClock<=0){game.powerups.push({x:p.x+(Math.random()-.5)*450,y:p.y+(Math.random()-.5)*350,type:['shield','heal','speed','damage'][Math.floor(Math.random()*4)]});game.worldEventClock=7;}
-   if(game.worldEvent==='TimeWarp'){p.fireRate=Math.max(.18,(p.fireRate||.45)*.82);}
+   
    if(game.worldEvent==='OmegaHunt' && game.worldEventClock<=0){spawnEnemy(Math.random()<.5?'juggernaut':'phantom');game.worldEventClock=8;}
-   if(game.worldEventTimer<=0){game.worldEvent='';game.worldEventClock=0;p.blackout=0;}
+   if(game.worldEventTimer<=0){game.worldEvent='';game.worldEventClock=0;game.worldEventApplied=false;game.worldEventBaseFireRate=0;p.blackout=0;}
  }
 if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game.time))<dt){
    const ev=['BLOOD MOON','XP FRENZY','COIN RUSH'][Math.floor(Math.random()*3)];
@@ -3659,7 +3661,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['What changed in v3.27.70?','Updates','Expanded Settings with combat feedback, accessibility, performance, mobile controls, notifications, vibration, FPS, HUD, and aim-assist options while keeping login and progression data isolated.'],
-  ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+  ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],

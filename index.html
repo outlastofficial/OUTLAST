@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.47">
-<meta name="build-version" content="3.27.47">
-<title>OUTLAST v3.27.47</title>
+<meta name="outlast-build" content="3.27.48">
+<meta name="build-version" content="3.27.48">
+<title>OUTLAST v3.27.48</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3454,6 +3454,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.27.48 — Settings Routing & Cache Fix','Settings update rebuilt so the Settings button reliably opens the new controls on PC and mobile. Login/account data was left untouched.'],
    ['v3.27.46 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
    ['v3.27.43 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
    ['v3.27.42 — Leaderboard Storage Fix','Small bug fixes and leaderboard reliability improvements.'],
@@ -6152,7 +6153,7 @@ window.__outlastSkinAreaVersion=VERSION;
   window.addEventListener('beforeunload',clearSpeed);
 })();
 </script>
-<script src="settings-expansion-v3.27.47.js"></script>
+<script src="settings-expansion-v3.27.48.js?v=3.27.48"></script>
 <script src="event-admin-preview-v3.27.30.js"></script>
 </body>
 </html>

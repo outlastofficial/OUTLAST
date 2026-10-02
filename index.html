@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.66">
-<meta name="build-version" content="3.27.66">
-<title>OUTLAST v3.27.66</title>
+<meta name="outlast-build" content="3.27.68">
+<meta name="build-version" content="3.27.68">
+<title>OUTLAST v3.27.68</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3658,7 +3658,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+  ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],
@@ -3761,7 +3761,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+   ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
    ['v3.27.64 — Game Start Recovery Fix','Fixed the Start Run crash caused by Pet/Relic/Charm scaling being referenced before initialization.'],
    ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
    ['v3.27.62 — Full Map Layout & Spawn Fix','Spread every map through the full arena and strengthened collision-safe player spawning.'],
@@ -3940,7 +3940,7 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.67';
+const CURRENT_UPDATE_VERSION='3.27.68';
 const CURRENT_UPDATE_INFO={title:'v3.27.67 — Progression & Leaderboard Fixes',summary:'Fixed contact damage, gear leveling, evolution coverage, build sets, collection organization, rarity odds, and leaderboard persistence.',items:['Zombies now deal reliable contact damage when they reach the survivor.','Pet, Relic, and Charm levels now have stronger and clearly displayed effects.','The Weapon Evolution Tree now covers the full weapon roster and evolved weapons gain a real combat bonus.','Build Sets and Build Presets now store and apply their bonuses correctly.','Collection content is reorganized into clear sections and rarity odds are shown.','Upgrade rarity cards now use the full rarity ladder and display the actual chance table.','Leaderboard records are saved locally first and failed server submissions are queued for retry.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
@@ -6163,7 +6163,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.67';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.68';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -6727,5 +6727,118 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   openRelics=function(){oldOpenRelics();};
   openCharms=function(){oldOpenCharms();};
 })();
-</script></body>
+</script>/* v3.27.68 progression/gameplay hardening */
+(function(){
+  window.__outlastGearRarity=function(cost){
+    cost=Number(cost)||0;
+    return cost>=50000?'Omega':cost>=15000?'Eternal':cost>=7000?'Celestial':cost>=3000?'Mythic':cost>=1500?'Epic':cost>=700?'Rare':cost>0?'Uncommon':'Common';
+  };
+  function clampLv(v){return Math.max(1,Math.min(5,Math.floor(Number(v)||1)));}
+
+  // Make pet level changes immediately reflected in the displayed stats and next run.
+  const petBase=openPets;
+  openPets=function(){
+    const html=Object.entries(pets).map(([n,v])=>{
+      const lv=clampLv(save.petLevels?.[n]); const owned=!!save.pets[n];
+      const rarity=window.__outlastGearRarity(v.cost);
+      const power=Math.round((1+.25*(lv-1))*100);
+      return '<div class="option '+(save.selectedPet===n?'selected':'')+'"><b>'+n+'</b><div class="small">Rarity: '+rarity+'</div><div class="small">'+v.desc+'</div><div class="small">'+(owned?'Owned • Level '+lv+'/5 • Power '+power+'%':'Unlock: '+v.cost+' coins')+'</div><button data-action="pet" data-value="'+n+'">'+(owned?'EQUIP':'UNLOCK')+'</button>'+(owned&&lv<5?'<button class="gold" data-action="petLevelFor" data-value="'+n+'">LEVEL UP • '+(250*lv)+' 🪙</button>':'')+'</div>';
+    }).join('');
+    openSub('🐾 Pets','<div class="grid">'+html+'</div>');
+  };
+  const relicBase=openRelics;
+  openRelics=function(){
+    const owned=Object.keys(save.relics||{}).filter(n=>save.relics[n]).length;
+    const html=Object.entries(relics).map(([n,v])=>{
+      const lv=clampLv(save.relicLevels?.[n]);const ownedNow=!!save.relics[n];const rarity=window.__outlastGearRarity(v.cost);
+      return '<div class="option '+(save.selectedRelic===n?'selected':'')+'"><b>'+n+'</b><div class="small">Rarity: '+rarity+'</div><div class="small">'+v.desc+'</div><div class="small">'+(ownedNow?'Owned • Level '+lv+'/5 • Power '+Math.round((1+.22*(lv-1))*100)+'%':'Unlock: '+v.cost+' coins')+'</div><button data-action="relic" data-value="'+n+'">'+(ownedNow?'EQUIP':'UNLOCK')+'</button>'+(ownedNow&&lv<5?'<button class="gold" data-action="relicLevelFor" data-value="'+n+'">LEVEL UP • '+(300*lv)+' 🪙</button>':'')+'</div>';
+    }).join('');
+    openSub('🧿 Relics','<p class="small">Owned: '+owned+'/'+Object.keys(relics).length+'</p><div class="grid">'+html+'</div>');
+  };
+  const charmBase=openCharms;
+  openCharms=function(){
+    const owned=Object.keys(save.charms||{}).filter(n=>save.charms[n]).length;
+    const html=Object.entries(charms).map(([n,v])=>{
+      const lv=clampLv(save.charmLevels?.[n]);const ownedNow=!!save.charms[n];const rarity=window.__outlastGearRarity(v.cost);
+      return '<div class="option '+(save.selectedCharm===n?'selected':'')+'"><b>'+n+'</b><div class="small">Rarity: '+rarity+'</div><div class="small">'+v.desc+'</div><div class="small">'+(ownedNow?'Owned • Level '+lv+'/5 • Power '+Math.round((1+.22*(lv-1))*100)+'%':'Unlock: '+v.cost+' coins')+'</div><button data-action="charm" data-value="'+n+'">'+(ownedNow?'EQUIP':'UNLOCK')+'</button>'+(ownedNow&&lv<5?'<button class="gold" data-action="charmLevelFor" data-value="'+n+'">LEVEL UP • '+(300*lv)+' 🪙</button>':'')+'</div>';
+    }).join('');
+    openSub('🪬 Charms','<p class="small">Owned: '+owned+'/'+Object.keys(charms).length+'</p><div class="grid">'+html+'</div>');
+  };
+
+  // Correct preset save/load to include every run-defining setting.
+  window.__saveBuildFull=function(slot){
+    save.buildPresets=save.buildPresets||{};
+    save.buildPresets[slot]={char:save.selectedChar,weapon:save.selectedWeapon,skin:save.selectedSkin,pet:save.selectedPet,relic:save.selectedRelic,charm:save.selectedCharm,element:save.element,skill:save.activeSkill,modifier:save.selectedModifier||'None',builderMods:[...(save.builderMods||[])],challengeMode:save.challengeMode,mode:save.mode,difficulty:save.difficulty,map:save.map,zone:save.selectedZone};
+    persist();return save.buildPresets[slot];
+  };
+  window.__loadBuildFull=function(slot){
+    const bp=save.buildPresets?.[slot];if(!bp)return false;
+    save.selectedChar=bp.char||save.selectedChar;save.selectedWeapon=bp.weapon||save.selectedWeapon;save.selectedSkin=bp.skin||save.selectedSkin;save.selectedPet=bp.pet||save.selectedPet;save.selectedRelic=bp.relic||save.selectedRelic;save.selectedCharm=bp.charm||save.selectedCharm;save.element=bp.element||save.element;save.activeSkill=bp.skill||save.activeSkill;save.selectedModifier=bp.modifier||save.selectedModifier;save.builderMods=Array.isArray(bp.builderMods)?bp.builderMods.slice(0,2):[];save.challengeMode=bp.challengeMode||save.challengeMode;save.mode=bp.mode||save.mode;save.difficulty=bp.difficulty||save.difficulty;save.map=bp.map||save.map;save.selectedZone=bp.zone||save.selectedZone;
+    persist();return true;
+  };
+  document.addEventListener('pointerdown',e=>{
+    const b=e.target.closest?.('[data-action="presetSave"],[data-action="presetLoad"]');if(!b)return;
+    const slot=b.dataset.value;
+    if(b.dataset.action==='presetSave'){e.preventDefault();e.stopPropagation();window.__saveBuildFull(slot);if(typeof renderWorld2==='function')renderWorld2();}
+    else if(b.dataset.action==='presetLoad'){e.preventDefault();e.stopPropagation();if(window.__loadBuildFull(slot)){if(typeof renderWorld2==='function')renderWorld2();toast('✅ Build '+slot+' restored!');}}
+  },true);
+
+  // Give all set families a real, deterministic in-run effect.
+  window.__applyAllSets=function(){
+    const p=game.player;if(!p||p.__setsApplied)return;
+    const groups={...relicSets,...itemSets};
+    p.activeSets={};p.__setsApplied=true;
+    for(const [name,pieces] of Object.entries(groups)){
+      const active=pieces.filter(x=>(save.upgrades?.[x]||0)>0);
+      if(active.length>=2){
+        p.activeSets[name]=active.length;
+        if(/Hunter|Guardian/.test(name))p.damage*=1.05;
+        if(/Treasure|Fortune/.test(name))p.coinMult*=1.05;
+        if(/Arcane/.test(name))p.ultGain*=1.05;
+        if(/Survivor/.test(name))p.speed=Math.min(p.speedCap,p.speed*1.04);
+        if(active.length>=3){
+          if(/Hunter/.test(name))p.damage*=1.08;
+          if(/Guardian/.test(name))p.armor=Math.max(.12,p.armor*.90);
+          if(/Treasure|Fortune/.test(name))p.coinMult*=1.12;
+          if(/Arcane/.test(name)){p.ultGain*=1.10;p.damage*=1.04;}
+          if(/Survivor/.test(name)){p.speed=Math.min(p.speedCap,p.speed*1.08);p.magnet+=35;}
+        }
+      }
+    }
+  };
+  const oldStartGame68=startGame;
+  if(!window.__outlastSetStart68){
+    window.__outlastSetStart68=true;
+    startGame=function(){const r=oldStartGame68.apply(this,arguments);try{window.__applyAllSets();}catch(_){}return r;};
+  }
+
+  // Keep the zombie contact damage path authoritative and stop on zero HP.
+  const oldUpdate68=update;
+  if(!window.__outlastContact68){
+    window.__outlastContact68=true;
+    update=function(dt){
+      oldUpdate68(dt);
+      const p=game.player;if(!p||!game.running)return;
+      if(p.hp<=0)return;
+      for(const e of game.enemies){
+        if(!e||e.__dead)continue;
+        const d=Math.hypot(e.x-p.x,e.y-p.y);
+        if(d<=(e.r||15)+(p.r||20)){
+          const raw=Math.max(1,Number(e.damage)||1)*(e.kind==='runner'?1.0:1.0);
+          const dealt=p.godMode?0:raw*Math.max(.15,Number(p.armor)||1)*(p.shield>0?Math.max(.05,.15/(Number(p.shieldEfficiency)||1)):1)*(Number(p.damageTakenMult)||1)*dt;
+          if(dealt>0)p.hp=Math.max(0,p.hp-dealt);
+        }
+      }
+    };
+  }
+
+  // Replace the rarity screen with labels + exact current upgrade odds and case odds.
+  renderRarities=function(){
+    const odds=getUpgradeRarityOdds();
+    const upRows=UPGRADE_RARITY_ORDER.map(n=>'<div class="option" style="border-left:4px solid '+(upgradeRarities[n]?.glow||'#999')+'"><b>'+n+'</b><div class="small">Upgrade chance: '+Number(odds.percent[n]||0).toFixed(3)+'% • Multiplier '+Number(upgradeRarities[n]?.mult||1).toFixed(2)+'×</div></div>').join('');
+    const skinRows=skinCaseOdds.map(([n,p])=>'<div class="option"><b>'+n+'</b><div class="small">Skin Case chance: '+Number(p).toFixed(3)+'%</div></div>').join('');
+    openSub('✦ Rarity & Drop Chances','<div class="option"><b>UPGRADE RARITIES</b><div class="small">These are the current chances with your present Upgrade Luck.</div></div><div class="grid">'+upRows+'</div><div class="option" style="margin-top:12px"><b>SKIN CASE RARITIES</b><div class="small">These are the exact case odds.</div></div><div class="grid">'+skinRows+'</div>');
+  };
+})();
+</body>
 </html>

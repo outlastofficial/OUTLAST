@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.57">
-<meta name="build-version" content="3.27.57">
-<title>OUTLAST v3.27.57</title>
+<meta name="outlast-build" content="3.27.58">
+<meta name="build-version" content="3.27.58">
+<title>OUTLAST v3.27.58</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1174,21 +1174,87 @@ const mapDefs={
 };
 
 const mapObstacles={
-  Forest:[['Tree',430,230,70,110],['Tree',790,520,75,105],['Rock',1160,270,95,65],['Log',620,760,150,42],['Rock',1320,720,100,70]],
-  Desert:[['Rock',430,250,110,70],['Cactus',800,520,55,95],['Rock',1180,300,120,75],['Ruins',620,760,150,55],['Rock',1360,720,110,70]],
-  Snow:[['IceRock',430,230,110,80],['IceBlock',780,540,120,65],['IceRock',1180,280,100,95],['SnowBank',610,770,170,55],['IceBlock',1370,700,120,70]],
-  Lava:[['Rock',430,220,105,80],['LavaRock',800,520,90,75],['Rock',1180,300,115,85],['LavaRock',620,750,150,55],['Rock',1360,700,110,80]],
-  City:[['Car',410,230,150,70],['Blockade',760,520,180,50],['Car',1180,290,150,70],['Barrier',590,760,190,45],['Car',1330,700,150,70]],
-  Hospital:[['Bed',420,240,150,55],['Cabinet',790,510,70,130],['Bed',1160,290,150,55],['Cabinet',610,740,70,130],['Bed',1330,690,150,55]],
-  Laboratory:[['Crate',420,240,120,90],['Tank',800,500,90,120],['Crate',1170,290,130,85],['Console',600,740,170,55],['Crate',1340,700,120,90]],
-  Subway:[['Bench',420,250,170,45],['Pillar',800,500,55,140],['Bench',1160,300,170,45],['Pillar',610,740,55,140],['Bench',1330,700,170,45]],
-  Prison:[['CellBlock',410,230,170,75],['Barrier',770,510,170,55],['CellBlock',1150,290,170,75],['Barrier',600,750,170,55],['CellBlock',1320,690,170,75]],
-  MilitaryBase:[['Sandbags',410,240,170,60],['Vehicle',770,500,150,85],['Sandbags',1160,290,170,60],['Crates',590,750,170,70],['Vehicle',1320,700,160,85]],
-  RuinedTown:[['Rubble',410,230,150,85],['Wall',760,510,190,55],['Rubble',1160,290,150,85],['Wall',590,750,190,55],['Rubble',1320,690,150,90]],
-  Harbor:[['Container',410,230,150,85],['Crane',760,510,180,55],['Container',1160,290,150,85],['DockWall',590,750,190,55],['Container',1320,690,150,90]],
-  Bunker:[['BlastDoor',410,230,150,85],['Console',760,510,120,100],['BlastDoor',1160,290,150,85],['Barrier',590,750,190,55],['Crate',1320,690,150,90]],
-  Swamp:[['DeadTree',410,230,120,100],['MudPatch',760,510,180,70],['DeadTree',1160,290,120,100],['ReedBed',590,750,190,55],['Rock',1320,690,150,90]],
-  Skyscraper:[['Desk',410,230,150,65],['Column',760,510,60,150],['Desk',1160,290,150,65],['Column',590,750,60,150],['Generator',1320,690,150,90]]
+  // Each map now has its own landmark layout and traversal pattern. The center spawn lane stays open.
+  Forest:[
+    ['Tree',260,260,90,150],['Tree',690,180,85,135],['Rock',1130,260,130,85],
+    ['Tree',1500,180,95,160],['Log',380,720,210,48],['Rock',910,790,125,90],
+    ['Tree',1410,690,100,170],['Rock',2350,350,150,95],['Tree',2740,780,110,170],['Log',2240,1120,240,52]
+  ],
+  Desert:[
+    ['DuneRock',300,360,150,85],['Cactus',620,170,55,110],['Ruins',1010,250,230,70],
+    ['Cactus',1510,420,55,120],['Ruins',250,930,190,75],['Rock',720,760,125,80],
+    ['Cactus',1540,1010,55,115],['Rock',2350,700,170,90],['Ruins',2700,260,210,75],['Cactus',2860,1050,55,120]
+  ],
+  Snow:[
+    ['IceWall',250,180,260,70],['IceRock',780,300,125,105],['SnowPine',1280,170,90,170],
+    ['IceBlock',1600,520,170,80],['SnowBank',340,850,230,65],['IceRock',920,900,120,110],
+    ['SnowPine',1480,960,95,175],['IceWall',2100,260,270,70],['IceRock',2650,760,150,120],['SnowPine',2900,330,90,175]
+  ],
+  Lava:[
+    ['LavaRock',240,240,150,110],['LavaRock',650,180,110,150],['Rock',1080,350,170,90],
+    ['LavaRock',1500,220,150,115],['LavaRock',330,860,240,65],['Rock',760,820,130,100],
+    ['LavaRock',1460,900,210,70],['Rock',2180,300,180,100],['LavaRock',2580,700,170,120],['Rock',2890,1000,140,95]
+  ],
+  City:[
+    ['Building',220,180,260,170],['Car',650,260,160,70],['Blockade',1030,180,250,55],
+    ['Building',1460,360,180,220],['Car',250,820,170,75],['Barrier',700,760,260,50],
+    ['Building',1360,900,240,150],['Car',2050,260,170,75],['Blockade',2390,720,280,55],['Building',2780,180,230,190]
+  ],
+  Hospital:[
+    ['Ward',220,200,280,120],['Bed',640,190,150,55],['Cabinet',1030,340,75,170],
+    ['Ward',1450,180,260,120],['Bed',300,820,160,55],['Cabinet',760,850,75,170],
+    ['Bed',1500,920,160,55],['Ward',2100,250,270,120],['Cabinet',2520,700,75,180],['Bed',2810,980,160,55]
+  ],
+  Laboratory:[
+    ['LabWall',220,170,300,60],['Tank',650,220,105,150],['Crate',1000,500,130,95],
+    ['ConsoleBank',1430,190,260,70],['Crate',250,820,140,105],['Tank',760,900,105,150],
+    ['ConsoleBank',1380,930,250,70],['Crate',2110,300,150,105],['Tank',2550,760,105,150],['Crate',2820,250,150,105]
+  ],
+  Subway:[
+    ['Platform',190,230,310,55],['Pillar',650,170,60,190],['Bench',1030,300,190,50],
+    ['TunnelWall',1450,180,280,65],['Platform',230,850,320,55],['Pillar',820,780,60,210],
+    ['Bench',1450,930,190,50],['TunnelWall',2070,250,280,65],['Pillar',2520,700,60,210],['Bench',2800,1050,190,50]
+  ],
+  Prison:[
+    ['CellBlock',180,180,300,95],['CellBlock',700,170,240,95],['Barrier',1120,360,260,60],
+    ['WatchTower',1500,190,110,170],['CellBlock',220,820,320,100],['Barrier',760,760,300,60],
+    ['CellBlock',1350,900,310,100],['WatchTower',2110,220,110,170],['Barrier',2380,690,300,60],['CellBlock',2760,300,300,100]
+  ],
+  MilitaryBase:[
+    ['Sandbags',180,220,320,65],['Vehicle',700,170,190,105],['Crates',1050,390,180,90],
+    ['BunkerEntrance',1430,170,260,120],['Sandbags',240,850,340,65],['Vehicle',820,820,190,105],
+    ['Crates',1390,930,200,90],['BunkerEntrance',2070,240,260,120],['Vehicle',2480,720,200,110],['Sandbags',2780,1030,330,65]
+  ],
+  RuinedTown:[
+    ['Rubble',180,210,240,130],['Wall',620,180,320,60],['Rubble',1110,360,190,140],
+    ['CollapsedHouse',1460,170,270,170],['Rubble',240,850,280,130],['Wall',760,800,340,60],
+    ['CollapsedHouse',1390,900,280,170],['Rubble',2080,280,220,140],['Wall',2440,700,330,60],['Rubble',2800,960,250,130]
+  ],
+  Harbor:[
+    ['WaterDock',160,200,360,70],['Container',700,170,170,90],['Crane',1030,300,220,65],
+    ['ContainerStack',1450,190,260,150],['DockWall',200,820,380,70],['Container',760,850,170,90],
+    ['Crane',1320,920,220,65],['ContainerStack',2040,240,260,150],['DockWall',2400,720,360,70],['Container',2810,990,180,90]
+  ],
+  Bunker:[
+    ['BlastDoor',170,200,300,100],['Reactor',690,180,150,170],['Console',1050,420,180,90],
+    ['BlastDoor',1450,180,300,100],['Barrier',210,850,360,65],['Reactor',760,820,150,170],
+    ['Console',1370,940,190,90],['BlastDoor',2050,240,300,100],['Barrier',2420,700,360,65],['Reactor',2820,300,150,170]
+  ],
+  Swamp:[
+    ['DeadTree',190,190,110,190],['MudPatch',560,250,320,90],['ReedBed',1040,170,250,130],
+    ['DeadTree',1510,330,110,190],['MudPatch',180,830,360,100],['ReedBed',760,780,270,140],
+    ['DeadTree',1430,900,110,190],['MudPatch',2070,240,350,100],['ReedBed',2520,700,280,140],['DeadTree',2880,260,110,190]
+  ],
+  Skyscraper:[
+    ['OfficeBlock',170,180,300,180],['Column',700,170,65,210],['DeskRow',1010,360,300,70],
+    ['ElevatorBank',1460,180,220,160],['OfficeBlock',210,850,320,180],['Column',790,790,65,220],
+    ['DeskRow',1370,900,310,70],['ElevatorBank',2070,240,220,160],['Column',2500,690,65,220],['OfficeBlock',2770,300,300,180]
+  ],
+  Wasteland:[
+    ['Wreck',170,260,230,100],['Crater',560,180,220,150],['ScrapPile',980,420,190,120],
+    ['BrokenWall',1410,170,300,75],['Wreck',210,860,250,105],['Crater',760,780,230,160],
+    ['ScrapPile',1360,930,210,130],['BrokenWall',2050,250,320,80],['Crater',2480,680,250,170],['Wreck',2820,980,240,105]
+  ]
 };
 function obstacleRects(map=save.map){return (mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));}
 function circleRectHit(x,y,r,o){const cx=Math.max(o.x,Math.min(x,o.x+o.w)),cy=Math.max(o.y,Math.min(y,o.y+o.h));return Math.hypot(x-cx,y-cy)<r;}
@@ -1247,7 +1313,8 @@ function drawMapObjects(scale=1,ox=0,oy=0){
   ctx.restore();
   // Extra non-solid map detail for a fuller environment.
   ctx.save();ctx.globalAlpha=.55;
-  const accents=['#2f4938','#4e4334','#394654','#56453d','#59624e'];
+  const accentsByMap={Forest:['#2f4938','#355b38','#46684a'],Desert:['#5d4930','#765b37','#9b7441'],Snow:['#465e70','#6d8799','#a7c8d8'],Lava:['#5b2a22','#7d3325','#a84a2e'],City:['#303943','#46515f','#5f6b78'],Hospital:['#b8c5cc','#d4dde1','#8fa6b2'],Laboratory:['#294550','#356878','#4c8796'],Subway:['#383646','#514d63','#6d6682'],Prison:['#414a52','#56616a','#68757f'],MilitaryBase:['#394a38','#526447','#71875a'],RuinedTown:['#4a3c39','#66514a','#80655a'],Harbor:['#2e4650','#3f6672','#568b98'],Bunker:['#3b3f45','#555b61','#77716a'],Swamp:['#30442e','#405b38','#587647'],Skyscraper:['#2c3b50','#40536a','#59718d'],Wasteland:['#4b382b','#664c38','#856348']};
+  const accents=accentsByMap[save.map]||accentsByMap.Forest;
   for(let i=0;i<20;i++){
     const xx=(i*173+97)%W, yy=(i*97+140)%H, c=accents[i%accents.length];
     ctx.fillStyle=c;
@@ -3432,6 +3499,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.27.58?','Updates','Maps now have genuinely different landmark layouts and traversal patterns. Wasteland also has its own layout instead of using the Forest fallback.'],
   ['What changed in v3.27.57?','Updates','Projectile-size upgrades now consistently scale Laser and special weapon projectiles.'], ['What changed in v3.27.56?','Updates','World Event countdowns now decrease correctly during runs and expire cleanly when their duration reaches zero.'], ['What changed in v3.27.55?','Updates','A fully charged Ultimate now uses a hardened activation path, affects only live enemies, and shows clear activation feedback.'], ['What changed in v3.27.54?','Updates','The boss health bar now follows the live boss HP and hides immediately when no active boss remains.'], ['What changed in v3.27.53?','Updates','Laser visual projectiles now travel far enough to reach their targets, with a clearer beam-style visual. Other projectile behavior remains unchanged.'], ['What changed in v3.27.52?','Updates','Improved top-screen header wrapping and balanced level-up choices with more varied drafts and smoother rarity chances.'],
   ['What changed in v3.27.51?','Updates','Removed the duplicate boss countdown and improved top HUD spacing so important information stays visible on smaller screens.'],
   ['What changed in v3.27.50?','Updates','The update notification now checks the current game build, so new update popups appear correctly. The visible version badge and Update Log stay synchronized.'],
@@ -3502,6 +3570,7 @@ const helpArticles=[
   ['What do the rarities mean?','Rarities','Rarity progresses from Common through Uncommon, Rare, Epic, Legendary, Mythic, Divine, Celestial, Transcendent, Eternal, and Omega.'],
   ['How do map obstacles work?','Map Obstacles','Maps can contain solid objects such as trees, rocks, vehicles, walls, crates, furniture, and rubble. Move around them instead of through them.'],
   ['What are map hazards?','Map Hazards','Some maps have unique hazards and events. Learn their warning patterns and move around dangerous areas to survive.'],
+  ['What makes each map unique?','Maps','Every map now has its own landmark layout and traversal pattern. Forest uses winding cover, Desert uses ruins and open lanes, Snow uses ice walls, Lava uses volcanic rock formations, City uses buildings and blockades, Hospital uses wards and cabinets, Laboratory uses tanks and consoles, Subway uses platforms and pillars, Prison uses cell blocks and watch towers, Military Base uses bunkers and vehicles, Ruined Town uses collapsed structures, Harbor uses docks and containers, Bunker uses reactors and blast doors, Swamp uses mud and reed zones, Skyscraper uses office blocks and columns, and Wasteland uses craters, wrecks, scrap, and broken walls.'],
   ['How do I see what a character will look like?','Character Preview','Open Inventory to see the live preview. It updates for your selected character and skin.'],
   ['Where can I see update information?','Update News','New versions can show an Update News popup on the main menu. You can also open the Update Log to see the full history.'],
   ['What does the version marker mean?','Version Marker','The visible OUTLAST version marker should match the current build version. If the marker looks older after loading, refresh the page so the current build metadata can be applied.'],
@@ -3526,6 +3595,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.27.58 — Unique Map Layouts','Reworked every map with its own landmark placement and traversal pattern, and added a dedicated Wasteland layout.'],
    ['v3.27.57 — Projectile Size Consistency Fix','Fixed projectile-size scaling so Big Bullets consistently affects Laser and special weapon projectiles.'], ['v3.27.56 — World Event Countdown Fix','Fixed World Event durations so their countdown now decreases during a live run and expires cleanly at zero.'], ['v3.27.55 — Ultimate Reliability Fix','Hardened the Ultimate activation path so a charged Ultimate reliably fires and clearly confirms activation.'], ['v3.27.54 — Boss Health Bar Sync Fix','Boss health now stays synchronized with the active boss and the bar disappears when the boss is defeated.'], ['v3.27.53 — Projectile Travel Fix','Fixed short-lived projectile visuals, especially laser travel distance and beam visibility.'], ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
    ['v3.27.51 — Boss Timer & HUD Fix','Removed the duplicate boss timer and improved top HUD spacing/clipping.'],
    ['v3.27.50 — Update Popup Fix','Fixed the update notification so the current update is shown on a new game build.'],
@@ -3697,8 +3767,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.57';
-const CURRENT_UPDATE_INFO={title:'v3.27.57 — Projectile Size Consistency Fix',summary:'Fixed weapon projectile size scaling so Big Bullets and other projectile-size upgrades consistently affect special weapons and Laser shots.',items:['Laser shots now use the same projectile-size multiplier as the standard weapon path.','SoulCannon, StarRifle, VoidLauncher, and StormBow now scale with projectile-size upgrades instead of using fixed radii.','MineLayer mines now respect projectile-size scaling as well, keeping special projectile visuals consistent.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.58';
+const CURRENT_UPDATE_INFO={title:'v3.27.58 — Unique Map Layouts',summary:'Reworked map layouts so each map has its own landmark arrangement, traversal pattern, and visual identity.',items:['All 16 maps now use distinct obstacle layouts instead of repeating the same five-position pattern.','Added a dedicated Wasteland layout so it no longer falls back to the Forest layout.','Map collision and enemy-spawn recovery continue to use the active map layout.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -5905,7 +5975,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.57';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.58';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

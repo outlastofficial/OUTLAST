@@ -3615,12 +3615,12 @@ const updates=[
 
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
-const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboard build metadata, hardened leaderboard saving for older saves, and synchronized the in-game update/version metadata across the main game pages.'];
+const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed leaderboard storage so saved scores can persist across server restarts.']
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='3.27.46';
-const CURRENT_UPDATE_INFO={title:'v3.27.46 — HTML Stability Fix',summary:'Small bug fixes and game stability improvements.',items:['Repaired malformed menu styling that could cause inconsistent UI rendering.','Kept existing controls and protected access behavior unchanged.','Login was not changed.']};
+const CURRENT_UPDATE_INFO={title:'v3.27.46 — Leaderboard Persistence Fix',summary:'Small bug fixes and game stability improvements.',items:['Fixed leaderboard storage so saved scores can persist across server restarts.','Kept existing controls and protected access behavior unchanged.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

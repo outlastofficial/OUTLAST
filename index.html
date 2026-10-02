@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.58">
-<meta name="build-version" content="3.27.58">
-<title>OUTLAST v3.27.58</title>
+<meta name="outlast-build" content="3.27.59">
+<meta name="build-version" content="3.27.59">
+<title>OUTLAST v3.27.59</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3499,6 +3499,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.27.59?','Updates','Fixed Daily Shop purchase buttons being overridden by an older shop handler. All six current offers now purchase through the live Daily Shop system.'],
   ['What changed in v3.27.58?','Updates','Maps now have genuinely different landmark layouts and traversal patterns. Wasteland also has its own layout instead of using the Forest fallback.'],
   ['What changed in v3.27.57?','Updates','Projectile-size upgrades now consistently scale Laser and special weapon projectiles.'], ['What changed in v3.27.56?','Updates','World Event countdowns now decrease correctly during runs and expire cleanly when their duration reaches zero.'], ['What changed in v3.27.55?','Updates','A fully charged Ultimate now uses a hardened activation path, affects only live enemies, and shows clear activation feedback.'], ['What changed in v3.27.54?','Updates','The boss health bar now follows the live boss HP and hides immediately when no active boss remains.'], ['What changed in v3.27.53?','Updates','Laser visual projectiles now travel far enough to reach their targets, with a clearer beam-style visual. Other projectile behavior remains unchanged.'], ['What changed in v3.27.52?','Updates','Improved top-screen header wrapping and balanced level-up choices with more varied drafts and smoother rarity chances.'],
   ['What changed in v3.27.51?','Updates','Removed the duplicate boss countdown and improved top HUD spacing so important information stays visible on smaller screens.'],
@@ -3595,6 +3596,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.27.59 — Daily Shop Button Fix','Fixed the Daily Shop purchase buttons so they use the current daily stock handler and correct item rewards.'],
    ['v3.27.58 — Unique Map Layouts','Reworked every map with its own landmark placement and traversal pattern, and added a dedicated Wasteland layout.'],
    ['v3.27.57 — Projectile Size Consistency Fix','Fixed projectile-size scaling so Big Bullets consistently affects Laser and special weapon projectiles.'], ['v3.27.56 — World Event Countdown Fix','Fixed World Event durations so their countdown now decreases during a live run and expires cleanly at zero.'], ['v3.27.55 — Ultimate Reliability Fix','Hardened the Ultimate activation path so a charged Ultimate reliably fires and clearly confirms activation.'], ['v3.27.54 — Boss Health Bar Sync Fix','Boss health now stays synchronized with the active boss and the bar disappears when the boss is defeated.'], ['v3.27.53 — Projectile Travel Fix','Fixed short-lived projectile visuals, especially laser travel distance and beam visibility.'], ['v3.27.52 — Top HUD & Upgrade Balance Fix','Improved top HUD wrapping and balanced level-up choice variety and rarity.'],
    ['v3.27.51 — Boss Timer & HUD Fix','Removed the duplicate boss timer and improved top HUD spacing/clipping.'],
@@ -3767,8 +3769,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.58';
-const CURRENT_UPDATE_INFO={title:'v3.27.58 — Unique Map Layouts',summary:'Reworked map layouts so each map has its own landmark arrangement, traversal pattern, and visual identity.',items:['All 16 maps now use distinct obstacle layouts instead of repeating the same five-position pattern.','Added a dedicated Wasteland layout so it no longer falls back to the Forest layout.','Map collision and enemy-spawn recovery continue to use the active map layout.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.59';
+const CURRENT_UPDATE_INFO={title:'v3.27.59 — Daily Shop Button Fix',summary:'Fixed Daily Shop purchase buttons being routed through an older legacy purchase handler.',items:['Daily Shop cards now use the current six-offer stock system when purchased.','All Daily Shop item IDs now map to the correct rewards and prices.','Purchased offers still lock for the current day and the stock remains stable until the next daily reset.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4297,30 +4299,50 @@ function updateShopCountdown(){
   c.textContent=h+'h '+m+'m '+s+'s';
 }
 window.buyShop=function(k){
-  const item=getDailyShop().find(x=>x[0]===k);
-  if(!item)return;
-  const key=todayKey();
-  if(save.shopDay!==key){save.shopDay=key;save.shopPurchases={};}
+  const items=typeof getDailyShopItems==='function'?getDailyShopItems():[];
+  const item=items.find(x=>x&&x.id===k);
+  if(!item)return toast('Shop item unavailable');
+  const day=todayKey();
+  ensureDailyShopStock();
+  if(save.shopDay!==day){save.shopDay=day;save.shopPurchases={};}
+  save.shopPurchases=save.shopPurchases||{};
   if(save.shopPurchases[k])return toast('Already purchased today');
-  if(save.coins<item[2])return toast('Not enough coins');
-  save.coins-=item[2];
-  if(k==='core')save.forgeCores+=3;
-  if(k==='case')save.keys++;
-  if(k==='xp')save.forgeCores++;
-  if(k==='shield')save.keys++;
-  if(k==='luck')save.nextRunLuck=(save.nextRunLuck||0)+25;
-  if(k==='parts')save.materials=(save.materials||0)+10;
-  if(k==='keys')save.keys=(save.keys||0)+2;
-  if(k==='dust')save.mythicDust=(save.mythicDust||0)+5;
-  if(k==='forge')save.forgeCores=(save.forgeCores||0)+8;
-  if(k==='upgrade'){
-    const names=permanent.filter(x=>(save.upgrades[x[0]]||0)<5);
-    if(names.length){const n=names[Math.floor(Math.random()*names.length)][0];save.upgrades[n]=(save.upgrades[n]||0)+1;toast('📈 '+n+' upgraded!');}
+  const price=Math.max(0,Math.floor(Number(item.price)||0));
+  if((Number(save.coins)||0)<price)return toast('Not enough coins');
+
+  save.coins=Math.max(0,(Number(save.coins)||0)-price);
+  switch(k){
+    case 'core': save.forgeCores=(save.forgeCores||0)+3; break;
+    case 'coins': save.coins=(save.coins||0)+900; break;
+    case 'case': save.caseCredits=(save.caseCredits||0)+1; break;
+    case 'xp': save.forgeCores=(save.forgeCores||0)+1; save.nextRunXP=(save.nextRunXP||0)+10; break;
+    case 'parts': save.materials=(save.materials||0)+10; break;
+    case 'key': save.worldKeys=(save.worldKeys||0)+2; break;
+    case 'dust': save.mythicDust=(save.mythicDust||0)+5; break;
+    case 'megaCore': save.forgeCores=(save.forgeCores||0)+8; break;
+    case 'shield': save.shieldCharges=(save.shieldCharges||0)+2; break;
+    case 'luck': save.nextRunLuck=(save.nextRunLuck||0)+25; break;
+    case 'upgrade': {
+      const names=typeof permanent!=='undefined'
+        ? permanent.filter(x=>(save.upgrades?.[x[0]]||0)<5)
+        : [];
+      if(names.length){
+        const n=names[Math.floor(Math.random()*names.length)][0];
+        save.upgrades[n]=(save.upgrades[n]||0)+1;
+        toast('📈 '+n+' upgraded!');
+      }
+      break;
+    }
+    case 'materials2': save.materials=(save.materials||0)+25; break;
+    default:
+      save.coins+=price;
+      return toast('Shop item unavailable');
   }
   save.shopPurchases[k]=true;
+  save.shopDay=day;
   persist();
-  toast('🛒 Purchased '+item[1]+'!');
-  shopOpen();
+  toast('🛒 '+item.name+' purchased!');
+  dailyShopOpen();
 };
 /* ---------- Weekly leaderboard + prizes ---------- */
 function weekId(){return weeklyKey();}
@@ -5975,7 +5997,7 @@ html.outlast-high-contrast{filter:contrast(1.12)}
 })();
 </script>
 <style id="outlast-v326-action-visuals">.outlast-action-flash{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.82);padding:9px 14px;border:1px solid rgba(130,205,255,.72);border-radius:999px;background:rgba(9,20,30,.86);color:#dff4ff;font:900 12px Arial;letter-spacing:.08em;pointer-events:none;z-index:115;text-shadow:0 0 10px rgba(120,210,255,.55);animation:outlastActionPop .38s ease-out forwards}@keyframes outlastActionPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.72)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.14)}}#outlastVersionBadge{position:fixed;right:10px;bottom:10px;z-index:110;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}@media(max-width:700px){#outlastVersionBadge{bottom:56px;font-size:9px}}</style>
-<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.58';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
+<script id="outlast-v326-restored-systems">(function(){const VERSION='v3.27.59';function flash(label){if(!document.getElementById('game')||document.getElementById('menu')?.style.display!=='none')return;const old=document.querySelector('.outlast-action-flash');if(old)old.remove();const el=document.createElement('div');el.className='outlast-action-flash';el.textContent=label;document.body.appendChild(el);setTimeout(()=>el.remove(),420)}function gameActive(){try{return !!(window.game&&game.running&&!game.over)}catch(_){return false}}document.addEventListener('keydown',e=>{if(e.repeat||!gameActive())return;if(e.key==='Shift')flash('DASH');else if(e.key.toLowerCase()==='q')flash('SKILL');},true);function refresh(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.title='OUTLAST '+VERSION;const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.replace(/^v/,'');const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.replace(/^v/,'');let b=document.getElementById('outlastVersionBadge');if(!b){b=document.createElement('div');b.id='outlastVersionBadge';document.body.appendChild(b)}b.textContent=VERSION;window.OUTLAST_PLAYER_UPDATE_V326={version:VERSION,text:'Small bug fixes and access reliability.'}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();setTimeout(refresh,500);setTimeout(refresh,1500)})();</script>
 <style id="outlast-v324-quality-css">
 #outlastQualityBadge{position:fixed;left:10px;bottom:10px;z-index:109;font:800 10px Arial;color:#91a8bb;background:rgba(7,13,19,.82);border:1px solid #263b4c;border-radius:999px;padding:5px 8px;pointer-events:none}
 .outlast-quality-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}

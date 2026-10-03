@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.90">
+<meta name="outlast-build" content="3.27.91">
 <meta name="build-version" content="3.27.86">
 <title>OUTLAST v3.27.86</title>
 <style id="event-expansion-compact-ui">
@@ -1396,9 +1396,20 @@ function tryMoveEntity(ent,nx,ny){
 }
 
 function bulletHitsObstacle(x,y,r=3){return obstacleRects().some(o=>circleRectHit(x,y,r,o))}
-/* v3.27.90: obstacle-aware enemy/boss navigation.
+/* v3.27.91: obstacle-aware enemy/boss navigation.
    Direct movement stays cheap; A* only runs when map geometry blocks the current route. */
 const ENEMY_NAV_CELL=80, ENEMY_NAV_MAX_EXPANSIONS=1400;
+const enemyNavPathCache=new Map(),enemyNavObstacleCache=new Map();
+function getEnemyNavObstacles(){
+  const map=String(save.map||'Forest');
+  if(enemyNavObstacleCache.has(map))return enemyNavObstacleCache.get(map);
+  const list=(mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));
+  enemyNavObstacleCache.set(map,list);return list;
+}
+function enemyNavBlocked(x,y,r){
+  return getEnemyNavObstacles().some(o=>circleRectHit(x,y,r,o));
+}
+
 const enemyNavDirs=[
   [1,0,1],[0,1,1],[-1,0,1],[0,-1,1],
   [1,1,1.414],[1,-1,1.414],[-1,1,1.414],[-1,-1,1.414]
@@ -1415,14 +1426,17 @@ function enemyNavCenter(cx,cy){
 function enemyNavKey(x,y){return x+','+y;}
 function enemyNavPassable(cx,cy,r){
   const p=enemyNavCenter(cx,cy);
-  return p.x>=r+8&&p.x<=W-r-8&&p.y>=r+8&&p.y<=H-r-8&&!blocked(p.x,p.y,r+5);
+  return p.x>=r+8&&p.x<=W-r-8&&p.y>=r+8&&p.y<=H-r-8&&!enemyNavBlocked(p.x,p.y,r+5);
 }
 function findEnemyPath(e,tx,ty){
+  const globalKey=save.map+'|'+Math.round(r*10)/10+'|'+startKey+'|'+goalKey;
   const r=Math.max(10,Number(e.r)||15), start=enemyNavCell(e.x,e.y), goal=enemyNavCell(tx,ty);
   const goalKey=enemyNavKey(goal.x,goal.y), startKey=enemyNavKey(start.x,start.y);
   if(startKey===goalKey)return [];
-  const cacheKey=save.map+'|'+r+'|'+startKey+'|'+goalKey;
+  const cacheKey=globalKey;
   const now=performance.now();
+  const globalCached=enemyNavPathCache.get(globalKey);
+  if(globalCached&&now-globalCached.at<1800){e.__navKey=cacheKey;e.__navPath=globalCached.path.slice();e.__navAt=now;return e.__navPath;}
   if(e.__navKey===cacheKey && Array.isArray(e.__navPath) && now-(e.__navAt||0)<650)return e.__navPath;
   const open=[{x:start.x,y:start.y,g:0,f:0}], came=new Map(), gScore=new Map([[startKey,0]]), closed=new Set();
   const heuristic=(x,y)=>Math.hypot(goal.x-x,goal.y-y);
@@ -1456,6 +1470,8 @@ function findEnemyPath(e,tx,ty){
     }
     path.reverse();
   }
+  enemyNavPathCache.set(globalKey,{path:path.slice(),at:now});
+  if(enemyNavPathCache.size>900){const first=enemyNavPathCache.keys().next().value;if(first)enemyNavPathCache.delete(first);}
   e.__navKey=cacheKey;e.__navPath=path;e.__navAt=now;
   return path;
 }
@@ -2515,7 +2531,7 @@ const tempUp=[
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+Math.round(12*v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
 /* v3.27.73: stale six-tier rarity roller removed; the canonical full-ladder roller above is the only active implementation. */
-/* v3.27.90: premium rarity-specific upgrades */
+/* v3.27.91: premium rarity-specific upgrades */
 tempUp.push(
  ['Elite Hunter',v=>`+${Math.round(28*v)}% elite damage and +${Math.round(8*v)}% crit`,v=>{game.player.executioner=(game.player.executioner||0)+.28*v;game.player.crit=Math.min(.95,(game.player.crit||0)+.08*v)}],
  ['Abyssal Core',v=>`+${Math.round(36*v)}% damage and +${Math.round(18*v)}% attack speed`,v=>{game.player.damage*=1+.36*v;game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.18*v))}],
@@ -3807,13 +3823,15 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.27.90?','Updates','Added obstacle-aware zombie and boss navigation and fixed Owner Panel self-coin gifting. Login was not changed.'],
+  ['What changed in v3.27.91?','Updates','Optimized zombie and boss navigation by caching map collision geometry and recent routes to reduce pathfinding CPU spikes. Login was not changed.'],
+  ['Why does enemy navigation stay smooth with many zombies?','Enemies','The navigation system reuses cached map obstacles and recent A* routes. Direct movement remains the fast path, and route search only runs when geometry blocks the direct route.'],
+  ['What changed in v3.27.91?','Updates','Added obstacle-aware zombie and boss navigation and fixed Owner Panel self-coin gifting. Login was not changed.'],
   ['How do zombies navigate the map?','Enemies','Zombies move directly when the route is clear. When a solid map object blocks them, they calculate a route around the obstacle while respecting their collision size. Bosses use the same system with their larger radius.'],
-  ['What changed in v3.27.90?','Updates','Fixed the rarity-pool audit timing so all upgrade batches are loaded before consistency validation runs. Login was not changed.'],
+  ['What changed in v3.27.91?','Updates','Fixed the rarity-pool audit timing so all upgrade batches are loaded before consistency validation runs. Login was not changed.'],
   ['Why did the upgrade pool audit show an error?','Upgrades','The audit used to run before some legacy upgrade batches were appended. It now runs after the scripts finish loading, so valid rarity pools are not falsely reported as broken.'],
-  ['What changed in v3.27.90?','Updates','Reworked upgrade quality by rarity. Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers. Login was not changed.'],
+  ['What changed in v3.27.91?','Updates','Reworked upgrade quality by rarity. Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers. Login was not changed.'],
   ['Why are higher rarity upgrades better?','Upgrades','Rarity now controls the upgrade pool and upgrade power. Higher rarities contain increasingly specialized multi-stat upgrades, with Omega reserved for the strongest endgame effects.'],
-  ['What changed in v3.27.90?','Updates','Upgrades now use exclusive rarity pools. Each upgrade belongs to exactly one rarity, so rarity changes which upgrades can appear rather than only changing the multiplier. Login was not changed.'],
+  ['What changed in v3.27.91?','Updates','Upgrades now use exclusive rarity pools. Each upgrade belongs to exactly one rarity, so rarity changes which upgrades can appear rather than only changing the multiplier. Login was not changed.'],
   ['How do upgrade rarity pools work?','Upgrades','Each upgrade belongs to exactly one rarity pool from Common through Omega. Level-up choices roll a rarity first, then choose an upgrade only from that rarity pool. Upgrade Luck still affects the rarity roll.'],
   ['What changed in v3.27.86?','Updates','Removed obsolete legacy GitHub Actions checks that were still validating the retired v3.9.7/v3.3/v3.4 builds and causing failure notifications on current pushes. Login was not changed.'],
   ['Why was I getting v3.9.7 run-failed emails?','Updates','The repository had a legacy workflow named Validate OUTLAST v3.9.7 that ran on every push and checked for retired v3.9.7 files and version markers. Those obsolete workflows have been removed.'],
@@ -4100,16 +4118,16 @@ const updates=[['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses 
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
-const POOL_AUDIT_UPDATE_ENTRY=['v3.27.90 — Rarity Pool Audit Fix','Moved the upgrade-pool consistency audit until after all upgrade batches load, preventing false console errors.']; try{ if(Array.isArray(updates)) updates.unshift(POOL_AUDIT_UPDATE_ENTRY); }catch(_){ }
-const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.90 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
+const POOL_AUDIT_UPDATE_ENTRY=['v3.27.91 — Rarity Pool Audit Fix','Moved the upgrade-pool consistency audit until after all upgrade batches load, preventing false console errors.']; try{ if(Array.isArray(updates)) updates.unshift(POOL_AUDIT_UPDATE_ENTRY); }catch(_){ }
+const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.91 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
 const TUTORIAL_UPDATE_ENTRY=['v3.27.85 — Tutorial Reliability Final Fix','Fixed the New Player Tutorial overlay so focused gameplay elements cannot cover the tutorial controls, and made the tutorial launch reliably from PC clicks and mobile touch/pointer input. Login was not changed.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
 const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed leaderboard storage so saved scores can persist across server restarts.']
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.90';
-const CURRENT_UPDATE_INFO={title:'v3.27.90 — Zombie & Boss Navigation',summary:'Enemies and bosses now navigate around solid map obstacles instead of repeatedly pushing into them.',items:['Zombies use direct movement when clear and obstacle-aware A* routing when blocked.','Bosses use the same navigation system with their larger collision radius, so they route around walls and objects instead of getting stuck.','Navigation respects the existing solid-object collision map and safe movement guard.','Owner Panel coin gifting now allows an owner to gift coins to their own verified owner account.','The Owner Panel pre-fills your own username and immediately claims a self-gift after it is queued.','Other owner accounts remain protected from being used as a target.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.91';
+const CURRENT_UPDATE_INFO={title:'v3.27.91 — Navigation Performance Guard',summary:'Zombie and boss navigation now reuses map geometry and recent routes to reduce pathfinding spikes.',items:['Navigation uses cached solid-map geometry instead of rebuilding obstacle rectangles for every path node.','Recent routes are shared between nearby enemies using the same map, collision radius, start cell, and target cell.','The path cache is bounded to prevent unbounded memory growth.','Zombie and boss obstacle-aware navigation remains active.','Owner Panel self-coin gifting remains active.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4304,7 +4322,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.90';
+const OUTLAST_BUILD='3.27.91';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;

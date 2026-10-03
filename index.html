@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.87">
+<meta name="outlast-build" content="3.27.88">
 <meta name="build-version" content="3.27.86">
 <title>OUTLAST v3.27.86</title>
 <style id="event-expansion-compact-ui">
@@ -2358,11 +2358,11 @@ const upgradeRarities={
  Epic:{mult:1.6,label:'EPIC',weight:7,glow:'#d28cff'},
  Legendary:{mult:1.9,label:'LEGENDARY',weight:2.4,glow:'#ffd84d'},
  Mythic:{mult:2.25,label:'MYTHIC',weight:.6,glow:'#ff65e8'},
- Divine:{mult:2.7,label:'DIVINE',weight:.12,glow:'#fff2a8'},
- Celestial:{mult:3.2,label:'CELESTIAL',weight:.05,glow:'#7ce7ff'},
- Transcendent:{mult:3.8,label:'TRANSCENDENT',weight:.02,glow:'#ff9cf2'},
- Eternal:{mult:4.6,label:'ETERNAL',weight:.007,glow:'#b8a7ff'},
- Omega:{mult:5.5,label:'OMEGA',weight:.002,glow:'#ff6b6b'}
+ Divine:{mult:3.0,label:'DIVINE',weight:.12,glow:'#fff2a8'},
+ Celestial:{mult:3.6,label:'CELESTIAL',weight:.05,glow:'#7ce7ff'},
+ Transcendent:{mult:4.35,label:'TRANSCENDENT',weight:.02,glow:'#ff9cf2'},
+ Eternal:{mult:5.25,label:'ETERNAL',weight:.007,glow:'#b8a7ff'},
+ Omega:{mult:6.5,label:'OMEGA',weight:.002,glow:'#ff6b6b'}
 };
 const UPGRADE_RARITY_ORDER=Object.keys(upgradeRarities);
 function getUpgradeRarityOdds(){
@@ -2430,18 +2430,29 @@ const tempUp=[
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+Math.round(12*v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
 /* v3.27.73: stale six-tier rarity roller removed; the canonical full-ladder roller above is the only active implementation. */
+/* v3.27.88: premium rarity-specific upgrades */
+tempUp.push(
+ ['Elite Hunter',v=>`+${Math.round(28*v)}% elite damage and +${Math.round(8*v)}% crit`,v=>{game.player.executioner=(game.player.executioner||0)+.28*v;game.player.crit=Math.min(.95,(game.player.crit||0)+.08*v)}],
+ ['Abyssal Core',v=>`+${Math.round(36*v)}% damage and +${Math.round(18*v)}% attack speed`,v=>{game.player.damage*=1+.36*v;game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.18*v))}],
+ ['Divine Aegis',v=>`+${Math.round(110*v)} max HP and a ${Math.round(7*v)}s shield`,v=>{game.player.max+=110*v;game.player.hp=Math.min(game.player.max,game.player.hp+110*v);game.player.shield=Math.max(game.player.shield||0,7*v)}],
+ ['Celestial Barrage',v=>`+${Math.max(4,Math.round(4*v))} projectiles and +${Math.round(22*v)}% damage`,v=>{game.player.multiShot=(game.player.multiShot||0)+Math.max(4,Math.round(4*v));game.player.damage*=1+.22*v}],
+ ['Transcendent Fury',v=>`+${Math.round(45*v)}% damage, +${Math.round(22*v)}% attack speed, +${Math.round(10*v)}% crit`,v=>{game.player.damage*=1+.45*v;game.player.fireRate=Math.max(.11,(game.player.fireRate||.45)*(1-.22*v));game.player.crit=Math.min(.98,(game.player.crit||0)+.10*v)}],
+ ['Void Arsenal',v=>`+${Math.max(5,Math.round(5*v))} projectiles, +${Math.round(30*v)}% projectile speed, +${Math.round(18*v)}% damage`,v=>{game.player.multiShot=(game.player.multiShot||0)+Math.max(5,Math.round(5*v));game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.30*v);game.player.damage*=1+.18*v}],
+ ['Eternal Rebirth',v=>`+${Math.round(180*v)} max HP, +${(3*v).toFixed(1)} HP/s, +${Math.round(15*v)}% damage`,v=>{game.player.max+=180*v;game.player.hp=Math.min(game.player.max,game.player.hp+180*v);game.player.regen+=(3*v);game.player.damage*=1+.15*v}],
+ ['Omega Ascension',v=>`+${Math.round(65*v)}% damage, +${Math.round(35*v)}% attack speed, +${Math.round(20*v)}% crit`,v=>{game.player.damage*=1+.65*v;game.player.fireRate=Math.max(.09,(game.player.fireRate||.45)*(1-.35*v));game.player.crit=Math.min(.99,(game.player.crit||0)+.20*v)}]
+);
 const UPGRADE_RARITY_POOLS={
- Common:['Power Shot','Vitality','Swift Feet','Magnet','Regeneration','Second Wind','Berserker','XP Boost'],
+ Common:['Power Shot','Vitality','Swift Feet','Magnet','Regeneration','Second Wind','Berserker','XP Boost','Second Heart'],
  Uncommon:['Rapid Fire','Piercing','Big Bullets','Projectile Speed','Swift Aim','Fortified Core','XP Burst'],
  Rare:['Multi-Shot','Frost Aura','Crit Chance','Rapid Recovery','Armor Pierce','Coin Magnetism'],
- Epic:['Heavy Rounds','Chain Reaction','Lifesteal','Shockwave','Deadeye','Scavenger Luck'],
+ Epic:['Heavy Rounds','Chain Reaction','Lifesteal','Shockwave','Deadeye','Scavenger Luck','Elite Hunter'],
  Legendary:['Lucky Hunter','Lucky Coins','Adrenaline','Shield Core','Poison Rounds','Stun Rounds'],
- Mythic:['Overcharge','Double Tap','Treasure Radar','Lucky Charm','Treasure Luck','Fortune'],
- Divine:['Overheat','Rift Pierce','Cryo Core','Ammo Surge','Heavy Impact','Emergency Shield'],
- Celestial:['Vampiric Surge','Fortune Engine','Combat Medic','XP Hunter','Bloodrush','Fortress','Adrenal Core','XP Reactor'],
- Transcendent:['Quick Reload','Ricochet','Executioner','Bossbreaker','Cryo Burst','Shock Circuit'],
- Eternal:['Vampire Core','Salvager','Lucky Barrage','Shield Nova','Overclock','Deadly Precision'],
- Omega:['Second Heart','Treasure Engine','Last Stand']
+ Mythic:['Overcharge','Double Tap','Treasure Radar','Lucky Charm','Treasure Luck','Fortune','Abyssal Core'],
+ Divine:['Overheat','Rift Pierce','Cryo Core','Ammo Surge','Heavy Impact','Emergency Shield','Divine Aegis'],
+ Celestial:['Vampiric Surge','Fortune Engine','Combat Medic','XP Hunter','Bloodrush','Fortress','Adrenal Core','XP Reactor','Celestial Barrage'],
+ Transcendent:['Quick Reload','Ricochet','Executioner','Bossbreaker','Cryo Burst','Shock Circuit','Transcendent Fury','Void Arsenal'],
+ Eternal:['Vampire Core','Salvager','Lucky Barrage','Shield Nova','Overclock','Eternal Rebirth','Last Stand'],
+ Omega:['Treasure Engine','Deadly Precision','Omega Ascension']
 };
 const UPGRADE_RARITY_BY_NAME=Object.create(null);
 for(const rarity of UPGRADE_RARITY_ORDER) for(const name of (UPGRADE_RARITY_POOLS[rarity]||[])) UPGRADE_RARITY_BY_NAME[name]=rarity;
@@ -2452,8 +2463,8 @@ if(_poolNames.length!==_poolUnique.size || _poolNames.some(n=>!tempUp.some(u=>u[
   console.error('OUTLAST upgrade rarity pool mismatch');
 }
 const upgradeCategory=n=>{
- const offense=new Set(['Power Shot','Rapid Fire','Piercing','Multi-Shot','Big Bullets','Projectile Speed','Overcharge','Heavy Rounds','Swift Aim','Crit Chance','Chain Reaction','Poison Rounds','Stun Rounds','Armor Pierce','Double Tap','Overheat','Deadeye','Rift Pierce','Ammo Surge','Heavy Impact','Fortune Engine']);
- const defense=new Set(['Vitality','Regeneration','Second Wind','Berserker','Adrenaline','Shield Core','Rapid Recovery','Lifesteal','Vampiric Surge','Fortified Core','Cryo Core','Emergency Shield','Second Heart']);
+ const offense=new Set(['Power Shot','Rapid Fire','Piercing','Multi-Shot','Big Bullets','Projectile Speed','Overcharge','Heavy Rounds','Swift Aim','Crit Chance','Chain Reaction','Poison Rounds','Stun Rounds','Armor Pierce','Double Tap','Overheat','Deadeye','Rift Pierce','Ammo Surge','Heavy Impact','Fortune Engine','Elite Hunter','Abyssal Core','Celestial Barrage','Transcendent Fury','Void Arsenal','Omega Ascension']);
+ const defense=new Set(['Vitality','Regeneration','Second Wind','Berserker','Adrenaline','Shield Core','Rapid Recovery','Lifesteal','Vampiric Surge','Fortified Core','Cryo Core','Emergency Shield','Second Heart','Divine Aegis','Eternal Rebirth']);
  const utility=new Set(['Swift Feet','Magnet','Frost Aura','Shockwave','Coin Magnetism']);
  const luck=new Set(['Lucky Hunter','Lucky Coins','Treasure Radar','Lucky Charm','Fortune','Treasure Luck','Scavenger Luck']);
  return luck.has(n)?'luck':defense.has(n)?'defense':utility.has(n)?'utility':offense.has(n)?'offense':'utility';
@@ -3702,7 +3713,9 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.27.87?','Updates','Upgrades now use exclusive rarity pools. Each upgrade belongs to exactly one rarity, so rarity changes which upgrades can appear rather than only changing the multiplier. Login was not changed.'],
+  ['What changed in v3.27.88?','Updates','Reworked upgrade quality by rarity. Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers. Login was not changed.'],
+  ['Why are higher rarity upgrades better?','Upgrades','Rarity now controls the upgrade pool and upgrade power. Higher rarities contain increasingly specialized multi-stat upgrades, with Omega reserved for the strongest endgame effects.'],
+  ['What changed in v3.27.88?','Updates','Upgrades now use exclusive rarity pools. Each upgrade belongs to exactly one rarity, so rarity changes which upgrades can appear rather than only changing the multiplier. Login was not changed.'],
   ['How do upgrade rarity pools work?','Upgrades','Each upgrade belongs to exactly one rarity pool from Common through Omega. Level-up choices roll a rarity first, then choose an upgrade only from that rarity pool. Upgrade Luck still affects the rarity roll.'],
   ['What changed in v3.27.86?','Updates','Removed obsolete legacy GitHub Actions checks that were still validating the retired v3.9.7/v3.3/v3.4 builds and causing failure notifications on current pushes. Login was not changed.'],
   ['Why was I getting v3.9.7 run-failed emails?','Updates','The repository had a legacy workflow named Validate OUTLAST v3.9.7 that ran on every push and checked for retired v3.9.7 files and version markers. Those obsolete workflows have been removed.'],
@@ -3995,8 +4008,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.87';
-const CURRENT_UPDATE_INFO={title:'v3.27.87 — Exclusive Upgrade Rarity Pools',summary:'Every upgrade now belongs to one explicit rarity pool.',items:['Each of the 68 active upgrades is assigned to exactly one rarity.','Level-up choices roll a rarity and then select only from that rarity’s upgrade pool.','No upgrade is shared between rarity pools.','All 11 rarities have dedicated upgrades.','Upgrade Luck continues to influence which rarity is rolled.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.88';
+const CURRENT_UPDATE_INFO={title:'v3.27.88 — Premium Rarity Upgrade Rework',summary:'Higher rarities now contain stronger, more specialized upgrades.',items:['Common and Uncommon focus on foundational progression.','Rare through Legendary add stronger combat, defense, and utility effects.','Mythic and Divine introduce major power spikes and specialized upgrades.','Celestial through Eternal contain premium multi-stat upgrades.','Omega has exclusive endgame upgrades with the strongest multiplier and effects.','Higher-rarity multipliers were increased so the power gap is easier to feel.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4191,7 +4204,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.87';
+const OUTLAST_BUILD='3.27.88';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;

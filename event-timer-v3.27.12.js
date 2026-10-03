@@ -1,13 +1,26 @@
-/* OUTLAST v3.27.28 — canonical event countdown
+/* OUTLAST v3.27.104 — canonical event countdown
  * Single source of truth for the October event target.
  * Scheduled: Saturday, October 3, 2026 at 11:00 AM ET (15:00 UTC).
  */
 (() => {
   'use strict';
 
-  const EVENT_TARGET_MS = Date.UTC(2026, 9, 3, 15, 0, 0, 0); // Launch schedule unchanged; canonical event timestamp.
-  window.OUTLAST_EVENT_TARGET_MS = EVENT_TARGET_MS;
-  window.OUTLAST_EVENT_TARGET_ISO = new Date(EVENT_TARGET_MS).toISOString();
+  const EVENT_TARGET_MS = Date.UTC(2026, 9, 3, 15, 0, 0, 0);
+  let targetMs = EVENT_TARGET_MS;
+  window.OUTLAST_EVENT_TARGET_MS = targetMs;
+  window.OUTLAST_EVENT_TARGET_ISO = new Date(targetMs).toISOString();
+  async function syncServerClock(){
+    try{
+      const r=await fetch('https://outlast-server.onrender.com/api/event/state?clock='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+      const d=await r.json();
+      const start=Number(d?.schedule?.scheduledStartAt||0),serverNow=Number(d?.schedule?.serverNow||0);
+      if(r.ok&&start>0&&serverNow>0){
+        targetMs=start-(serverNow-Date.now());
+        window.OUTLAST_EVENT_TARGET_MS=targetMs;
+        window.OUTLAST_EVENT_TARGET_ISO=new Date(targetMs).toISOString();
+      }
+    }catch(_){}
+  }
 
   function formatCountdown(ms) {
     ms = Math.max(0, Number(ms) || 0);
@@ -57,7 +70,7 @@
     if (menu) {
       const menuBox = ensureBox(
         'outlastMenuCountdown',
-        '<div style="font-weight:900;letter-spacing:1.5px;color:#d6a84f;font-size:12px">🎃 NIGHTFALL EVENT</div><div id="outlastMenuEventTime" style="font-size:21px;font-weight:900;margin-top:4px">Loading…</div><div style="font-size:11px;color:#9eb0c1;margin-top:3px">October 3, 2026 • 11:00 AM ET</div>',
+        '<div style="font-weight:900;letter-spacing:1.5px;color:#d6a84f;font-size:12px">🎃 NIGHTFALL EVENT</div><div id="outlastMenuEventTime" style="font-size:21px;font-weight:900;margin-top:4px">Loading…</div><div style="font-size:11px;color:#9eb0c1;margin-top:3px">Saturday, October 3, 2026 • 11:00 AM ET</div>',
         'margin:10px 0 12px;padding:12px 14px;border:2px solid #d6a84f;border-radius:14px;background:#111820;box-shadow:0 8px 28px rgba(0,0,0,.25);text-align:center;display:block;visibility:visible;opacity:1;position:relative;z-index:5;pointer-events:none;'
       );
       const summary = document.getElementById('menuSummary');
@@ -65,7 +78,7 @@
     }
 
     const update = () => {
-      const value = formatCountdown(EVENT_TARGET_MS - Date.now());
+      const value = formatCountdown(targetMs - Date.now());
       top.innerHTML =
         '<div style="color:#d6a84f;font-size:11px;letter-spacing:1px">OUTLAST OCTOBER EVENT</div>' +
         '<div style="font-size:18px;margin-top:2px">' + value + '</div>';
@@ -74,7 +87,9 @@
     };
 
     update();
+    syncServerClock().then(update).catch(()=>{});
     window.__outlastCountdownTimer = setInterval(update, 1000);
+    window.__outlastCountdownAuthorityTimer = setInterval(()=>{syncServerClock().then(update).catch(()=>{});},15000);
   }
 
   if (document.readyState === 'loading') {

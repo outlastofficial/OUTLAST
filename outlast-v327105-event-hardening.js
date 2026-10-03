@@ -52,13 +52,13 @@
       const event=String(g?.worldEvent||'');
       const factor=event==='PowerSurge'?.74:event==='TimeWarp'?.82:1;
       const expiresThisFrame=!!(g&&p&&factor<1&&Number(g.worldEventTimer)>0&&Number(g.worldEventTimer)<=step+.001);
-      const preRate=expiresThisFrame?Number(p.fireRate):NaN;
+      const eventBaseRate=expiresThisFrame?Number(g.worldEventBaseFireRate):NaN;
       if(event!=='TreasureRain')treasureCacheClock=0;
       const result=originalUpdate.apply(this,arguments);
       const g2=window.game,p2=g2?.player;
 
-      if(expiresThisFrame&&p2&&Number.isFinite(preRate)&&preRate>0&&Number.isFinite(Number(p2.fireRate))){
-        p2.fireRate=Math.max(.07,preRate/factor);
+      if(expiresThisFrame&&p2&&Number.isFinite(eventBaseRate)&&eventBaseRate>0){
+        p2.fireRate=eventBaseRate;
       }
 
       if(g2&&g2.running&&!g2.over&&g2.worldEvent==='TreasureRain'&&Number(g2.worldEventTimer)>0){

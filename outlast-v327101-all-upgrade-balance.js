@@ -37,7 +37,7 @@
     'Heavy Rounds':['Heavy Rounds',()=>'+12 damage, 4% slower attacks',()=>{const p=game.player;p.damage+=12;p.fireRate=Math.min(1.1,(p.fireRate||.45)*1.04)}],
     'Chain Reaction':['Chain Reaction',()=>'+12% chain damage',()=>game.player.chain=(game.player.chain||1)*1.12],
     'Lifesteal':['Lifesteal',()=>'+0.25 HP per kill',()=>game.player.vampire=(game.player.vampire||0)+.25],
-    'Shockwave':['Shockwave',()=>+'Every 14th kill triggers a 140-radius blast',()=>{game.player.shockwave=true;game.player.shockwaveEvery=14;game.player.shockwaveRadius=140;game.player.shockwaveDamage=.65}],
+    'Shockwave':['Shockwave',()=>'Every 14th kill triggers a 140-radius blast',()=>{game.player.shockwave=true;game.player.shockwaveEvery=14;game.player.shockwaveRadius=140;game.player.shockwaveDamage=.65}],
     'Deadeye':['Deadeye',()=>'+8% crit chance',()=>game.player.crit=Math.min(.95,(game.player.crit||0)+.08)],
     'Scavenger Luck':['Scavenger Luck',()=>'+8 Loot Luck',()=>{const p=game.player;p.lootLuck=(p.lootLuck||0)+8;p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
     'Elite Hunter':['Elite Hunter',()=>'+20% elite damage, +5% crit, +5% move speed',()=>{const p=game.player;p.executioner=(p.executioner||0)+.20;p.crit=Math.min(.95,(p.crit||0)+.05);p.speed=Math.min(p.speedCap,p.speed*1.05)}],
@@ -48,13 +48,13 @@
     'Lucky Coins':['Lucky Coins',()=>'+20% coins',()=>game.player.coinMult*=1.20],
     'Adrenaline':['Adrenaline',()=>'+15% move speed while below 50% HP',()=>{const p=game.player;p.adrenaline=true;p.adrenalineBonus=.15}],
     'Shield Core':['Shield Core',()=>'+5 seconds of shield',()=>game.player.shield=Math.max(game.player.shield||0,5)],
-    'Poison Rounds':['Poison Rounds',()=>+'Shots apply poison',()=>game.player.poison=true],
-    'Stun Rounds':['Stun Rounds',()=>+'Shots have an 18% stun chance',()=>{game.player.stun=true;game.player.stunChance=.18}],
+    'Poison Rounds':['Poison Rounds',()=>'Shots apply poison',()=>game.player.poison=true],
+    'Stun Rounds':['Stun Rounds',()=>'Shots have an 18% stun chance',()=>{game.player.stun=true;game.player.stunChance=.18}],
 
     // MYTHIC — strong specialization
     'Overcharge':['Overcharge',()=>'+30% ultimate damage',()=>game.player.ultDamage=(game.player.ultDamage||1)*1.30],
     'Double Tap':['Double Tap',()=>'+20% chance to fire an extra shot',()=>{game.player.doubleTap=true;game.player.doubleTapChance=.20}],
-    'Treasure Radar':['Treasure Radar',()=>+'1.5x power-up drop chance',()=>{game.player.treasure=true;game.player.treasureMultiplier=Math.max(game.player.treasureMultiplier||1,1.5)}],
+    'Treasure Radar':['Treasure Radar',()=>'1.5x power-up drop chance',()=>{game.player.treasure=true;game.player.treasureMultiplier=Math.max(game.player.treasureMultiplier||1,1.5)}],
     'Lucky Charm':['Lucky Charm',()=>'+8 Upgrade Luck',()=>{const p=game.player;p.upgradeLuck=(p.upgradeLuck||0)+8;p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
     'Treasure Luck':['Treasure Luck',()=>'+20 Treasure Luck',()=>{const p=game.player;p.treasureLuck=(p.treasureLuck||0)+20;p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
     'Fortune':['Fortune',()=>'+15 Loot Luck',()=>{const p=game.player;p.lootLuck=(p.lootLuck||0)+15;p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
@@ -63,10 +63,10 @@
     // DIVINE — very strong but not runaway
     'Overheat':['Overheat',()=>'+25% attack speed and +5% damage',()=>{const p=game.player;p.fireRate=Math.max(.12,(p.fireRate||.45)*.75);p.damage*=1.05}],
     'Rift Pierce':['Rift Pierce',()=>'+2 pierce',()=>game.player.pierce=(game.player.pierce||0)+2],
-    'Cryo Core':['Cryo Core',()=>+'Frost aura gets stronger',()=>{const p=game.player;p.frost=true;p.frostSlow=Math.min(.90,(p.frostSlow||.50)+.09);p.frostAuraDps=(p.frostAuraDps||.12)+.08}],
+    'Cryo Core':['Cryo Core',()=>'Frost aura gets stronger',()=>{const p=game.player;p.frost=true;p.frostSlow=Math.min(.90,(p.frostSlow||.50)+.09);p.frostAuraDps=(p.frostAuraDps||.12)+.08}],
     'Ammo Surge':['Ammo Surge',()=>'+3 projectiles',()=>game.player.multiShot=(game.player.multiShot||0)+3],
     'Heavy Impact':['Heavy Impact',()=>'+25 damage and +20% projectile size',()=>{const p=game.player;p.damage+=25;p.bulletSize=(p.bulletSize||1)*1.20}],
-    'Emergency Shield':['Emergency Shield',()=>+'7 seconds of shield',()=>game.player.shield=Math.max(game.player.shield||0,7)],
+    'Emergency Shield':['Emergency Shield',()=>'7 seconds of shield',()=>game.player.shield=Math.max(game.player.shield||0,7)],
     'Divine Aegis':['Divine Aegis',()=>'+250 max HP, 8s shield, 12% damage reduction',()=>{const p=game.player;p.max+=250;p.hp=Math.min(p.max,p.hp+250);p.shield=Math.max(p.shield||0,8);p.damageTakenMult=Math.max(.50,(p.damageTakenMult||1)*.88)}],
 
     // CELESTIAL — high-impact synergy
@@ -85,7 +85,7 @@
     'Ricochet':['Ricochet',()=>'+1 pierce and +8% projectile size',()=>{const p=game.player;p.pierce=(p.pierce||0)+1;p.bulletSize=(p.bulletSize||1)*1.08}],
     'Executioner':['Executioner',()=>'+20% elite damage',()=>game.player.executioner=(game.player.executioner||0)+.20],
     'Bossbreaker':['Bossbreaker',()=>'+20% boss damage',()=>game.player.bossDamageBonus=(game.player.bossDamageBonus||0)+.20],
-    'Cryo Burst':['Cryo Burst',()=>+'Large frost aura, stronger slow and chill damage',()=>{const p=game.player;p.frost=true;p.frostAuraRadius=(p.frostAuraRadius||130)+70;p.frostSlow=Math.min(.93,(p.frostSlow||.50)+.12);p.frostAuraDps=(p.frostAuraDps||.12)+.12}],
+    'Cryo Burst':['Cryo Burst',()=>'Large frost aura, stronger slow and chill damage',()=>{const p=game.player;p.frost=true;p.frostAuraRadius=(p.frostAuraRadius||130)+70;p.frostSlow=Math.min(.93,(p.frostSlow||.50)+.12);p.frostAuraDps=(p.frostAuraDps||.12)+.12}],
     'Shock Circuit':['Shock Circuit',()=>'+20% chain effect',()=>game.player.chain=(game.player.chain||1)*1.20],
     'Transcendent Fury':['Transcendent Fury',()=>'+125% damage, +60% attack speed, +20% crit, +3 pierce, +25% boss damage, +30% ultimate damage',()=>{const p=game.player;p.damage*=2.25;p.fireRate=Math.max(.065,(p.fireRate||.45)*.40);p.crit=Math.min(.97,(p.crit||0)+.20);p.pierce=(p.pierce||0)+3;p.bossMult=(p.bossMult||1)*1.25;p.ultDamage=(p.ultDamage||1)*1.30}],
 
@@ -93,7 +93,7 @@
     'Vampire Core':['Vampire Core',()=>'+0.6 HP per kill and +8% max HP',()=>{const p=game.player;p.vampire=(p.vampire||0)+.60;p.max*=1.08;p.hp=Math.min(p.max,p.hp+p.max*.08)}],
     'Salvager':['Salvager',()=>'+25% coins and +20 pickup radius',()=>{const p=game.player;p.coinMult*=1.25;p.magnet+=20}],
     'Lucky Barrage':['Lucky Barrage',()=>'+28% chance to fire an extra shot',()=>{game.player.doubleTap=true;game.player.doubleTapChance=Math.max(game.player.doubleTapChance||0,.28)}],
-    'Shield Nova':['Shield Nova',()=>+'6 seconds of shield and defensive pulse',()=>{const p=game.player;p.shield=Math.max(p.shield||0,6);p.shieldEfficiency=Math.max(p.shieldEfficiency||1,1.15);game.effects.push({x:p.x,y:p.y,t:.45,r:145,fill:false})}],
+    'Shield Nova':['Shield Nova',()=>'6 seconds of shield and defensive pulse',()=>{const p=game.player;p.shield=Math.max(p.shield||0,6);p.shieldEfficiency=Math.max(p.shieldEfficiency||1,1.15);game.effects.push({x:p.x,y:p.y,t:.45,r:145,fill:false})}],
     'Overclock':['Overclock',()=>'+20% attack speed and +8% damage',()=>{const p=game.player;p.fireRate=Math.max(.09,(p.fireRate||.45)*.80);p.damage*=1.08}],
     'Eternal Rebirth':['Eternal Rebirth',()=>'+900 max HP, +15 HP/s, +100% damage, 30% damage reduction, +1 Phoenix revive',()=>{const p=game.player;p.max+=900;p.hp=Math.min(p.max,p.hp+900);p.regen+=15;p.damage*=2;p.damageTakenMult=Math.max(.45,(p.damageTakenMult||1)*.70);p.phoenixRevives=(p.phoenixRevives||0)+1}],
     'Last Stand':['Last Stand',()=>'+35% damage below 25% HP',()=>{const p=game.player;p.lastStand=true;p.lastStandBonus=(p.lastStandBonus||0)+.35}],

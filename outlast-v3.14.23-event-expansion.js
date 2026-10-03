@@ -28,7 +28,7 @@
   function saveState(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(_){}}
   function qs(s){try{return document.querySelector(s)}catch(_){return null}}
   function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-  function remaining(){return Math.max(0,EVENT_AT-Date.now())}
+  function remaining(){return Math.max(0,(Number(window.OUTLAST_EVENT_TARGET_MS)||EVENT_AT)-Date.now())}
   function phase(){return remaining()===0?'LIVE':remaining()<=86400000?'FINAL':'BUILDUP'}
   function fmt(ms){let sec=Math.floor(ms/1000),d=Math.floor(sec/86400);sec%=86400;let h=Math.floor(sec/3600);sec%=3600;let m=Math.floor(sec/60);sec%=60;return d+'d '+String(h).padStart(2,'0')+'h '+String(m).padStart(2,'0')+'m '+String(sec).padStart(2,'0')+'s'}
   function eventDateText(){

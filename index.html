@@ -2356,8 +2356,8 @@ const upgradeRarities={
  Uncommon:{mult:1.15,label:'UNCOMMON',weight:27,glow:'#71d68a'},
  Rare:{mult:1.35,label:'RARE',weight:15,glow:'#72a8ff'},
  Epic:{mult:1.6,label:'EPIC',weight:7,glow:'#d28cff'},
- Legendary:{mult:1.9,label:'LEGENDARY',weight:2.4,glow:'#ffd84d'},
- Mythic:{mult:2.25,label:'MYTHIC',weight:.6,glow:'#ff65e8'},
+ Legendary:{mult:2.05,label:'LEGENDARY',weight:2.4,glow:'#ffd84d'},
+ Mythic:{mult:2.5,label:'MYTHIC',weight:.6,glow:'#ff65e8'},
  Divine:{mult:3.0,label:'DIVINE',weight:.12,glow:'#fff2a8'},
  Celestial:{mult:3.6,label:'CELESTIAL',weight:.05,glow:'#7ce7ff'},
  Transcendent:{mult:4.35,label:'TRANSCENDENT',weight:.02,glow:'#ff9cf2'},
@@ -4002,6 +4002,7 @@ const updates=[['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses 
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
+const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.88 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
 const TUTORIAL_UPDATE_ENTRY=['v3.27.85 — Tutorial Reliability Final Fix','Fixed the New Player Tutorial overlay so focused gameplay elements cannot cover the tutorial controls, and made the tutorial launch reliably from PC clicks and mobile touch/pointer input. Login was not changed.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
 const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed leaderboard storage so saved scores can persist across server restarts.']

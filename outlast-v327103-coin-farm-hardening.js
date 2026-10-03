@@ -23,6 +23,12 @@
       }else if(payout>0){
         setLastPayout(now);game.__coinGuardSuppressed=false;
       }
+      if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('Coin Farm Hardening'))){
+        updates.unshift(['v3.27.103 — Coin Farm Hardening','Hardened rapid repeat-run coin rewards so very short farming loops do not generate normal run coin payouts.']);
+      }
+      if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('repeat-run coin farming'))){
+        helpArticles.unshift(['How are repeat-run coin farms handled?','Progression','Very short runs and rapid repeat runs may have their run coin payout blocked. Normal-length runs continue to earn coins normally.']);
+      }
       return originalEndRun(victory,recordScore,showEnd);
     };
   }

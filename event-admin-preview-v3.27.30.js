@@ -9,7 +9,7 @@
       const name=entries[0]?.[0]||'Nightfall Event';
       const desc=entries[0]?.[1]||'Upcoming event';
       const safe=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-      const launchMs=Date.now()-1000;
+      const launchMs=Number(window.OUTLAST_EVENT_TARGET_MS)||Date.now()-1000;
       const countdown=()=>{
         const ms=launchMs-Date.now();
         if(ms<=0)return 'LIVE';

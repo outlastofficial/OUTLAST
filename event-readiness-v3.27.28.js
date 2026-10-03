@@ -3,7 +3,7 @@
   'use strict';
   if (window.__OUTLAST_EVENT_PREFLIGHT__) return;
   window.__OUTLAST_EVENT_PREFLIGHT__ = true;
-  const API='https://outlast-server.onrender.com';
+  const API='https://outlast-test-server.onrender.com';
   const checks={};
   const tester=/outlast-test(?:\.onrender\.com)?$/i.test(location.hostname);
   async function checkEndpoint(name,path){

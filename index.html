@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.85">
-<meta name="build-version" content="3.27.85">
-<title>OUTLAST v3.27.85</title>
+<meta name="outlast-build" content="3.27.86">
+<meta name="build-version" content="3.27.86">
+<title>OUTLAST v3.27.86</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3669,6 +3669,8 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.27.86?','Updates','Removed obsolete legacy GitHub Actions checks that were still validating the retired v3.9.7/v3.3/v3.4 builds and causing failure notifications on current pushes. Login was not changed.'],
+  ['Why was I getting v3.9.7 run-failed emails?','Updates','The repository had a legacy workflow named Validate OUTLAST v3.9.7 that ran on every push and checked for retired v3.9.7 files and version markers. Those obsolete workflows have been removed.'],
   ['What changed in v3.27.85?','Updates','Added a hard Space-bar lock so Space cannot scroll or shift the OUTLAST screen/panels, while normal Space typing remains available in text/chat fields. Login was not changed.'],
   ['How do I stop Space from moving the screen?','Controls','Space is not a gameplay control. OUTLAST blocks Space from browser scrolling and focused button activation outside text-entry fields.'],
   ['What changed in v3.27.70?','Updates','Expanded Settings with combat feedback, accessibility, performance, mobile controls, notifications, vibration, FPS, HUD, and aim-assist options while keeping login and progression data isolated.'],
@@ -3958,8 +3960,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.85';
-const CURRENT_UPDATE_INFO={title:'v3.27.85 — Space-Bar Stability Fix',summary:'Space can no longer scroll or shift OUTLAST screens and panels.',items:['Space is blocked from browser scrolling outside text-entry fields.','Focused buttons and menu summaries cannot be accidentally activated by Space.','The lock runs before other keyboard listeners so later UI scripts cannot override it.','Chat/text fields still accept normal Space characters.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.86';
+const CURRENT_UPDATE_INFO={title:'v3.27.86 — CI Notification Cleanup',summary:'Obsolete legacy update checks were removed so current OUTLAST pushes are not reported as v3.x failures.',items:['Removed the obsolete v3.9.7 validation workflows that expected old files and version markers.','Removed other legacy v3.3/v3.4 version-check workflows that were also tied to outdated builds.','Current OUTLAST updates are no longer validated against the old v3.9.7 build requirements.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4154,7 +4156,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.85';
+const OUTLAST_BUILD='3.27.86';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;

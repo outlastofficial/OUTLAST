@@ -11,7 +11,7 @@
   };
   const IS_TESTER=/outlast-test(?:\.onrender\.com)?$/i.test(location.hostname);
   const EVENT_AT=EVENT_CONFIG.startAt;
-  const API='https://outlast-server.onrender.com';
+  const API='https://outlast-test-server.onrender.com';
   const KEY='outlastEventExpansionV323';
   const defaults={
     coins:0,contrib:0,clues:0,clueCooldown:0,completedRuns:0,bossDefeated:false,

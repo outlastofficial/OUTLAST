@@ -866,7 +866,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.27.94 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.96 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -4145,7 +4145,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='3.27.96';
-const CURRENT_UPDATE_INFO={title:'v3.27.96 — Feedback Moderation & Apex Rarities',summary:'Owner submissions moderation is live and the highest upgrade rarities now have dramatically stronger effects.',items:['Owner Panel now has a protected Submissions tab with Hide, Restore and Resolve controls.','Abusive submissions are automatically hidden from the public feedback feed while remaining available to owners for moderation.','Celestial, Transcendent, Eternal and Omega upgrades were substantially strengthened with multi-stat power boosts.','Login flow was not changed.']};
+const CURRENT_UPDATE_INFO={title:'v3.27.96 — Premium Rarity Rebuild',summary:'High-rarity upgrades now have substantially stronger signature effects while projectile counts are capped to protect performance.',items:['Divine, Celestial, Transcendent, Eternal, and Omega upgrades now have stronger damage, survivability, boss, ultimate, pierce, and chain effects.','Top-tier projectile bonuses are capped to avoid runaway projectile spam and lag.','Omega Ascension now guarantees critical hits and adds major boss, ultimate, chain, shockwave, and Phoenix power.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -7216,5 +7216,6 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 })();
 </script>
 <script src="outlast-version-v3.27.96.js?v=3.27.96"></script>
+<script src="rarity-rebuild-v3.27.96.js?v=3.27.96"></script>
 </body>
 </html>

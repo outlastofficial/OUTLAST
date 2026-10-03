@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.104">
-<meta name="build-version" content="3.27.104">
-<title>OUTLAST v3.27.104</title>
+<meta name="outlast-build" content="3.27.105">
+<meta name="build-version" content="3.27.105">
+<title>OUTLAST v3.27.105</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -849,7 +849,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.27.104 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.105 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1511,7 +1511,7 @@ const runModifiers={None:{desc:'Normal run',spawn:1,reward:1,enemy:1},DoubleTrou
 const elements={Fire:{desc:'Burns enemies over time',color:'#ff6a3d'},Ice:{desc:'Slows enemies heavily',color:'#8de6ff'},Shock:{desc:'Can chain to nearby enemies',color:'#ffe66d'},Poison:{desc:'Damage over time',color:'#8be85c'},Void:{desc:'Bonus damage to elites/bosses',color:'#d28cff'}};
 const activeSkills={Nova:{cost:0,desc:'Blast nearby enemies',cool:18},Blink:{cost:900,desc:'Dash 450 units',cool:12},Fortify:{cost:1200,desc:'Shield for 8 seconds',cool:22},TimeStop:{cost:1800,desc:'Freeze enemies for 5 seconds',cool:28},Meteor:{cost:2500,desc:'Massive area strike',cool:30}};
 const challengeModes={Horde:{desc:'Far more enemies, 2x score',enemy:1.25,spawn:.48,reward:1.9},GlassCannon:{desc:'You have 45% less HP, 2.25x score',enemy:1.1,spawn:1,reward:2.25},BossGauntlet:{desc:'Boss every 45 seconds, 2.5x score',enemy:1.15,spawn:.8,reward:2.3},Chaos:{desc:'Random events every 30 seconds',enemy:1.2,spawn:.75,reward:2},Treasure:{desc:'More chests and coins, 1.8x rewards',enemy:1,spawn:.9,reward:1.8}};
-const worldEvents={MeteorStorm:'Meteors strike random zones',PowerSurge:'All weapons fire faster',TreasureRain:'Extra chests and coins',EliteInvasion:'Elite enemies flood the map',BloodHarvest:'Zombies drop extra XP for 20 seconds',SupplyDrop:'A rare supply crate lands nearby',TimeWarp:'Game speed shifts unpredictably',OmegaHunt:'A rare Omega enemy can appear'};
+const worldEvents={MeteorStorm:'Meteors strike random zones',PowerSurge:'All weapons fire faster',TreasureRain:'Extra coins and treasure caches',EliteInvasion:'Elite enemies flood the map',BloodHarvest:'Zombies drop extra XP for 20 seconds',SupplyDrop:'A rare supply crate lands nearby',TimeWarp:'Game speed shifts unpredictably',OmegaHunt:'A rare high-threat target can appear'};
 const craftRecipes={ForgeCore:{cost:{coins:300,parts:3},gain:'forgeCores',amount:1},GemBundle:{cost:{coins:500,parts:4},gain:'gemsCrafted',amount:1},ChestKey:{cost:{coins:750,parts:5},gain:'keys',amount:1},MythicDust:{cost:{cores:3,parts:8},gain:'mythicDust',amount:1}};
 const itemSets={HunterSet:['Sharpshooter','Long Arm','Collector'],GuardianSet:['Iron Heart','Thick Armor','Recovery'],ArcaneSet:['Arcane Power','Scholar','Overdrive'],FortuneSet:['Coin Hunter','Lucky Drops','Lucky Case']};
 
@@ -4954,7 +4954,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 })();
 </script><script src="outlast-v3.9.7.js?v=3.27.13"></script>
 <script src="outlast-v3.14.0.js?v=3.27.28"></script>
-<script src="event-timer-v3.27.12.js?v=3.27.104"></script>
+<script src="event-timer-v3.27.12.js?v=3.27.105"></script>
 <script id="outlast-v32713-chat-space-fix">
 (function(){
   'use strict';
@@ -4976,7 +4976,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   },true);
 })();
 </script>
-<script src="event-readiness-v3.27.28.js?v=3.27.104"></script>
+<script src="event-readiness-v3.27.28.js?v=3.27.105"></script>
 
 <script id="outlast-v3143-skin-button-fix">
 (function(){
@@ -5572,7 +5572,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   };
 })();
 </script><script src="outlast-v3.14.18-upgrades.js?v=3.14.18"></script><script src="outlast-v3.14.19-juice.js?v=3.18.0"></script>
-<script src="outlast-v3.14.23-event-expansion.js?v=3.27.104"></script>
+<script src="outlast-v3.14.23-event-expansion.js?v=3.27.105"></script>
 <style id="outlast-v318-settings-css">
 #outlastSettingsClock{display:none}
 .outlast-settings-wrap{display:grid;gap:12px}
@@ -6146,15 +6146,16 @@ window.__outlastSkinAreaVersion=VERSION;
   window.addEventListener('beforeunload',clearSpeed);
 })();
 </script>
-<script src="event-admin-preview-v3.27.30.js?v=3.27.104"></script>
+<script src="event-admin-preview-v3.27.30.js?v=3.27.105"></script>
 <script src="rarity-rebuild-v3.27.96.js?v=3.27.96"></script>
-<script src="outlast-version-v3.27.104.js?v=3.27.104"></script>
+<script src="outlast-version-v3.27.105.js?v=3.27.105"></script>
 <script src="outlast-v32797-dash-spawn-hardening.js?v=3.27.99"></script>
 <script src="outlast-v32798-void-arsenal-balance.js?v=3.27.99"></script>
 <script src="outlast-v32799-premium-rarity-balance.js?v=3.27.99"></script>
 <script src="outlast-v327100-lower-rarity-balance.js?v=3.27.101"></script>
 <script src="outlast-v327101-all-upgrade-balance.js?v=3.27.101"></script>
-<script src="outlast-v327102-bouncing-bullets.js?v=3.27.104"></script>
-<script src="outlast-v327103-coin-farm-hardening.js?v=3.27.104"></script>
+<script src="outlast-v327102-bouncing-bullets.js?v=3.27.105"></script>
+<script src="outlast-v327103-coin-farm-hardening.js?v=3.27.105"></script>
+<script src="outlast-v327105-event-hardening.js?v=3.27.105"></script>
 </body>
 </html>

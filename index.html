@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.80">
-<meta name="build-version" content="3.27.80">
-<title>OUTLAST v3.27.80</title>
+<meta name="outlast-build" content="3.27.81">
+<meta name="build-version" content="3.27.81">
+<title>OUTLAST v3.27.81</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3666,7 +3666,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['What changed in v3.27.70?','Updates','Expanded Settings with combat feedback, accessibility, performance, mobile controls, notifications, vibration, FPS, HUD, and aim-assist options while keeping login and progression data isolated.'],
-  ['What changed in v3.27.80?','Updates','Rebuilt the map spawn/collision guard so players, enemies, bosses, and spawned pickups are forced to safe positions outside solid map objects, and movement repairs any accidental overlap. Login was not changed.'], ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.79?','Updates','Nerfed ranged enemy and boss red projectiles to 75% speed and 65% damage, with a slightly smaller hitbox. Normal weapons and login were not changed.'], ['What changed in v3.27.78?','Updates','Serialized leaderboard submissions and retry submissions so slow requests cannot overlap. Login flow was not changed.'], ['What changed in v3.27.77?','Updates','Repaired the update-log declaration so the main UI script parses cleanly after the runtime-structure hardening. Login flow was not changed.'], ['What changed in v3.27.76?','Updates','Closed the remaining script-tag mismatch and aligned current build references so future patches execute consistently. Login flow was not changed.'], ['What changed in v3.27.75?','Updates','Closed a late script-boundary gap so progression hardening executes correctly, and removed the obsolete duplicate Daily Shop implementation. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
+  ['What changed in v3.27.81?','Updates','Hardened spawn placement so blocked positions are rejected instead of being used as a fallback; player, enemy, boss, shrine, and pickup placement is rechecked against map geometry, with safe-position recovery when needed.']airs any accidental overlap. Login was not changed.'], ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.79?','Updates','Nerfed ranged enemy and boss red projectiles to 75% speed and 65% damage, with a slightly smaller hitbox. Normal weapons and login were not changed.'], ['What changed in v3.27.78?','Updates','Serialized leaderboard submissions and retry submissions so slow requests cannot overlap. Login flow was not changed.'], ['What changed in v3.27.77?','Updates','Repaired the update-log declaration so the main UI script parses cleanly after the runtime-structure hardening. Login flow was not changed.'], ['What changed in v3.27.76?','Updates','Closed the remaining script-tag mismatch and aligned current build references so future patches execute consistently. Login flow was not changed.'], ['What changed in v3.27.75?','Updates','Closed a late script-boundary gap so progression hardening executes correctly, and removed the obsolete duplicate Daily Shop implementation. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
   ['What changed in v3.27.62?','Updates','Spread map geometry through the full arena and added extra player spawn clearance to prevent spawning inside objects.'],
@@ -3690,7 +3690,7 @@ const helpArticles=[
   ['How does the online player count work?','Online / Multiplayer','The Players online number and the named player list use the same connected-player data. Server connection totals are tracked separately.'],
   ['How do I see who is online?','Online / Multiplayer','Open Online / Multiplayer to see the actual named players currently connected to the OUTLAST server.'],
   ['How do Owner Chat Tags work?','Global Chat','Recognized OUTLAST owner usernames — including BestGamer, Landon, Phone Landon, and Poke — display an 👑 OWNER tag next to the username in Global Chat.'],
-  ['How does the stability guard work?','How To','OUTLAST now keeps one current build marker, a single Daily Shop implementation, protected autosave and serialized leaderboard submissions/retries, and correctly bounded late progression code so future updates are less likely to create silent regressions.'],
+  ['How does the stability guard work?','How To','OUTLAST now validates spawn positions against solid map objects before accepting them. If a requested position is blocked, it searches the map for a clear position with enough collision clearance instead of using a blocked fallback.'],
    ['How do I use the Quality Center?','Quality & Recovery','Open Settings → Quality & Recovery for the current objective, run history, favorites, bug reporting, and Practice Mode.'],
   ['How does Practice Mode work?','Practice Mode','Practice Mode starts a separate no-enemy session for learning the controls and exploring the current setup. Practice sessions do not keep normal rewards or progression.'],
   ['How do I report a bug?','Bug Reporting','Open Settings → Quality & Recovery → Report a Bug. The report automatically includes the current OUTLAST version, map, mode, and difficulty. Reports are saved locally and sent to the OUTLAST server when available.'],
@@ -3769,7 +3769,7 @@ function renderUpdates(){
  
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
-const updates=[['v3.27.80 — Spawn & Collision Guard','Prevents player, enemy, boss, and pickup spawns from landing inside solid map objects and repairs any accidental overlap during movement.'], ['v3.27.79 — Red Ball Nerf','Nerfed ranged enemy and boss red projectiles: 25% slower, 35% less damage, and a slightly smaller hitbox.'], ['v3.27.77 — Syntax & Regression Cleanup','Repaired the update-log declaration so the main UI script parses cleanly.'], ['v3.27.76 — Runtime Structure Guard','Closed a late script-boundary gap and consolidated Daily Shop handling into one source of truth.'], ['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
+const updates=[['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses a stronger safe-position search and refuses blocked fallback positions, preventing players, enemies, bosses, shrines, and pickups from being left inside solid map objects.'], ['v3.27.79 — Red Ball Nerf','Nerfed ranged enemy and boss red projectiles: 25% slower, 35% less damage, and a slightly smaller hitbox.'], ['v3.27.77 — Syntax & Regression Cleanup','Repaired the update-log declaration so the main UI script parses cleanly.'], ['v3.27.76 — Runtime Structure Guard','Closed a late script-boundary gap and consolidated Daily Shop handling into one source of truth.'], ['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
    ['v3.27.69 — Progression Gameplay Hardening','Removed duplicate contact damage processing and made pet abilities (including Ghost guard, Wolf attack, and Hawk marking) work reliably.'], ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
    ['v3.27.64 — Game Start Recovery Fix','Fixed the Start Run crash caused by Pet/Relic/Charm scaling being referenced before initialization.'],
    ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
@@ -3949,7 +3949,7 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.80';
+const CURRENT_UPDATE_VERSION='3.27.81';
 const CURRENT_UPDATE_INFO={title:'v3.27.80 — Spawn & Collision Guard',summary:'Map spawning and movement now reject solid-object overlap.',items:['Player spawns are rechecked against every solid map object.','Enemy and boss spawns are rechecked before they can become active.','Spawned gems, coins, powerups, and shrines are moved out of solid objects.','Movement repairs accidental player or enemy overlap instead of leaving the entity stuck inside geometry.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
@@ -4145,7 +4145,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.80';
+const OUTLAST_BUILD='3.27.81';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;
@@ -6851,6 +6851,149 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
       repairPickups();
     }catch(_){ }
   };
+})();
+</script>
+
+<script id="outlast-v32781-guaranteed-safe-spawns">
+/* v3.27.81 — Guaranteed Safe Spawns: never accept a blocked spawn fallback. */
+(function(){
+  'use strict';
+  if(window.__outlastGuaranteedSafeSpawns32781)return;
+  window.__outlastGuaranteedSafeSpawns32781=true;
+
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  function isClear(x,y,r){
+    return Number.isFinite(x)&&Number.isFinite(y)&&Number.isFinite(r)&&
+      x>=r+2&&x<=W-r-2&&y>=r+2&&y<=H-r-2&&!blocked(x,y,r);
+  }
+  function findGuaranteed(x,y,r=18,avoidX=null,avoidY=null){
+    r=Math.max(6,Number(r)||18);
+    const bx=clamp(Number(x)||W/2,r+4,W-r-4),by=clamp(Number(y)||H/2,r+4,H-r-4);
+    const acceptable=(px,py)=>{
+      px=clamp(px,r+4,W-r-4);py=clamp(py,r+4,H-r-4);
+      if(!isClear(px,py,r))return null;
+      if(avoidX!==null&&avoidY!==null&&Math.hypot(px-avoidX,py-avoidY)<Math.max(70,r*3.5))return null;
+      return {x:px,y:py,d:Math.hypot(px-bx,py-by)};
+    };
+    const direct=acceptable(bx,by);if(direct)return direct;
+    // Dense radial search handles large objects and narrow clearings.
+    for(let ring=12;ring<=1600;ring+=12){
+      for(let step=0;step<72;step++){
+        const a=step*Math.PI*2/72,p=acceptable(bx+Math.cos(a)*ring,by+Math.sin(a)*ring);
+        if(p)return p;
+      }
+    }
+    // Full-map scan is the final deterministic fallback. No blocked fallback is allowed.
+    for(let yy=r+6;yy<=H-r-6;yy+=16){
+      for(let xx=r+6;xx<=W-r-6;xx+=16){
+        const p=acceptable(xx,yy);if(p)return p;
+      }
+    }
+    return null;
+  }
+
+  // Replace the old helper so every later caller gets a guaranteed clear point.
+  window.findSafePlayerSpawn=function(x,y,r=20,avoidX=null,avoidY=null){
+    const p=findGuaranteed(x,y,r,avoidX,avoidY);
+    return p?{x:p.x,y:p.y}:null;
+  };
+  window.findOpenEnemyPoint=function(x,y,r=15,spread=180){
+    const p=findGuaranteed(x,y,r);return p?{x:p.x,y:p.y}:null;
+  };
+
+  function repair(e,avoidX=null,avoidY=null,removeIfImpossible=false){
+    if(!e||!Number.isFinite(e.x)||!Number.isFinite(e.y))return false;
+    const r=Math.max(6,Number(e.r)||16);
+    if(isClear(e.x,e.y,r))return true;
+    const p=findGuaranteed(e.x,e.y,r,avoidX,avoidY);
+    if(p){e.x=p.x;e.y=p.y;return true;}
+    return !removeIfImpossible;
+  }
+
+  // Strengthen the existing movement guard: an entity can never finish a move inside geometry.
+  const oldMove=window.tryMoveEntity;
+  if(typeof oldMove==='function'&&!window.__outlastMoveGuard32781){
+    window.__outlastMoveGuard32781=true;
+    window.tryMoveEntity=function(ent,nx,ny){
+      if(!ent)return;
+      oldMove(ent,nx,ny);
+      repair(ent,game.player?.x??null,game.player?.y??null,false);
+    };
+  }
+
+  // Wrap spawn entry points so every newly created entity is validated immediately.
+  const oldEnemy=window.spawnEnemy;
+  if(typeof oldEnemy==='function'&&!window.__outlastEnemyGuard32781){
+    window.__outlastEnemyGuard32781=true;
+    window.spawnEnemy=function(){
+      const before=game.enemies.length,result=oldEnemy.apply(this,arguments);
+      for(let i=before;i<game.enemies.length;i++){
+        const e=game.enemies[i];
+        if(!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
+      }
+      return result;
+    };
+  }
+  const oldBoss=window.spawnBoss;
+  if(typeof oldBoss==='function'&&!window.__outlastBossGuard32781){
+    window.__outlastBossGuard32781=true;
+    window.spawnBoss=function(){
+      const before=game.enemies.length,result=oldBoss.apply(this,arguments);
+      for(let i=before;i<game.enemies.length;i++){
+        const e=game.enemies[i];
+        if(!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
+      }
+      return result;
+    };
+  }
+  const oldShrine=window.spawnShrine;
+  if(typeof oldShrine==='function'&&!window.__outlastShrineGuard32781){
+    window.__outlastShrineGuard32781=true;
+    window.spawnShrine=function(){
+      const before=game.shrines.length,result=oldShrine.apply(this,arguments);
+      for(let i=before;i<game.shrines.length;i++){
+        const e=game.shrines[i];
+        if(!repair(e,null,null,true))game.shrines.splice(i--,1);
+      }
+      return result;
+    };
+  }
+
+  // Player start/restart is the strictest case: if the requested spawn is blocked,
+  // move to the nearest valid point before the run is allowed to continue.
+  const oldStart=window.startGame;
+  if(typeof oldStart==='function'&&!window.__outlastStartGuard32781){
+    window.__outlastStartGuard32781=true;
+    window.startGame=function(){
+      const result=oldStart.apply(this,arguments);
+      if(game.player){
+        const ok=repair(game.player,null,null,false);
+        if(!ok){
+          game.running=false;
+          toast?.('⚠️ No safe player spawn was available on this map. Run cancelled safely.');
+        }
+      }
+      if(game.player2)repair(game.player2,game.player?.x??null,game.player?.y??null,false);
+      return result;
+    };
+  }
+
+  // Final invariant check: blocked live entities are relocated; impossible enemy/pickup
+  // placements are removed instead of leaving an object overlapping map geometry.
+  const oldUpdate=window.update;
+  if(typeof oldUpdate==='function'&&!window.__outlastUpdateGuard32781){
+    window.__outlastUpdateGuard32781=true;
+    window.update=function(dt){
+      oldUpdate(dt);
+      try{
+        if(game.player&&!repair(game.player,null,null,false)){game.running=false;return;}
+        if(game.player2)repair(game.player2,game.player?.x??null,game.player?.y??null,false);
+        for(let i=(game.enemies||[]).length-1;i>=0;i--)if(!repair(game.enemies[i],game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i,1);
+        for(let i=(game.shrines||[]).length-1;i>=0;i--)if(!repair(game.shrines[i],null,null,true))game.shrines.splice(i,1);
+        for(const list of [game.coins||[],game.gems||[],game.powerups||[]])for(let i=list.length-1;i>=0;i--)if(!repair(list[i],null,null,true))list.splice(i,1);
+      }catch(_){/* spawn safety must never break the main game loop */}
+    };
+  }
 })();
 </script>
 </body>

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.82">
-<meta name="build-version" content="3.27.82">
-<title>OUTLAST v3.27.82</title>
+<meta name="outlast-build" content="3.27.83">
+<meta name="build-version" content="3.27.83">
+<title>OUTLAST v3.27.83</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3666,7 +3666,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['What changed in v3.27.70?','Updates','Expanded Settings with combat feedback, accessibility, performance, mobile controls, notifications, vibration, FPS, HUD, and aim-assist options while keeping login and progression data isolated.'],
-  ['What changed in v3.27.82?','Updates','Hardened multiplayer connections with server heartbeat support, health endpoints, stronger reconnect handling, and server/client version synchronization. Login was not changed.'],
+  ['What changed in v3.27.83?','Updates','Hardened multiplayer connections with server heartbeat support, health endpoints, stronger reconnect handling, and server/client version synchronization. Login was not changed.'],
   ['What changed in v3.27.81?','Updates','Hardened spawn placement so blocked positions are rejected instead of being used as a fallback; player, enemy, boss, shrine, and pickup placement is rechecked against map geometry, with safe-position recovery when needed.'], ['What changed in v3.27.74?','Updates','Added regression hardening for version markers, autosave, leaderboard retry timing, admin test controls, and duplicate progression-set effects. Login flow was not changed.'], ['What changed in v3.27.79?','Updates','Nerfed ranged enemy and boss red projectiles to 75% speed and 65% damage, with a slightly smaller hitbox. Normal weapons and login were not changed.'], ['What changed in v3.27.78?','Updates','Serialized leaderboard submissions and retry submissions so slow requests cannot overlap. Login flow was not changed.'], ['What changed in v3.27.77?','Updates','Repaired the update-log declaration so the main UI script parses cleanly after the runtime-structure hardening. Login flow was not changed.'], ['What changed in v3.27.76?','Updates','Closed the remaining script-tag mismatch and aligned current build references so future patches execute consistently. Login flow was not changed.'], ['What changed in v3.27.75?','Updates','Closed a late script-boundary gap so progression hardening executes correctly, and removed the obsolete duplicate Daily Shop implementation. Login flow was not changed.'], ['What changed in v3.27.73?','Updates','Fixed rarity chance consistency by removing a stale six-tier upgrade roll. The full Common→Omega ladder, Upgrade Luck, and the displayed live odds now use one canonical table.'], ['What changed in v3.27.72?','Updates','Hardened manual world-event triggers and restored the normal fire rate when timed event effects expire.'], ['What changed in v3.27.71?','Updates','Fixed world-event effect stacking and reset state so timed events apply once and expire cleanly.'], ['What changed in v3.27.69?','Updates','Hardened zombie contact damage and made pet abilities visibly functional, including Ghost protection, Wolf attacks, and Hawk marks.'], ['What changed in v3.27.68?','Updates','Fixed zombie contact damage, real gear leveling effects, complete weapon evolutions, set/preset saving, Collection organization, rarity labels and exact chances, and leaderboard persistence/retry.'], ['What changed in v3.27.67?','Updates','Fixed zombie contact damage, real pet/relic/charm level scaling, full evolution coverage, live build sets, full build presets, reorganized Collection content, named rarity chances, and leaderboard retry persistence.'], ['What changed in v3.27.65?','Updates','Removed the recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
   ['What changed in v3.27.64?','Updates','Fixed a game-start crash caused by gear scaling values being initialized after they were used.'],
   ['What changed in v3.27.63?','Updates','Restored the 11-tier upgrade rarity ladder, made Upgrade Luck stronger and visible, added real gear levels/effects, and restored in-run chat.'],
@@ -3944,14 +3944,14 @@ const updates=[['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses 
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
-const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
+const TUTORIAL_UPDATE_ENTRY=['v3.27.83 — Tutorial Reliability Fix','Fixed the New Player Tutorial overlay so focused gameplay elements cannot cover the tutorial controls, and made the tutorial launch reliably from PC clicks and mobile touch/pointer input. Login was not changed.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
 const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed leaderboard storage so saved scores can persist across server restarts.']
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.82';
-const CURRENT_UPDATE_INFO={title:'v3.27.80 — Spawn & Collision Guard',summary:'Map spawning and movement now reject solid-object overlap.',items:['Player spawns are rechecked against every solid map object.','Enemy and boss spawns are rechecked before they can become active.','Spawned gems, coins, powerups, and shrines are moved out of solid objects.','Movement repairs accidental player or enemy overlap instead of leaving the entity stuck inside geometry.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.83';
+const CURRENT_UPDATE_INFO={title:'v3.27.83 — Tutorial Reliability Fix',summary:'New Player Tutorial controls and overlay focus are now reliable on PC and mobile.',items:['Player spawns are rechecked against every solid map object.','Enemy and boss spawns are rechecked before they can become active.','Spawned gems, coins, powerups, and shrines are moved out of solid objects.','Movement repairs accidental player or enemy overlap instead of leaving the entity stuck inside geometry.','Tutorial launch and NEXT/SKIP controls are protected from the global button safety layer.','Focused gameplay elements can no longer cover the tutorial card or its controls.','PC click and mobile pointer/touch launch paths are handled directly.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4146,7 +4146,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.82';
+const OUTLAST_BUILD='3.27.83';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;
@@ -5672,7 +5672,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 #newPlayerTutorial button{margin:0}
 #newPlayerTutorial .npt-skip{background:#17232f;border:1px solid #334b60;box-shadow:none}
 #newPlayerTutorial .npt-next{background:#3da96b;box-shadow:0 4px 0 #23673f}
-.npt-focus{position:relative!important;z-index:141!important;box-shadow:0 0 0 4px rgba(105,192,255,.78),0 0 30px rgba(70,180,255,.45)!important;animation:nptPulse 1.1s ease-in-out infinite}
+.npt-focus{position:relative!important;z-index:auto!important;pointer-events:none!important;box-shadow:0 0 0 4px rgba(105,192,255,.78),0 0 30px rgba(70,180,255,.45)!important}
 @keyframes nptPulse{50%{filter:brightness(1.18);transform:translateY(-1px)}}
 @media(max-width:600px){#newPlayerTutorial .npt-card{padding:19px}#newPlayerTutorial h2{font-size:25px}}
 </style><script id="outlast-v317-new-player-tutorial">
@@ -5715,10 +5715,13 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     root.querySelector('.npt-skip').onclick=e=>{e.preventDefault();e.stopPropagation();close(true)};
     root.onclick=e=>{if(e.target===root)close(true)};
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&active)close(true)});
-    document.addEventListener('click',e=>{
+    const openFromButton=e=>{
       const b=e.target?.closest?.('#newPlayerTutorialBtn');
-      if(b){e.preventDefault();e.stopPropagation();show();}
-    },false);
+      if(!b)return;
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();show();
+    };
+    document.addEventListener('pointerup',openFromButton,true);
+    document.addEventListener('click',openFromButton,true);
     // Make the tutorial always manually available, even if the auto-show flag was saved.
     window.openNewPlayerTutorial=show;
     const old=localStorage.getItem(KEY);

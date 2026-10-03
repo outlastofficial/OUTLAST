@@ -7,8 +7,9 @@
   const EVENT_CONFIG={
     id:'nightfall-october-2026',
     name:'Nightfall / October Event',
-    startAt:new Date('2026-10-03T15:00:00Z').getTime()
+    startAt:Number(window.OUTLAST_EVENT_TARGET_MS)||new Date('2026-10-03T15:00:00Z').getTime()
   };
+  const IS_TESTER=/outlast-test(?:\.onrender\.com)?$/i.test(location.hostname);
   const EVENT_AT=EVENT_CONFIG.startAt;
   const API='https://outlast-server.onrender.com';
   const KEY='outlastEventExpansionV323';
@@ -110,10 +111,12 @@
   }
   async function contribute(points,reason){
     const n=Math.max(1,Math.min(25,Math.floor(Number(points)||1)));
-    state.contrib+=n;state.missions.contrib=state.contrib;saveState();
     const d=await server('/api/event/contribute',{method:'POST',body:JSON.stringify({username:currentUser(),points:n,reason})});
-    if(d?.progress){state.globalProgress=Number(d.progress.percent)||0;state.globalContrib=Number(d.progress.points)||0;state.globalGoal=Number(d.progress.goal)||5000}
+    if(!d?.progress)return false;
+    state.contrib+=n;state.missions.contrib=state.contrib;
+    state.globalProgress=Number(d.progress.percent)||0;state.globalContrib=Number(d.progress.points)||0;state.globalGoal=Number(d.progress.goal)||5000;
     saveState();
+    return true;
   }
   function currentUser(){
     try{return String((window.save&&window.save.username)||localStorage.getItem('outlastUsername')||'Player').slice(0,18)}catch(_){return 'Player'}
@@ -192,10 +195,17 @@
     openModal('EVENT LEADERBOARD','<div class="oeb23-grid">'+body+'</div><p class="oeb23-muted">The community leaderboard is server-backed when the event service is online.</p>');
   }
 
-  function terminalAccess(){
-    if(phase()!=='LIVE'){openModal('ACCESS LOCKED','The event terminal will unlock when the countdown reaches zero.');return}
+  async function terminalAccess(){
+    if(state.bossDefeated){openModal('EVENT COMPLETE','The Rift Pumpkin has already been defeated on this account. Your event rewards remain unlocked.');return}
+    let live=phase()==='LIVE';
+    if(!IS_TESTER){
+      const auth=await server('/api/event/state');
+      if(auth?.schedule)live=Boolean(auth.schedule.live)||(Boolean(auth.active)&&String(auth.globalEvent?.type||'')==='october');
+    }
+    if(!live){openModal('ACCESS LOCKED','The event terminal will unlock when the authoritative countdown reaches zero.');return}
     state.activated=true;saveState();checkAchievements();
     if(window.game&&game.running){
+      game.eventRun=true;
       spawnEventBoss();
       return;
     }
@@ -208,13 +218,15 @@
     try{
       if(window.game&&game.running){spawnEventBoss();return}
       if(typeof startGame==='function')startGame();
-      setTimeout(()=>{if(window.game&&game.running){state.completedRuns=Math.max(0,state.completedRuns);saveState();spawnEventBoss()}},1200);
+      setTimeout(()=>{if(window.game&&game.running){game.eventRun=true;saveState();spawnEventBoss()}},1200);
     }catch(_){toastMsg('Unable to start the event run from the current screen.')}
   }
 
   function spawnEventBoss(){
     try{
       if(!window.game||!game.running||game.over){toastMsg('Start a run before entering the breach.');return}
+      if(state.bossDefeated)return;
+      game.eventRun=true;
       if(game.enemies.some(e=>e&&e.eventBoss))return;
       if(typeof spawnBoss!=='function')return;
       const before=game.enemies.length;
@@ -237,22 +249,28 @@
       if(p==='LIVE'&&!state.finaleSeen){state.finaleSeen=true;saveState();openFinale()}
     }
     if(window.game&&game.running&&!game.over){
-      encounterTimer++;
-      if(encounterTimer>=45){encounterTimer=0;eventEncounter()}
-      const activeBoss=game.enemies.some(e=>e&&e.eventBoss);
+      if(!game.eventRun){encounterTimer=0;lastBoss=false;}
+      else {
+        encounterTimer++;
+        if(encounterTimer>=45){encounterTimer=0;eventEncounter()}
+      }
+      const activeBoss=game.eventRun&&game.enemies.some(e=>e&&e.eventBoss);
       if(lastBoss&& !activeBoss && !state.bossDefeated){
         state.bossDefeated=true;state.coins+=150;state.missions.boss=1;state.missions.coins=state.coins;state.aftermath=true;saveState();contribute(15,'boss-clear');checkAchievements();openModal('RIFT BREACH CLOSED','<div class="oeb23-card"><h4>🎃 Event Boss Defeated</h4><div class="oeb23-muted">+150 Event Coins • the aftermath is now permanently unlocked.</div></div>');
       }
       if(!lastRun){lastRun=true}
     }
     if(window.game&&game.over&&lastRun){
-      state.completedRuns++;state.missions.runs=state.completedRuns;lastRun=false;saveState();contribute(3,'event-run');checkAchievements();
+      if(game.eventRun){
+        state.completedRuns++;state.missions.runs=state.completedRuns;saveState();contribute(3,'event-run');checkAchievements();
+      }
+      game.eventRun=false;lastRun=false;saveState();
     }
-    lastBoss=!!(window.game&&game.running&&!game.over&&game.enemies.some(e=>e&&e.eventBoss));
+    lastBoss=!!(window.game&&game.eventRun&&game.running&&!game.over&&game.enemies.some(e=>e&&e.eventBoss));
     if(Date.now()-lastTick>15000){lastTick=Date.now();syncCommunity()}
   }
   function eventEncounter(){
-    if(!window.game||!game.running||game.over)return;
+    if(!window.game||!game.running||game.over||!game.eventRun||phase()!=='LIVE')return;
     state.encounters++;state.coins+=10;state.missions.coins=state.coins;saveState();contribute(2,'encounter');
     toastMsg('📡 SIGNAL CACHE FOUND • +10 EVENT COINS');
     checkAchievements();
@@ -301,11 +319,28 @@
     root.querySelector('[data-open]').onclick=showDetails;
   }
 
-  function init(){
-    ensureCss();rootRender();syncCommunity();checkAchievements();
+  async function syncEventAuthority(){
+    if(IS_TESTER)return null;
+    const d=await server('/api/event/state');
+    const start=Number(d?.schedule?.scheduledStartAt||0),serverNow=Number(d?.schedule?.serverNow||0);
+    if(start>0&&serverNow>0){
+      const offset=serverNow-Date.now();
+      window.OUTLAST_EVENT_SERVER_OFFSET_MS=offset;
+      window.OUTLAST_EVENT_TARGET_MS=start-offset;
+      return d;
+    }
+    return null;
+  }
+  async function init(){
+    ensureCss();
+    await syncEventAuthority();
+    rootRender();await syncCommunity();checkAchievements();
+    if(phase()==='LIVE'&&!state.finaleSeen){state.finaleSeen=true;saveState();setTimeout(openFinale,120);}
     setInterval(()=>{rootRender();eventTick()},1000);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 
+  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('Event Bug Sweep'))){updates.unshift(['v3.27.104 — Event Bug Sweep','Hardened event timing, live access, contribution validation, event-run tracking, and repeat boss rewards.']);}
+  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('event timing and access'))){helpArticles.unshift(['How does event timing and access stay reliable?','Halloween Event','The event countdown uses one canonical timestamp. Live access and community contributions are checked against the event service, and event encounters/runs are only counted during actual event runs.']);}
   window.OUTLAST_EVENT_EXPANSION={showDetails,showInvestigation,showMissions,showShop,showLeaderboard,showCalendar,terminalAccess,spawnEventBoss};
 })();

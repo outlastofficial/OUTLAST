@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.105">
-<meta name="build-version" content="3.27.105">
-<title>OUTLAST v3.27.105</title>
+<meta name="outlast-build" content="3.27.107">
+<meta name="build-version" content="3.27.107">
+<title>OUTLAST v3.27.107</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -754,6 +754,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 }
 </style><style id="boss-health-hud-v32754">#bossHealthHud{position:fixed;left:50%;top:12px;transform:translateX(-50%);width:min(560px,72vw);padding:8px 11px;background:rgba(5,10,15,.92);border:1px solid rgba(255,91,118,.65);border-radius:11px;box-shadow:0 10px 30px rgba(0,0,0,.30);z-index:18;pointer-events:none;font-family:Arial,sans-serif;box-sizing:border-box}.bhh-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}.bhh-name{font-size:11px;font-weight:900;letter-spacing:.1em;color:#ffd1d8}.bhh-values{font-size:11px;font-weight:800;color:#e5edf4}.bhh-track{height:11px;background:#28151b;border:1px solid #5b2c36;border-radius:999px;overflow:hidden}.bhh-fill{height:100%;width:0%;background:#ff5b76;border-radius:999px;box-shadow:0 0 12px rgba(255,91,118,.45);transition:width .08s linear}@media(max-width:760px){#bossHealthHud{top:8px;width:min(88vw,520px);padding:7px 9px}.bhh-name,.bhh-values{font-size:10px}.bhh-track{height:9px}}</style></head>
 <body>
+<div id="outlastEventBuild" aria-live="polite" aria-label="OUTLAST event status"></div>
 <canvas id="game" width="1100" height="700"></canvas>
 <div id="bossTimerHud" aria-live="polite" aria-label="Boss countdown"><span class="bth-label">BOSS</span><span class="bth-time" id="bossTimerHudTime">00:00</span><span class="bth-state" id="bossTimerHudState">NEXT</span></div> <div id="bossHealthHud" aria-live="polite" aria-label="Boss health" style="display:none"><div class="bhh-top"><span class="bhh-name" id="bossHealthHudName">BOSS</span><span class="bhh-values" id="bossHealthHudValues">0 / 0</span></div><div class="bhh-track"><div class="bhh-fill" id="bossHealthHudFill"></div></div></div>
 <div id="outlastChat" aria-label="OUTLAST global chat">
@@ -866,7 +867,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.27.105 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.107 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -4144,8 +4145,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.105';
-const CURRENT_UPDATE_INFO={title:'v3.27.105 — Event Hardening',summary:'Small bug fixes and game stability improvements.',items:['Removed stale v3.27.96 update-popup metadata.','Applied the current event hardening build as the authoritative player update.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.107';
+const CURRENT_UPDATE_INFO={title:'v3.27.107 — Event UI Visibility Fix',summary:'Small bug fixes and game stability improvements.',items:['Removed stale v3.27.96 update-popup metadata.','Applied the current event hardening build as the authoritative player update.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

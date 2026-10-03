@@ -1,7 +1,7 @@
 /* OUTLAST v3.13.2 — Unified Owner Control Center */
 (() => {
   'use strict';
-  const VERSION = '3.13.2';
+  const VERSION = '3.27.93';
   const API_BASE = 'https://outlast-server.onrender.com';
   const OWNER_USERNAMES = ['BestGamer', 'Landon'];
   const cleanUsername = value => String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 18);
@@ -173,7 +173,7 @@ let socket=null,room=null,selfId='',reconnectTimer=null,pingTimer=null,stateTime
 const remotePlayers=new Map();
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-function version(){const v='3.12.3';document.querySelector('meta[name="outlast-build"]')?.setAttribute('content',v);document.querySelector('meta[name="build-version"]')?.setAttribute('content',v);document.title='OUTLAST v'+v}
+function version(){const v='3.27.93';document.querySelector('meta[name="outlast-build"]')?.setAttribute('content',v);document.querySelector('meta[name="build-version"]')?.setAttribute('content',v);document.title='OUTLAST v'+v}
 function removeDuplicateStatus(){document.querySelectorAll('#playerStatusBar').forEach(x=>x.remove())}
 function installExit(){let b=$('exitGameBtn');if(!b){b=document.createElement('button');b.id='exitGameBtn';b.type='button';b.textContent='✕ EXIT GAME';b.className='danger';Object.assign(b.style,{position:'fixed',right:'18px',top:'18px',display:'none',zIndex:'70',minWidth:'132px',minHeight:'46px',fontWeight:'900',cursor:'pointer',touchAction:'manipulation'});b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{if(typeof window.exitGame==='function')window.exitGame();else if(typeof window.closeAllOverlays==='function')window.closeAllOverlays()}catch(err){console.error('OUTLAST exit:',err)}});document.body.appendChild(b)}return b}
 function playerName(){return String(window.currentUsername||window.save?.username||'Player').trim()||'Player'}
@@ -232,7 +232,7 @@ setInterval(()=>{try{const b=$('exitGameBtn');if(b&&window.game)b.style.display=
 /* OUTLAST v3.13.1 — responsive UI polish + interaction safeguards. */
 (function(){
   'use strict';
-  const VERSION='3.13.1';
+  const VERSION='3.27.93';
   const $=id=>document.getElementById(id);
 
   function injectStyle(){

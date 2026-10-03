@@ -7,7 +7,6 @@
       if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
     });
     document.querySelectorAll('[data-outlast-version]').forEach(el=>{el.textContent=VERSION;});
-    document.querySelectorAll('[data-build-version]').forEach(el=>{el.textContent=VERSION;});
     const m=document.querySelector('meta[name="outlast-build"]');if(m)m.content=VERSION.slice(1);
     const m2=document.querySelector('meta[name="build-version"]');if(m2)m2.content=VERSION.slice(1);
     document.title='OUTLAST '+VERSION;

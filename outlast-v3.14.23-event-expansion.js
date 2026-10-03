@@ -95,6 +95,7 @@
     return o;
   }
   async function server(path,opts){
+    if(IS_TESTER)return null;
     try{const r=await fetch(API+path,{cache:'no-store',headers:{'Content-Type':'application/json'},...opts});const d=await r.json();if(!r.ok)throw new Error(d.error||'Server request failed');return d}catch(e){return null}
   }
   async function syncCommunity(){

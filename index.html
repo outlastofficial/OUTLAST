@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.88">
+<meta name="outlast-build" content="3.27.89">
 <meta name="build-version" content="3.27.86">
 <title>OUTLAST v3.27.86</title>
 <style id="event-expansion-compact-ui">
@@ -2430,7 +2430,7 @@ const tempUp=[
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+Math.round(12*v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
 /* v3.27.73: stale six-tier rarity roller removed; the canonical full-ladder roller above is the only active implementation. */
-/* v3.27.88: premium rarity-specific upgrades */
+/* v3.27.89: premium rarity-specific upgrades */
 tempUp.push(
  ['Elite Hunter',v=>`+${Math.round(28*v)}% elite damage and +${Math.round(8*v)}% crit`,v=>{game.player.executioner=(game.player.executioner||0)+.28*v;game.player.crit=Math.min(.95,(game.player.crit||0)+.08*v)}],
  ['Abyssal Core',v=>`+${Math.round(36*v)}% damage and +${Math.round(18*v)}% attack speed`,v=>{game.player.damage*=1+.36*v;game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.18*v))}],
@@ -2456,12 +2456,21 @@ const UPGRADE_RARITY_POOLS={
 };
 const UPGRADE_RARITY_BY_NAME=Object.create(null);
 for(const rarity of UPGRADE_RARITY_ORDER) for(const name of (UPGRADE_RARITY_POOLS[rarity]||[])) UPGRADE_RARITY_BY_NAME[name]=rarity;
-/* Keep the rarity pools future-safe: every active upgrade must belong to exactly one pool. */
-const _poolNames=Object.values(UPGRADE_RARITY_POOLS).flat();
-const _poolUnique=new Set(_poolNames);
-if(_poolNames.length!==_poolUnique.size || _poolNames.some(n=>!tempUp.some(u=>u[0]===n)) || tempUp.some(u=>!_poolUnique.has(u[0]))) {
-  console.error('OUTLAST upgrade rarity pool mismatch');
+/* Keep the rarity pools future-safe. Some legacy upgrade batches are appended later in the file,
+   so audit after the current script stack finishes loading instead of producing a false startup error. */
+function auditUpgradeRarityPools(){
+  const names=Array.isArray(tempUp)?tempUp.map(u=>u&&u[0]).filter(Boolean):[];
+  const poolNames=Object.values(UPGRADE_RARITY_POOLS).flat();
+  const unique=new Set(poolNames);
+  const missing=names.filter(n=>!unique.has(n));
+  const invalid=poolNames.filter(n=>!names.includes(n));
+  const duplicate=poolNames.filter((n,i)=>poolNames.indexOf(n)!==i);
+  const empty=UPGRADE_RARITY_ORDER.filter(r=>!(UPGRADE_RARITY_POOLS[r]||[]).length);
+  const ok=poolNames.length===unique.size&&!missing.length&&!invalid.length&&!duplicate.length&&!empty.length;
+  if(!ok) console.error('OUTLAST upgrade rarity pool mismatch',{missing,invalid,duplicate,empty});
+  return ok;
 }
+setTimeout(auditUpgradeRarityPools,0);
 const upgradeCategory=n=>{
  const offense=new Set(['Power Shot','Rapid Fire','Piercing','Multi-Shot','Big Bullets','Projectile Speed','Overcharge','Heavy Rounds','Swift Aim','Crit Chance','Chain Reaction','Poison Rounds','Stun Rounds','Armor Pierce','Double Tap','Overheat','Deadeye','Rift Pierce','Ammo Surge','Heavy Impact','Fortune Engine','Elite Hunter','Abyssal Core','Celestial Barrage','Transcendent Fury','Void Arsenal','Omega Ascension']);
  const defense=new Set(['Vitality','Regeneration','Second Wind','Berserker','Adrenaline','Shield Core','Rapid Recovery','Lifesteal','Vampiric Surge','Fortified Core','Cryo Core','Emergency Shield','Second Heart','Divine Aegis','Eternal Rebirth']);
@@ -3713,9 +3722,11 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.27.88?','Updates','Reworked upgrade quality by rarity. Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers. Login was not changed.'],
+  ['What changed in v3.27.89?','Updates','Fixed the rarity-pool audit timing so all upgrade batches are loaded before consistency validation runs. Login was not changed.'],
+  ['Why did the upgrade pool audit show an error?','Upgrades','The audit used to run before some legacy upgrade batches were appended. It now runs after the scripts finish loading, so valid rarity pools are not falsely reported as broken.'],
+  ['What changed in v3.27.89?','Updates','Reworked upgrade quality by rarity. Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers. Login was not changed.'],
   ['Why are higher rarity upgrades better?','Upgrades','Rarity now controls the upgrade pool and upgrade power. Higher rarities contain increasingly specialized multi-stat upgrades, with Omega reserved for the strongest endgame effects.'],
-  ['What changed in v3.27.88?','Updates','Upgrades now use exclusive rarity pools. Each upgrade belongs to exactly one rarity, so rarity changes which upgrades can appear rather than only changing the multiplier. Login was not changed.'],
+  ['What changed in v3.27.89?','Updates','Upgrades now use exclusive rarity pools. Each upgrade belongs to exactly one rarity, so rarity changes which upgrades can appear rather than only changing the multiplier. Login was not changed.'],
   ['How do upgrade rarity pools work?','Upgrades','Each upgrade belongs to exactly one rarity pool from Common through Omega. Level-up choices roll a rarity first, then choose an upgrade only from that rarity pool. Upgrade Luck still affects the rarity roll.'],
   ['What changed in v3.27.86?','Updates','Removed obsolete legacy GitHub Actions checks that were still validating the retired v3.9.7/v3.3/v3.4 builds and causing failure notifications on current pushes. Login was not changed.'],
   ['Why was I getting v3.9.7 run-failed emails?','Updates','The repository had a legacy workflow named Validate OUTLAST v3.9.7 that ran on every push and checked for retired v3.9.7 files and version markers. Those obsolete workflows have been removed.'],
@@ -4002,15 +4013,16 @@ const updates=[['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses 
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
-const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.88 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
+const POOL_AUDIT_UPDATE_ENTRY=['v3.27.89 — Rarity Pool Audit Fix','Moved the upgrade-pool consistency audit until after all upgrade batches load, preventing false console errors.']; try{ if(Array.isArray(updates)) updates.unshift(POOL_AUDIT_UPDATE_ENTRY); }catch(_){ }
+const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.89 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
 const TUTORIAL_UPDATE_ENTRY=['v3.27.85 — Tutorial Reliability Final Fix','Fixed the New Player Tutorial overlay so focused gameplay elements cannot cover the tutorial controls, and made the tutorial launch reliably from PC clicks and mobile touch/pointer input. Login was not changed.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
 const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed leaderboard storage so saved scores can persist across server restarts.']
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.88';
-const CURRENT_UPDATE_INFO={title:'v3.27.88 — Premium Rarity Upgrade Rework',summary:'Higher rarities now contain stronger, more specialized upgrades.',items:['Common and Uncommon focus on foundational progression.','Rare through Legendary add stronger combat, defense, and utility effects.','Mythic and Divine introduce major power spikes and specialized upgrades.','Celestial through Eternal contain premium multi-stat upgrades.','Omega has exclusive endgame upgrades with the strongest multiplier and effects.','Higher-rarity multipliers were increased so the power gap is easier to feel.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.89';
+const CURRENT_UPDATE_INFO={title:'v3.27.89 — Rarity Pool Audit Fix',summary:'The rarity upgrade audit now waits until every upgrade batch has loaded.',items:['Rarity pool validation no longer runs before legacy upgrade batches are appended.','The audit checks every loaded upgrade, every pool entry, duplicate assignments, and empty rarities.','No false pool-mismatch console error is produced during normal startup.','The v3.27.88 premium rarity upgrades remain active.','Login flow was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4205,7 +4217,7 @@ document.getElementById('nextUpdatePollForm')?.addEventListener('submit',async e
 'use strict';
 
 /* OUTLAST major gameplay expansion */
-const OUTLAST_BUILD='3.27.88';
+const OUTLAST_BUILD='3.27.89';
 
 /* ---------- Temporary admin sandbox ---------- */
 let adminSnapshot=null;

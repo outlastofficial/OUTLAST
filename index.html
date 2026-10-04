@@ -7431,7 +7431,6 @@ function repair(){
   document.querySelectorAll('.menu-chip').forEach(el=>{
     if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
   });
-  const meta=document.querySelector('meta[name="outlast-build]'); // harmless guard
   const build=document.querySelector('meta[name="build-version"]');
   if(build)build.content='3.28.3';
   const out=document.querySelector('meta[name="outlast-build"]');

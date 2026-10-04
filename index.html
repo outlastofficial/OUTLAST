@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.9">
+<meta name="outlast-build" content="3.30.2">
 <meta name="build-version" content="3.28.9">
-<title>OUTLAST v3.28.9</title>
+<title>OUTLAST v3.30.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -7434,15 +7434,45 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v3301-final-stability">
 (function(){
 'use strict';
-const VERSION='v3.30.1';
-const UPDATE={title:'v3.30.1 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Fixed the menu/start transition so START RUN stays in the gameplay state.','Removed the unstable Halloween presentation layer.','Restored the Hansen-tier Railgun cosmetic without changing gameplay balance.']};
-function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.1';if(b)b.content='3.30.1';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.1';window.OUTLAST_VERSION=VERSION;}
+const VERSION='v3.30.2';
+const UPDATE={title:'v3.30.2 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Rebuilt the menu-to-run transition so START RUN stays in the gameplay state.','Removed the unstable Halloween presentation layer.','Restored the previously rewound content without changing login or saved-player data.']};
+function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.2';if(b)b.content='3.30.2';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.2';window.OUTLAST_VERSION=VERSION;}
 function popup(force=false){const pop=document.getElementById('updatePopup');if(!pop)return;let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}if(!force&&seen===VERSION)return;const v=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');if(v)v.textContent=UPDATE.title;if(body)body.innerHTML='<p class="note">'+UPDATE.summary+'</p><ul class="update-pop-list">'+UPDATE.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');}
 function close(){try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION)}catch(_){}const pop=document.getElementById('updatePopup');if(pop){pop.style.display='none';pop.setAttribute('aria-hidden','true')}}
 function wire(){const pop=document.getElementById('updatePopup'),btn=document.getElementById('updatePopupClose');if(btn)btn.onclick=close;if(pop&&!pop.dataset.finalWired){pop.dataset.finalWired='1';pop.addEventListener('click',e=>{if(e.target===pop)close()})}document.onkeydown=function(e){if(e.key==='Escape'&&pop&&pop.style.display==='flex')close()};}
-function boot(){setVersion();wire();[100,500,1200].forEach(ms=>setTimeout(()=>{setVersion();wire();popup(false)},ms));try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))updates.unshift([VERSION+' — Stability Update','Small bug fixes and stability improvements.'])}catch(_){}try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.30.1?')))helpArticles.unshift(['What changed in v3.30.1?','Updates','Small bug fixes and stability improvements, including the Start Run transition and stable menu presentation.'])}catch(_){}}
+function boot(){setVersion();wire();[100,500,1200].forEach(ms=>setTimeout(()=>{setVersion();wire();popup(false)},ms));try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))updates.unshift([VERSION+' — Stability Update','Small bug fixes and stability improvements.'])}catch(_){}try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.30.2?')))helpArticles.unshift(['What changed in v3.30.2?','Updates','Small bug fixes and stability improvements, including the Start Run transition, stable menu presentation, and restored update popup flow.'])}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.showUpdatePopup=popup;
+})();
+</script>
+
+<script id="outlast-v3302-popup-failsafe">
+(function(){
+'use strict';
+const VERSION='v3.30.2';
+function storeGet(k){try{if(typeof outlastStorage!=='undefined'&&outlastStorage.getItem)return outlastStorage.getItem(k)||'';}catch(_){}try{return localStorage.getItem(k)||''}catch(_){return''}}
+function storeSet(k,v){try{if(typeof outlastStorage!=='undefined'&&outlastStorage.setItem){outlastStorage.setItem(k,v);return}}catch(_){}try{localStorage.setItem(k,v)}catch(_){}}
+function show(force){
+ const pop=document.getElementById('updatePopup');if(!pop)return;
+ if(!force&&storeGet('outlastSeenUpdateVersion')===VERSION)return;
+ const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
+ if(v)v.textContent='v3.30.2 — Stability Update';
+ if(b)b.innerHTML='<p class="note">Small bug fixes and stability improvements.</p><ul class="update-pop-list"><li>START RUN now uses the rebuilt stable transition.</li><li>The unstable Halloween presentation layer is removed.</li><li>The update window has reliable close and reopen behavior.</li></ul>';
+ pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
+}
+function close(){
+ storeSet('outlastSeenUpdateVersion',VERSION);
+ const pop=document.getElementById('updatePopup');if(pop){pop.style.display='none';pop.setAttribute('aria-hidden','true')}
+}
+function wire(){
+ const p=document.getElementById('updatePopup'),c=document.getElementById('updatePopupClose');
+ if(c)c.onclick=close;
+ if(p&&!p.dataset.v3302wired){p.dataset.v3302wired='1';p.addEventListener('click',e=>{if(e.target===p)close()})}
+ window.addEventListener('keydown',e=>{if(e.key==='Escape'&&p&&p.style.display==='flex')close()},{passive:true});
+}
+function boot(){wire();show(false)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.showUpdatePopup=show;
 })();
 </script>
 </body>

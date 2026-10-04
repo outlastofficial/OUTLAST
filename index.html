@@ -8070,7 +8070,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 'use strict';
 const V='3.30.31',R='v3.30.31';
 const $=s=>{try{return document.querySelector(s)}catch(_){return null}};
-const $=s=>{try{return Array.from(document.querySelectorAll(s))}catch(_){return []}};
+const $$=s=>{try{return Array.from(document.querySelectorAll(s))}catch(_){return []}};
 const safe=(fn,f)=>{try{return fn()}catch(_){return f}};
 const get=(k)=>safe(()=>localStorage.getItem(k),null);
 const set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);

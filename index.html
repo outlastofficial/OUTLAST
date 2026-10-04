@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.2">
-<meta name="build-version" content="3.28.2">
-<title>OUTLAST v3.28.2</title>
+<meta name="outlast-build" content="3.28.4">
+<meta name="build-version" content="3.28.4">
+<title>OUTLAST v3.28.4</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -7263,7 +7263,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.28.3';
+  const VERSION='v3.28.4';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
@@ -7431,10 +7431,10 @@ function repair(){
     if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
   });
   const build=document.querySelector('meta[name="build-version"]');
-  if(build)build.content='3.28.3';
+  if(build)build.content='3.28.4';
   const out=document.querySelector('meta[name="outlast-build"]');
-  if(out)out.content='3.28.3';
-  window.OUTLAST_BUILD='3.28.3';
+  if(out)out.content='3.28.4';
+  window.OUTLAST_BUILD='3.28.4';
   window.OUTLAST_VERSION=VERSION;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();

@@ -7377,45 +7377,67 @@ window.__outlastBootRepair3283=repair;
 })();
 </script>
 
-<style id="outlast-v3290-hansen-content">
+<style id="outlast-v3290-hansen-character">
 .chris-hansen-card{border-color:#d6a84f!important;background:linear-gradient(145deg,#241d12,#11161d)!important}
-.predator-hunter-card{border-color:#a64f5f!important;background:linear-gradient(145deg,#241319,#11161d)!important}
-.hansen-badge,.predator-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.05em;margin-left:5px}
-.hansen-badge{background:#4a3918;color:#ffd86a;border:1px solid #9f7d2f}.predator-badge{background:#451b27;color:#ff9cae;border:1px solid #a64f5f}
+.hansen-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.05em;margin-left:5px;background:#4a3918;color:#ffd86a;border:1px solid #9f7d2f}
 </style>
-<script id="outlast-v3290-hansen-content">
+<script id="outlast-v3290-hansen-character">
 (function(){
 'use strict';
-if(window.__outlastHansen3290)return; window.__outlastHansen3290=true;
-const VERSION='v3.29.0',HANSEN='ChrisHansen',PREDATOR='PredatorHunter',BILLION=1000000000;
+if(window.__outlastHansenCharacter3290)return;window.__outlastHansenCharacter3290=true;
+const VERSION='v3.29.0',HANSEN='ChrisHansen',BILLION=1000000000;
 if(typeof chars!=='undefined'&&!chars[HANSEN])chars[HANSEN]={cost:BILLION,hp:140,speed:300,damage:30,range:950,desc:'The legendary predator hunter. Cannot be defeated.',immortal:true,visual:{body:'#20262d',head:'#e2c3a3',visor:'#f5f5f5',style:'hansen'}};
-if(typeof weapons!=='undefined'&&!weapons[PREDATOR])weapons[PREDATOR]={cost:BILLION,desc:'Instantly defeats any enemy, including bosses.'};
-if(typeof DAMAGE_WEAPON_NAMES!=='undefined')DAMAGE_WEAPON_NAMES.add(PREDATOR);
-function ensureHansenSave(){if(typeof save==='undefined'||!save)return;save.unlockedChars=save.unlockedChars&&typeof save.unlockedChars==='object'?save.unlockedChars:{};save.unlockedWeapons=save.unlockedWeapons&&typeof save.unlockedWeapons==='object'?save.unlockedWeapons:{};save.weaponLevels=save.weaponLevels&&typeof save.weaponLevels==='object'?save.weaponLevels:{}}
-ensureHansenSave();
+function ensure(){if(typeof save==='undefined'||!save)return;save.unlockedChars=save.unlockedChars&&typeof save.unlockedChars==='object'?save.unlockedChars:{}}
+ensure();
 window.renderHansenCharacterMenu=function(){
- ensureHansenSave();
+ ensure();
  const html=Object.entries(chars).map(([n,v])=>{const ok=!!save.unlockedChars[n],special=n===HANSEN;return '<button class="option '+(save.selectedChar===n?'selected ':'')+(special?'chris-hansen-card':'')+'" data-action="char" data-value="'+n+'"><b>'+n+(special?'<span class="hansen-badge">IMMORTAL</span>':'')+'</b><div class="small">'+v.desc+'</div><div class="small">'+(ok?'Unlocked':'Unlock: '+Number(v.cost||0).toLocaleString()+' coins')+'</div></button>'}).join('');
  openSub('🧍 Characters','<p class="note">Chris Hansen costs 1,000,000,000 coins and cannot be defeated in normal combat.</p><div class="grid">'+html+'</div>');
 };
-window.selectHansenCharacter=function(n){ensureHansenSave();const v=chars[n];if(!v)return;if(!save.unlockedChars[n]){if(Number(save.coins||0)>=Number(v.cost||0)){save.coins-=Number(v.cost||0);save.unlockedChars[n]=true}else return toast('Not enough coins')}save.selectedChar=n;persist();window.renderHansenCharacterMenu()};
-if(document.getElementById('charBtn'))document.getElementById('charBtn').onclick=window.renderHansenCharacterMenu;
-window.renderHansenWeaponMenu=function(){
- ensureHansenSave();
- const html=Object.entries(weapons).map(([n,v])=>{const ok=!!save.unlockedWeapons[n],lvl=Math.max(0,Math.floor(Number(save.weaponLevels?.[n])||0)),special=n===PREDATOR,sellable=ok&&n!=='Blaster',refund=Math.floor(Number(v.cost||0)*.5);return '<div class="option '+(save.selectedWeapon===n?'selected ':'')+(special?'predator-hunter-card':'')+'"><button style="width:100%" data-action="weapon" data-value="'+n+'"><b>'+n+(special?'<span class="predator-badge">ONE-SHOT</span>':'')+'</b><div class="small">'+v.desc+'</div><div class="small">'+(ok?'Owned • Lv '+lvl:'Unlock: '+Number(v.cost||0).toLocaleString()+' coins')+'</div></button>'+(sellable?'<button class="danger" data-action="sellWeapon" data-value="'+n+'">SELL • +'+refund.toLocaleString()+' coins</button>':'')+'</div>'}).join('');
- openSub('⚔ Weapons','<p class="note">Predator Hunter is the ultimate anti-predator weapon: one hit defeats any enemy or boss.</p><div class="grid">'+html+'</div>');
+window.selectHansenCharacter=function(n){
+ ensure();const v=chars[n];if(!v)return;
+ if(!save.unlockedChars[n]){if(Number(save.coins||0)>=Number(v.cost||0)){save.coins-=Number(v.cost||0);save.unlockedChars[n]=true}else return toast('Not enough coins')}
+ save.selectedChar=n;persist();window.renderHansenCharacterMenu();
 };
-if(document.getElementById('weaponBtn'))document.getElementById('weaponBtn').onclick=window.renderHansenWeaponMenu;
-window.normalizeWeaponForFire=function(weapon){const known=['Blaster','TwinShot','Lightning','OrbitBlades','Flame','Boomerang','Shotgun','Railgun','Plasma','Chakram','Meteor','Shuriken','RocketLauncher','Laser','FrostNova','ChainGun','GravityOrb','DroneSwarm','MineLayer','ArcBlade','ThunderStaff','SoulCannon','StarRifle','VoidLauncher','StormBow','PulseCannon','OmegaBlade','WastelandBow','NovaCannon','RiftBlade',PREDATOR];return known.includes(weapon)?weapon:'Blaster'};
-if(typeof window.endRun==='function'&&!window.__hansenEndRunGuard3290){const realEndRun=window.endRun;window.endRun=function(victory,recordScore=true,showEnd=true){if(!victory&&game?.running&&game?.player?.characterName===HANSEN&&Number(game.player.hp)<=0){game.player.hp=Math.max(1,Number(game.player.max)||1);toast('🛡️ Chris Hansen cannot be defeated.');return}return realEndRun.apply(this,arguments)};window.__hansenEndRunGuard3290=true}
-if(typeof window.startGame==='function'&&!window.__hansenStartGuard3290){const realStart=window.startGame;window.startGame=function(){const result=realStart.apply(this,arguments);if(game?.player?.characterName===HANSEN){game.player.immortal=true;game.player.hp=game.player.max}return result};window.__hansenStartGuard3290=true}
-if(typeof window.damageEnemy==='function'&&!window.__predatorDamageGuard3290){const realDamageEnemy=window.damageEnemy;window.damageEnemy=function(e,dmg){if(e&&game?.player&&save?.selectedWeapon===PREDATOR){e.hp=0;e.hitFlash=.12;if(typeof killEnemy==='function')killEnemy(e);return}return realDamageEnemy.apply(this,arguments)};window.__predatorDamageGuard3290=true}
-if(typeof window.shoot==='function'&&!window.__predatorShootGuard3290){const realShoot=window.shoot;window.shoot=function(){const special=save?.selectedWeapon===PREDATOR,result=realShoot.apply(this,arguments);if(special&&game?.player){const p=game.player;game.effects.push({x:p.x,y:p.y,t:.18,r:34,color:'#ff6b7d'});ring(p.x,p.y,'#ff6b7d',44,.22)}return result};window.__predatorShootGuard3290=true}
-try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.29.0')))updates.unshift(['v3.29.0 — Predator Hunter Update','Added Chris Hansen as a 1,000,000,000-coin immortal character and the Predator Hunter weapon, which instantly defeats any enemy or boss.'])}catch(_){}
-try{if(Array.isArray(helpArticles)){if(!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does Chris Hansen work?')))helpArticles.unshift(['How does Chris Hansen work?','Characters','Chris Hansen costs 1,000,000,000 coins. Once unlocked and equipped, he cannot be defeated in normal combat.']);if(!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the Predator Hunter work?')))helpArticles.unshift(['How does the Predator Hunter work?','Weapons','Predator Hunter costs 1,000,000,000 coins. A successful hit instantly defeats any enemy, including elite and boss enemies.'])}}catch(_){}
-window.showUpdatePopup=function(force=false){let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}if(!force&&seen==='3.29.0')return;const pop=document.getElementById('updatePopup');if(!pop)return;const version=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');if(version)version.textContent='v3.29.0 — Predator Hunter Update';if(body)body.innerHTML='<p class="note">A new endgame character and weapon have arrived.</p><ul class="update-pop-list"><li>Chris Hansen costs 1,000,000,000 coins and is immortal.</li><li>Predator Hunter costs 1,000,000,000 coins and one-shots any enemy, including bosses.</li><li>Login and existing player saves are preserved.</li></ul>';pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false')};
-function force3290Version(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.29.0';if(b)b.content='3.29.0';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.29.0';window.OUTLAST_VERSION=VERSION}
-force3290Version();setTimeout(force3290Version,100);setTimeout(force3290Version,1000);
+if(document.getElementById('charBtn'))document.getElementById('charBtn').onclick=window.renderHansenCharacterMenu;
+if(typeof window.endRun==='function'&&!window.__hansenEndRunGuard3290){
+ const realEndRun=window.endRun;
+ window.endRun=function(victory,recordScore=true,showEnd=true){
+  if(!victory&&game?.running&&game?.player?.characterName===HANSEN&&Number(game.player.hp)<=0){
+   game.player.hp=Math.max(1,Number(game.player.max)||1);toast('🛡️ Chris Hansen cannot be defeated.');return;
+  }
+  return realEndRun.apply(this,arguments);
+ };
+ window.__hansenEndRunGuard3290=true;
+}
+if(typeof window.startGame==='function'&&!window.__hansenStartGuard3290){
+ const realStart=window.startGame;
+ window.startGame=function(){
+  const result=realStart.apply(this,arguments);
+  if(game?.player?.characterName===HANSEN){game.player.immortal=true;game.player.hp=game.player.max}
+  return result;
+ };
+ window.__hansenStartGuard3290=true;
+}
+try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.29.0')))updates.unshift(['v3.29.0 — Chris Hansen Character','Added Chris Hansen as a 1,000,000,000-coin immortal character.'])}catch(_){}
+try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does Chris Hansen work?')))helpArticles.unshift(['How does Chris Hansen work?','Characters','Chris Hansen costs 1,000,000,000 coins. Once unlocked and equipped, he cannot be defeated in normal combat.'])}catch(_){}
+window.showUpdatePopup=function(force=false){
+ let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
+ if(!force&&seen==='3.29.0')return;
+ const pop=document.getElementById('updatePopup');if(!pop)return;
+ const version=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
+ if(version)version.textContent='v3.29.0 — Chris Hansen Character';
+ if(body)body.innerHTML='<p class="note">A new endgame character has arrived.</p><ul class="update-pop-list"><li>Chris Hansen costs 1,000,000,000 coins.</li><li>Chris Hansen cannot be defeated in normal combat.</li><li>Login and existing player saves are preserved.</li></ul>';
+ pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
+};
+function forceVersion(){
+ document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});
+ document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
+ const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+ if(a)a.content='3.29.0';if(b)b.content='3.29.0';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.29.0';window.OUTLAST_VERSION=VERSION;
+}
+forceVersion();setTimeout(forceVersion,100);setTimeout(forceVersion,1000);
 })();
-</script></body>
+</script>
+</body>
 </html>

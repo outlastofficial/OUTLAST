@@ -4177,17 +4177,20 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.107';
-const CURRENT_UPDATE_INFO={title:'v3.27.107 — Event UI Visibility Fix',summary:'Small bug fixes and game stability improvements.',items:['Removed stale v3.27.96 update-popup metadata.','Applied the current event hardening build as the authoritative player update.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.112';
+const CURRENT_UPDATE_INFO={title:'v3.27.112 — Chat Safety Update',summary:'Chat filtering is more resistant to common bypasses and spaced or substituted text.',items:['Improved chat filtering for obfuscated and spaced inappropriate messages.','Added stronger text normalization before chat filtering.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
   if(!force && seen===CURRENT_UPDATE_VERSION)return;
   const pop=document.getElementById('updatePopup');
   if(!pop)return;
-  document.getElementById('updatePopupVersion').textContent=CURRENT_UPDATE_INFO.title;
-  document.getElementById('updatePopupBody').innerHTML=`<p class="note">${CURRENT_UPDATE_INFO.summary}</p><ul class="update-pop-list">${CURRENT_UPDATE_INFO.items.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  const version=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
+  if(version)version.textContent=CURRENT_UPDATE_INFO.title;
+  if(body)body.innerHTML=`<p class="note">${CURRENT_UPDATE_INFO.summary}</p><ul class="update-pop-list">${CURRENT_UPDATE_INFO.items.map(x=>`<li>${x}</li>`).join('')}</ul>`;
   pop.style.display='flex';
+  pop.style.visibility='visible';
+  pop.setAttribute('aria-hidden','false');
 }
 function closeUpdatePopup(){
   try{outlastStorage.setItem('outlastSeenUpdateVersion',CURRENT_UPDATE_VERSION);}catch(_){ }
@@ -4331,6 +4334,7 @@ let last=performance.now(), fatalGameError='',fatalErrorShown=false;
 function drawFatal(){syncMobileControls();ctx.fillStyle='#10141a';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='42px Arial';ctx.fillText('RECOVERED FROM GAME ERROR',CW/2,235);ctx.font='20px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('The run was safely stopped.',CW/2,275);ctx.fillText('Return to the menu to keep playing.',CW/2,310);ctx.textAlign='left';showGameOverActions(false);const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');if(title)title.textContent='Game error recovered';if(stats)stats.innerHTML='<div class=\"game-over-stat\">The game was stopped safely so it could recover.</div>';}
 function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown&&!game.__outlastTypingActive)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
 showUpdatePopup();
+[250,1000,2500].forEach(ms=>setTimeout(()=>{try{showUpdatePopup();}catch(_){ }},ms));
 requestAnimationFrame(loop);
 </script>
 <script id="outlastV240AutoSave">

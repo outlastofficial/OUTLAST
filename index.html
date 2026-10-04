@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.10">
-<meta name="build-version" content="3.30.10">
-<title>OUTLAST v3.30.10</title>
+<meta name="outlast-build" content="3.28.9">
+<meta name="build-version" content="3.28.9">
+<title>OUTLAST v3.28.9</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2127,8 +2127,6 @@ function startGame(fromRoom=false){
    }
  }
 }
-/* v3.30.10 — freeze the known-working Start core before later wrappers */
-if(typeof window.__OUTLAST_STABLE_START_33010!=='function')window.__OUTLAST_STABLE_START_33010=startGame;
 function exitGame(){
   coopLaunchActive=false;
   if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
@@ -3338,20 +3336,10 @@ function activateStartRun(ev){
   if(ev){ev.preventDefault();ev.stopPropagation();}
   if(startBtn.dataset.startLock==='1') return;
   startBtn.dataset.startLock='1';
-  try{
-    if(typeof newRunStats==='function')newRunStats();
-    const launch=window.__OUTLAST_STABLE_START_33010;
-    if(typeof launch!=='function')throw new Error('Stable Start launcher unavailable');
-    launch.call(window,false);
-    setTimeout(()=>c.focus(),0);
-  }catch(err){
-    fatalGameError=err?.message||String(err);fatalErrorShown=true;
-    game.running=false;game.paused=false;game.over=true;
-    try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';}catch(_){}
-    try{toast('⚠️ Start Run failed: '+fatalGameError)}catch(_){}
-  }finally{setTimeout(()=>{startBtn.dataset.startLock='';},350);}
+  try{newRunStats();startGame();setTimeout(()=>c.focus(),0);}finally{setTimeout(()=>{startBtn.dataset.startLock='';},350);}
 }
 startBtn.onclick=activateStartRun;
+startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')activateStartRun(e)},{passive:false});
 document.getElementById('mapBtn').onclick=()=>{openSub('🗺️ Choose Map','<div class="grid">'+Object.keys(mapDefs).map(x=>`<button class="option ${save.map===x?'selected':''}" data-action="map" data-value="${x}"><b>${x}</b></button>`).join('')+'</div>')};
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
@@ -7581,28 +7569,6 @@ function addDocs(){
 }
 function boot(){ensureSkin();renderHansenSkinMenu;installProjectileSkin();updateVersion();addDocs();[100,500,1200,2500].forEach(ms=>setTimeout(()=>{installProjectileSkin();updateVersion();addDocs()},ms))}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-})();
-</script>
-<script id="outlast-v33010-start-authority">
-(function(){
-'use strict';
-const VERSION='v3.30.10',INFO={title:'v3.30.10 — Start Run Stability Fix',summary:'Small bug fixes and stability improvements.'};
-function version(){
- try{
-  document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
-  document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';});
-  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-  if(a)a.content='3.30.10';if(b)b.content='3.30.10';
-  document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.10';window.OUTLAST_VERSION=VERSION;
- }catch(_){}
-}
-function docs(){
- try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(INFO.title)))updates.unshift([INFO.title,INFO.summary]);}catch(_){}
- try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does Start Run work now?')))helpArticles.unshift(['How does Start Run work now?','Troubleshooting','Start Run uses a launcher captured from the known-working game core before later feature wrappers replace the startGame function.']);}catch(_){}
-}
-function boot(){version();docs();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-[0,500,1500,3000].forEach(ms=>setTimeout(()=>{try{version()}catch(_){}},ms));
 })();
 </script>
 </body>

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.1">
-<meta name="build-version" content="3.28.1">
-<title>OUTLAST v3.28.1</title>
+<meta name="outlast-build" content="3.28.3">
+<meta name="build-version" content="3.28.3">
+<title>OUTLAST v3.28.3</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -6160,5 +6160,6 @@ window.__outlastSkinAreaVersion=VERSION;
 <script src="outlast-v327108-rarity-card-authority.js?v=3.27.108"></script>
 <script src="outlast-version-v3.28.1.js?v=3.28.1"></script>
 <script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
+<script id="outlast-v3283-ui-boot-repair">(function(){'use strict';const VERSION='v3.28.3';function repair(){const menu=document.getElementById('menu'),canvas=document.getElementById('game');if(!menu||!canvas||typeof game==='undefined')return;const p=game.player,valid=!!p&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y));const active=!!game.running&&valid&&!game.over&&!fatalErrorShown;if(game.running&&!valid){game.running=false;game.paused=false;game.over=false;game.endScreen=false;try{fatalErrorShown=false;fatalGameError=''}catch(_){}}if(!active){menu.style.display='flex';canvas.style.display='block';document.body.classList.remove('outlast-in-game');try{document.getElementById('subPanel').style.display='none'}catch(_){}try{syncMobileControls();updateMenuSummary()}catch(_){}}else{menu.style.display='none';canvas.style.display='block';document.body.classList.add('outlast-in-game')}const q=document.getElementById('outlastQualityBadge');if(q)q.remove();document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});const b=document.querySelector('meta[name="build-version"]'),o=document.querySelector('meta[name="outlast-build"]');if(b)b.content='3.28.3';if(o)o.content='3.28.3';window.OUTLAST_BUILD='3.28.3';window.OUTLAST_VERSION=VERSION}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();[0,100,500,1000,2000,4000].forEach(ms=>setTimeout(repair,ms))})();</script>
 </body>
 </html>

@@ -8152,7 +8152,170 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 })();
 </script>
 
-</body>\n</html>\n
+</body>\n
+<script id="outlast-v33029-start-bug-isolation">
+(function(){
+'use strict';
+const VERSION='3.30.29', RELEASE='v'+VERSION;
+function q(s){try{return document.querySelector(s)}catch(_){return null}}
+function safe(fn,fallback){try{return fn()}catch(_){return fallback}}
+function setRelease(){
+  safe(function(){
+    document.title='OUTLAST '+RELEASE;
+    const a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
+    if(a)a.content=VERSION;
+    if(b)b.content=VERSION;
+    window.OUTLAST_BUILD=VERSION;
+    window.OUTLAST_VERSION=RELEASE;
+    document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent=RELEASE});
+    document.querySelectorAll('.menu-chip').forEach(function(el){
+      if(/SURVIVOR HUB|Gameplay|Stability|Expansion|Start Run/i.test(el.textContent||'')){
+        el.textContent=RELEASE+' • SURVIVOR HUB';
+      }
+    });
+  });
+}
+function docs(){
+  safe(function(){
+    if(Array.isArray(window.updates)&&!window.updates.some(function(x){
+      return Array.isArray(x)&&String(x[0]).indexOf(RELEASE)>=0;
+    })){
+      window.updates.unshift([
+        RELEASE+' — Start Run Bug-Suppression Fix',
+        'Small bug fixes and game stability improvements. Start Run now has an isolated launcher that closes feedback overlays before launch and calls the stable gameplay core without routing through Bug Reporting.'
+      ]);
+    }
+  });
+  safe(function(){
+    if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){
+      return Array.isArray(x)&&String(x[0]).indexOf('Why does Start Run avoid Bug Reporting')>=0;
+    })){
+      window.helpArticles.unshift([
+        'Why does Start Run avoid Bug Reporting?',
+        'Start Run',
+        'Start Run now uses its own launcher. Feedback and Bug Reporting controls cannot intercept the launcher, and the game menu only closes after a live player has been initialized.'
+      ]);
+    }
+  });
+}
+function closeLaunchOverlays(){
+  safe(function(){
+    const sub=q('#subPanel');
+    if(sub)sub.style.display='none';
+  });
+  safe(function(){
+    document.querySelectorAll('.update-pop').forEach(function(el){
+      if(el.id!=='loginPopup')el.style.display='none';
+    });
+  });
+  safe(function(){
+    document.querySelectorAll('#outlastQuickSettings').forEach(function(el){el.classList.remove('open');});
+  });
+}
+function verify(){
+  return !!(window.game&&window.game.running&&window.game.player);
+}
+function launch(){
+  closeLaunchOverlays();
+  safe(function(){if(typeof window.newRunStats==='function')window.newRunStats();});
+  let started=false;
+
+  const stableCore=window.__OUTLAST_ORIGINAL_START_CORE_33014;
+  if(typeof stableCore==='function'){
+    safe(function(){
+      stableCore(false);
+      started=verify();
+    });
+  }
+
+  if(!started&&typeof window.startGame==='function'){
+    safe(function(){
+      window.startGame(false);
+      started=verify();
+    });
+  }
+
+  if(started){
+    safe(function(){
+      window.fatalGameError='';
+      window.fatalErrorShown=false;
+      if(window.game)window.game.over=false;
+      const menu=q('#menu');
+      if(menu)menu.style.display='none';
+      if(window.c&&typeof window.c.focus==='function')window.c.focus();
+      if(typeof window.syncMobileControls==='function')window.syncMobileControls();
+      if(typeof window.syncExtractUI==='function')window.syncExtractUI();
+      if(typeof window.syncOutlastChatUI==='function')window.syncOutlastChatUI();
+    });
+    return true;
+  }
+
+  safe(function(){
+    if(window.game){
+      window.game.running=false;
+      window.game.paused=false;
+      window.game.over=true;
+    }
+    const menu=q('#menu');
+    if(menu)menu.style.display='flex';
+    if(typeof window.toast==='function')window.toast('Start Run could not initialize.');
+  });
+  return false;
+}
+function wire(){
+  const old=q('#startBtn');
+  if(!old)return false;
+  if(old.dataset.v33029Start==='1')return true;
+
+  const btn=old.cloneNode(true);
+  btn.id='startBtn';
+  btn.type='button';
+  btn.dataset.v33029Start='1';
+  btn.removeAttribute('data-action');
+  btn.removeAttribute('data-quality');
+  btn.removeAttribute('data-mobile-action');
+  btn.onclick=null;
+  btn.onpointerup=null;
+
+  btn.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    if(btn.dataset.startBusy==='1')return;
+    btn.dataset.startBusy='1';
+    try{
+      launch();
+    }finally{
+      setTimeout(function(){btn.dataset.startBusy='0';},500);
+    }
+  });
+
+  old.replaceWith(btn);
+  return true;
+}
+function boot(){
+  setRelease();
+  docs();
+  closeLaunchOverlays();
+  wire();
+  [100,500,1200,2500,5000].forEach(function(ms){
+    setTimeout(function(){setRelease();docs();wire();},ms);
+  });
+}
+window.__OUTLAST_START_AUDIT_33029=function(){
+  const b=q('#startBtn');
+  return {
+    version:RELEASE,
+    isolated:!!(b&&b.dataset.v33029Start==='1'),
+    feedbackAction:!!(b&&b.dataset.action),
+    running:!!(window.game&&window.game.running),
+    player:!!(window.game&&window.game.player)
+  };
+};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+else boot();
+})();
+</script>
+</html>\n
 <script id="outlast-v33028-final-start-authority">
 (function(){
   'use strict';

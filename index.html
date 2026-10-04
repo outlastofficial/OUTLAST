@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.109">
-<meta name="build-version" content="3.27.109">
-<title>OUTLAST v3.27.109</title>
+<meta name="outlast-build" content="3.27.110">
+<meta name="build-version" content="3.27.110">
+<title>OUTLAST v3.27.110</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -752,7 +752,35 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
  #menu .menu-topbar .subtitle{font-size:9px!important;letter-spacing:.11em!important}
  #menu .menu-chip{font-size:9px!important}
 }
-</style><style id="boss-health-hud-v32754">#bossHealthHud{position:fixed;left:50%;top:12px;transform:translateX(-50%);width:min(560px,72vw);padding:8px 11px;background:rgba(5,10,15,.92);border:1px solid rgba(255,91,118,.65);border-radius:11px;box-shadow:0 10px 30px rgba(0,0,0,.30);z-index:18;pointer-events:none;font-family:Arial,sans-serif;box-sizing:border-box}.bhh-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}.bhh-name{font-size:11px;font-weight:900;letter-spacing:.1em;color:#ffd1d8}.bhh-values{font-size:11px;font-weight:800;color:#e5edf4}.bhh-track{height:11px;background:#28151b;border:1px solid #5b2c36;border-radius:999px;overflow:hidden}.bhh-fill{height:100%;width:0%;background:#ff5b76;border-radius:999px;box-shadow:0 0 12px rgba(255,91,118,.45);transition:width .08s linear}@media(max-width:760px){#bossHealthHud{top:8px;width:min(88vw,520px);padding:7px 9px}.bhh-name,.bhh-values{font-size:10px}.bhh-track{height:9px}}</style></head>
+</style><style id="boss-health-hud-v32754">#bossHealthHud{position:fixed;left:50%;top:12px;transform:translateX(-50%);width:min(560px,72vw);padding:8px 11px;background:rgba(5,10,15,.92);border:1px solid rgba(255,91,118,.65);border-radius:11px;box-shadow:0 10px 30px rgba(0,0,0,.30);z-index:18;pointer-events:none;font-family:Arial,sans-serif;box-sizing:border-box}.bhh-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}.bhh-name{font-size:11px;font-weight:900;letter-spacing:.1em;color:#ffd1d8}.bhh-values{font-size:11px;font-weight:800;color:#e5edf4}.bhh-track{height:11px;background:#28151b;border:1px solid #5b2c36;border-radius:999px;overflow:hidden}.bhh-fill{height:100%;width:0%;background:#ff5b76;border-radius:999px;box-shadow:0 0 12px rgba(255,91,118,.45);transition:width .08s linear}@media(max-width:760px){#bossHealthHud{top:8px;width:min(88vw,520px);padding:7px 9px}.bhh-name,.bhh-values{font-size:10px}.bhh-track{height:9px}}</style><style id="halloween-ui-v327110">
+:root{--hw-orange:#ff7a18;--hw-purple:#7b2cbf;--hw-dark:#0d0712;--hw-green:#78c800;--hw-bone:#f4e6c8}
+html,body{background:radial-gradient(circle at 50% 10%,#24102f 0%,#0d0712 48%,#050306 100%)!important}
+body:before{content:'🎃';position:fixed;left:12px;top:10px;font-size:30px;z-index:2;pointer-events:none;filter:drop-shadow(0 0 10px rgba(255,122,24,.65))}
+body:after{content:'🦇';position:fixed;right:14px;top:10px;font-size:28px;z-index:2;pointer-events:none}
+.card,.menu-side{background:linear-gradient(145deg,#1b1022,#0e0913)!important;border-color:#5b3475!important;box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 24px rgba(123,44,191,.12)}
+.menu-side{border-color:#47245f!important}
+.menu-side-title,.menu-page-sub,.small{color:#c4a9cf!important}
+.menu-nav-btn,.menu-card,.option,.menu-section{background:#160e1d!important;border-color:#513363!important}
+.menu-nav-btn:hover,.menu-nav-btn.active{background:#2b1638!important;border-color:var(--hw-orange)!important}
+.menu-nav-btn.active{box-shadow:inset 3px 0 0 var(--hw-orange),0 0 12px rgba(255,122,24,.18)!important}
+button{background:linear-gradient(180deg,#ff8b2b,#d85a08)!important;box-shadow:0 4px 0 #7d2f05!important;border:1px solid #ffb05e!important}
+button:hover{filter:brightness(1.12) saturate(1.1)}
+.danger{background:linear-gradient(180deg,#b92b4d,#74152f)!important;box-shadow:0 4px 0 #430b1c!important}
+.green{background:linear-gradient(180deg,#68a91d,#3d6810)!important;box-shadow:0 4px 0 #244008!important}
+.gold{background:linear-gradient(180deg,#c68b24,#80530b)!important;box-shadow:0 4px 0 #4d3106!important}
+.title,.menu-page-title{ text-shadow:0 0 14px rgba(255,122,24,.22)}
+.menu-chip{background:#170d1f!important;border-color:#68407e!important;color:#f2c7ff!important}
+.quick-card{background:linear-gradient(135deg,#28152e,#130b18)!important;border-color:#6a3c80!important}
+#gameAdminToggle{background:#7b2cbf!important;border-color:#c26cff!important;box-shadow:0 3px 0 #481878!important}
+#gameAdminPanel{background:rgba(16,8,21,.97)!important;border-color:#8d48b4!important}
+#gameAdminPanel h3{color:#ffb05e!important}
+.update-pop-card{background:linear-gradient(145deg,#211027,#0e0913)!important;border-color:#6a3c80!important}
+.update-pop-new{background:#32144a!important;color:#ffb66e!important;border-color:#8d48b4!important}
+.owner-player-row{border-color:#663b7b!important}
+.owner-player-row button[data-owner-action="playerAccess"]{min-width:150px!important;font-weight:900!important;border-color:#ffb05e!important;box-shadow:0 4px 0 #7d2f05,0 0 12px rgba(255,122,24,.18)!important}
+.owner-player-row[data-player-banned="1"] button[data-owner-action="playerAccess"]{background:linear-gradient(180deg,#3f9a45,#25632a)!important;box-shadow:0 4px 0 #123b16,0 0 12px rgba(120,200,0,.15)!important}
+@media(max-width:700px){body:before{font-size:24px;left:6px;top:6px}body:after{font-size:23px;right:7px;top:6px}.owner-player-row button[data-owner-action="playerAccess"]{min-width:125px!important;font-size:14px!important;padding:9px 10px!important}}
+</style></head>
 <body>
 <div id="outlastEventBuild" aria-live="polite" aria-label="OUTLAST event status"></div>
 <canvas id="game" width="1100" height="700"></canvas>
@@ -3964,7 +3992,7 @@ function renderUpdates(){
  
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
-const updates=[['v3.27.109 — Stability Update','Small bug fixes and game stability improvements.'],['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses a stronger safe-position search and refuses blocked fallback positions, preventing players, enemies, bosses, shrines, and pickups from being left inside solid map objects.'], ['v3.27.79 — Red Ball Nerf','Nerfed ranged enemy and boss red projectiles: 25% slower, 35% less damage, and a slightly smaller hitbox.'], ['v3.27.77 — Syntax & Regression Cleanup','Repaired the update-log declaration so the main UI script parses cleanly.'], ['v3.27.76 — Runtime Structure Guard','Closed a late script-boundary gap and consolidated Daily Shop handling into one source of truth.'], ['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
+const updates=[['v3.27.110 — Stability Update','Small bug fixes and game stability improvements.'],['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses a stronger safe-position search and refuses blocked fallback positions, preventing players, enemies, bosses, shrines, and pickups from being left inside solid map objects.'], ['v3.27.79 — Red Ball Nerf','Nerfed ranged enemy and boss red projectiles: 25% slower, 35% less damage, and a slightly smaller hitbox.'], ['v3.27.77 — Syntax & Regression Cleanup','Repaired the update-log declaration so the main UI script parses cleanly.'], ['v3.27.76 — Runtime Structure Guard','Closed a late script-boundary gap and consolidated Daily Shop handling into one source of truth.'], ['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
    ['v3.27.69 — Progression Gameplay Hardening','Removed duplicate contact damage processing and made pet abilities (including Ghost guard, Wolf attack, and Hawk marking) work reliably.'], ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
    ['v3.27.64 — Game Start Recovery Fix','Fixed the Start Run crash caused by Pet/Relic/Charm scaling being referenced before initialization.'],
    ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
@@ -7203,7 +7231,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.27.109';
+  const VERSION='v3.27.110';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';

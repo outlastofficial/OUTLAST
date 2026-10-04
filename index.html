@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.8">
-<meta name="build-version" content="3.30.8">
-<title>OUTLAST v3.30.8</title>
+<meta name="outlast-build" content="3.30.9">
+<meta name="build-version" content="3.30.9">
+<title>OUTLAST v3.30.9</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -7559,7 +7559,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v3308-start-system-rebuild">
 (function(){
 'use strict';
-const VERSION='v3.30.8';
+const VERSION='v3.30.9';
 let launchBusy=false;
 
 function normalizeRunConfig(){
@@ -7641,7 +7641,7 @@ function bind(){
  btn.addEventListener('click',intercept,true);
 }
 function docs(){
- try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.8 — Start Run System Rebuild')))updates.unshift(['v3.30.8 — Start Run System Rebuild','Rebuilt the Start Run launch path, normalized stale saved run settings before launch, and isolated the start button from legacy gameplay wrappers.']);}catch(_){}
+ try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.9 — Start Run System Rebuild')))updates.unshift(['v3.30.9 — Start Run System Rebuild','Rebuilt the Start Run launch path, normalized stale saved run settings before launch, and isolated the start button from legacy gameplay wrappers.']);}catch(_){}
  try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the rebuilt Start Run launch path work?')))helpArticles.unshift(['How does the rebuilt Start Run launch path work?','Troubleshooting','Start Run now uses a dedicated core launcher. Saved map, difficulty, mode, loadout, and objective settings are normalized before launch, and one controlled re-entry handles stale state initialization.']);}catch(_){}
 }
 function version(){
@@ -7649,7 +7649,7 @@ function version(){
   document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
   document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';});
   const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-  if(a)a.content='3.30.8';if(b)b.content='3.30.8';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.8';window.OUTLAST_VERSION=VERSION;
+  if(a)a.content='3.30.9';if(b)b.content='3.30.9';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.9';window.OUTLAST_VERSION=VERSION;
  }catch(_){}
 }
 function boot(){version();docs();bind();}

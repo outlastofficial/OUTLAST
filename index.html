@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="outlast-build" content="3.30.27">
 <meta name="build-version" content="3.30.27">
-<title>OUTLAST v3.30.27</title>
+<title>OUTLAST v3.30.30</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2116,11 +2116,32 @@ function startGame(fromRoom=false){
   fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();if(typeof connectOutlastServer==='function')connectOutlastServer();syncOutlastChatUI();
  }catch(err){
    fatalGameError=err?.message||String(err);
+   /* A player may already be fully constructed when an optional launch hook fails.
+      Never throw away a valid run because a secondary UI/system hook errored. */
+   if(game&&game.player){
+     game.running=true;
+     game.paused=false;
+     game.over=false;
+     game.upgradeOpen=false;
+     fatalGameError='';
+     fatalErrorShown=false;
+     coopLaunchActive=!!fromRoom||!!roomStarted;
+     try{document.getElementById('menu').style.display='none';}catch(_){}
+     try{document.getElementById('subPanel').style.display='none';}catch(_){}
+     try{syncMobileControls();}catch(_){}
+     try{hideGameOverActions();}catch(_){}
+     try{syncGameAdminUI();}catch(_){}
+     try{syncExtractUI();}catch(_){}
+     try{if(typeof syncOutlastChatUI==='function')syncOutlastChatUI();}catch(_){}
+     try{if(typeof connectOutlastServer==='function')connectOutlastServer();}catch(_){}
+     try{if(c&&typeof c.focus==='function')c.focus();}catch(_){}
+     return;
+   }
    fatalErrorShown=true;
    coopLaunchActive=false;
    game.running=false;game.paused=false;game.over=true;
-   syncMobileControls();
-   hideGameOverActions();
+   try{syncMobileControls();}catch(_){}
+   try{hideGameOverActions();}catch(_){}
    try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';}catch(_){}
    if(window.matchMedia?.('(max-width:760px)').matches){
      toast('⚠️ Start failed safely. Please try again.');
@@ -7617,11 +7638,32 @@ function v310StartCore(fromRoom=false){
   fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';syncExtractUI();c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
  }catch(err){
    fatalGameError=err?.message||String(err);
+   /* A player may already be fully constructed when an optional launch hook fails.
+      Never throw away a valid run because a secondary UI/system hook errored. */
+   if(game&&game.player){
+     game.running=true;
+     game.paused=false;
+     game.over=false;
+     game.upgradeOpen=false;
+     fatalGameError='';
+     fatalErrorShown=false;
+     coopLaunchActive=!!fromRoom||!!roomStarted;
+     try{document.getElementById('menu').style.display='none';}catch(_){}
+     try{document.getElementById('subPanel').style.display='none';}catch(_){}
+     try{syncMobileControls();}catch(_){}
+     try{hideGameOverActions();}catch(_){}
+     try{syncGameAdminUI();}catch(_){}
+     try{syncExtractUI();}catch(_){}
+     try{if(typeof syncOutlastChatUI==='function')syncOutlastChatUI();}catch(_){}
+     try{if(typeof connectOutlastServer==='function')connectOutlastServer();}catch(_){}
+     try{if(c&&typeof c.focus==='function')c.focus();}catch(_){}
+     return;
+   }
    fatalErrorShown=true;
    coopLaunchActive=false;
    game.running=false;game.paused=false;game.over=true;
-   syncMobileControls();
-   hideGameOverActions();
+   try{syncMobileControls();}catch(_){}
+   try{hideGameOverActions();}catch(_){}
    try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';}catch(_){}
    if(window.matchMedia?.('(max-width:760px)').matches){
      toast('⚠️ Start failed safely. Please try again.');
@@ -8156,7 +8198,7 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 <script id="outlast-v33029-start-bug-isolation">
 (function(){
 'use strict';
-const VERSION='3.30.29', RELEASE='v'+VERSION;
+const VERSION='3.30.30', RELEASE='v'+VERSION;
 function q(s){try{return document.querySelector(s)}catch(_){return null}}
 function safe(fn,fallback){try{return fn()}catch(_){return fallback}}
 function setRelease(){
@@ -8181,19 +8223,19 @@ function docs(){
       return Array.isArray(x)&&String(x[0]).indexOf(RELEASE)>=0;
     })){
       window.updates.unshift([
-        RELEASE+' — Start Run Bug-Suppression Fix',
-        'Small bug fixes and game stability improvements. Start Run now has an isolated launcher that closes feedback overlays before launch and calls the stable gameplay core without routing through Bug Reporting.'
+        RELEASE+' — Start Run Launch Recovery Fix',
+        'Small bug fixes and game stability improvements. Start Run now preserves a valid gameplay initialization when a secondary UI or system hook fails during launch, while remaining isolated from Bug Reporting.'
       ]);
     }
   });
   safe(function(){
     if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){
-      return Array.isArray(x)&&String(x[0]).indexOf('Why does Start Run avoid Bug Reporting')>=0;
+      return Array.isArray(x)&&String(x[0]).indexOf('Why does Start Run preserve a valid launch')>=0;
     })){
       window.helpArticles.unshift([
-        'Why does Start Run avoid Bug Reporting?',
+        'Why does Start Run preserve a valid launch?',
         'Start Run',
-        'Start Run now uses its own launcher. Feedback and Bug Reporting controls cannot intercept the launcher, and the game menu only closes after a live player has been initialized.'
+        'Start Run uses its own launcher. Feedback and Bug Reporting controls cannot intercept it, and secondary UI/system failures no longer discard an already-initialized player.'
       ]);
     }
   });

@@ -2059,6 +2059,15 @@ setupMobileControls();syncMobileControls();
 function startGame(fromRoom=false){
  try{
   ensureMegaSave();
+  save.map=mapDefs[save.map]?save.map:'Forest';
+  save.mode=modeDefs[save.mode]?save.mode:'Classic';
+  save.difficulty=diffDefs[save.difficulty]?save.difficulty:'Normal';
+  save.selectedChar=chars[save.selectedChar]?save.selectedChar:'Survivor';
+  save.selectedWeapon=weapons[save.selectedWeapon]?save.selectedWeapon:'Blaster';
+  save.selectedSkin=skins[save.selectedSkin]?save.selectedSkin:'Classic';
+  save.selectedPet=pets[save.selectedPet]?save.selectedPet:'None';
+  save.selectedRelic=relics[save.selectedRelic]?save.selectedRelic:'None';
+  save.selectedCharm=charms[save.selectedCharm]?save.selectedCharm:'None';
   const d=diffDefs[save.difficulty]||diffDefs.Normal,m=modeDefs[save.mode]||modeDefs.Classic,ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;
   const cm=save.challengeMode==='None'?{enemy:1,spawn:1,reward:1}:challengeModes[save.challengeMode]||{enemy:1,spawn:1,reward:1};
   const safeBuilderMods=Array.isArray(save.builderMods)?save.builderMods:[];const modifiers=[save.selectedModifier,...safeBuilderMods].filter(n=>n&&n!=='None'&&runModifiers[n]).map(n=>runModifiers[n]);
@@ -2792,7 +2801,7 @@ function drawHazards(scale=1,ox=0,oy=0,clipW=W,clipH=H){
 } 
 
 function drawSurvivalSplit(){
- const md=mapDefs[save.map];
+ const md=mapDefs[save.map]||mapDefs.Forest;
  ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);
  const mid=CW/2, panelW=mid, panelH=CH;
  const panels=[{x:0,label:'PLAYER 1',player:game.player,accent:'#5e9fff'},{x:mid,label:'PLAYER 2',player:game.player2,accent:'#ff5f69'}];
@@ -2958,7 +2967,7 @@ function draw(){
  syncGameAdminUI;
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
  if(save.mode==='1v1 Arena'&&game.player2&&!game.paused&&!game.upgradeOpen){drawSurvivalSplit();drawMinimap();return;}
- const md=mapDefs[save.map];ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
+ const md=mapDefs[save.map]||mapDefs.Forest;ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
  ctx.strokeStyle=md.grid;ctx.lineWidth=1;for(let x=0;x<=W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<=H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
  ctx.strokeStyle=md.accent;ctx.lineWidth=5;ctx.strokeRect(2,2,W-4,H-4);drawMapObjects(1,0,0); for(const fx of game.effects){const alpha=Math.max(0,fx.t/.8);ctx.save();ctx.globalAlpha=alpha;if(fx.type==='lightning'){ctx.strokeStyle=fx.color||'#8fe8ff';ctx.lineWidth=3+3*alpha;ctx.shadowColor=fx.color||'#8fe8ff';ctx.shadowBlur=16;ctx.beginPath();const dx=fx.x2-fx.x1,dy=fx.y2-fx.y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;for(let k=0;k<=8;k++){const u=k/8,wig=(k===0||k===8)?0:Math.sin(game.time*35+k*2.7)*10;const xx=fx.x1+dx*u+nx*wig,yy=fx.y1+dy*u+ny*wig;if(k===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy)}ctx.stroke();ctx.restore();continue;}ctx.strokeStyle=fx.color||'#fff';ctx.lineWidth=fx.fill?3:4;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*(1+(1-alpha)*.35),0,Math.PI*2);if(fx.fill){ctx.fillStyle=fx.color||'#fff';ctx.globalAlpha=alpha*.35;ctx.fill();}else ctx.stroke();ctx.restore()} for(const a of game.particles){ctx.save();ctx.globalAlpha=Math.max(0,a.t/a.max);ctx.fillStyle=a.color;ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);ctx.fill();ctx.restore()}
  for(const g of game.gems){ctx.fillStyle='#59d8ff';ctx.beginPath();ctx.arc(g.x,g.y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#08314a';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.icon||'◆',g.x,g.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
@@ -3306,9 +3315,39 @@ document.getElementById('subContent').addEventListener('click',e=>{
 const startBtn=document.getElementById('startBtn');
 function activateStartRun(ev){
   if(ev){ev.preventDefault();ev.stopPropagation();}
-  if(startBtn.dataset.startLock==='1') return;
+  if(startBtn.dataset.startLock==='1')return;
   startBtn.dataset.startLock='1';
-  try{newRunStats();startGame();setTimeout(()=>c.focus(),0);}finally{setTimeout(()=>{startBtn.dataset.startLock='';},350);}
+  try{
+    ensureMegaSave();
+    save.map=mapDefs[save.map]?save.map:'Forest';
+    save.mode=modeDefs[save.mode]?save.mode:'Classic';
+    save.difficulty=diffDefs[save.difficulty]?save.difficulty:'Normal';
+    save.selectedChar=chars[save.selectedChar]?save.selectedChar:'Survivor';
+    save.selectedWeapon=weapons[save.selectedWeapon]?save.selectedWeapon:'Blaster';
+    save.selectedSkin=skins[save.selectedSkin]?save.selectedSkin:'Classic';
+    save.selectedPet=pets[save.selectedPet]?save.selectedPet:'None';
+    save.selectedRelic=relics[save.selectedRelic]?save.selectedRelic:'None';
+    save.selectedCharm=charms[save.selectedCharm]?save.selectedCharm:'None';
+    newRunStats();
+    fatalGameError='';fatalErrorShown=false;game.endScreen=false;game.endVictory=false;game.over=false;
+    startGame(false);
+    if(game.running&&game.player){
+      document.getElementById('menu').style.display='none';
+      document.getElementById('subPanel').style.display='none';
+      syncMobileControls();syncGameAdminUI();
+      setTimeout(()=>c.focus(),0);
+    }else if(fatalErrorShown){
+      game.running=false;
+      document.getElementById('menu').style.display='flex';
+      document.getElementById('subPanel').style.display='none';
+    }
+  }catch(err){
+    fatalGameError=err?.message||String(err);fatalErrorShown=true;game.running=false;game.over=true;
+    document.getElementById('menu').style.display='flex';
+    document.getElementById('subPanel').style.display='none';
+  }finally{
+    setTimeout(()=>{startBtn.dataset.startLock='';},400);
+  }
 }
 startBtn.onclick=activateStartRun;
 startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')activateStartRun(e)},{passive:false});
@@ -7434,13 +7473,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v3301-final-stability">
 (function(){
 'use strict';
-const VERSION='v3.30.2';
-const UPDATE={title:'v3.30.2 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Rebuilt the menu-to-run transition so START RUN stays in the gameplay state.','Removed the unstable Halloween presentation layer.','Restored the previously rewound content without changing login or saved-player data.']};
-function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.2';if(b)b.content='3.30.2';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.2';window.OUTLAST_VERSION=VERSION;}
+const VERSION='v3.30.3';
+const UPDATE={title:'v3.30.3 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Rebuilt the menu-to-run transition so START RUN stays in the gameplay state.','Removed the unstable Halloween presentation layer.','Restored the previously rewound content without changing login or saved-player data.']};
+function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.3';if(b)b.content='3.30.3';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.3';window.OUTLAST_VERSION=VERSION;}
 function popup(force=false){const pop=document.getElementById('updatePopup');if(!pop)return;let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}if(!force&&seen===VERSION)return;const v=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');if(v)v.textContent=UPDATE.title;if(body)body.innerHTML='<p class="note">'+UPDATE.summary+'</p><ul class="update-pop-list">'+UPDATE.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');}
 function close(){try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION)}catch(_){}const pop=document.getElementById('updatePopup');if(pop){pop.style.display='none';pop.setAttribute('aria-hidden','true')}}
 function wire(){const pop=document.getElementById('updatePopup'),btn=document.getElementById('updatePopupClose');if(btn)btn.onclick=close;if(pop&&!pop.dataset.finalWired){pop.dataset.finalWired='1';pop.addEventListener('click',e=>{if(e.target===pop)close()})}document.onkeydown=function(e){if(e.key==='Escape'&&pop&&pop.style.display==='flex')close()};}
-function boot(){setVersion();wire();[100,500,1200].forEach(ms=>setTimeout(()=>{setVersion();wire();popup(false)},ms));try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))updates.unshift([VERSION+' — Stability Update','Small bug fixes and stability improvements.'])}catch(_){}try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.30.2?')))helpArticles.unshift(['What changed in v3.30.2?','Updates','Small bug fixes and stability improvements, including the Start Run transition, stable menu presentation, and restored update popup flow.'])}catch(_){}}
+function boot(){setVersion();wire();[100,500,1200].forEach(ms=>setTimeout(()=>{setVersion();wire();popup(false)},ms));try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))updates.unshift([VERSION+' — Stability Update','Small bug fixes and stability improvements.'])}catch(_){}try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.30.3?')))helpArticles.unshift(['What changed in v3.30.3?','Updates','Small bug fixes and stability improvements. Start Run now normalizes legacy saved selections and protects the first gameplay frame from an invalid map state.'])}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.showUpdatePopup=popup;
 })();
@@ -7449,14 +7488,14 @@ window.showUpdatePopup=popup;
 <script id="outlast-v3302-popup-failsafe">
 (function(){
 'use strict';
-const VERSION='v3.30.2';
+const VERSION='v3.30.3';
 function storeGet(k){try{if(typeof outlastStorage!=='undefined'&&outlastStorage.getItem)return outlastStorage.getItem(k)||'';}catch(_){}try{return localStorage.getItem(k)||''}catch(_){return''}}
 function storeSet(k,v){try{if(typeof outlastStorage!=='undefined'&&outlastStorage.setItem){outlastStorage.setItem(k,v);return}}catch(_){}try{localStorage.setItem(k,v)}catch(_){}}
 function show(force){
  const pop=document.getElementById('updatePopup');if(!pop)return;
  if(!force&&storeGet('outlastSeenUpdateVersion')===VERSION)return;
  const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
- if(v)v.textContent='v3.30.2 — Stability Update';
+ if(v)v.textContent='v3.30.3 — Stability Update';
  if(b)b.innerHTML='<p class="note">Small bug fixes and stability improvements.</p><ul class="update-pop-list"><li>START RUN now uses the rebuilt stable transition.</li><li>The unstable Halloween presentation layer is removed.</li><li>The update window has reliable close and reopen behavior.</li></ul>';
  pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
 }

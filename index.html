@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.9">
+<meta name="outlast-build" content="3.30.5">
 <meta name="build-version" content="3.28.9">
-<title>OUTLAST v3.28.9</title>
+<title>OUTLAST v3.30.5</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -752,7 +752,12 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
  #menu .menu-topbar .subtitle{font-size:9px!important;letter-spacing:.11em!important}
  #menu .menu-chip{font-size:9px!important}
 }
-</style><style id="boss-health-hud-v32754">#bossHealthHud{position:fixed;left:50%;top:12px;transform:translateX(-50%);width:min(560px,72vw);padding:8px 11px;background:rgba(5,10,15,.92);border:1px solid rgba(255,91,118,.65);border-radius:11px;box-shadow:0 10px 30px rgba(0,0,0,.30);z-index:18;pointer-events:none;font-family:Arial,sans-serif;box-sizing:border-box}.bhh-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}.bhh-name{font-size:11px;font-weight:900;letter-spacing:.1em;color:#ffd1d8}.bhh-values{font-size:11px;font-weight:800;color:#e5edf4}.bhh-track{height:11px;background:#28151b;border:1px solid #5b2c36;border-radius:999px;overflow:hidden}.bhh-fill{height:100%;width:0%;background:#ff5b76;border-radius:999px;box-shadow:0 0 12px rgba(255,91,118,.45);transition:width .08s linear}@media(max-width:760px){#bossHealthHud{top:8px;width:min(88vw,520px);padding:7px 9px}.bhh-name,.bhh-values{font-size:10px}.bhh-track{height:9px}}</style></head>
+</style><style id="boss-health-hud-v32754">#bossHealthHud{position:fixed;left:50%;top:12px;transform:translateX(-50%);width:min(560px,72vw);padding:8px 11px;background:rgba(5,10,15,.92);border:1px solid rgba(255,91,118,.65);border-radius:11px;box-shadow:0 10px 30px rgba(0,0,0,.30);z-index:18;pointer-events:none;font-family:Arial,sans-serif;box-sizing:border-box}.bhh-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}.bhh-name{font-size:11px;font-weight:900;letter-spacing:.1em;color:#ffd1d8}.bhh-values{font-size:11px;font-weight:800;color:#e5edf4}.bhh-track{height:11px;background:#28151b;border:1px solid #5b2c36;border-radius:999px;overflow:hidden}.bhh-fill{height:100%;width:0%;background:#ff5b76;border-radius:999px;box-shadow:0 0 12px rgba(255,91,118,.45);transition:width .08s linear}@media(max-width:760px){#bossHealthHud{top:8px;width:min(88vw,520px);padding:7px 9px}.bhh-name,.bhh-values{font-size:10px}.bhh-track{height:9px}}</style><style id="outlast-v3305-popup-layout">
+.update-pop{pointer-events:none!important}
+.update-pop .update-pop-card{pointer-events:auto!important;position:absolute;right:24px;top:24px;margin:0;width:min(440px,calc(100vw - 32px))!important}
+@media(max-width:700px){.update-pop .update-pop-card{right:8px;left:8px;top:auto;bottom:8px;width:auto!important;max-height:55vh}}
+</style>
+</head>
 <body>
 <div id="outlastEventBuild" aria-live="polite" aria-label="OUTLAST event status"></div>
 <canvas id="game" width="1100" height="700"></canvas>
@@ -7513,15 +7518,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v3304-update-popup-authority">
 (function(){
 'use strict';
-const VERSION='v3.30.4';
+const VERSION='v3.30.5';
 const INFO={title:'v3.30.4 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Restored the stable Start Run baseline.','Removed the unstable Halloween presentation layer.','Repaired the Update News popup and its close/reopen behavior.']};
 function store(){try{return typeof outlastStorage!=='undefined'?outlastStorage:localStorage}catch(_){return localStorage}}
 function seen(){try{return store().getItem('outlastSeenUpdateVersion')||''}catch(_){return''}}
 function putSeen(){try{store().setItem('outlastSeenUpdateVersion',VERSION)}catch(_){}}
 function closePopup(){putSeen();const p=document.getElementById('updatePopup');if(p){p.style.display='none';p.style.visibility='hidden';p.setAttribute('aria-hidden','true')}}
 function showPopup(force=false){const p=document.getElementById('updatePopup');if(!p)return;if(!force&&seen()===VERSION)return;const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');if(v)v.textContent=INFO.title;if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false')}
-function wire(){const p=document.getElementById('updatePopup'),c=document.getElementById('updatePopupClose');if(c)c.onclick=closePopup;if(p&&!p.dataset.v3304wired){p.dataset.v3304wired='1';p.addEventListener('click',e=>{if(e.target===p)closePopup()})}}
-function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.4';if(b)b.content='3.30.4';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.4';window.OUTLAST_VERSION=VERSION}
+function wire(){
+ const p=document.getElementById('updatePopup'),c=document.getElementById('updatePopupClose'),card=p?.querySelector('.update-pop-card');
+ if(c)c.onclick=closePopup;
+ if(p&&!p.dataset.v3305wired){
+  p.dataset.v3305wired='1';
+  document.addEventListener('click',e=>{
+   if(p.style.display!=='flex')return;
+   if(card&&card.contains(e.target))return;
+   closePopup();
+  },true);
+ }
+}
+function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.5';if(b)b.content='3.30.5';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.5';window.OUTLAST_VERSION=VERSION}
 function boot(){setVersion();wire();window.showUpdatePopup=showPopup;showPopup(false)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

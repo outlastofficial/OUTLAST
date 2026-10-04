@@ -7851,5 +7851,169 @@ window.__OUTLAST_CORE_AUDIT_33023=function(){return {version:VERSION,startCore:t
 })();
 </script>
 
-</body>
-</html>
+
+<script id="outlast-batch1-stability-and-systems">
+(function(){
+'use strict';
+const V='3.30.25', RELEASE='v'+V;
+const root=document.documentElement;
+function q(s){try{return document.querySelector(s)}catch(_){return null}}
+function qs(s){try{return Array.from(document.querySelectorAll(s))}catch(_){return []}}
+function safe(fn,fallback){try{return fn()}catch(_){return fallback}}
+function storageGet(k){return safe(()=>localStorage.getItem(k),null)}
+function storageSet(k,v){return safe(()=>localStorage.setItem(k,v),false)}
+function toastMsg(msg){safe(()=>{if(typeof toast==='function')toast(msg);else{const t=q('#toast');if(t){t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2200)}}})}
+
+/* Final release authority: this layer intentionally runs last. */
+function syncRelease(){
+  safe(()=>{
+    document.title='OUTLAST '+RELEASE;
+    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
+    document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
+    const a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
+    if(a)a.content=V;if(b)b.content=V;
+    window.OUTLAST_BUILD=V;window.OUTLAST_VERSION=RELEASE;
+    window.__OUTLAST_CURRENT_RELEASE_VERSION__=RELEASE;
+  });
+}
+const INFO={
+ title:RELEASE+' — Stability + Systems Batch',
+ summary:'A large stability and quality batch is now active. Existing progression and the stable Start Run core are preserved.',
+ items:[
+  'Final release/version authority now stays on '+RELEASE+'.',
+  'Save recovery, settings persistence, responsive controls, and UI overflow guards were strengthened.',
+  'Run-start and enemy-spawn safety guards were added without replacing the stable Start Run core.',
+  'Update News and How To now point to the current release instead of legacy runtime markers.'
+ ]
+};
+function docs(){
+ safe(()=>{
+   if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(RELEASE)))
+     window.updates.unshift([INFO.title,INFO.summary]);
+ });
+ safe(()=>{
+   if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the stability batch protect my save?')))
+     window.helpArticles.unshift(['How does the stability batch protect my save?','Troubleshooting','OUTLAST now keeps a lightweight recovery copy, flushes pending saves before leaving the page, and avoids replacing the stable Start Run core during maintenance updates.']);
+ });
+}
+function popup(force){
+  const p=q('#updatePopup'); if(!p)return;
+  const seen=storageGet('outlastSeenUpdateVersion')||'';
+  if(!force&&seen===V)return;
+  const ver=q('#updatePopupVersion'),body=q('#updatePopupBody');
+  if(ver)ver.textContent=INFO.title;
+  if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
+}
+function closePopup(){
+  storageSet('outlastSeenUpdateVersion',V);
+  const p=q('#updatePopup');if(p){p.style.display='none';p.setAttribute('aria-hidden','true')}
+}
+window.showUpdatePopup=popup;
+
+/* Save recovery: non-invasive, uses existing save object when available. */
+function snapshot(){
+  return safe(()=>{
+    if(typeof save==='undefined'||!save)return null;
+    const copy=JSON.parse(JSON.stringify(save));
+    return JSON.stringify({version:V,time:Date.now(),save:copy});
+  },null);
+}
+function makeRecovery(){
+  const s=snapshot(); if(s)storageSet('outlastRecoverySave',s);
+}
+window.__outlastBatchRecovery=makeRecovery;
+['pagehide','beforeunload','visibilitychange'].forEach(ev=>{
+  window.addEventListener(ev,()=>{if(ev!=='visibilitychange'||document.visibilityState==='hidden')makeRecovery()},{capture:true});
+});
+
+/* Responsive/mobile guardrails. */
+function responsiveGuard(){
+  safe(()=>{
+    const menu=q('#menu');
+    if(menu&&innerWidth<=700){
+      menu.style.overflow='hidden';
+      qs('#menu .menu-nav-btn,#menu button').forEach(b=>{b.style.touchAction='manipulation'});
+    }
+    const canvas=q('#game');
+    if(canvas){canvas.style.maxWidth='100vw';canvas.style.maxHeight='100vh';}
+  });
+}
+window.addEventListener('resize',responsiveGuard,{passive:true});
+window.addEventListener('orientationchange',()=>setTimeout(responsiveGuard,100),{passive:true});
+
+/* Reduced-motion/performance preference without changing gameplay balance. */
+function applyMotion(){
+  const reduced=storageGet('outlastReducedMotion')==='1';
+  root.classList.toggle('outlast-reduced-motion',reduced);
+}
+function installSettings(){
+  if(q('#outlastBatchSettings'))return;
+  const candidates=qs('button,[role="button"]').filter(b=>/settings/i.test(b.textContent||''));
+  if(!candidates.length)return;
+  const host=candidates[0].parentElement||document.body;
+  const box=document.createElement('div');
+  box.id='outlastBatchSettings';
+  box.innerHTML='<label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#9fb3c2"><input id="outlastReducedMotion" type="checkbox"> Reduce menu motion</label>';
+  host.appendChild(box);
+  const cb=q('#outlastReducedMotion');
+  if(cb){cb.checked=storageGet('outlastReducedMotion')==='1';cb.onchange=()=>{storageSet('outlastReducedMotion',cb.checked?'1':'0');applyMotion()}}
+}
+const style=document.createElement('style');
+style.textContent='.outlast-reduced-motion *, .outlast-reduced-motion *::before, .outlast-reduced-motion *::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}#menu button,#subPanel button{touch-action:manipulation}';
+document.head.appendChild(style);
+
+/* Spawn safety: never allow an enemy to begin outside the playable canvas bounds. */
+function installSpawnGuard(){
+  const current=window.spawnEnemy;
+  if(typeof current!=='function'||current.__batch1Guard)return;
+  function guarded(type){
+    const before=Array.isArray(window.game?.enemies)?window.game.enemies.length:0;
+    const out=current.apply(this,arguments);
+    safe(()=>{
+      const arr=window.game?.enemies;
+      if(!Array.isArray(arr)||arr.length<=before)return;
+      const e=arr[arr.length-1];
+      if(!e)return;
+      e.x=Math.max(-24,Math.min((window.W||canvas?.width||innerWidth)+24,Number(e.x)||0));
+      e.y=Math.max(-24,Math.min((window.H||canvas?.height||innerHeight)+24,Number(e.y)||0));
+    });
+    return out;
+  }
+  guarded.__batch1Guard=true;
+  window.spawnEnemy=guarded;
+}
+
+/* Prevent accidental page gestures from interfering with the game surface. */
+function installInputGuard(){
+  const c=q('#game');if(!c||c.__batch1Input)return;
+  c.__batch1Input=true;
+  c.addEventListener('touchmove',e=>{if(window.game?.running)e.preventDefault()},{passive:false});
+  c.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
+}
+
+/* Small diagnostic API used for the batch gate; it never exposes admin controls. */
+window.__OUTLAST_BATCH1_AUDIT=function(){
+ return {
+  version:window.OUTLAST_VERSION,
+  recovery:!!storageGet('outlastRecoverySave'),
+  reducedMotion:storageGet('outlastReducedMotion')==='1',
+  startCore:typeof window.startGame==='function',
+  enemyCore:typeof window.spawnEnemy==='function',
+  canvas:!!q('#game'),
+  menu:!!q('#menu'),
+  updatePopup:!!q('#updatePopup')
+ };
+};
+
+function bootBatch(){
+ syncRelease();docs();applyMotion();installSettings();responsiveGuard();installInputGuard();installSpawnGuard();
+ const close=q('#updatePopupClose'),p=q('#updatePopup');
+ if(close)close.onclick=closePopup;
+ if(p&&!p.dataset.batch1Wired){p.addEventListener('click',e=>{if(e.target===p)closePopup()});p.dataset.batch1Wired='1'}
+ [100,500,1000,2000,4000].forEach(ms=>setTimeout(()=>{syncRelease();docs();applyMotion();installSettings();responsiveGuard();installInputGuard();installSpawnGuard()},ms));
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootBatch,{once:true});else bootBatch();
+})();
+</script>
+\n</body>\n</html>

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.4">
-<meta name="build-version" content="3.28.4">
-<title>OUTLAST v3.28.4</title>
+<meta name="outlast-build" content="3.28.5">
+<meta name="build-version" content="3.28.5">
+<title>OUTLAST v3.28.5</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -4181,8 +4181,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.28.2';
-const CURRENT_UPDATE_INFO={title:'v3.28.2 — Upgrade Rarity Balance',summary:'Higher-rarity upgrades now have stronger, tier-appropriate effects and cleaner power progression.',items:['Celestial, Transcendent, Eternal, and Omega upgrades now use stronger dedicated effects.','Each upgrade is now pulled from its matching rarity tier, so high rarity no longer displays an out-of-tier effect.','Rarity multipliers and high-tier stat growth were increased for a clearer power step above Epic.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.28.5';
+const CURRENT_UPDATE_INFO={title:'v3.28.5 — Stable UI Rebuild',summary:'Rebuilt the main interface on the last stable layout and removed the broken Nightfall presentation layer.',items:['Restored the stable menu layout and interaction flow.','Removed the unstable animated Nightfall UI layer that could interfere with the menu/game boot state.','Kept gameplay, login, moderation, saving, and rarity systems unchanged.','Improved PC and mobile menu sizing and scrolling without changing controls.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -7263,7 +7263,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.28.4';
+  const VERSION='v3.28.5';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
@@ -7287,106 +7287,40 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script src="outlast-v327103-coin-farm-hardening.js?v=3.27.105"></script>
 <script src="outlast-v327105-event-hardening.js?v=3.27.105"></script>
 <script src="outlast-v327108-rarity-card-authority.js?v=3.27.108"></script>
-<style id="nightfall-halloween-v3280">
-/* OUTLAST v3.28.0 — deeper Nightfall/Halloween interface */
-#menu.nightfall-menu{position:relative;isolation:isolate;overflow:hidden;background:
-  radial-gradient(circle at 78% 10%,rgba(255,177,66,.12),transparent 17%),
-  radial-gradient(circle at 20% 88%,rgba(150,69,220,.12),transparent 22%),
-  linear-gradient(180deg,#090b12 0%,#0b0d15 48%,#090b10 100%)!important}
-#menu.nightfall-menu:before{content:'';position:absolute;inset:0;pointer-events:none;z-index:-1;
-  background:
-   radial-gradient(circle at 79% 12%,rgba(255,223,164,.85) 0 42px,rgba(255,194,105,.12) 43px 85px,transparent 86px),
-   linear-gradient(180deg,transparent 0 48%,rgba(48,22,62,.15) 70%,rgba(11,9,17,.62) 100%)}
-#menu.nightfall-menu:after{content:'';position:absolute;left:-10%;right:-10%;bottom:-6%;height:32%;pointer-events:none;z-index:-1;
-  background:linear-gradient(180deg,transparent,rgba(34,12,46,.35));
-  filter:blur(16px)}
-#menu.nightfall-menu .menu-topbar{position:relative;background:linear-gradient(180deg,rgba(28,18,28,.96),rgba(13,14,21,.9))!important;border-bottom-color:#3b283b!important}
-#menu.nightfall-menu .menu-topbar .title{color:#f3e8d4!important;text-shadow:0 0 20px rgba(255,166,64,.18)!important}
-#menu.nightfall-menu .menu-topbar .subtitle{color:#9f8ca9!important}
-#menu.nightfall-menu .menu-chip{background:linear-gradient(135deg,#221829,#130f18)!important;border-color:#6b4058!important;color:#ffc86e!important;box-shadow:0 0 18px rgba(255,153,56,.08)!important}
-#nightfallUiDecor{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-#nightfallUiDecor .nf-moon{position:absolute;right:74px;top:30px;width:58px;height:58px;border-radius:50%;
-  background:#fff0c8;box-shadow:0 0 38px rgba(255,205,117,.28)}
-#nightfallUiDecor .nf-moon:after{content:'';position:absolute;right:-7px;top:-4px;width:58px;height:58px;border-radius:50%;background:#11131d}
-#nightfallUiDecor .nf-bat{position:absolute;font-size:21px;opacity:.72;filter:drop-shadow(0 5px 10px rgba(0,0,0,.7));animation:nfFly 7s ease-in-out infinite}
-#nightfallUiDecor .nf-bat.b1{left:10%;top:14%;animation-delay:-1.2s}.nf-bat.b2{right:21%;top:25%;animation-delay:-4s}.nf-bat.b3{left:44%;top:8%;font-size:15px;animation-delay:-2.5s}
-#nightfallUiDecor .nf-pumpkin{position:absolute;font-size:30px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.58));animation:nfBob 3.6s ease-in-out infinite}
-#nightfallUiDecor .nf-pumpkin.p1{left:20px;bottom:18px}.nf-pumpkin.p2{right:28px;bottom:14px;font-size:26px;animation-delay:-1.4s}
-#nightfallUiDecor .nf-fog{position:absolute;left:-10%;right:-10%;height:24%;bottom:0;background:linear-gradient(90deg,transparent,rgba(105,83,121,.14),transparent);filter:blur(16px);animation:nfFog 9s linear infinite}
-#nightfallUiDecor .nf-grave{position:absolute;bottom:0;font-size:44px;opacity:.19;filter:grayscale(.15);transform:translateY(10px)}
-#nightfallUiDecor .nf-grave.g1{left:8%}.nf-grave.g2{left:36%;font-size:34px}.nf-grave.g3{right:13%;font-size:39px}
-#menu.nightfall-menu .menu-side{position:relative;z-index:2;background:rgba(10,8,14,.9)!important;border-bottom-color:#342536!important}
-#menu.nightfall-menu .menu-nav-btn{background:rgba(26,18,30,.9)!important;border-color:#4a3048!important;color:#bdaabd!important}
-#menu.nightfall-menu .menu-nav-btn:hover{background:#2a1a2a!important;border-color:#7a4b65!important}
-#menu.nightfall-menu .menu-nav-btn.active{background:linear-gradient(135deg,#6a304a,#8a4b32)!important;border-color:#e0a15c!important;color:#fff5df!important;box-shadow:0 8px 24px rgba(189,91,58,.19)!important}
-#menu.nightfall-menu .menu-main{position:relative;z-index:2}
-#menu.nightfall-menu .quick-card{background:linear-gradient(115deg,#1a1320,#181421 55%,#21151b)!important;border-color:#684154!important;box-shadow:inset 0 1px 0 rgba(255,220,180,.035),0 18px 42px rgba(0,0,0,.22)!important}
-#menu.nightfall-menu .hero-btn{background:linear-gradient(135deg,#8d4e2f,#c17a3e)!important;border-color:#e2a35f!important;box-shadow:0 7px 0 #55301f,0 14px 30px rgba(173,89,48,.22)!important}
-#menu.nightfall-menu .menu-card{background:linear-gradient(150deg,rgba(26,18,29,.96),rgba(14,13,20,.96))!important;border-color:#3f2b40!important}
-#menu.nightfall-menu .menu-card:hover{border-color:#73465e!important;box-shadow:0 14px 30px rgba(0,0,0,.28),0 0 22px rgba(210,106,67,.06)!important}
-#menu.nightfall-menu .menu-card h3{color:#d6bfcf!important}
-#menu.nightfall-menu .menu-card .menu-btn{background:rgba(28,20,31,.92)!important;border-color:#4d334a!important;color:#e4d9de!important}
-#menu.nightfall-menu .menu-card .menu-btn:hover{background:#352138!important;border-color:#89556c!important}
-.nightfall-event-banner{display:flex;align-items:center;gap:9px;margin:8px 0 12px;padding:9px 12px;border-radius:12px;border:1px solid #62424f;background:linear-gradient(90deg,rgba(73,34,52,.88),rgba(35,23,36,.88));box-shadow:inset 0 1px 0 rgba(255,216,160,.04),0 8px 22px rgba(0,0,0,.18);font-size:11px;color:#d6c5ce}
-.nightfall-event-banner .nf-live{padding:3px 7px;border-radius:999px;background:#4a2b18;border:1px solid #9a6334;color:#ffc77c;font-weight:900;letter-spacing:.07em}
-.nightfall-event-banner .nf-title{font-weight:900;color:#f1dfce;letter-spacing:.06em}
-.nightfall-event-banner .nf-sub{margin-left:auto;color:#a9919f}
-.nf-candle{display:inline-block;width:9px;height:18px;border-radius:3px;background:#d9b778;box-shadow:0 -5px 10px rgba(255,166,68,.38);position:relative}
-.nf-candle:after{content:'';position:absolute;width:6px;height:8px;border-radius:50% 50% 45% 45%;left:1.5px;top:-7px;background:#ffb34d;box-shadow:0 0 10px rgba(255,153,47,.5)}
-body.nightfall-in-game #game{filter:saturate(.94) contrast(1.03)}
-#nightfallInRunOverlay{position:fixed;inset:0;pointer-events:none;z-index:20;display:none}
-body.outlast-in-game #nightfallInRunOverlay{display:block}
-#nightfallInRunOverlay:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,transparent 44%,rgba(20,10,27,.08) 66%,rgba(10,6,14,.34) 100%)}
-#nightfallInRunOverlay:after{content:'🦇';position:absolute;top:7%;right:7%;font-size:22px;opacity:.22;animation:nfFly 8s ease-in-out infinite}
-@keyframes nfFly{0%,100%{transform:translate3d(-8px,0,0) rotate(-4deg)}50%{transform:translate3d(20px,9px,0) rotate(4deg)}}
-@keyframes nfBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes nfFog{0%{transform:translateX(-8%)}50%{transform:translateX(8%)}100%{transform:translateX(-8%)}}
-@media(max-width:760px){
- #nightfallUiDecor .nf-moon{right:26px;top:24px;width:44px;height:44px}#nightfallUiDecor .nf-moon:after{width:44px;height:44px}
- #nightfallUiDecor .nf-bat{font-size:16px}.nightfall-event-banner{align-items:flex-start;flex-wrap:wrap}.nightfall-event-banner .nf-sub{margin-left:0;width:100%}
- #menu.nightfall-menu .menu-topbar .title{text-shadow:0 0 16px rgba(255,166,64,.16)!important}
+<script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
+<style id="outlast-v3285-stable-ui">
+/* v3.28.5 — stable UI rebuild: presentation only, no gameplay/boot hooks */
+#menu{background:linear-gradient(180deg,#080b10 0%,#0b1016 55%,#080c11 100%)!important}
+#menu .main-menu-card{border-color:#344657!important;box-shadow:0 26px 80px rgba(0,0,0,.48)!important}
+#menu .menu-topbar{border-bottom-color:#2a3947!important;background:linear-gradient(180deg,#111923,#0b1118)!important}
+#menu .menu-topbar .title{color:#f0e7dc!important;text-shadow:0 0 18px rgba(255,166,64,.10)!important}
+#menu .menu-topbar .subtitle{color:#93a3b1!important}
+#menu .menu-chip{background:#121922!important;border-color:#4a3a32!important;color:#f2b56a!important}
+#menu .menu-nav-btn.active{border-color:#c27a45!important;box-shadow:inset 3px 0 #e0a15c,0 6px 18px rgba(0,0,0,.16)!important}
+#menu .menu-card{border-color:#2b3d4b!important}
+#menu .menu-card .menu-btn{border-color:#344a5b!important}
+#menu .menu-card .menu-btn:hover{border-color:#8b6044!important}
+@media(max-width:700px){
+  #menu .main-menu-card{width:100%!important;height:100dvh!important;max-height:none!important;border-radius:0!important}
+  #menu .menu-main{overflow-y:auto!important;overflow-x:hidden!important}
+  #menu .menu-nav{overflow-x:auto!important}
+  #menu .menu-nav-btn{min-width:96px!important}
+  #menu .menu-card .menu-btn{min-height:44px!important}
 }
 </style>
-<script id="nightfall-halloween-js-v3280">
+<script id="outlast-v3285-help-entry">
 (function(){
-  'use strict';
   function add(){
-    const menu=document.getElementById('menu');
-    if(!menu)return;
-    menu.classList.add('nightfall-menu');
-    if(!document.getElementById('nightfallUiDecor')){
-      const decor=document.createElement('div');decor.id='nightfallUiDecor';
-      decor.innerHTML='<div class="nf-moon"></div><div class="nf-bat b1">🦇</div><div class="nf-bat b2">🦇</div><div class="nf-bat b3">🦇</div><div class="nf-pumpkin p1">🎃</div><div class="nf-pumpkin p2">🎃</div><div class="nf-fog"></div><div class="nf-grave g1">▰</div><div class="nf-grave g2">▰</div><div class="nf-grave g3">▰</div>';
-      menu.insertBefore(decor,menu.firstChild);
-    }
-    const main=menu.querySelector('.menu-main');
-    const summary=document.getElementById('menuSummary');
-    if(main&&!document.getElementById('nightfallEventBanner')){
-      const banner=document.createElement('div');banner.id='nightfallEventBanner';banner.className='nightfall-event-banner';
-      banner.innerHTML='<span class="nf-candle"></span><span class="nf-live">NIGHTFALL</span><span class="nf-title">🎃 OCTOBER EVENT</span><span class="nf-sub">Spooky presentation active • watch the event area for live changes</span>';
-      if(summary&&summary.parentElement===main)summary.insertAdjacentElement('afterend',banner);else main.insertBefore(banner,main.firstChild);
-    }
-    if(!document.getElementById('nightfallInRunOverlay')){
-      const ov=document.createElement('div');ov.id='nightfallInRunOverlay';document.body.appendChild(ov);
-    }
-    document.body.classList.add('nightfall-in-game');
+    try{
+      if(typeof helpArticles==='undefined'||!Array.isArray(helpArticles))return;
+      if(helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.5?')))return;
+      helpArticles.unshift(['What changed in v3.28.5?','Updates','Restored the stable menu layout, removed the unstable Nightfall presentation layer, and kept gameplay, login, saving, and moderation systems unchanged.']);
+    }catch(_){}
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add();
-  [0,250,1000,2500].forEach(ms=>setTimeout(add,ms));
-})();
-</script>
-<script id="outlast-v3280-help-entry">
-(function(){
-  const add=()=>{
-    if(typeof helpArticles==='undefined'||!Array.isArray(helpArticles))return;
-    if(helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.0?')))return;
-    helpArticles.unshift(['What changed in v3.28.0?','Halloween / Nightfall','The main menu now has a deeper Nightfall presentation with a moon, bats, pumpkins, ambient fog, a dedicated October Event banner, and a responsive Halloween styling pass. Login was not changed.']);
-  };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',add,{once:true});else add();
   setTimeout(add,0);
 })();
 </script>
-<script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
 <script id="outlast-v3283-ui-boot-repair">
 (function(){
 'use strict';
@@ -7431,10 +7365,10 @@ function repair(){
     if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
   });
   const build=document.querySelector('meta[name="build-version"]');
-  if(build)build.content='3.28.4';
+  if(build)build.content='3.28.5';
   const out=document.querySelector('meta[name="outlast-build"]');
-  if(out)out.content='3.28.4';
-  window.OUTLAST_BUILD='3.28.4';
+  if(out)out.content='3.28.5';
+  window.OUTLAST_BUILD='3.28.5';
   window.OUTLAST_VERSION=VERSION;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();

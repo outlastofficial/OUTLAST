@@ -4177,8 +4177,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.112';
-const CURRENT_UPDATE_INFO={title:'v3.27.112 — Chat Safety Update',summary:'Chat filtering is more resistant to common bypasses and spaced or substituted text.',items:['Improved chat filtering for obfuscated and spaced inappropriate messages.','Added stronger text normalization before chat filtering.','Login was not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.113';
+const CURRENT_UPDATE_INFO={title:'v3.27.113 — Runtime Crash Fix',summary:'Small bug fixes and game stability improvements.',items:['Prevented special enemy repositioning from crashing when no safe position is available.','Hardened special weapon projectile sizing so missing values cannot stop a run.','Protected optional enemy and build-synergy systems from taking down the full game loop.','Login was not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4575,7 +4575,7 @@ Object.assign(weapons,{
   OmegaBlade:{cost:30000,desc:'Huge close-range arc with bonus boss damage.'}
 });
 function uniqueWeaponShoot(){
- const p=game.player;if(!p)return false;const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
+ const p=game.player;if(!p)return false;const projectileSizeMultiplier=Math.max(.25,Number(p.bulletSize)||1);const w=save.selectedWeapon;let target=null,bd=p.range;for(const e of game.enemies){const d=Math.hypot(e.x-p.x,e.y-p.y);if(d<bd){bd=d;target=e}}
  if(!target)return true;const a=Math.atan2(target.y-p.y,target.x-p.x);
  const wl=Math.max(0,Math.floor(Number(save.weaponLevels?.[w])||0));
  if(w==='DroneSwarm'){p.drones=(p.drones||0)+1;const n=Math.min(6+wl,p.drones+wl);for(let k=0;k<n;k++){const q=game.enemies[Math.floor(Math.random()*game.enemies.length)];if(q){damageEnemy(q,p.damage*.55);applyElement(q);if(q.hp<=0)killEnemy(game.enemies.indexOf(q));}}game.effects.push({x:p.x,y:p.y,t:.2,r:45});return true;}
@@ -4626,12 +4626,12 @@ function specialEnemyTick(dt){
     const nearby=game.enemies.filter(q=>q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<120);for(const q of nearby)q.shieldTimer=.2;
   }
   if(e.kind==='spitter'&&e.abilityClock<=0){const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:dx/d*240,vy:dy/d*240,r:9,dmg:e.damage*1.3,acid:true});e.abilityClock=2.8;}
-  if(e.kind==='reaper'&&e.abilityClock<=0&&Math.hypot(p.x-e.x,p.y-e.y)>180){const safe=findOpenEnemyPoint(p.x+(Math.random()-.5)*500,p.y+(Math.random()-.5)*500,e.r||15,260);e.x=safe.x;e.y=safe.y;toast('⚠️ Reaper appeared nearby!');e.abilityClock=4;}
+  if(e.kind==='reaper'&&e.abilityClock<=0&&Math.hypot(p.x-e.x,p.y-e.y)>180){const safe=findOpenEnemyPoint(p.x+(Math.random()-.5)*500,p.y+(Math.random()-.5)*500,e.r||15,260);if(safe){e.x=safe.x;e.y=safe.y;toast('⚠️ Reaper appeared nearby!');}else{rescueEnemyFromObstacle(e);}e.abilityClock=4;}
   if(e.kind==='warden'&&e.abilityClock<=0){for(const q of game.enemies){if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<170)q.speed*=1.12;}e.abilityClock=4;}
   if(e.kind==='Charger'&&Math.hypot(p.x-e.x,p.y-e.y)<280){e.speed=Math.min(190,e.speed+40);}
   if(e.kind==='Siren'&&e.abilityClock<=0){p.damage=Math.max(1,p.damage*.97);e.abilityClock=3;}
   if(e.kind==='Volatile'&&e.hp<=0&&!e.exploded){e.exploded=true;for(const q of game.enemies){if(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<90)damageEnemy(q,p.damage*.9);}}
-  if(e.kind==='Mimic'&&e.abilityClock<=0&&Math.hypot(p.x-e.x,p.y-e.y)>150){const safe=findOpenEnemyPoint(p.x+(Math.random()-.5)*240,p.y+(Math.random()-.5)*240,e.r||15,180);e.x=safe.x;e.y=safe.y;e.abilityClock=5;}
+  if(e.kind==='Mimic'&&e.abilityClock<=0&&Math.hypot(p.x-e.x,p.y-e.y)>150){const safe=findOpenEnemyPoint(p.x+(Math.random()-.5)*240,p.y+(Math.random()-.5)*240,e.r||15,180);if(safe){e.x=safe.x;e.y=safe.y;}else{rescueEnemyFromObstacle(e);}e.abilityClock=5;}
   if(e.kind==='splitter'&&e.hp<e.max*.45&&!e.splitDone){e.splitDone=true;for(let k=0;k<2;k++)spawnEnemy('fast');}
   if(e.boss){e.speed=Math.min(e.speed,140);if(e.hp<e.max*.66&&e.phase<2){e.phase=2;e.speed=Math.min(140,e.speed*1.12);e.damage*=1.2;toast('👹 Boss Phase 2!');}if(e.hp<e.max*.33&&e.phase<3){e.phase=3;e.speed=Math.min(140,e.speed*1.15);e.damage*=1.3;e.shoot=.5;toast('💀 Boss Final Phase!');}}
  }
@@ -4643,14 +4643,14 @@ update=function(dt){
   if(!game.running||!game.player)return;
   game.eventClock=(game.eventClock||35)-dt;
   if(game.eventClock<=0){runRandomEvent();game.eventClock=45;}
-  specialEnemyTick(dt);
+  try{specialEnemyTick(dt);}catch(err){console.error('[OUTLAST] special enemy subsystem recovered',err);}
   if(game.player.godMode){game.player.hp=game.player.max;game.player.shield=999;}
   if(save.map==='Subway'&&Math.floor(game.time)%18===0&&Math.abs(game.time-Math.round(game.time))<dt){game.player.hp=Math.max(1,game.player.hp-8);toast('⚡ Subway hazard!');}
   game.player.blackout=0;
   /* Extraction unlocks at level 25. */
   if(game.level>=25&&!game.player.extraction){game.player.extraction={x:80+Math.random()*(W-160),y:80+Math.random()*(H-160),charge:0};toast('🚨 EXTRACTION UNLOCKED — Reach the extraction point!');}
   const ex=game.player.extraction;if(ex){const d=Math.hypot(ex.x-game.player.x,ex.y-game.player.y);if(d<75){ex.charge+=dt;if(ex.charge>=3){toast('🚁 EXTRACTION SUCCESSFUL!');endRun(true);}}else ex.charge=Math.max(0,ex.charge-dt*.5);}
-  applyBuildSynergy();
+  try{applyBuildSynergy();}catch(err){console.error('[OUTLAST] build synergy subsystem recovered',err);}
 };
 
 /* ---------- Score scaling ---------- */

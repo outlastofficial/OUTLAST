@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.3">
+<meta name="outlast-build" content="3.28.9">
 <meta name="build-version" content="3.28.9">
-<title>OUTLAST v3.30.3</title>
+<title>OUTLAST v3.28.9</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2059,15 +2059,6 @@ setupMobileControls();syncMobileControls();
 function startGame(fromRoom=false){
  try{
   ensureMegaSave();
-  save.map=mapDefs[save.map]?save.map:'Forest';
-  save.mode=modeDefs[save.mode]?save.mode:'Classic';
-  save.difficulty=diffDefs[save.difficulty]?save.difficulty:'Normal';
-  save.selectedChar=chars[save.selectedChar]?save.selectedChar:'Survivor';
-  save.selectedWeapon=weapons[save.selectedWeapon]?save.selectedWeapon:'Blaster';
-  save.selectedSkin=skins[save.selectedSkin]?save.selectedSkin:'Classic';
-  save.selectedPet=pets[save.selectedPet]?save.selectedPet:'None';
-  save.selectedRelic=relics[save.selectedRelic]?save.selectedRelic:'None';
-  save.selectedCharm=charms[save.selectedCharm]?save.selectedCharm:'None';
   const d=diffDefs[save.difficulty]||diffDefs.Normal,m=modeDefs[save.mode]||modeDefs.Classic,ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;
   const cm=save.challengeMode==='None'?{enemy:1,spawn:1,reward:1}:challengeModes[save.challengeMode]||{enemy:1,spawn:1,reward:1};
   const safeBuilderMods=Array.isArray(save.builderMods)?save.builderMods:[];const modifiers=[save.selectedModifier,...safeBuilderMods].filter(n=>n&&n!=='None'&&runModifiers[n]).map(n=>runModifiers[n]);
@@ -2085,7 +2076,7 @@ function startGame(fromRoom=false){
   const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0)+((pet.damage||0)*petScale)+((relic.damage||0)*relicScale)+((charm.damage||0)*charmScale))*(1+weaponLevel*.06)*(1+weakWeaponBoost)*(save.weaponEvolutions?.[save.selectedWeapon]?1.20:1);
   const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?Math.round(80*petScale):0)+(charm.magnet||0)*charmScale;
   coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
-  const playerSpawn=findSafePlayerSpawn(W/2,H/2,28)||findSafePlayerSpawn(90,90,28)||findSafePlayerSpawn(W-90,H-90,28); if(!playerSpawn) throw new Error('No safe player spawn available');
+  const playerSpawn=findSafePlayerSpawn(W/2,H/2,28);
   game.player={x:playerSpawn.x,y:playerSpawn.y,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0)*relicScale,crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)*charmScale+(pet.crit||0)*petScale),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0)*relicScale,shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(relic.armor||0)*relicScale-(charm.armor||0)*charmScale),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)*petScale+(relic.coins||0)*relicScale+(charm.coins||0)*charmScale,bossMult:1+.08*up('Boss Hunter')+(relic.boss||0)*relicScale+(pet.boss||0)*petScale,vampire:.2*up('Vampire')+(relic.vampire||0)*relicScale,skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:petScale,elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)*petScale+(relic.xp||0)*relicScale+(charm.xp||0)*charmScale,fireRate:Math.max(.12,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')-(pet.fireRate||0)*petScale)),petLevel,relicLevel,charmLevel,phoenixRevives:save.selectedPet==='Phoenix'?1:0};
   game.player.max=hp+(relic.hp||0)*relicScale+(charm.hp||0)*charmScale;game.player.hp=game.player.max;
   game.player2=null;
@@ -2801,7 +2792,7 @@ function drawHazards(scale=1,ox=0,oy=0,clipW=W,clipH=H){
 } 
 
 function drawSurvivalSplit(){
- const md=mapDefs[save.map]||mapDefs.Forest;
+ const md=mapDefs[save.map];
  ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);
  const mid=CW/2, panelW=mid, panelH=CH;
  const panels=[{x:0,label:'PLAYER 1',player:game.player,accent:'#5e9fff'},{x:mid,label:'PLAYER 2',player:game.player2,accent:'#ff5f69'}];
@@ -2967,7 +2958,7 @@ function draw(){
  syncGameAdminUI;
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
  if(save.mode==='1v1 Arena'&&game.player2&&!game.paused&&!game.upgradeOpen){drawSurvivalSplit();drawMinimap();return;}
- const md=mapDefs[save.map]||mapDefs.Forest;ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
+ const md=mapDefs[save.map];ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
  ctx.strokeStyle=md.grid;ctx.lineWidth=1;for(let x=0;x<=W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<=H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
  ctx.strokeStyle=md.accent;ctx.lineWidth=5;ctx.strokeRect(2,2,W-4,H-4);drawMapObjects(1,0,0); for(const fx of game.effects){const alpha=Math.max(0,fx.t/.8);ctx.save();ctx.globalAlpha=alpha;if(fx.type==='lightning'){ctx.strokeStyle=fx.color||'#8fe8ff';ctx.lineWidth=3+3*alpha;ctx.shadowColor=fx.color||'#8fe8ff';ctx.shadowBlur=16;ctx.beginPath();const dx=fx.x2-fx.x1,dy=fx.y2-fx.y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;for(let k=0;k<=8;k++){const u=k/8,wig=(k===0||k===8)?0:Math.sin(game.time*35+k*2.7)*10;const xx=fx.x1+dx*u+nx*wig,yy=fx.y1+dy*u+ny*wig;if(k===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy)}ctx.stroke();ctx.restore();continue;}ctx.strokeStyle=fx.color||'#fff';ctx.lineWidth=fx.fill?3:4;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*(1+(1-alpha)*.35),0,Math.PI*2);if(fx.fill){ctx.fillStyle=fx.color||'#fff';ctx.globalAlpha=alpha*.35;ctx.fill();}else ctx.stroke();ctx.restore()} for(const a of game.particles){ctx.save();ctx.globalAlpha=Math.max(0,a.t/a.max);ctx.fillStyle=a.color;ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);ctx.fill();ctx.restore()}
  for(const g of game.gems){ctx.fillStyle='#59d8ff';ctx.beginPath();ctx.arc(g.x,g.y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#08314a';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.icon||'◆',g.x,g.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
@@ -3318,31 +3309,23 @@ function activateStartRun(ev){
   if(startBtn.dataset.startLock==='1')return;
   startBtn.dataset.startLock='1';
   try{
-    ensureMegaSave();
-    save.map=mapDefs[save.map]?save.map:'Forest';
-    save.mode=modeDefs[save.mode]?save.mode:'Classic';
-    save.difficulty=diffDefs[save.difficulty]?save.difficulty:'Normal';
-    save.selectedChar=chars[save.selectedChar]?save.selectedChar:'Survivor';
-    save.selectedWeapon=weapons[save.selectedWeapon]?save.selectedWeapon:'Blaster';
-    save.selectedSkin=skins[save.selectedSkin]?save.selectedSkin:'Classic';
-    save.selectedPet=pets[save.selectedPet]?save.selectedPet:'None';
-    save.selectedRelic=relics[save.selectedRelic]?save.selectedRelic:'None';
-    save.selectedCharm=charms[save.selectedCharm]?save.selectedCharm:'None';
     newRunStats();
-    fatalGameError='';fatalErrorShown=false;game.endScreen=false;game.endVictory=false;game.over=false;
     startGame(false);
     if(game.running&&game.player){
       document.getElementById('menu').style.display='none';
       document.getElementById('subPanel').style.display='none';
+      fatalErrorShown=false;fatalGameError='';
       syncMobileControls();syncGameAdminUI();
       setTimeout(()=>c.focus(),0);
-    }else if(fatalErrorShown){
+    }else{
       game.running=false;
+      game.paused=false;
       document.getElementById('menu').style.display='flex';
-      document.getElementById('subPanel').style.display='none';
     }
   }catch(err){
-    fatalGameError=err?.message||String(err);fatalErrorShown=true;game.running=false;game.over=true;
+    fatalGameError=err?.message||String(err);
+    fatalErrorShown=true;
+    game.running=false;game.paused=false;game.over=true;
     document.getElementById('menu').style.display='flex';
     document.getElementById('subPanel').style.display='none';
   }finally{
@@ -3350,7 +3333,6 @@ function activateStartRun(ev){
   }
 }
 startBtn.onclick=activateStartRun;
-startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')activateStartRun(e)},{passive:false});
 document.getElementById('mapBtn').onclick=()=>{openSub('🗺️ Choose Map','<div class="grid">'+Object.keys(mapDefs).map(x=>`<button class="option ${save.map===x?'selected':''}" data-action="map" data-value="${x}"><b>${x}</b></button>`).join('')+'</div>')};
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
@@ -7459,59 +7441,95 @@ if(window.__outlastHansenRailgunSkin3300)return;
 window.__outlastHansenRailgunSkin3300=true;
 const VERSION='v3.30.0',SKIN='HansensStool',COST=20000;
 function ensureSkin(){if(typeof save==='undefined'||!save)return false;save.skins=save.skins&&typeof save.skins==='object'?save.skins:{};return true}
-if(typeof skins!=='undefined'&&!skins[SKIN])skins[SKIN]={cost:COST,rarity:'Hansen',color:'#8b6b45',bonus:'Railgun cosmetic • Hansen tier',hp:0,damage:0,speed:0,crit:0,weapon:'Railgun',hansen:true};
-function renderHansenSkinMenu(){if(typeof openSub!=='function'||typeof skins==='undefined'||!ensureSkin())return;const html=Object.entries(skins).map(([n,v])=>{const ok=!!save.skins[n],special=n===SKIN,action=special?(ok?'EQUIP':'BUY'),state=ok?(save.selectedSkin===n?'EQUIPPED':'Owned'):(special?('Unlock: '+COST.toLocaleString()+' coins'):'Case only');return '<button class="option '+(save.selectedSkin===n?'selected ':'')+(special?'hansen-skin-card':'')+'" data-action="skin" data-value="'+n+'"><b>'+n+(special?'<span class="hansen-tier-badge">HANSEN</span>':'')+'</b><div class="small">'+v.rarity+' • '+v.bonus+'</div><div class="small">'+state+'</div></button>';}).join('');openSub('✦ Skin Cases','<div class="option"><b>◆ Skin Case</b><div class="small">Costs 250 coins or 1 Case Voucher • Random standard skin</div><div class="small" style="margin-top:6px"><b>HANSEN TIER</b> • Hansen cosmetics are direct-unlock items and are not included in random skin cases.</div><button class="gold" data-action="case">OPEN CASE — 250 ● / 1 Voucher</button></div><h3>Skins</h3><div class="grid">'+html+'</div>');}
-window.selectSkin=function(n){if(typeof skins==='undefined'||!ensureSkin())return;const v=skins[n];if(!v)return;if(!save.skins[n]){if(n!==SKIN)return toast('Open Skin Cases to unlock this skin');if(Number(save.coins||0)<COST)return toast('Not enough coins');save.coins-=COST;save.skins[n]=true;persist();toast('✦ Unlocked Hansens Stool — Hansen Tier')}save.selectedSkin=n;persist();renderHansenSkinMenu();};
-window.openSkinCase=function(){if(!ensureSkin()||typeof skinCaseOdds==='undefined')return;const usedVoucher=Number(save.caseCredits||0)>0;if(usedVoucher)save.caseCredits--;else{if(Number(save.coins||0)<250)return toast('Not enough coins');save.coins-=250}let rarity='Common',acc=0,r=Math.random();for(const [name,pct] of skinCaseOdds){acc+=pct;if(r<=acc){rarity=name;break}}let pool=Object.keys(skins).filter(n=>!save.skins[n]&&skins[n].rarity===rarity&&n!==SKIN);if(!pool.length)pool=Object.keys(skins).filter(n=>!save.skins[n]&&skins[n].rarity!=='Hansen');if(!pool.length){if(!usedVoucher)save.coins+=250;save.forgeCores=(save.forgeCores||0)+1;persist();toast('◆ All standard skins owned — +1 Forge Core!');return}const got=pool[Math.floor(Math.random()*pool.length)];save.skins[got]=true;save.selectedSkin=got;persist();toast('✦ Unlocked '+got+'!');renderHansenSkinMenu();};
-function drawHansenStoolProjectile(b){if(typeof ctx==='undefined'||!ctx)return;const r=Math.max(3,b.r||6),a=b.a||Math.atan2(b.vy||0,b.vx||1);ctx.save();ctx.translate(b.x,b.y);ctx.rotate(a);ctx.shadowBlur=8;ctx.shadowColor='#d6a84f';ctx.fillStyle='#8b6b45';ctx.fillRect(-r*1.15,-r*.72,r*2.3,r*.42);ctx.fillStyle='#6d4d30';ctx.fillRect(-r*.9,-r*.3,r*.22,r*1.15);ctx.fillRect(r*.68,-r*.3,r*.22,r*1.15);ctx.fillStyle='#b48a5a';ctx.fillRect(-r*.82,-r*.95,r*1.64,r*.18);ctx.restore();}
-function installProjectileSkin(){if(typeof window.drawWeaponProjectile!=='function')return;if(window.__outlastHansenProjectileWrapped3300)return;const base=window.drawWeaponProjectile;window.drawWeaponProjectile=function(b){if(b&&b.type==='RailSlug'&&typeof save!=='undefined'&&save.selectedSkin===SKIN){drawHansenStoolProjectile(b);return}return base.apply(this,arguments)};window.__outlastHansenProjectileWrapped3300=true;}
-function addDocs(){try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.0')))updates.unshift(['v3.30.0 — Hansen Railgun Skin','Added Hansens Stool as a 20,000-coin Hansen-tier cosmetic skin for the Railgun. It changes visuals only.'])}catch(_){}try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the Hansen tier work?')))helpArticles.unshift(['How does the Hansen tier work?','Skins','Hansens Stool is a 20,000-coin Hansen-tier cosmetic for the Railgun. It changes the Railgun projectile appearance only and is not included in random skin cases.'])}catch(_){}}
-function boot(){ensureSkin();installProjectileSkin();addDocs()}
+if(typeof skins!=='undefined'&&!skins[SKIN]){
+  skins[SKIN]={cost:COST,rarity:'Hansen',color:'#8b6b45',bonus:'Railgun cosmetic • Hansen tier',hp:0,damage:0,speed:0,crit:0,weapon:'Railgun',hansen:true};
+}
+function renderHansenSkinMenu(){
+  if(typeof openSub!=='function'||typeof skins==='undefined'||!ensureSkin())return;
+  const html=Object.entries(skins).map(([n,v])=>{
+    const ok=!!save.skins[n],special=n===SKIN;
+    const action=special?(ok?'EQUIP':'BUY'):'EQUIP';
+    const state=ok?(save.selectedSkin===n?'EQUIPPED':'Owned'):(special?('Unlock: '+COST.toLocaleString()+' coins'):'Case only');
+    return '<button class="option '+(save.selectedSkin===n?'selected ':'')+(special?'hansen-skin-card':'')+'" data-action="skin" data-value="'+n+'"><b>'+n+(special?'<span class="hansen-tier-badge">HANSEN</span>':'')+'</b><div class="small">'+v.rarity+' • '+v.bonus+'</div><div class="small">'+state+'</div></button>';
+  }).join('');
+  openSub('✦ Skin Cases','<div class="option"><b>◆ Skin Case</b><div class="small">Costs 250 coins or 1 Case Voucher • Random standard skin</div><div class="small" style="margin-top:6px"><b>HANSEN TIER</b> • Hansen cosmetics are direct-unlock items and are not included in random skin cases.</div><button class="gold" data-action="case">OPEN CASE — 250 ● / 1 Voucher</button></div><h3>Skins</h3><div class="grid">'+html+'</div>');
+}
+window.selectSkin=function(n){
+  if(typeof skins==='undefined'||!ensureSkin())return;
+  const v=skins[n];if(!v)return;
+  if(!save.skins[n]){
+    if(n!==SKIN)return toast('Open Skin Cases to unlock this skin');
+    if(Number(save.coins||0)<COST)return toast('Not enough coins');
+    save.coins-=COST;save.skins[n]=true;persist();toast('✦ Unlocked Hansens Stool — Hansen Tier');
+  }
+  save.selectedSkin=n;persist();
+  renderHansenSkinMenu();
+};
+window.openSkinCase=function(){
+  if(!ensureSkin()||typeof skinCaseOdds==='undefined')return;
+  const usedVoucher=Number(save.caseCredits||0)>0;
+  if(usedVoucher)save.caseCredits--;else{if(Number(save.coins||0)<250)return toast('Not enough coins');save.coins-=250}
+  let rarity='Common',acc=0,r=Math.random();
+  for(const [name,pct] of skinCaseOdds){acc+=pct;if(r<=acc){rarity=name;break}}
+  let pool=Object.keys(skins).filter(n=>!save.skins[n]&&skins[n].rarity===rarity&&n!==SKIN);
+  if(!pool.length)pool=Object.keys(skins).filter(n=>!save.skins[n]&&skins[n].rarity!=='Hansen');
+  if(!pool.length){if(!usedVoucher)save.coins+=250;save.forgeCores=(save.forgeCores||0)+1;persist();toast('◆ All standard skins owned — +1 Forge Core!');return}
+  const got=pool[Math.floor(Math.random()*pool.length)];save.skins[got]=true;save.selectedSkin=got;persist();toast('✦ Unlocked '+got+'!');renderHansenSkinMenu();
+};
+function drawHansenStoolProjectile(b){
+  if(typeof ctx==='undefined'||!ctx)return;
+  const r=Math.max(3,b.r||6),a=b.a||Math.atan2(b.vy||0,b.vx||1);
+  ctx.save();ctx.translate(b.x,b.y);ctx.rotate(a);ctx.shadowBlur=8;ctx.shadowColor='#d6a84f';
+  ctx.fillStyle='#8b6b45';ctx.fillRect(-r*1.15,-r*.72,r*2.3,r*.42);
+  ctx.fillStyle='#6d4d30';ctx.fillRect(-r*.9,-r*.3,r*.22,r*1.15);ctx.fillRect(r*.68,-r*.3,r*.22,r*1.15);
+  ctx.fillStyle='#b48a5a';ctx.fillRect(-r*.82,-r*.95,r*1.64,r*.18);
+  ctx.restore();
+}
+function installProjectileSkin(){
+  if(typeof window.drawWeaponProjectile!=='function')return;
+  if(window.__outlastHansenProjectileWrapped3300)return;
+  const base=window.drawWeaponProjectile;
+  window.drawWeaponProjectile=function(b){
+    if(b&&b.type==='RailSlug'&&typeof save!=='undefined'&&save.selectedSkin===SKIN){drawHansenStoolProjectile(b);return}
+    return base.apply(this,arguments);
+  };
+  window.__outlastHansenProjectileWrapped3300=true;
+}
+function updateVersion(){
+  document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});
+  document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.30.0';if(b)b.content='3.30.0';
+  document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.0';window.OUTLAST_VERSION=VERSION;
+}
+function addDocs(){
+  try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.0')))updates.unshift(['v3.30.0 — Hansen Railgun Skin','Added Hansens Stool as a 20,000-coin Hansen-tier cosmetic skin for the Railgun. It changes visuals only.'])}catch(_){}
+  try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the Hansen tier work?')))helpArticles.unshift(['How does the Hansen tier work?','Skins','Hansens Stool is a 20,000-coin Hansen-tier cosmetic for the Railgun. It changes the Railgun projectile appearance only and is not included in random skin cases.'])}catch(_){}
+}
+function boot(){ensureSkin();renderHansenSkinMenu;installProjectileSkin();updateVersion();addDocs();[100,500,1200,2500].forEach(ms=>setTimeout(()=>{installProjectileSkin();updateVersion();addDocs()},ms))}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
-<script id="outlast-v3301-final-stability">
+<script id="outlast-v3304-update-popup-authority">
 (function(){
 'use strict';
-const VERSION='v3.30.3';
-const UPDATE={title:'v3.30.3 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Rebuilt the menu-to-run transition so START RUN stays in the gameplay state.','Removed the unstable Halloween presentation layer.','Restored the previously rewound content without changing login or saved-player data.']};
-function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.3';if(b)b.content='3.30.3';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.3';window.OUTLAST_VERSION=VERSION;}
-function popup(force=false){const pop=document.getElementById('updatePopup');if(!pop)return;let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}if(!force&&seen===VERSION)return;const v=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');if(v)v.textContent=UPDATE.title;if(body)body.innerHTML='<p class="note">'+UPDATE.summary+'</p><ul class="update-pop-list">'+UPDATE.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');}
-function close(){try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION)}catch(_){}const pop=document.getElementById('updatePopup');if(pop){pop.style.display='none';pop.setAttribute('aria-hidden','true')}}
-function wire(){const pop=document.getElementById('updatePopup'),btn=document.getElementById('updatePopupClose');if(btn)btn.onclick=close;if(pop&&!pop.dataset.finalWired){pop.dataset.finalWired='1';pop.addEventListener('click',e=>{if(e.target===pop)close()})}document.onkeydown=function(e){if(e.key==='Escape'&&pop&&pop.style.display==='flex')close()};}
-function boot(){setVersion();wire();[100,500,1200].forEach(ms=>setTimeout(()=>{setVersion();wire();popup(false)},ms));try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))updates.unshift([VERSION+' — Stability Update','Small bug fixes and stability improvements.'])}catch(_){}try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.30.3?')))helpArticles.unshift(['What changed in v3.30.3?','Updates','Small bug fixes and stability improvements. Start Run now normalizes legacy saved selections and protects the first gameplay frame from an invalid map state.'])}catch(_){}}
+const VERSION='v3.30.4';
+const INFO={title:'v3.30.4 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Restored the stable Start Run baseline.','Removed the unstable Halloween presentation layer.','Repaired the Update News popup and its close/reopen behavior.']};
+function store(){try{return typeof outlastStorage!=='undefined'?outlastStorage:localStorage}catch(_){return localStorage}}
+function seen(){try{return store().getItem('outlastSeenUpdateVersion')||''}catch(_){return''}}
+function putSeen(){try{store().setItem('outlastSeenUpdateVersion',VERSION)}catch(_){}}
+function closePopup(){putSeen();const p=document.getElementById('updatePopup');if(p){p.style.display='none';p.style.visibility='hidden';p.setAttribute('aria-hidden','true')}}
+function showPopup(force=false){const p=document.getElementById('updatePopup');if(!p)return;if(!force&&seen()===VERSION)return;const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');if(v)v.textContent=INFO.title;if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false')}
+function wire(){const p=document.getElementById('updatePopup'),c=document.getElementById('updatePopupClose');if(c)c.onclick=closePopup;if(p&&!p.dataset.v3304wired){p.dataset.v3304wired='1';p.addEventListener('click',e=>{if(e.target===p)closePopup()})}}
+function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.4';if(b)b.content='3.30.4';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.4';window.OUTLAST_VERSION=VERSION}
+function boot(){setVersion();wire();window.showUpdatePopup=showPopup;showPopup(false)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.showUpdatePopup=popup;
 })();
 </script>
-
-<script id="outlast-v3303-popup-failsafe">
+<script id="outlast-v3304-docs">
 (function(){
-'use strict';
-const VERSION='v3.30.3';
-function storeGet(k){try{if(typeof outlastStorage!=='undefined'&&outlastStorage.getItem)return outlastStorage.getItem(k)||'';}catch(_){}try{return localStorage.getItem(k)||''}catch(_){return''}}
-function storeSet(k,v){try{if(typeof outlastStorage!=='undefined'&&outlastStorage.setItem){outlastStorage.setItem(k,v);return}}catch(_){}try{localStorage.setItem(k,v)}catch(_){}}
-function show(force){
- const pop=document.getElementById('updatePopup');if(!pop)return;
- if(!force&&storeGet('outlastSeenUpdateVersion')===VERSION)return;
- const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
- if(v)v.textContent='v3.30.3 — Stability Update';
- if(b)b.innerHTML='<p class="note">Small bug fixes and stability improvements.</p><ul class="update-pop-list"><li>START RUN now uses the rebuilt stable transition.</li><li>The unstable Halloween presentation layer is removed.</li><li>The update window has reliable close and reopen behavior.</li></ul>';
- pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
-}
-function close(){
- storeSet('outlastSeenUpdateVersion',VERSION);
- const pop=document.getElementById('updatePopup');if(pop){pop.style.display='none';pop.setAttribute('aria-hidden','true')}
-}
-function wire(){
- const p=document.getElementById('updatePopup'),c=document.getElementById('updatePopupClose');
- if(c)c.onclick=close;
- if(p&&!p.dataset.v3302wired){p.dataset.v3302wired='1';p.addEventListener('click',e=>{if(e.target===p)close()})}
- window.addEventListener('keydown',e=>{if(e.key==='Escape'&&p&&p.style.display==='flex')close()},{passive:true});
-}
-function boot(){wire();show(false)}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.showUpdatePopup=show;
+try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.4')))updates.unshift(['v3.30.4 — Stability Update','Small bug fixes and stability improvements.']);}catch(_){}
+try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.30.4?')))helpArticles.unshift(['What changed in v3.30.4?','Updates','Small bug fixes and stability improvements, including restoration of the stable Start Run path, removal of the unstable Halloween presentation layer, and the Update News popup repair.']);}catch(_){}
 })();
 </script>
 </body>

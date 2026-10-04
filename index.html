@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.16">
-<meta name="build-version" content="3.30.16">
-<title>OUTLAST v3.30.16</title>
+<meta name="outlast-build" content="3.30.17">
+<meta name="build-version" content="3.30.17">
+<title>OUTLAST v3.30.17</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -895,7 +895,7 @@ button:hover{filter:brightness(1.12) saturate(1.1)}
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.16 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.17 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -7324,61 +7324,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   setTimeout(add,0);
 })();
 </script>
-<script id="outlast-v3283-ui-boot-repair">
-(function(){
-'use strict';
-const VERSION='v3.28.3';
-function repair(){
-  const menu=document.getElementById('menu');
-  const canvas=document.getElementById('game');
-  if(!menu||!canvas||typeof game==='undefined')return;
 
-  const player=game.player;
-  const playerValid=!!player&&Number.isFinite(Number(player.x))&&Number.isFinite(Number(player.y));
-  const runValid=!!game.running&&playerValid&&!game.over&&!fatalErrorShown;
-
-  // A run cannot legitimately be active without a valid player.
-  if(game.running&&!playerValid){
-    game.running=false;
-    game.paused=false;
-    game.over=false;
-    game.endScreen=false;
-    try{fatalErrorShown=false;fatalGameError='';}catch(_){}
-    try{document.getElementById('subPanel').style.display='none';}catch(_){}
-  }
-
-  if(!runValid){
-    menu.style.display='flex';
-    canvas.style.display='block';
-    document.body.classList.remove('outlast-in-game');
-    document.body.classList.remove('menu-open');
-    try{syncMobileControls();}catch(_){}
-    try{updateMenuSummary();}catch(_){}
-  }else{
-    menu.style.display='none';
-    canvas.style.display='block';
-    document.body.classList.add('outlast-in-game');
-  }
-
-  // Remove the obsolete v3.25 Quality badge if an old inline layer recreated it.
-  const q=document.getElementById('outlastQualityBadge');
-  if(q)q.remove();
-
-  document.querySelectorAll('.menu-chip').forEach(el=>{
-    if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
-  });
-  const build=document.querySelector('meta[name="build-version"]');
-  if(build)build.content='3.28.6';
-  const out=document.querySelector('meta[name="outlast-build"]');
-  if(out)out.content='3.28.6';
-  window.OUTLAST_BUILD='3.28.8';
-  window.OUTLAST_VERSION=VERSION;
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
-[0,100,500,1000,2000,4000].forEach(ms=>setTimeout(repair,ms));
-window.__outlastBootRepair3283=repair;
-})();
-</script>
 
 <style id="outlast-v3290-hansen-character">
 .chris-hansen-card{border-color:#d6a84f!important;background:linear-gradient(145deg,#241d12,#11161d)!important}
@@ -7750,101 +7696,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<script id="outlast-v33015-version-authority">
-(function(){
-  'use strict';
-  const VERSION='v3.30.15';
-  const INFO={
-    title:'v3.30.15 — Stability Update',
-    summary:'Fixed the Survivor Hub version marker getting overwritten by an older UI layer.',
-    items:[
-      'The Survivor Hub now stays on the current release version after all page scripts finish loading.',
-      'The visible menu marker, title, and build metadata are synchronized to the same release.',
-      'No login, save, gameplay, or moderation logic was changed.'
-    ]
-  };
-  function syncVersion(){
-    try{
-      document.querySelectorAll('.menu-chip').forEach(function(el){
-        if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
-      });
-      document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent=VERSION;});
-      const a=document.querySelector('meta[name="outlast-build"]');
-      const b=document.querySelector('meta[name="build-version"]');
-      if(a) a.content=VERSION.slice(1);
-      if(b) b.content=VERSION.slice(1);
-      document.title='OUTLAST '+VERSION;
-      window.OUTLAST_BUILD=VERSION.slice(1);
-      window.OUTLAST_VERSION=VERSION;
-    }catch(_){}
-  }
-  function showUpdatePopup(force){
-    let seen='';
-    try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
-    if(!force && seen==='3.30.15') return;
-    const pop=document.getElementById('updatePopup');
-    if(!pop) return;
-    const ver=document.getElementById('updatePopupVersion');
-    const body=document.getElementById('updatePopupBody');
-    if(ver) ver.textContent=INFO.title;
-    if(body) body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
-    pop.style.display='flex';
-    pop.style.visibility='visible';
-    pop.setAttribute('aria-hidden','false');
-  }
-  function closeUpdatePopup(){
-    try{outlastStorage.setItem('outlastSeenUpdateVersion','3.30.15');}catch(_){}
-    const pop=document.getElementById('updatePopup');
-    if(pop) pop.style.display='none';
-  }
-  function docs(){
-    try{
-      if(Array.isArray(updates) && !updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.15');}))
-        updates.unshift(['v3.30.15 — Stability Update','Fixed the Survivor Hub version marker being overwritten by an older UI layer.']);
-    }catch(_){}
-    try{
-      if(Array.isArray(helpArticles) && !helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('Why is the Survivor Hub version locked to the current release?');}))
-        helpArticles.unshift(['Why is the Survivor Hub version locked to the current release?','Updates','A final release guard synchronizes the visible Survivor Hub marker, page title, and build metadata after older UI layers finish loading.']);
-    }catch(_){}
-  }
-  function wirePopup(){
-    const close=document.getElementById('updatePopupClose');
-    const pop=document.getElementById('updatePopup');
-    if(close) close.onclick=closeUpdatePopup;
-    if(pop && !pop.dataset.v33015Wired){
-      pop.addEventListener('click',function(e){if(e.target===pop) closeUpdatePopup();});
-      pop.dataset.v33015Wired='1';
-    }
-  }
-  function boot(){
-    syncVersion();
-    docs();
-    wirePopup();
-    [100,500,1200,2500,4500,6500].forEach(function(ms){
-      setTimeout(function(){syncVersion();docs();wirePopup();},ms);
-    });
-    // Legacy version layers can still run on delayed timers; keep the final release authoritative.
-    setInterval(syncVersion,1000);
-  }
-  window.showUpdatePopup=showUpdatePopup;
-  window.__OUTLAST_CURRENT_RELEASE_VERSION__=VERSION;
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
-  else boot();
-})();
-</script>
 
 
-<script id="outlast-v33016-authority">
+
+
+
+
+
+
+
+<script id="outlast-v33017-authority">
 (function(){
 'use strict';
-const VERSION='v3.30.16';
+const VERSION='v3.30.17';
 const INFO={
- title:'v3.30.16 — Stability Update',
- summary:'Rebuilt the enemy spawn and Exit Game paths after a regression in the layered gameplay guards.',
+ title:'v3.30.17 — Stability Update',
+ summary:'Cleaned up conflicting legacy runtime guards and stabilized spawning and Exit Game.',
  items:[
-  'Enemy and boss spawning now use one safe runtime path instead of the old stacked spawn wrappers.',
-  'Exit Game now has a hard-safe capture handler that always returns to the Survivor Hub.',
-  'The obsolete v3.28.3 boot repair was removed. Login and saved progress were not changed.'
+  'Removed the obsolete v3.28.3 boot-repair layer that could force a run back to the menu.',
+  'Removed the previous version-authority layer so an older release cannot overwrite the current marker.',
+  'Spawning and Exit Game remain on the rebuilt v3.30.17 runtime path. Login and saved progress were not changed.'
  ]
 };
 function syncVersion(){
@@ -7861,19 +7732,19 @@ function syncVersion(){
   window.OUTLAST_VERSION=VERSION;
  }catch(_){}
 }
-function addDocs(){
+function docs(){
  try{
-  if(Array.isArray(updates)&&!updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.16');}))
-   updates.unshift(['v3.30.16 — Stability Update','Rebuilt the enemy/boss spawn and Exit Game runtime paths and removed the obsolete boot-repair layer.']);
+  if(Array.isArray(updates)&&!updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.17');}))
+   updates.unshift(['v3.30.17 — Stability Update','Cleaned conflicting legacy runtime guards and stabilized enemy/boss spawning and Exit Game.']);
  }catch(_){}
  try{
-  if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('How were spawning and Exit Game stabilized?');}))
-   helpArticles.unshift(['How were spawning and Exit Game stabilized?','Troubleshooting','OUTLAST now uses one safe enemy/boss spawn path and a hard-safe Exit Game handler. The obsolete boot-repair layer was removed.']);
+  if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('Why were spawning and Exit Game rebuilt?');}))
+   helpArticles.unshift(['Why were spawning and Exit Game rebuilt?','Troubleshooting','OUTLAST now uses one final safe spawn path and a hard-safe Exit Game control. Legacy boot/version guards that could conflict with live runs were removed.']);
  }catch(_){}
 }
 function showUpdatePopup(force){
  let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
- if(!force&&seen==='3.30.16')return;
+ if(!force&&seen==='3.30.17')return;
  const pop=document.getElementById('updatePopup');if(!pop)return;
  const ver=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
  if(ver)ver.textContent=INFO.title;
@@ -7881,15 +7752,15 @@ function showUpdatePopup(force){
  pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
 }
 function closePopup(){
- try{outlastStorage.setItem('outlastSeenUpdateVersion','3.30.16')}catch(_){}
+ try{outlastStorage.setItem('outlastSeenUpdateVersion','3.30.17')}catch(_){}
  const pop=document.getElementById('updatePopup');if(pop)pop.style.display='none';
 }
 function boot(){
- syncVersion();addDocs();
+ syncVersion();docs();
  const close=document.getElementById('updatePopupClose'),pop=document.getElementById('updatePopup');
  if(close)close.onclick=closePopup;
- if(pop&&!pop.dataset.v33016Wired){pop.addEventListener('click',function(e){if(e.target===pop)closePopup()});pop.dataset.v33016Wired='1'}
- [100,500,1200,2500,5000].forEach(function(ms){setTimeout(function(){syncVersion();addDocs()},ms)});
+ if(pop&&!pop.dataset.v33017Wired){pop.addEventListener('click',function(e){if(e.target===pop)closePopup()});pop.dataset.v33017Wired='1'}
+ [100,500,1200,2500,5000].forEach(function(ms){setTimeout(function(){syncVersion();docs()},ms)});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.showUpdatePopup=showUpdatePopup;
@@ -7898,11 +7769,11 @@ window.__OUTLAST_CURRENT_RELEASE_VERSION__=VERSION;
 </script>
 
 
-<script id="outlast-v33016-gameplay-rebuild">
+<script id="outlast-v33017-gameplay-rebuild">
 (function(){
 'use strict';
-if(window.__outlastGameplayRebuild33016)return;
-window.__outlastGameplayRebuild33016=true;
+if(window.__outlastGameplayRebuild33017)return;
+window.__outlastGameplayRebuild33017=true;
 
 function validPoint(x,y,r){
  return Number.isFinite(x)&&Number.isFinite(y)&&x>=r+8&&x<=W-r-8&&y>=r+8&&y<=H-r-8&&
@@ -7917,7 +7788,6 @@ function safePoint(r,nearX,nearY,avoidX,avoidY){
   if(ax!==null&&ay!==null&&Math.hypot(x-ax,y-ay)<Math.max(75,r*4))return null;
   return {x,y};
  };
- // Prefer a ring near the requested location, then scan the perimeter.
  for(let radius=90;radius<=540;radius+=45){
   for(let s=0;s<16;s++){
    const a=s*Math.PI*2/16,hit=tryPoint(nx+Math.cos(a)*radius,ny+Math.sin(a)*radius);
@@ -7926,7 +7796,7 @@ function safePoint(r,nearX,nearY,avoidX,avoidY){
  }
  const margin=Math.max(32,r+10);
  for(let s=0;s<48;s++){
-  const t=s/48, candidates=[
+  const t=s/48,candidates=[
    {x:margin+t*(W-margin*2),y:margin},
    {x:W-margin,y:margin+t*(H-margin*2)},
    {x:W-margin-t*(W-margin*2),y:H-margin},
@@ -7939,7 +7809,6 @@ function safePoint(r,nearX,nearY,avoidX,avoidY){
  }
  return null;
 }
-
 function rebuiltSpawnEnemy(type){
  const p=game.player;
  if(!game.running||!p||!game.stats)return;
@@ -7956,8 +7825,7 @@ function rebuiltSpawnEnemy(type){
  const r=['tank','armored','brute','juggernaut'].includes(kind)?24:['elite','golden','phantom','LeechKing','WastelandStalker','RiftBrute'].includes(kind)?20:['crawler','swarm'].includes(kind)?12:15;
  const pos=safePoint(r,null,null,p.x,p.y);
  if(!pos)return;
- const enemy={x:pos.x,y:pos.y,kind:kind,hp:base[0]*scale,max:base[0]*scale,speed:base[1]*levelSpeed,r:r,damage:base[2]*levelDamage*levelDifficulty,xp:kind==='golden'?xp*5:xp,shoot:['ranged','spitter','volt'].includes(kind)?1.5:99,golden:kind==='golden'};
- game.enemies.push(enemy);
+ game.enemies.push({x:pos.x,y:pos.y,kind:kind,hp:base[0]*scale,max:base[0]*scale,speed:base[1]*levelSpeed,r:r,damage:base[2]*levelDamage*levelDifficulty,xp:kind==='golden'?xp*5:xp,shoot:['ranged','spitter','volt'].includes(kind)?1.5:99,golden:kind==='golden'});
  if(save.codex)save.codex[kind]=true;
  if(kind==='splitter'&&game.enemies.length<MAX_ENEMIES){
   const split=safePoint(9,pos.x,pos.y,p.x,p.y);
@@ -7981,39 +7849,29 @@ function rebuiltSpawnBoss(){
 }
 function hardExitGame(){
  try{coopLaunchActive=false}catch(_){}
- try{
-  if(game.running&&typeof window.endRun==='function')window.endRun(false,true,false);
- }catch(_){}
- try{game.running=false;game.paused=false;game.over=false;game.upgradeOpen=false;game.endScreen=false;game.endVictory=false;}catch(_){}
- try{game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];}catch(_){}
+ try{if(game.running&&typeof window.endRun==='function')window.endRun(false,true,false)}catch(_){}
+ try{game.running=false;game.paused=false;game.over=false;game.upgradeOpen=false;game.endScreen=false;game.endVictory=false}catch(_){}
+ try{game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[]}catch(_){}
  try{if(typeof hideGameOverActions==='function')hideGameOverActions()}catch(_){}
  try{if(typeof syncMobileControls==='function')syncMobileControls()}catch(_){}
  try{if(typeof disconnectOutlastServer==='function')disconnectOutlastServer()}catch(_){}
  try{const sp=document.getElementById('subPanel');if(sp)sp.style.display='none'}catch(_){}
  try{const pop=document.getElementById('gameOverActions');if(pop)pop.style.display='none'}catch(_){}
- try{
-  const menu=document.getElementById('menu');if(menu)menu.style.display='flex';
-  const canvas=document.getElementById('game');if(canvas)canvas.style.display='block';
-  document.body.classList.remove('outlast-in-game');document.body.classList.remove('menu-open');
- }catch(_){}
+ try{const menu=document.getElementById('menu');if(menu)menu.style.display='flex';const canvas=document.getElementById('game');if(canvas)canvas.style.display='block';document.body.classList.remove('outlast-in-game');document.body.classList.remove('menu-open')}catch(_){}
  try{const exit=document.getElementById('exitGameBtn');if(exit)exit.style.display='none'}catch(_){}
  try{if(typeof updateMenuSummary==='function')updateMenuSummary()}catch(_){}
  try{if(typeof persist==='function')persist()}catch(_){}
 }
-
 window.spawnEnemy=rebuiltSpawnEnemy;
 window.spawnBoss=rebuiltSpawnBoss;
 window.exitGame=hardExitGame;
-
 function wireExit(){
- const b=document.getElementById('exitGameBtn');
- if(!b)return;
- b.style.zIndex='999999';
- b.style.pointerEvents='auto';
+ const b=document.getElementById('exitGameBtn');if(!b)return;
+ b.style.zIndex='999999';b.style.pointerEvents='auto';
  b.onclick=function(e){e.preventDefault();e.stopPropagation();hardExitGame()};
  b.onpointerdown=function(e){e.preventDefault();e.stopPropagation()};
- if(!b.dataset.v33016Wired){
-  b.dataset.v33016Wired='1';
+ if(!b.dataset.v33017Wired){
+  b.dataset.v33017Wired='1';
   b.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();hardExitGame()},true);
  }
 }
@@ -8028,16 +7886,8 @@ function boot(){
  setInterval(function(){wireExit();syncVersion();spawnWatchdog()},1000);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-window.__outlastGameplayAudit33016=function(){
- return {
-  version:'v3.30.16',
-  spawnRebuilt:window.spawnEnemy===rebuiltSpawnEnemy,
-  bossSpawnRebuilt:window.spawnBoss===rebuiltSpawnBoss,
-  exitRebuilt:window.exitGame===hardExitGame,
-  exitWired:document.getElementById('exitGameBtn')?.dataset?.v33016Wired==='1',
-  running:!!game?.running,
-  enemies:Number(game?.enemies?.length||0)
- };
+window.__outlastGameplayAudit33017=function(){
+ return {version:'v3.30.17',spawnRebuilt:window.spawnEnemy===rebuiltSpawnEnemy,bossSpawnRebuilt:window.spawnBoss===rebuiltSpawnBoss,exitRebuilt:window.exitGame===hardExitGame,exitWired:document.getElementById('exitGameBtn')?.dataset?.v33017Wired==='1',running:!!game?.running,enemies:Number(game?.enemies?.length||0)};
 };
 })();
 </script>

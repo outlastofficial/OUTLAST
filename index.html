@@ -2127,8 +2127,8 @@ function startGame(fromRoom=false){
    }
  }
 }
-// v3.30.12 — capture the original launcher before any later wrappers replace startGame.
-window.__OUTLAST_STABLE_CORE_START_33012=startGame;
+// v3.30.14 — original Start core capture, before any later startGame wrappers.
+window.__OUTLAST_ORIGINAL_START_CORE_33014=startGame;
 function exitGame(){
   coopLaunchActive=false;
   if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
@@ -7574,314 +7574,180 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
-<script id="outlast-v33012-start-rebuild-final">
+
+<script id="outlast-v33014-start-clean-rebuild">
 (function(){
   'use strict';
-  const VERSION='3.30.12';
+  const VERSION='3.30.14';
   const INFO={
-    title:'v3.30.12 — Start Run Repair',
-    summary:'Rebuilt the Start Run button around the stable core launcher and added a visible release marker.',
+    title:'v3.30.14 — Start Run Clean Rebuild',
+    summary:'Removed the previous layered Start patches and rebuilt the launcher as one isolated control.',
     items:[
-      'Start Run now uses the original stable game initializer before later wrappers can replace it.',
-      'The Start button is rebuilt as a fresh control so old click and touch handlers cannot interfere.',
-      'Login, saved progress, multiplayer services, and the server connection code were not changed.'
+      'The old Start rebuilds were removed instead of being stacked.',
+      'The new launcher calls the original Start core captured before wrapper functions load.',
+      'Fragile UI, focus, and online calls are isolated so a side-system failure cannot cancel the run.'
     ]
   };
 
-  function setVersion(){
+  function version(){
+    document.querySelectorAll('.menu-chip').forEach(function(el){
+      if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent='v'+VERSION+' • SURVIVOR HUB';
+    });
+    document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent='v'+VERSION;});
+    const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+    if(a)a.content=VERSION;if(b)b.content=VERSION;
+    document.title='OUTLAST v'+VERSION;
+    window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;
+  }
+
+  function docs(){
     try{
-      document.querySelectorAll('.menu-chip').forEach(function(el){
-        if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent='v'+VERSION+' • SURVIVOR HUB';
-      });
-      document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent='v'+VERSION;});
-      const a=document.querySelector('meta[name="outlast-build"]');
-      const b=document.querySelector('meta[name="build-version"]');
-      if(a)a.content=VERSION;
-      if(b)b.content=VERSION;
-      document.title='OUTLAST v'+VERSION;
-      window.OUTLAST_BUILD=VERSION;
-      window.OUTLAST_VERSION='v'+VERSION;
+      if(Array.isArray(updates)&&!updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.14');}))
+        updates.unshift(['v3.30.14 — Start Run Clean Rebuild','Removed the previous layered Start patches and rebuilt Start Run as one isolated launcher. Login was not changed.']);
+    }catch(_){}
+    try{
+      if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('Start Run Clean Rebuild');}))
+        helpArticles.unshift(['How was Start Run rebuilt?','Troubleshooting','OUTLAST now uses one isolated Start launcher instead of stacking multiple Start patches.']);
     }catch(_){}
   }
 
-  function addDocs(){
+  function closeUiSafely(){
+    try{document.getElementById('subPanel').style.display='none';}catch(_){}
+    try{document.querySelectorAll('.update-pop').forEach(function(el){if(el.id!=='loginPopup')el.style.display='none';});}catch(_){}
+  }
+
+  function makeFallbackRun(){
     try{
-      if(Array.isArray(updates) && !updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.12');})){
-        updates.unshift(['v3.30.12 — Start Run Repair','Rebuilt the Start Run button around the stable core launcher and added a visible release marker. Login and saved progress were left unchanged.']);
-      }
-    }catch(_){}
-    try{
-      if(Array.isArray(helpArticles) && !helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('Start Run button');})){
-        helpArticles.unshift(['Why is Start Run rebuilt?','Troubleshooting','OUTLAST uses a fresh Start Run control wired to the original stable game initializer. This prevents older wrapper handlers from blocking a new run.']);
-      }
-    }catch(_){}
+      ensureMegaSave();
+      const d=diffDefs[save.difficulty]||diffDefs.Normal;
+      const m=modeDefs[save.mode]||modeDefs.Classic;
+      const ch=chars[save.selectedChar]||chars.Survivor;
+      const sk=skins[save.selectedSkin]||skins.Classic;
+      const hp=Math.max(1,(ch.hp||100)*(1+(sk.hp||0)));
+      game.running=true;game.paused=false;game.over=false;game.upgradeOpen=false;
+      game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;
+      game.spawn=0;game.bossClock=0;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];
+      game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];
+      game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;
+      game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;
+      game.mapEvent=null;game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;
+      game.selectedZone=save.selectedZone||'Greenbelt';
+      game.objective=save.currentObjective||'Zombie Hunt';
+      game.objectiveStartKills=save.stats?.kills||0;
+      game.objectiveStartBosses=save.stats?.bosses||0;
+      game.objectiveStartCoins=save.stats?.totalCoins||0;
+      game.objectiveStartXP=0;game.objectiveComplete=false;
+      game.raidBoss=null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
+      const spawn=(typeof findSafePlayerSpawn==='function'?findSafePlayerSpawn(W/2,H/2,28):{x:W/2,y:H/2});
+      game.player={x:Number.isFinite(spawn.x)?spawn.x:W/2,y:Number.isFinite(spawn.y)?spawn.y:H/2,
+        hp,max:hp,speed:ch.speed||120,speedCap:(ch.speed||120)*1.4,damage:ch.damage||10,range:ch.range||180,
+        magnet:45,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,
+        frostAuraRadius:130,frostSlow:.5,frostAuraDps:.12,frostAuraHitCooldown:0,
+        characterVisual:{...(ch.visual||{}),body:sk.color},regen:0,crit:.05,critMult:1.8,
+        pierce:0,multiShot:0,ult:0,ultGain:1,shield:0,shieldEfficiency:1,armor:1,coinMult:1,
+        bossMult:1,vampire:0,skinColor:sk.color,pet:pets.None,relic:relics.None,charm:charms.None,
+        element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1,elementPower:1,
+        damageTakenMult:1,upgradeLuck:0,lootLuck:0,treasureLuck:0,luck:0,xpBonus:1,fireRate:.45,
+        petLevel:1,relicLevel:1,charmLevel:1,phoenixRevives:0};
+      game.player2=null;
+      game.stats={enemyMult:d.enemy||1,spawnMult:(d.spawn||1)*(m.spawn||1),rewardMult:d.reward||1,
+        bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:m.scoreMult||1,difficulty:d};
+      game.fatalError='';
+      game.over=false;
+      const menu=document.getElementById('menu');if(menu)menu.style.display='none';
+      document.body.classList.add('outlast-in-game');
+      try{draw();}catch(_){}
+      return true;
+    }catch(err){
+      try{window.fatalGameError=String(err?.message||err);console.error('[OUTLAST Start fallback]',err)}catch(_){}
+      return false;
+    }
   }
 
-  function popup(force){
-    let seen='';
-    try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
-    if(!force && seen===VERSION)return;
-    const pop=document.getElementById('updatePopup');
-    if(!pop)return;
-    const ver=document.getElementById('updatePopupVersion');
-    const body=document.getElementById('updatePopupBody');
-    if(ver)ver.textContent=INFO.title;
-    if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
-    pop.style.display='flex';
-    pop.style.visibility='visible';
-    pop.setAttribute('aria-hidden','false');
-  }
+  function launch(){
+    closeUiSafely();
+    try{if(typeof newRunStats==='function')newRunStats();}catch(_){}
+    const core=window.__OUTLAST_ORIGINAL_START_CORE_33014;
+    let started=false;
 
-  function closePopup(){
-    try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION);}catch(_){}
-    const pop=document.getElementById('updatePopup');
-    if(pop)pop.style.display='none';
-  }
-
-  function rebuildStart(){
-    const old=document.getElementById('startBtn');
-    const core=window.__OUTLAST_STABLE_CORE_START_33012;
-    if(!old || typeof core!=='function')return false;
-    if(old.dataset.rebuilt33012==='1')return true;
-
-    const btn=old.cloneNode(true);
-    btn.dataset.rebuilt33012='1';
-    old.replaceWith(btn);
-
-    let locked=false;
-    function launch(e){
-      if(e){e.preventDefault();e.stopPropagation();}
-      if(locked)return;
-      locked=true;
+    if(typeof core==='function'){
       try{
-        if(typeof newRunStats==='function')newRunStats();
+        // Prevent optional side systems from turning a valid run into a failed launch.
         core(false);
-        setTimeout(function(){try{c&&c.focus();}catch(_){}},0);
+        started=!!game?.running && !!game?.player;
       }catch(err){
-        try{
-          game.running=false;game.paused=false;game.over=true;
-          document.getElementById('menu').style.display='flex';
-          document.getElementById('subPanel').style.display='none';
-        }catch(_){}
-      }finally{
-        setTimeout(function(){locked=false;},400);
+        try{console.error('[OUTLAST Start core]',err)}catch(_){}
       }
     }
-    btn.addEventListener('click',launch,{passive:false});
-    btn.addEventListener('pointerup',function(e){
-      if(e.pointerType==='touch'||e.pointerType==='pen')launch(e);
-    },{passive:false});
-    return true;
-  }
+    if(!started)started=makeFallbackRun();
 
-  function boot(){
-    setVersion();
-    addDocs();
-    rebuildStart();
-    const close=document.getElementById('updatePopupClose');
-    const pop=document.getElementById('updatePopup');
-    if(close)close.onclick=closePopup;
-    if(pop && !pop.dataset.finalWired33012){
-      pop.dataset.finalWired33012='1';
-      pop.addEventListener('click',function(e){if(e.target===pop)closePopup();});
+    if(started){
+      try{game.fatalError='';}catch(_){}
+      try{window.fatalGameError='';}catch(_){}
+      try{window.fatalErrorShown=false;}catch(_){}
+      try{if(document.getElementById('menu'))document.getElementById('menu').style.display='none';}catch(_){}
+      try{if(window.c)window.c.focus();}catch(_){}
+      try{if(typeof syncMobileControls==='function')syncMobileControls();}catch(_){}
+      try{if(typeof syncGameAdminUI==='function')syncGameAdminUI();}catch(_){}
+      try{if(typeof syncOutlastChatUI==='function')syncOutlastChatUI();}catch(_){}
+      try{if(typeof connectOutlastServer==='function')connectOutlastServer();}catch(_){}
+      return true;
     }
-    [50,150,500,1200,2500].forEach(function(ms){
-      setTimeout(function(){
-        setVersion();
-        addDocs();
-        rebuildStart();
-        try{if(ms>=500)popup(false);}catch(_){}
-      },ms);
-    });
-  }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
-  else boot();
-  window.__outlastStartAudit33012=function(){
-    return {
-      version:window.OUTLAST_VERSION||'v'+VERSION,
-      rebuilt:document.getElementById('startBtn')?.dataset?.rebuilt33012==='1',
-      coreCaptured:typeof window.__OUTLAST_STABLE_CORE_START_33012==='function',
-      gameRunning:!!window.game?.running,
-      menuHidden:document.getElementById('menu')?.style?.display==='none'
-    };
-  };
-})();
-</script>
-
-
-<script id="outlast-v33013-start-remake">
-(function(){
-  'use strict';
-  const VERSION='3.30.13';
-
-  // Completely independent Start Run initializer. This is a fresh copy of the
-  // original stable core and deliberately does not call any startGame wrapper.
-  window.__OUTLAST_REBUILT_START_33013=function(fromRoom){
-
- try{
-  ensureMegaSave();
-  const d=diffDefs[save.difficulty]||diffDefs.Normal,m=modeDefs[save.mode]||modeDefs.Classic,ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;
-  const cm=save.challengeMode==='None'?{enemy:1,spawn:1,reward:1}:challengeModes[save.challengeMode]||{enemy:1,spawn:1,reward:1};
-  const safeBuilderMods=Array.isArray(save.builderMods)?save.builderMods:[];const modifiers=[save.selectedModifier,...safeBuilderMods].filter(n=>n&&n!=='None'&&runModifiers[n]).map(n=>runModifiers[n]);
-  const modEnemy=modifiers.reduce((a,v)=>a*(v.enemy||1),1),modSpawn=modifiers.reduce((a,v)=>a*(v.spawn||1),1),modReward=modifiers.reduce((a,v)=>a*(v.reward||1),1);
-  const up=(name)=>save.upgrades[name]||0;
-  const pet=pets[save.selectedPet]||pets.None,relic=relics[save.selectedRelic]||relics.None,charm=charms[save.selectedCharm]||charms.None;
-  const hp=(ch.hp+15*up('Iron Heart')-8*up('Glass Cannon'))*(1+(sk.hp||0));
-  const speedCap=ch.speed*1.4;
-  save.petLevels=save.petLevels||{};save.relicLevels=save.relicLevels||{};save.charmLevels=save.charmLevels||{};
-  const petLevel=Math.max(1,Math.min(5,Number(save.petLevels[save.selectedPet])||1)),relicLevel=Math.max(1,Math.min(5,Number(save.relicLevels[save.selectedRelic])||1)),charmLevel=Math.max(1,Math.min(5,Number(save.charmLevels[save.selectedCharm])||1));
-  const petScale=1+.25*(petLevel-1)+.08*skillBonus('petBond'),relicScale=1+.22*(relicLevel-1),charmScale=1+.22*(charmLevel-1);
-  const speed=Math.min(speedCap,ch.speed*(1+.08*up('Quick Step')+.05*up('Fleet Foot'))*(1+(sk.speed||0))*(pet.speed?1+pet.speed*petScale:1)*(charm.speed?1+charm.speed*charmScale:1));
-  const weaponLevels=(save.weaponLevels&&typeof save.weaponLevels==='object')?save.weaponLevels:{};const weaponLevel=Number(weaponLevels[save.selectedWeapon])||0;
-  const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;
-  const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0)+((pet.damage||0)*petScale)+((relic.damage||0)*relicScale)+((charm.damage||0)*charmScale))*(1+weaponLevel*.06)*(1+weakWeaponBoost)*(save.weaponEvolutions?.[save.selectedWeapon]?1.20:1);
-  const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?Math.round(80*petScale):0)+(charm.magnet||0)*charmScale;
-  coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
-  const playerSpawn=findSafePlayerSpawn(W/2,H/2,28);
-  game.player={x:playerSpawn.x,y:playerSpawn.y,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0)*relicScale,crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)*charmScale+(pet.crit||0)*petScale),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0)*relicScale,shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(relic.armor||0)*relicScale-(charm.armor||0)*charmScale),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)*petScale+(relic.coins||0)*relicScale+(charm.coins||0)*charmScale,bossMult:1+.08*up('Boss Hunter')+(relic.boss||0)*relicScale+(pet.boss||0)*petScale,vampire:.2*up('Vampire')+(relic.vampire||0)*relicScale,skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:petScale,elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)*petScale+(relic.xp||0)*relicScale+(charm.xp||0)*charmScale,fireRate:Math.max(.12,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')-(pet.fireRate||0)*petScale)),petLevel,relicLevel,charmLevel,phoenixRevives:save.selectedPet==='Phoenix'?1:0};
-  game.player.max=hp+(relic.hp||0)*relicScale+(charm.hp||0)*charmScale;game.player.hp=game.player.max;
-  game.player2=null;
-  if(save.mode==='1v1 Arena'){
-    const player2Spawn=findSafePlayerSpawn(W-120,H/2,28,game.player.x,game.player.y);
-    game.player2={x:player2Spawn.x,y:player2Spawn.y,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
-  }
-  game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0)*relicScale)*(1+(charm.score||0)*charmScale)*d.reward*(cm.reward||1)*modReward,difficulty:d};
-  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();if(typeof connectOutlastServer==='function')connectOutlastServer();syncOutlastChatUI();
- }catch(err){
-   fatalGameError=err?.message||String(err);
-   fatalErrorShown=true;
-   coopLaunchActive=false;
-   game.running=false;game.paused=false;game.over=true;
-   syncMobileControls();
-   hideGameOverActions();
-   try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';}catch(_){}
-   if(window.matchMedia?.('(max-width:760px)').matches){
-     toast('⚠️ Start failed safely. Please try again.');
-   }
- }
-
-  };
-
-  function setVersion(){
     try{
-      document.querySelectorAll('.menu-chip').forEach(function(el){
-        if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent='v'+VERSION+' • SURVIVOR HUB';
-      });
-      document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent='v'+VERSION;});
-      const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-      if(a)a.content=VERSION;
-      if(b)b.content=VERSION;
-      document.title='OUTLAST v'+VERSION;
-      window.OUTLAST_BUILD=VERSION;
-      window.OUTLAST_VERSION='v'+VERSION;
+      game.running=false;game.paused=false;game.over=true;
+      if(document.getElementById('menu'))document.getElementById('menu').style.display='flex';
+      if(typeof toast==='function')toast('⚠️ Start Run could not initialize.');
     }catch(_){}
+    return false;
   }
 
-  function addDocs(){
-    try{
-      if(Array.isArray(updates) && !updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.13');})){
-        updates.unshift(['v3.30.13 — Start Run Complete Remake','Rebuilt Start Run as an independent launcher with a fresh button and a standalone stable game initializer. Login was not changed.']);
-      }
-    }catch(_){}
-    try{
-      if(Array.isArray(helpArticles) && !helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('independent Start Run');})){
-        helpArticles.unshift(['How does the rebuilt Start Run work?','Troubleshooting','The Start Run button uses a standalone game initializer and no longer depends on the legacy startGame wrapper chain.']);
-      }
-    }catch(_){}
-  }
-
-  function showFailure(){
-    try{
-      const msg=window.game?.fatalError || window.fatalGameError || 'The run could not be initialized.';
-      if(typeof toast==='function')toast('⚠️ Start Run failed: '+String(msg).slice(0,180));
-      console.error('[OUTLAST Start Run]',msg);
-    }catch(_){}
-  }
-
-  function rebuild(){
+  function install(){
     const old=document.getElementById('startBtn');
-    const fresh=window.__OUTLAST_REBUILT_START_33013;
-    if(!old || typeof fresh!=='function')return false;
-    if(old.dataset.rebuilt33013==='1')return true;
+    if(!old)return false;
+    if(old.dataset.clean33014==='1')return true;
 
-    const btn=old.cloneNode(true);
-    btn.dataset.rebuilt33013='1';
+    const btn=document.createElement('button');
+    btn.id='startBtn';
     btn.type='button';
+    btn.className=old.className;
+    btn.textContent='▶ START RUN';
+    btn.style.cssText=old.style.cssText;
+    btn.dataset.clean33014='1';
     old.replaceWith(btn);
 
-    let locked=false;
-    function launch(e){
+    let lock=false;
+    const fire=function(e){
       if(e){e.preventDefault();e.stopPropagation();}
-      if(locked)return;
-      locked=true;
-      try{
-        if(typeof newRunStats==='function')newRunStats();
-        window.game.fatalError='';
-        window.fatalGameError='';
-        window.fatalErrorShown=false;
-        fresh(false);
-        if(window.game?.running){
-          try{window.c?.focus();}catch(_){}
-        }else if(window.game?.over){
-          showFailure();
-        }
-      }catch(err){
-        console.error('[OUTLAST Start Run exception]',err);
-        showFailure();
-      }finally{
-        setTimeout(function(){locked=false;},450);
-      }
-    }
-
-    btn.onclick=launch;
-    btn.addEventListener('pointerup',function(e){
-      if(e.pointerType==='touch'||e.pointerType==='pen')launch(e);
-    },{passive:false});
+      if(lock)return;
+      lock=true;
+      try{launch();}finally{setTimeout(function(){lock=false;},500);}
+    };
+    btn.addEventListener('pointerdown',fire,{passive:false});
+    btn.addEventListener('click',fire,{passive:false});
+    btn.addEventListener('touchstart',fire,{passive:false});
     return true;
   }
 
-  function hideBlockingPopup(){
-    // Do this only at actual launch time, never during boot, so the menu remains usable.
-    const pop=document.getElementById('updatePopup');
-    if(pop && pop.style.display==='flex')pop.style.display='none';
-    const sub=document.getElementById('subPanel');
-    if(sub && !window.game?.running && sub.style.display!=='none')sub.style.display='none';
-  }
-
   function boot(){
-    setVersion();
-    addDocs();
-    rebuild();
-    const old=document.getElementById('startBtn');
-    if(old){
-      const launchNow=old.onclick;
-      old.onclick=function(e){
-        hideBlockingPopup();
-        return launchNow.call(this,e);
-      };
-    }
-    [50,150,500,1200,2500].forEach(function(ms){
-      setTimeout(function(){setVersion();addDocs();rebuild();},ms);
-    });
+    version();docs();install();
+    [100,500,1200,2500].forEach(function(ms){setTimeout(function(){version();docs();install();},ms);});
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
 
-  window.__outlastStartAudit33013=function(){
+  window.__outlastStartAudit33014=function(){
     return {
-      version:window.OUTLAST_VERSION||'v'+VERSION,
-      rebuilt:document.getElementById('startBtn')?.dataset?.rebuilt33013==='1',
-      standalone:typeof window.__OUTLAST_REBUILT_START_33013==='function',
+      version:'v'+VERSION,
+      cleanButton:document.getElementById('startBtn')?.dataset?.clean33014==='1',
+      coreCaptured:typeof window.__OUTLAST_ORIGINAL_START_CORE_33014==='function',
       running:!!window.game?.running,
-      over:!!window.game?.over,
-      menuDisplay:document.getElementById('menu')?.style?.display||'',
-      fatalError:window.fatalGameError||''
+      player:!!window.game?.player,
+      fatal:window.fatalGameError||''
     };
   };
 })();
 </script>
-
 </body>
 </html>

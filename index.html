@@ -3864,6 +3864,9 @@ document.getElementById('extrasBtn').onclick=renderExtras;
 document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
+const RUNTIME_FIX_HELP_ENTRY=['What changed in v3.27.113?','Updates','Small bug fixes and game stability improvements. The runtime now safely handles special-enemy repositioning when no clear position exists and gives special weapons a safe projectile-size fallback. Login was not changed.'];
+try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.27.113?')))helpArticles.unshift(RUNTIME_FIX_HELP_ENTRY);}catch(_){}
+
 const helpArticles=[
   ['What changed in v3.27.96?','Updates','Added Owner Panel submission moderation and substantially stronger Celestial, Transcendent, Eternal and Omega upgrade effects. Login was not changed.'],
   ['How do I moderate player submissions?','Owner Panel','Open Owner Panel → Submissions. Use Resolve for completed reports, Hide for abusive/inappropriate posts, or Restore to return a hidden submission to Pending.'],

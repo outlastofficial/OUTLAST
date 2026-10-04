@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.9">
-<meta name="build-version" content="3.28.9">
-<title>OUTLAST v3.28.9</title>
+<meta name="outlast-build" content="3.30.12">
+<meta name="build-version" content="3.30.12">
+<title>OUTLAST v3.30.12</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2127,6 +2127,8 @@ function startGame(fromRoom=false){
    }
  }
 }
+// v3.30.12 — capture the original launcher before any later wrappers replace startGame.
+window.__OUTLAST_STABLE_CORE_START_33012=startGame;
 function exitGame(){
   coopLaunchActive=false;
   if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
@@ -7571,5 +7573,141 @@ function boot(){ensureSkin();renderHansenSkinMenu;installProjectileSkin();update
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
+
+<script id="outlast-v33012-start-rebuild-final">
+(function(){
+  'use strict';
+  const VERSION='3.30.12';
+  const INFO={
+    title:'v3.30.12 — Start Run Repair',
+    summary:'Rebuilt the Start Run button around the stable core launcher and added a visible release marker.',
+    items:[
+      'Start Run now uses the original stable game initializer before later wrappers can replace it.',
+      'The Start button is rebuilt as a fresh control so old click and touch handlers cannot interfere.',
+      'Login, saved progress, multiplayer services, and the server connection code were not changed.'
+    ]
+  };
+
+  function setVersion(){
+    try{
+      document.querySelectorAll('.menu-chip').forEach(function(el){
+        if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent='v'+VERSION+' • SURVIVOR HUB';
+      });
+      document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent='v'+VERSION;});
+      const a=document.querySelector('meta[name="outlast-build"]');
+      const b=document.querySelector('meta[name="build-version"]');
+      if(a)a.content=VERSION;
+      if(b)b.content=VERSION;
+      document.title='OUTLAST v'+VERSION;
+      window.OUTLAST_BUILD=VERSION;
+      window.OUTLAST_VERSION='v'+VERSION;
+    }catch(_){}
+  }
+
+  function addDocs(){
+    try{
+      if(Array.isArray(updates) && !updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.12');})){
+        updates.unshift(['v3.30.12 — Start Run Repair','Rebuilt the Start Run button around the stable core launcher and added a visible release marker. Login and saved progress were left unchanged.']);
+      }
+    }catch(_){}
+    try{
+      if(Array.isArray(helpArticles) && !helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('Start Run button');})){
+        helpArticles.unshift(['Why is Start Run rebuilt?','Troubleshooting','OUTLAST uses a fresh Start Run control wired to the original stable game initializer. This prevents older wrapper handlers from blocking a new run.']);
+      }
+    }catch(_){}
+  }
+
+  function popup(force){
+    let seen='';
+    try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
+    if(!force && seen===VERSION)return;
+    const pop=document.getElementById('updatePopup');
+    if(!pop)return;
+    const ver=document.getElementById('updatePopupVersion');
+    const body=document.getElementById('updatePopupBody');
+    if(ver)ver.textContent=INFO.title;
+    if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+    pop.style.display='flex';
+    pop.style.visibility='visible';
+    pop.setAttribute('aria-hidden','false');
+  }
+
+  function closePopup(){
+    try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION);}catch(_){}
+    const pop=document.getElementById('updatePopup');
+    if(pop)pop.style.display='none';
+  }
+
+  function rebuildStart(){
+    const old=document.getElementById('startBtn');
+    const core=window.__OUTLAST_STABLE_CORE_START_33012;
+    if(!old || typeof core!=='function')return false;
+    if(old.dataset.rebuilt33012==='1')return true;
+
+    const btn=old.cloneNode(true);
+    btn.dataset.rebuilt33012='1';
+    old.replaceWith(btn);
+
+    let locked=false;
+    function launch(e){
+      if(e){e.preventDefault();e.stopPropagation();}
+      if(locked)return;
+      locked=true;
+      try{
+        if(typeof newRunStats==='function')newRunStats();
+        core(false);
+        setTimeout(function(){try{c&&c.focus();}catch(_){}},0);
+      }catch(err){
+        try{
+          game.running=false;game.paused=false;game.over=true;
+          document.getElementById('menu').style.display='flex';
+          document.getElementById('subPanel').style.display='none';
+        }catch(_){}
+      }finally{
+        setTimeout(function(){locked=false;},400);
+      }
+    }
+    btn.addEventListener('click',launch,{passive:false});
+    btn.addEventListener('pointerup',function(e){
+      if(e.pointerType==='touch'||e.pointerType==='pen')launch(e);
+    },{passive:false});
+    return true;
+  }
+
+  function boot(){
+    setVersion();
+    addDocs();
+    rebuildStart();
+    const close=document.getElementById('updatePopupClose');
+    const pop=document.getElementById('updatePopup');
+    if(close)close.onclick=closePopup;
+    if(pop && !pop.dataset.finalWired33012){
+      pop.dataset.finalWired33012='1';
+      pop.addEventListener('click',function(e){if(e.target===pop)closePopup();});
+    }
+    [50,150,500,1200,2500].forEach(function(ms){
+      setTimeout(function(){
+        setVersion();
+        addDocs();
+        rebuildStart();
+        try{if(ms>=500)popup(false);}catch(_){}
+      },ms);
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+  window.__outlastStartAudit33012=function(){
+    return {
+      version:window.OUTLAST_VERSION||'v'+VERSION,
+      rebuilt:document.getElementById('startBtn')?.dataset?.rebuilt33012==='1',
+      coreCaptured:typeof window.__OUTLAST_STABLE_CORE_START_33012==='function',
+      gameRunning:!!window.game?.running,
+      menuHidden:document.getElementById('menu')?.style?.display==='none'
+    };
+  };
+})();
+</script>
+
 </body>
 </html>

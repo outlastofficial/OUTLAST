@@ -1,9 +1,9 @@
-/* OUTLAST v3.30.31 — game viewport/recovery guard */
+/* OUTLAST v3.30.32 — game viewport/recovery guard */
 (function(){
   'use strict';
   if(window.__outlastRecoveryAuthority3281)return;
   window.__outlastRecoveryAuthority3281=true;
-  const FALLBACK_VERSION='v3.30.31';
+  const FALLBACK_VERSION='v3.30.32';
 
   function menuVisible(){
     const el=document.getElementById('menu');

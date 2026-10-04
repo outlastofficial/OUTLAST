@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.36">
-<meta name="build-version" content="3.30.36">
-<title>OUTLAST v3.30.36</title>
+<meta name="outlast-build" content="3.30.37">
+<meta name="build-version" content="3.30.37">
+<title>OUTLAST v3.30.37</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -8389,515 +8389,69 @@ else boot();
 })();
 </script>
 
-<script id="outlast-v33033-release-cleanup">
+
+
+
+
+<script id="outlast-v33037-start-run-authority">
 (function(){
 'use strict';
-const VERSION='3.30.33', RELEASE='v3.30.33';
+const VERSION='3.30.37', RELEASE='v'+VERSION;
 const q=s=>{try{return document.querySelector(s)}catch(_){return null}};
 const qs=s=>{try{return Array.from(document.querySelectorAll(s))}catch(_){return []}};
-function sync(){
-  try{
-    document.title='OUTLAST '+RELEASE;
-    const a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
-    if(a)a.content=VERSION;if(b)b.content=VERSION;
-    window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION=RELEASE;
-    window.__OUTLAST_CURRENT_RELEASE_VERSION__=RELEASE;
-    qs('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
-    qs('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
-    const vb=q('#outlastVersionBadge');if(vb)vb.textContent=RELEASE;
-    const qb=q('#outlastQualityBadge');if(qb)qb.textContent=RELEASE+' • QUALITY';
-    const bb=q('#outlastBatch2Bar .b2v');if(bb)bb.textContent=RELEASE;
-    const upVer=q('#updatePopupVersion');if(upVer)upVer.textContent=RELEASE+' — Start Run Spawn Guard Fix';
-  }catch(_){}
-}
-function docs(){
-  try{
-    if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(RELEASE))){
-      window.updates.unshift([RELEASE+' — Start Run Spawn Guard Fix','Small bug fixes and game stability improvements. Corrected the spawn-safety guard so valid player positions no longer cancel the run on the first update tick.']);
-    }
-  }catch(_){}
-  try{
-    if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the Start Run spawn guard work?'))){
-      window.helpArticles.unshift(['How does the Start Run spawn guard work?','Troubleshooting','A valid player, enemy, or pickup position is now treated as safe. The guard only repairs or removes an entity when it is actually blocked or impossible to place.']);
-    }
-  }catch(_){}
-}
-function popup(force){
-  const p=q('#updatePopup');if(!p)return;
-  let seen='';try{seen=localStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
-  if(!force&&seen===VERSION)return;
-  const v=q('#updatePopupVersion'),body=q('#updatePopupBody');
-  if(v)v.textContent=RELEASE+' — Start Run Spawn Guard Fix';
-  if(body)body.innerHTML='<p class="note">Small bug fixes and game stability improvements.</p><ul class="update-pop-list"><li>Fixed the spawn-safety guard that was cancelling valid runs on the first game tick.</li><li>Start Run remains isolated from Bug Reporting and feedback routing.</li><li>Current map, save data, and login behavior were preserved.</li></ul>';
-  p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
-}
-window.showUpdatePopup=popup;
-sync();docs();
-[100,500,1200,2500,5000,6500].forEach(function(ms){setTimeout(function(){sync();docs()},ms)});
-})();
-</script>
-
-<script id="outlast-v33034-final-start-authority">
-(function(){
-'use strict';
-const VERSION='3.30.34', RELEASE='v3.30.34';
-function q(s){try{return document.querySelector(s)}catch(_){return null}}
-function qs(s){try{return Array.from(document.querySelectorAll(s))}catch(_){return []}}
-function safe(fn,f){try{return fn()}catch(_){return f}}
-function syncRelease(){
-  safe(function(){
-    document.title='OUTLAST '+RELEASE;
-    const a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
-    if(a)a.content=VERSION;if(b)b.content=VERSION;
-    window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION=RELEASE;
-    window.__OUTLAST_CURRENT_RELEASE_VERSION__=RELEASE;
-    qs('[data-outlast-version]').forEach(function(el){el.textContent=RELEASE});
-    qs('.menu-chip').forEach(function(el){
-      if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=RELEASE+' • SURVIVOR HUB';
-    });
-    const qb=q('#outlastQualityBadge');if(qb)qb.textContent=RELEASE+' • QUALITY';
-    const bb=q('#outlastBatch2Bar .b2v');if(bb)bb.textContent=RELEASE;
-    const vb=q('#outlastVersionBadge');if(vb)vb.textContent=RELEASE;
-  });
-}
-function docs(){
-  safe(function(){
-    if(Array.isArray(window.updates)&&!window.updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes(RELEASE)})){
-      window.updates.unshift([
-        RELEASE+' — Start Run Authority Lock',
-        'Small bug fixes and game stability improvements. Start Run now uses one final launcher and a short startup lock so legacy recovery/spawn handlers cannot cancel a valid newly-created run.'
-      ]);
-    }
-  });
-  safe(function(){
-    if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('How does the Start Run Authority Lock work?')})){
-      window.helpArticles.unshift([
-        'How does the Start Run Authority Lock work?',
-        'Start Run',
-        'The launcher protects the first few seconds of a new run from legacy recovery, spawn, and menu handlers that could incorrectly turn a valid launch back into a saved run.'
-      ]);
-    }
-  });
-}
-function closeOverlays(){
-  safe(function(){const p=q('#subPanel');if(p)p.style.display='none';});
-  safe(function(){
-    qs('.update-pop').forEach(function(el){if(el.id!=='loginPopup')el.style.display='none';});
-  });
-  safe(function(){qs('#outlastQuickSettings').forEach(function(el){el.classList.remove('open');});});
-  safe(function(){hideGameOverActions?.();});
-}
-function installRunningLatch(){
-  const g=window.game;
-  if(!g||g.__outlastRunningLatch33034)return;
-  let value=!!g.running;
-  Object.defineProperty(g,'running',{
-    configurable:true,
-    enumerable:true,
-    get:function(){return value;},
-    set:function(next){
-      const nextBool=!!next;
-      const latchUntil=Number(g.__outlastStartLatchUntil||0);
-      if(!nextBool&&latchUntil>Date.now()&&g.player){
-        g.__outlastRejectedRunningFalse={time:Date.now(),stack:safe(function(){return (new Error()).stack},'')};
-        return;
-      }
-      value=nextBool;
-    }
-  });
-  g.__outlastRunningLatch33034=true;
-}
-function armLatch(){
-  installRunningLatch();
-  safe(function(){
-    game.__outlastStartLatchUntil=Date.now()+6500;
-    game.__outlastStartLatchActive=true;
-    game.__outlastRejectedRunningFalse=null;
-  });
-}
-function releaseLatch(){
-  safe(function(){
-    game.__outlastStartLatchActive=false;
-    game.__outlastStartLatchUntil=0;
-  });
-}
-function verify(){
-  return !!(window.game&&window.game.running&&window.game.player&&
-    Number.isFinite(Number(window.game.player.x))&&
-    Number.isFinite(Number(window.game.player.y)));
-}
-function keepStarted(){
-  safe(function(){
-    if(!verify())return false;
-    game.starting=false;
-    game.over=false;
-    game.upgradeOpen=false;
-    game.__outlastStartLatchActive=true;
-    if(q('#menu'))q('#menu').style.display='none';
-    if(q('#subPanel'))q('#subPanel').style.display='none';
-    if(window.c&&typeof window.c.focus==='function')window.c.focus();
-    if(typeof window.syncMobileControls==='function')window.syncMobileControls();
-    if(typeof window.syncExtractUI==='function')window.syncExtractUI();
-    if(typeof window.syncOutlastChatUI==='function')window.syncOutlastChatUI();
-    return true;
-  });
-  return verify();
-}
-function launch(){
-  closeOverlays();
-  armLatch();
-  safe(function(){if(typeof window.newRunStats==='function')window.newRunStats();});
-  let started=false;
-  const start=window.startGame;
-  if(typeof start==='function'){
-    safe(function(){start.call(window,false);});
-    started=keepStarted();
-  }
-  if(!started&&typeof window.__OUTLAST_ORIGINAL_START_CORE_33014==='function'){
-    safe(function(){window.__OUTLAST_ORIGINAL_START_CORE_33014(false);});
-    started=keepStarted();
-  }
-  if(!started&&window.game&&window.game.player){
-    safe(function(){game.running=true;});
-    started=keepStarted();
-  }
-  if(started){
-    safe(function(){
-      if(typeof window.toast==='function')window.toast('▶ Run started');
-    });
-    setTimeout(function(){
-      if(verify())releaseLatch();
-    },6500);
-    return true;
-  }
-  releaseLatch();
-  safe(function(){
-    if(window.game){game.running=false;game.paused=false;game.over=true;game.starting=false;}
-    if(q('#menu'))q('#menu').style.display='flex';
-    if(typeof window.toast==='function')window.toast('Start Run could not initialize.');
-  });
-  return false;
-}
-function wire(){
-  const old=q('#startBtn');
-  if(!old)return false;
-  if(old.dataset.v33034Start==='1')return true;
-  const btn=old.cloneNode(true);
-  btn.id='startBtn';
-  btn.type='button';
-  btn.dataset.v33034Start='1';
-  btn.removeAttribute('data-action');
-  btn.removeAttribute('data-quality');
-  btn.removeAttribute('data-mobile-action');
-  btn.onclick=null;
-  btn.onpointerup=null;
-  btn.onpointerdown=null;
-  btn.style.pointerEvents='auto';
-  btn.style.touchAction='manipulation';
-  btn.addEventListener('click',function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    if(btn.dataset.startBusy==='1')return;
-    btn.dataset.startBusy='1';
-    try{launch();}finally{
-      setTimeout(function(){btn.dataset.startBusy='0';},500);
-    }
-  });
-  old.replaceWith(btn);
-  return true;
-}
-function boot(){
-  syncRelease();
-  docs();
-  installRunningLatch();
-  closeOverlays();
-  wire();
-  let checks=0;
-  const timer=setInterval(function(){
-    syncRelease();
-    wire();
-    checks++;
-    if(checks>=140)clearInterval(timer);
-  },50);
-}
-window.__OUTLAST_START_AUDIT_33034=function(){
-  const b=q('#startBtn');
-  return {
-    version:RELEASE,
-    wired:!!(b&&b.dataset.v33034Start==='1'),
-    running:!!(game&&game.running),
-    player:!!(game&&game.player),
-    latchUntil:Number(game?.__outlastStartLatchUntil||0),
-    rejectedFalse:!!game?.__outlastRejectedRunningFalse
-  };
-};
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
-else boot();
-})();
-</script>
-</html>\n
-<script id="outlast-v33028-final-start-authority">
-(function(){
-  'use strict';
-  const VERSION='3.30.32';
-  const RELEASE='v'+VERSION;
-
-  function q(s){try{return document.querySelector(s)}catch(_){return null}}
-  function safe(fn){try{return fn()}catch(_){return null}}
-
-  function syncRelease(){
-    safe(function(){
-      document.title='OUTLAST '+RELEASE;
-      document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent=RELEASE});
-      document.querySelectorAll('.menu-chip').forEach(function(el){
-        if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=RELEASE+' • SURVIVOR HUB';
-      });
-      var a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
-      if(a)a.content=VERSION;
-      if(b)b.content=VERSION;
-      window.OUTLAST_BUILD=VERSION;
-      window.OUTLAST_VERSION=RELEASE;
-    });
-  }
-
-  function docs(){
-    safe(function(){
-      if(Array.isArray(window.updates)&&!window.updates.some(function(x){
-        return Array.isArray(x)&&String(x[0]).indexOf(RELEASE)>=0;
-      })){
-        window.updates.unshift([
-          RELEASE+' — Final Start Run Recovery Fix',
-          'Small bug fixes and game stability improvements. The final Start Run launcher now wins the runtime race, holds an explicit startup state, and remains isolated from Bug Reporting.'
-        ]);
-      }
-    });
-    safe(function(){
-      if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){
-        return Array.isArray(x)&&String(x[0]).indexOf('Final Start Run Authority')>=0;
-      })){
-        window.helpArticles.unshift([
-          'How does the v3.30.32 Start Run launcher work?',
-          'Troubleshooting',
-          'The final launcher holds an explicit startup state while calling the stable gameplay core. The menu only closes after a valid player exists, and the recovery guard ignores that startup window.'
-        ]);
-      }
-    });
-  }
-
-  function closeUi(){
-    safe(function(){var p=q('#subPanel');if(p)p.style.display='none'});
-    safe(function(){
-      document.querySelectorAll('.update-pop').forEach(function(el){
-        if(el.id!=='loginPopup')el.style.display='none';
-      });
-    });
-  }
-
-  function verifyStarted(){
-    return !!(window.game&&window.game.running&&window.game.player);
-  }
-
-  function launch(){
-    closeUi();
-    safe(function(){if(typeof window.newRunStats==='function')window.newRunStats()});
-    safe(function(){if(window.game){window.game.starting=true;window.game.startStartedAt=Date.now();}});
-    var started=false;
-
-    if(typeof window.startGame==='function'){
-      started=!!safe(function(){
-        window.startGame(false);
-        return verifyStarted();
-      });
-    }
-
-    if(!started&&typeof window.__OUTLAST_ORIGINAL_START_CORE_33014==='function'){
-      started=!!safe(function(){
-        window.__OUTLAST_ORIGINAL_START_CORE_33014(false);
-        return verifyStarted();
-      });
-    }
-
-    if(started){
-      safe(function(){window.game.fatalError=''});
-      safe(function(){window.fatalGameError=''});
-      safe(function(){window.fatalErrorShown=false});
-      safe(function(){if(window.game){window.game.starting=false;window.game.startStartedAt=0;}});
-      safe(function(){var m=q('#menu');if(m)m.style.display='none'});
-      safe(function(){if(window.c&&typeof window.c.focus==='function')window.c.focus()});
-      safe(function(){if(typeof window.syncMobileControls==='function')window.syncMobileControls()});
-      safe(function(){if(typeof window.syncExtractUI==='function')window.syncExtractUI()});
-      return true;
-    }
-
-    safe(function(){if(window.game){window.game.starting=false;window.game.startStartedAt=0;}});
-    safe(function(){
-      if(typeof window.toast==='function')window.toast('Start Run failed to initialize.');
-    });
-    return false;
-  }
-
-  function wire(){
-    var btn=q('#startBtn');
-    if(!btn)return false;
-    if(btn.dataset.finalStartAuthority===VERSION)return true;
-
-    var replacement=btn.cloneNode(true);
-    replacement.id='startBtn';
-    replacement.type='button';
-    replacement.dataset.finalStartAuthority=VERSION;
-    replacement.style.pointerEvents='auto';
-    replacement.style.touchAction='manipulation';
-    replacement.style.position='relative';
-    replacement.style.zIndex='1000000';
-
-    replacement.onclick=function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      if(replacement.dataset.startBusy==='1')return;
-      replacement.dataset.startBusy='1';
-      var ok=false;
-      try{ok=launch()}finally{
-        setTimeout(function(){
-          replacement.dataset.startBusy='0';
-        },700);
-      }
-      return ok;
-    };
-
-    btn.replaceWith(replacement);
-    return true;
-  }
-
-  function boot(){
-    syncRelease();
-    docs();
-    wire();
-    [100,500,1200,2500,5000].forEach(function(ms){
-      setTimeout(function(){syncRelease();docs();wire()},ms);
-    });
-  }
-
-  window.__OUTLAST_START_FINAL_AUDIT_33032=function(){
-    var b=q('#startBtn');
-    return {
-      version:RELEASE,
-      wired:!!(b&&b.dataset.finalStartAuthority===VERSION),
-      startFunction:typeof window.startGame==='function',
-      originalCore:typeof window.__OUTLAST_ORIGINAL_START_CORE_33014==='function',
-      running:!!(window.game&&window.game.running),
-      player:!!(window.game&&window.game.player)
-    };
-  };
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
-  else boot();
-})();
-</script>
-
-<script id="outlast-v33035-start-finalizer">
-(function(){
-'use strict';
-const RELEASE='v3.30.35';
-function q(s){try{return document.querySelector(s)}catch(_){return null}}
-function wire(){
- const old=q('#startBtn'); if(!old)return;
- if(old.dataset.v33035Start==='1')return;
- const btn=old.cloneNode(true);
- btn.id='startBtn'; btn.type='button'; btn.dataset.v33035Start='1';
- btn.removeAttribute('data-action'); btn.removeAttribute('data-mobile-action'); btn.removeAttribute('data-quality');
- btn.onclick=null; btn.onpointerup=null; btn.onpointerdown=null;
- btn.style.pointerEvents='auto'; btn.style.touchAction='manipulation';
- btn.addEventListener('click',function(e){
-   e.preventDefault(); e.stopPropagation();
-   if(btn.dataset.startBusy==='1')return;
-   btn.dataset.startBusy='1';
-   try{
-     if(typeof window.__OUTLAST_START_AUDIT_33034==='function'){}
-     const core=window.__OUTLAST_ORIGINAL_START_CORE_33014;
-     if(typeof core==='function'){
-       try{if(typeof window.newRunStats==='function')window.newRunStats()}catch(_){}
-       core(false);
-     }else if(typeof window.startGame==='function'){
-       window.startGame(false);
-     }
-     const g=window.game;
-     if(g&&g.player){
-       if(!g.stats)g.stats={enemyMult:1,spawnMult:1,rewardMult:1,bossEvery:90,timeLimit:0,scoreMult:1,difficulty:{}};
-       g.enemies=Array.isArray(g.enemies)?g.enemies:[];
-       g.bullets=Array.isArray(g.bullets)?g.bullets:[];
-       g.gems=Array.isArray(g.gems)?g.gems:[];
-       g.coins=Array.isArray(g.coins)?g.coins:[];
-       g.shots=Array.isArray(g.shots)?g.shots:[];
-       g.effects=Array.isArray(g.effects)?g.effects:[];
-       g.particles=Array.isArray(g.particles)?g.particles:[];
-       g.powerups=Array.isArray(g.powerups)?g.powerups:[];
-       g.shrines=Array.isArray(g.shrines)?g.shrines:[];
-       g.running=true; g.paused=false; g.over=false; g.starting=false;
-       g.upgradeOpen=false;
-       window.fatalGameError=''; window.fatalErrorShown=false;
-       const menu=q('#menu'); if(menu)menu.style.display='none';
-       const sub=q('#subPanel'); if(sub)sub.style.display='none';
-       if(window.c&&typeof window.c.focus==='function')window.c.focus();
-       if(typeof window.syncMobileControls==='function')window.syncMobileControls();
-       if(typeof window.syncExtractUI==='function')window.syncExtractUI();
-     }
-   }catch(err){
-     try{console.error('[OUTLAST Start]',err)}catch(_){}
-   }finally{
-     setTimeout(function(){btn.dataset.startBusy='0'},500);
-   }
- });
- old.replaceWith(btn);
-}
-function sync(){
+const safe=(fn,f)=>{try{return fn()}catch(_){return f}};
+function sync(){safe(function(){
  document.title='OUTLAST '+RELEASE;
  const a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
- if(a)a.content='3.30.35'; if(b)b.content='3.30.35';
- document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
- document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
+ if(a)a.content=VERSION;if(b)b.content=VERSION;
+ window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION=RELEASE;window.__OUTLAST_CURRENT_RELEASE_VERSION__=RELEASE;
+ qs('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
+ qs('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
+ const v=q('#outlastVersionBadge');if(v)v.textContent=RELEASE;
+ const qb=q('#outlastQualityBadge');if(qb)qb.textContent=RELEASE+' • QUALITY';
+ const bb=q('#outlastBatch2Bar .b2v');if(bb)bb.textContent=RELEASE;
+ const up=q('#updatePopupVersion');if(up)up.textContent=RELEASE+' — Start Run Stability Fix';
+})}
+function docs(){safe(function(){
+ if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(RELEASE)))
+  window.updates.unshift([RELEASE+' — Start Run Stability Fix','Small bug fixes and game stability improvements. Rebuilt the final Start Run launcher so legacy Start handlers cannot take control of the button or cancel a valid run during startup.']);
+});safe(function(){
+ if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('Start Run Stability Fix')))
+  window.helpArticles.unshift(['How does the Start Run Stability Fix work?','Start Run','Start Run now uses one final launcher. It calls the stable gameplay core, repairs only missing runtime collections, confirms a valid player and running state, then releases the menu. Login and event systems are preserved.']);
+})}
+function closeLaunchUi(){safe(function(){const p=q('#subPanel');if(p)p.style.display='none'});safe(function(){qs('.update-pop').forEach(el=>{if(el.id!=='loginPopup')el.style.display='none'})});safe(function(){const p=q('#updatePopup');if(p)p.style.display='none'})}
+function repairRun(){
+ const g=window.game;if(!g||!g.player)return false;
+ ['enemies','bullets','gems','coins','shots','effects','particles','powerups','shrines'].forEach(k=>safe(function(){g[k]=Array.isArray(g[k])?g[k]:[]}));
+ if(!g.stats)safe(function(){g.stats={enemyMult:1,spawnMult:1,rewardMult:1,bossEvery:90,timeLimit:0,scoreMult:1,difficulty:{}}});
+ safe(function(){g.running=true;g.paused=false;g.over=false;g.starting=false;g.upgradeOpen=false;g.fatalError='';window.fatalGameError='';window.fatalErrorShown=false});
+ return Number.isFinite(Number(g.player.x))&&Number.isFinite(Number(g.player.y));
 }
-sync(); wire();
-[100,300,700,1500,3000,5000].forEach(ms=>setTimeout(function(){sync();wire()},ms));
-window.__OUTLAST_START_FINAL_AUDIT_33035=function(){
- const b=q('#startBtn'),g=window.game;
- return {version:RELEASE,wired:!!(b&&b.dataset.v33035Start==='1'),running:!!g?.running,player:!!g?.player,stats:!!g?.stats};
-};
+function launch(){
+ closeLaunchUi();safe(function(){if(typeof window.newRunStats==='function')window.newRunStats()});
+ let started=false;const core=window.__OUTLAST_ORIGINAL_START_CORE_33014;
+ if(typeof core==='function'){try{core(false)}catch(e){safe(function(){console.error('[OUTLAST Start core]',e)})}started=repairRun()}
+ if(!started&&typeof window.startGame==='function'){try{window.startGame(false)}catch(e){safe(function(){console.error('[OUTLAST Start game]',e)})}started=repairRun()}
+ if(started){
+  safe(function(){const m=q('#menu');if(m)m.style.display='none'});safe(function(){const s=q('#subPanel');if(s)s.style.display='none'});
+  safe(function(){document.body.classList.add('outlast-in-game')});safe(function(){if(window.c&&typeof window.c.focus==='function')window.c.focus()});
+  safe(function(){if(typeof window.syncMobileControls==='function')window.syncMobileControls()});
+  safe(function(){if(typeof window.syncExtractUI==='function')window.syncExtractUI()});
+  safe(function(){if(typeof window.syncOutlastChatUI==='function')window.syncOutlastChatUI()});return true;
+ }
+ safe(function(){if(typeof window.toast==='function')window.toast('Start Run could not initialize.')});return false;
+}
+function wire(){
+ const old=q('#startBtn');if(!old)return false;if(old.dataset.v33037Start==='1')return true;
+ const btn=old.cloneNode(true);btn.id='startBtn';btn.type='button';btn.dataset.v33037Start='1';
+ btn.removeAttribute('data-action');btn.removeAttribute('data-mobile-action');btn.removeAttribute('data-quality');
+ btn.onclick=null;btn.onpointerdown=null;btn.onpointerup=null;btn.style.pointerEvents='auto';btn.style.touchAction='manipulation';btn.style.position='relative';btn.style.zIndex='1000000';
+ const fire=function(e){if(e){e.preventDefault();e.stopPropagation()}if(btn.dataset.startBusy==='1')return false;btn.dataset.startBusy='1';let ok=false;try{ok=launch()}finally{setTimeout(function(){btn.dataset.startBusy='0'},700)}return ok};
+ btn.addEventListener('click',fire,{passive:false});btn.addEventListener('touchend',fire,{passive:false});old.replaceWith(btn);return true;
+}
+function boot(){sync();docs();wire();[100,300,700,1500,3000,5000,8000].forEach(ms=>setTimeout(function(){sync();docs();wire()},ms))}
+window.__OUTLAST_START_AUDIT_33037=function(){const b=q('#startBtn'),g=window.game;return{version:RELEASE,wired:!!(b&&b.dataset.v33037Start==='1'),core:typeof window.__OUTLAST_ORIGINAL_START_CORE_33014==='function',startGame:typeof window.startGame==='function',running:!!g?.running,player:!!g?.player}};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
-\n<script id="outlast-v33036-start-event-guard">
-(function(){
-'use strict';
-const RELEASE='v3.30.36';
-function hideLaunchEventOverlay(){
-  try{
-    if(!(window.game&&window.game.running))return;
-    const needles=['OUTLAST EVENT PROTOCOL','PROTOCOL ACTIVATION','SIGNAL LOCKED','RIFT PUMPKIN BREACH'];
-    document.querySelectorAll('body *').forEach(function(el){
-      if(el.id==='menu'||el.id==='game'||el.tagName==='SCRIPT'||el.tagName==='STYLE')return;
-      const t=String(el.textContent||'').toUpperCase();
-      if(!t||t.length>500)return;
-      if(needles.some(n=>t.includes(n))){
-        const cs=getComputedStyle(el);
-        if(cs.position==='fixed'||cs.position==='absolute'||cs.zIndex!=='auto'){
-          el.style.display='none';
-          el.setAttribute('data-start-launch-hidden','1');
-        }
-      }
-    });
-  }catch(_){}
-}
-function sync(){
-  document.title='OUTLAST '+RELEASE;
-  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-  if(a)a.content='3.30.36';if(b)b.content='3.30.36';
-  document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
-  document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
-}
-sync();
-const observer=new MutationObserver(function(){hideLaunchEventOverlay()});
-observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class']});
-[100,300,700,1200,2500,5000].forEach(ms=>setTimeout(function(){sync();hideLaunchEventOverlay()},ms));
-setInterval(hideLaunchEventOverlay,250);
-window.__OUTLAST_START_EVENT_GUARD_33036=true;
-})();
-</script>\n
+</html>

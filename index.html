@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.6">
-<meta name="build-version" content="3.30.6">
-<title>OUTLAST v3.30.6</title>
+<meta name="outlast-build" content="3.30.7">
+<meta name="build-version" content="3.30.7">
+<title>OUTLAST v3.30.7</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -7518,30 +7518,57 @@ function boot(){ensureSkin();renderHansenSkinMenu;installProjectileSkin();update
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
-<script id="outlast-v3304-update-popup-authority">
+<script id="outlast-v3307-update-popup-authority">
 (function(){
 'use strict';
-const VERSION='v3.30.5';
-const INFO={title:'v3.30.4 — Stability Update',summary:'Small bug fixes and stability improvements.',items:['Restored the stable Start Run baseline.','Removed the unstable Halloween presentation layer.','Repaired the Update News popup and its close/reopen behavior.']};
+const VERSION='v3.30.7';
+const INFO={
+ title:'v3.30.7 — Stability Update',
+ summary:'Small bug fixes and stability improvements.',
+ items:[
+  'Rewired the Update News popup so the latest release version is authoritative.',
+  'The popup no longer falls back to an older v3.30.4/v3.30.5 message.',
+  'Start Run remains on the rebuilt stable launch path.'
+ ]
+};
 function store(){try{return typeof outlastStorage!=='undefined'?outlastStorage:localStorage}catch(_){return localStorage}}
 function seen(){try{return store().getItem('outlastSeenUpdateVersion')||''}catch(_){return''}}
-function putSeen(){try{store().setItem('outlastSeenUpdateVersion',VERSION)}catch(_){}}
-function closePopup(){putSeen();const p=document.getElementById('updatePopup');if(p){p.style.display='none';p.style.visibility='hidden';p.setAttribute('aria-hidden','true')}}
-function showPopup(force=false){const p=document.getElementById('updatePopup');if(!p)return;if(!force&&seen()===VERSION)return;const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');if(v)v.textContent=INFO.title;if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false')}
+function markSeen(){try{store().setItem('outlastSeenUpdateVersion',VERSION)}catch(_){}}
+function closePopup(){
+ markSeen();
+ const p=document.getElementById('updatePopup');
+ if(p){p.style.display='none';p.style.visibility='hidden';p.setAttribute('aria-hidden','true')}
+}
+function showPopup(force=false){
+ const p=document.getElementById('updatePopup');if(!p)return;
+ if(!force&&seen()===VERSION)return;
+ const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
+ if(v)v.textContent=INFO.title;
+ if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+ p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
+}
 function wire(){
  const p=document.getElementById('updatePopup'),c=document.getElementById('updatePopupClose'),card=p?.querySelector('.update-pop-card');
  if(c)c.onclick=closePopup;
- if(p&&!p.dataset.v3305wired){
-  p.dataset.v3305wired='1';
-  document.addEventListener('click',e=>{
-   if(p.style.display!=='flex')return;
-   if(card&&card.contains(e.target))return;
-   closePopup();
-  },true);
+ if(p&&!p.dataset.v3307wired){
+  p.dataset.v3307wired='1';
+  p.addEventListener('click',e=>{if(e.target===p)closePopup()});
  }
 }
-function setVersion(){document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content='3.30.5';if(b)b.content='3.30.5';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.5';window.OUTLAST_VERSION=VERSION}
-function boot(){setVersion();wire();window.showUpdatePopup=showPopup;showPopup(false)}
+function setVersion(){
+ try{
+  document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
+  document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.30.7';if(b)b.content='3.30.7';
+  document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.7';window.OUTLAST_VERSION=VERSION;
+ }catch(_){}
+}
+function addDocs(){
+ try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(INFO.title)))updates.unshift([INFO.title,INFO.summary]);}catch(_){}
+ try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the v3.30.7 Update News popup work?')))helpArticles.unshift(['How does the v3.30.7 Update News popup work?','Updates','The Update News popup now uses v3.30.7 as its single authoritative release version. Older popup text is no longer allowed to replace the current release message.']);}catch(_){}
+}
+function boot(){setVersion();addDocs();wire();window.showUpdatePopup=showPopup;showPopup(false)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>

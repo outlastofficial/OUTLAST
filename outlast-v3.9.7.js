@@ -1,8 +1,8 @@
-/* OUTLAST v3.9.7 — Nightfall Event countdown */
+/* OUTLAST v3.30.22 — Nightfall Event countdown */
 (() => {
   'use strict';
 
-  const VERSION = '3.9.7';
+  const VERSION = '3.30.22';
   const EVENT_NAME = 'NIGHTFALL';
   const TARGET_MONTH = 9; // October, zero-based.
   const TARGET_DAY = 1;
@@ -124,7 +124,7 @@
     setInterval(createCard, 1500);
   }
 
-  window.OUTLAST_V397 = {
+  window.OUTLAST_V33022 = {
     version: VERSION,
     event: EVENT_NAME,
     startsAtLocal: targetTime()

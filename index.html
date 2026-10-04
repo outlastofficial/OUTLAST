@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.35">
-<meta name="build-version" content="3.30.35">
-<title>OUTLAST v3.30.35</title>
+<meta name="outlast-build" content="3.30.36">
+<meta name="build-version" content="3.30.36">
+<title>OUTLAST v3.30.36</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -8864,3 +8864,40 @@ window.__OUTLAST_START_FINAL_AUDIT_33035=function(){
 };
 })();
 </script>
+\n<script id="outlast-v33036-start-event-guard">
+(function(){
+'use strict';
+const RELEASE='v3.30.36';
+function hideLaunchEventOverlay(){
+  try{
+    if(!(window.game&&window.game.running))return;
+    const needles=['OUTLAST EVENT PROTOCOL','PROTOCOL ACTIVATION','SIGNAL LOCKED','RIFT PUMPKIN BREACH'];
+    document.querySelectorAll('body *').forEach(function(el){
+      if(el.id==='menu'||el.id==='game'||el.tagName==='SCRIPT'||el.tagName==='STYLE')return;
+      const t=String(el.textContent||'').toUpperCase();
+      if(!t||t.length>500)return;
+      if(needles.some(n=>t.includes(n))){
+        const cs=getComputedStyle(el);
+        if(cs.position==='fixed'||cs.position==='absolute'||cs.zIndex!=='auto'){
+          el.style.display='none';
+          el.setAttribute('data-start-launch-hidden','1');
+        }
+      }
+    });
+  }catch(_){}
+}
+function sync(){
+  document.title='OUTLAST '+RELEASE;
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.30.36';if(b)b.content='3.30.36';
+  document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
+  document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
+}
+sync();
+const observer=new MutationObserver(function(){hideLaunchEventOverlay()});
+observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class']});
+[100,300,700,1200,2500,5000].forEach(ms=>setTimeout(function(){sync();hideLaunchEventOverlay()},ms));
+setInterval(hideLaunchEventOverlay,250);
+window.__OUTLAST_START_EVENT_GUARD_33036=true;
+})();
+</script>\n

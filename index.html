@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.27.112">
-<meta name="build-version" content="3.27.112">
-<title>OUTLAST v3.27.112</title>
+<meta name="outlast-build" content="3.27.113">
+<meta name="build-version" content="3.27.113">
+<title>OUTLAST v3.27.113</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -895,7 +895,7 @@ button:hover{filter:brightness(1.12) saturate(1.1)}
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.27.112 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.27.113 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3995,7 +3995,7 @@ function renderUpdates(){
  
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
-const updates=[['v3.27.112 — Chat Safety Update','Improved chat filtering for obfuscated and spaced inappropriate messages.'],['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses a stronger safe-position search and refuses blocked fallback positions, preventing players, enemies, bosses, shrines, and pickups from being left inside solid map objects.'], ['v3.27.79 — Red Ball Nerf','Nerfed ranged enemy and boss red projectiles: 25% slower, 35% less damage, and a slightly smaller hitbox.'], ['v3.27.77 — Syntax & Regression Cleanup','Repaired the update-log declaration so the main UI script parses cleanly.'], ['v3.27.76 — Runtime Structure Guard','Closed a late script-boundary gap and consolidated Daily Shop handling into one source of truth.'], ['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
+const updates=[['v3.27.113 — Runtime Crash Fix','Prevented unsafe special-enemy repositioning and missing projectile-size values from crashing a run.'],['v3.27.112 — Chat Safety Update','Improved chat filtering for obfuscated and spaced inappropriate messages.'],['v3.27.81 — Guaranteed Safe Spawns','Spawn placement now uses a stronger safe-position search and refuses blocked fallback positions, preventing players, enemies, bosses, shrines, and pickups from being left inside solid map objects.'], ['v3.27.79 — Red Ball Nerf','Nerfed ranged enemy and boss red projectiles: 25% slower, 35% less damage, and a slightly smaller hitbox.'], ['v3.27.77 — Syntax & Regression Cleanup','Repaired the update-log declaration so the main UI script parses cleanly.'], ['v3.27.76 — Runtime Structure Guard','Closed a late script-boundary gap and consolidated Daily Shop handling into one source of truth.'], ['v3.27.74 — Stability & Regression Hardening','Hardened version synchronization, autosave behavior, leaderboard retry safety, admin test controls, and duplicate set application.'], ['v3.27.73 — Rarity Chance Fix','Fixed the duplicate six-tier upgrade rarity roller so Common through Omega now use the same canonical odds table shown in the Rarity screen.'], 
    ['v3.27.69 — Progression Gameplay Hardening','Removed duplicate contact damage processing and made pet abilities (including Ghost guard, Wolf attack, and Hawk marking) work reliably.'], ['v3.27.68 — Progression Systems Fix','Fixed zombie contact damage, pet/relic/charm level scaling and UI, complete weapon evolution coverage, live build sets/presets, Collection organization, rarity labels/chances, and leaderboard retry persistence.'], ['v3.27.67 — Progression & Leaderboard Fixes','Fixed zombie contact damage, gear levels, complete weapon evolution coverage, build sets/presets, collection organization, rarity labels/chances, and leaderboard local retry persistence.'], ['v3.27.65 — Game Crash Fix','Removed a recursive Upgrade Luck rarity wrapper that could crash the game when generating upgrade choices.'],
    ['v3.27.64 — Game Start Recovery Fix','Fixed the Start Run crash caused by Pet/Relic/Charm scaling being referenced before initialization.'],
    ['v3.27.63 — Progression & Upgrade Luck Rework','Upgrade rarity ladder restored through Omega, Upgrade Luck now visibly changes exact odds, gear levels now scale effects, and in-run chat is restored.'],
@@ -7238,7 +7238,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.27.112';
+  const VERSION='v3.27.113';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
@@ -7252,7 +7252,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   setTimeout(forceVersion,0);setTimeout(forceVersion,500);setTimeout(forceVersion,1500);setTimeout(forceVersion,3000);
 })();
 </script>
-<script src="outlast-version-v3.27.112.js?v=3.27.112"></script>
+<script src="outlast-version-v3.27.113.js?v=3.27.113"></script>
 <script src="rarity-rebuild-v3.27.96.js?v=3.27.96"></script>
 <script src="outlast-v32797-dash-spawn-hardening.js?v=3.27.99"></script>
 <script src="outlast-v32798-void-arsenal-balance.js?v=3.27.99"></script>

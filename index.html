@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.13">
-<meta name="build-version" content="3.30.13">
-<title>OUTLAST v3.30.13</title>
+<meta name="outlast-build" content="3.30.15">
+<meta name="build-version" content="3.30.15">
+<title>OUTLAST v3.30.15</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -895,7 +895,7 @@ button:hover{filter:brightness(1.12) saturate(1.1)}
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.28.2 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.15 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -7749,5 +7749,89 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   };
 })();
 </script>
+
+<script id="outlast-v33015-version-authority">
+(function(){
+  'use strict';
+  const VERSION='v3.30.15';
+  const INFO={
+    title:'v3.30.15 — Stability Update',
+    summary:'Fixed the Survivor Hub version marker getting overwritten by an older UI layer.',
+    items:[
+      'The Survivor Hub now stays on the current release version after all page scripts finish loading.',
+      'The visible menu marker, title, and build metadata are synchronized to the same release.',
+      'No login, save, gameplay, or moderation logic was changed.'
+    ]
+  };
+  function syncVersion(){
+    try{
+      document.querySelectorAll('.menu-chip').forEach(function(el){
+        if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
+      });
+      document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent=VERSION;});
+      const a=document.querySelector('meta[name="outlast-build"]');
+      const b=document.querySelector('meta[name="build-version"]');
+      if(a) a.content=VERSION.slice(1);
+      if(b) b.content=VERSION.slice(1);
+      document.title='OUTLAST '+VERSION;
+      window.OUTLAST_BUILD=VERSION.slice(1);
+      window.OUTLAST_VERSION=VERSION;
+    }catch(_){}
+  }
+  function showUpdatePopup(force){
+    let seen='';
+    try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
+    if(!force && seen==='3.30.15') return;
+    const pop=document.getElementById('updatePopup');
+    if(!pop) return;
+    const ver=document.getElementById('updatePopupVersion');
+    const body=document.getElementById('updatePopupBody');
+    if(ver) ver.textContent=INFO.title;
+    if(body) body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+    pop.style.display='flex';
+    pop.style.visibility='visible';
+    pop.setAttribute('aria-hidden','false');
+  }
+  function closeUpdatePopup(){
+    try{outlastStorage.setItem('outlastSeenUpdateVersion','3.30.15');}catch(_){}
+    const pop=document.getElementById('updatePopup');
+    if(pop) pop.style.display='none';
+  }
+  function docs(){
+    try{
+      if(Array.isArray(updates) && !updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.15');}))
+        updates.unshift(['v3.30.15 — Stability Update','Fixed the Survivor Hub version marker being overwritten by an older UI layer.']);
+    }catch(_){}
+    try{
+      if(Array.isArray(helpArticles) && !helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('Why is the Survivor Hub version locked to the current release?');}))
+        helpArticles.unshift(['Why is the Survivor Hub version locked to the current release?','Updates','A final release guard synchronizes the visible Survivor Hub marker, page title, and build metadata after older UI layers finish loading.']);
+    }catch(_){}
+  }
+  function wirePopup(){
+    const close=document.getElementById('updatePopupClose');
+    const pop=document.getElementById('updatePopup');
+    if(close) close.onclick=closeUpdatePopup;
+    if(pop && !pop.dataset.v33015Wired){
+      pop.addEventListener('click',function(e){if(e.target===pop) closeUpdatePopup();});
+      pop.dataset.v33015Wired='1';
+    }
+  }
+  function boot(){
+    syncVersion();
+    docs();
+    wirePopup();
+    [100,500,1200,2500,4500,6500].forEach(function(ms){
+      setTimeout(function(){syncVersion();docs();wirePopup();},ms);
+    });
+    // Legacy version layers can still run on delayed timers; keep the final release authoritative.
+    setInterval(syncVersion,1000);
+  }
+  window.showUpdatePopup=showUpdatePopup;
+  window.__OUTLAST_CURRENT_RELEASE_VERSION__=VERSION;
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+</script>
+
 </body>
 </html>

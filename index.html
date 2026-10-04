@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.23">
-<meta name="build-version" content="3.30.23">
-<title>OUTLAST v3.30.23</title>
+<meta name="outlast-build" content="3.30.24">
+<meta name="build-version" content="3.30.24">
+<title>OUTLAST v3.30.24</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -4175,7 +4175,7 @@ const updates=[['v3.28.2 — Upgrade Rarity Balance','Higher-rarity upgrades now
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
-const UPDATE_POPUP_FIX_ENTRY=['v3.28.9 — Update Popup Fix','Restored the main-menu Update News popup after the recent UI revert.']; try{ if(Array.isArray(updates)) updates.unshift(UPDATE_POPUP_FIX_ENTRY); }catch(_){ }
+const UPDATE_POPUP_FIX_ENTRY=['v3.30.24 — Stability & Update Authority Fix','Synchronized the Update News popup and release version so legacy scripts cannot overwrite the current build marker.']; try{ if(Array.isArray(updates)) updates.unshift(UPDATE_POPUP_FIX_ENTRY); }catch(_){ }
 const HALLOWEEN_UI_UPDATE_ENTRY=['v3.28.8 — UI Revert','Reverted the previous Halloween UI presentation layer while keeping the Owner access changes intact.']; try{ if(Array.isArray(updates)) updates.unshift(HALLOWEEN_UI_UPDATE_ENTRY); }catch(_){ }
 const POOL_AUDIT_UPDATE_ENTRY=['v3.27.94 — Rarity Pool Audit Fix','Moved the upgrade-pool consistency audit until after all upgrade batches load, preventing false console errors.']; try{ if(Array.isArray(updates)) updates.unshift(POOL_AUDIT_UPDATE_ENTRY); }catch(_){ }
 const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.94 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
@@ -4185,8 +4185,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.28.9';
-const CURRENT_UPDATE_INFO={title:'v3.28.9 — Update Popup Fix',summary:'Restored the main-menu Update News popup after the recent UI revert.',items:['The Update News popup now uses the current release version.','It appears once for a new version and can still be reopened from the normal update flow.','Existing login, saves, Owner access, and Owner Panel permissions were not changed.']};
+const CURRENT_UPDATE_VERSION='3.30.24';
+const CURRENT_UPDATE_INFO={title:'v3.30.24 — Stability & Update Authority Fix',summary:'Synchronized the Update News popup and release version so legacy scripts cannot overwrite the current build marker.',items:['The Update News popup now uses the current release version.', 'Legacy version overrides no longer replace the live build marker.', 'Existing login, saves, Owner access, and Owner Panel permissions were not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -7330,115 +7330,6 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 .chris-hansen-card{border-color:#d6a84f!important;background:linear-gradient(145deg,#241d12,#11161d)!important}
 .hansen-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.05em;margin-left:5px;background:#4a3918;color:#ffd86a;border:1px solid #9f7d2f}
 </style>
-<script id="outlast-v3290-hansen-character">
-(function(){
-'use strict';
-if(window.__outlastHansenCharacter3290)return;window.__outlastHansenCharacter3290=true;
-const VERSION='v3.29.0',HANSEN='ChrisHansen',BILLION=1000000000;
-if(typeof chars!=='undefined'&&!chars[HANSEN])chars[HANSEN]={cost:BILLION,hp:140,speed:300,damage:30,range:950,desc:'The legendary predator hunter. Cannot be defeated.',immortal:true,visual:{body:'#20262d',head:'#e2c3a3',visor:'#f5f5f5',style:'hansen'}};
-function ensure(){if(typeof save==='undefined'||!save)return;save.unlockedChars=save.unlockedChars&&typeof save.unlockedChars==='object'?save.unlockedChars:{}}
-ensure();
-window.renderHansenCharacterMenu=function(){
- ensure();
- const html=Object.entries(chars).map(([n,v])=>{const ok=!!save.unlockedChars[n],special=n===HANSEN;return '<button class="option '+(save.selectedChar===n?'selected ':'')+(special?'chris-hansen-card':'')+'" data-action="char" data-value="'+n+'"><b>'+n+(special?'<span class="hansen-badge">IMMORTAL</span>':'')+'</b><div class="small">'+v.desc+'</div><div class="small">'+(ok?'Unlocked':'Unlock: '+Number(v.cost||0).toLocaleString()+' coins')+'</div></button>'}).join('');
- openSub('🧍 Characters','<p class="note">Chris Hansen costs 1,000,000,000 coins and cannot be defeated in normal combat.</p><div class="grid">'+html+'</div>');
-};
-window.selectHansenCharacter=function(n){
- ensure();const v=chars[n];if(!v)return;
- if(!save.unlockedChars[n]){if(Number(save.coins||0)>=Number(v.cost||0)){save.coins-=Number(v.cost||0);save.unlockedChars[n]=true}else return toast('Not enough coins')}
- save.selectedChar=n;persist();window.renderHansenCharacterMenu();
-};
-if(document.getElementById('charBtn'))document.getElementById('charBtn').onclick=window.renderHansenCharacterMenu;
-if(typeof window.endRun==='function'&&!window.__hansenEndRunGuard3290){
- const realEndRun=window.endRun;
- window.endRun=function(victory,recordScore=true,showEnd=true){
-  if(!victory&&game?.running&&game?.player?.characterName===HANSEN&&Number(game.player.hp)<=0){
-   game.player.hp=Math.max(1,Number(game.player.max)||1);toast('🛡️ Chris Hansen cannot be defeated.');return;
-  }
-  return realEndRun.apply(this,arguments);
- };
- window.__hansenEndRunGuard3290=true;
-}
-if(typeof window.startGame==='function'&&!window.__hansenStartGuard3290){
- const realStart=window.startGame;
- window.startGame=function(){
-  const result=realStart.apply(this,arguments);
-  if(game?.player?.characterName===HANSEN){game.player.immortal=true;game.player.hp=game.player.max}
-  return result;
- };
- window.__hansenStartGuard3290=true;
-}
-try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.29.0')))updates.unshift(['v3.29.0 — Chris Hansen Character','Added Chris Hansen as a 1,000,000,000-coin immortal character.'])}catch(_){}
-try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does Chris Hansen work?')))helpArticles.unshift(['How does Chris Hansen work?','Characters','Chris Hansen costs 1,000,000,000 coins. Once unlocked and equipped, he cannot be defeated in normal combat.'])}catch(_){}
-window.showUpdatePopup=function(force=false){
- let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
- if(!force&&seen==='3.29.0')return;
- const pop=document.getElementById('updatePopup');if(!pop)return;
- const version=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
- if(version)version.textContent='v3.29.0 — Chris Hansen Character';
- if(body)body.innerHTML='<p class="note">A new endgame character has arrived.</p><ul class="update-pop-list"><li>Chris Hansen costs 1,000,000,000 coins.</li><li>Chris Hansen cannot be defeated in normal combat.</li><li>Login and existing player saves are preserved.</li></ul>';
- pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
-};
-function forceVersion(){
- document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});
- document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
- const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
- if(a)a.content='3.29.0';if(b)b.content='3.29.0';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.29.0';window.OUTLAST_VERSION=VERSION;
-}
-forceVersion();setTimeout(forceVersion,100);setTimeout(forceVersion,1000);
-})();
-</script>
-
-
-<script id="outlast-v3289-update-popup-final-guard">
-(function(){
-'use strict';
-const VERSION='3.28.9';
-const INFO={
- title:'v3.28.9 — Update Popup Fix',
- summary:'Restored the main-menu Update News popup after the recent UI revert.',
- items:[
-  'The Update News popup now uses the current release version.',
-  'It appears once for a new version and can still be reopened from the normal update flow.',
-  'Existing login, saves, Owner access, and Owner Panel permissions were not changed.'
- ]
-};
-function showCurrentUpdatePopup(force){
- let seen='';
- try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
- if(!force&&seen===VERSION)return;
- const pop=document.getElementById('updatePopup');
- if(!pop)return;
- const version=document.getElementById('updatePopupVersion');
- const body=document.getElementById('updatePopupBody');
- if(version)version.textContent=INFO.title;
- if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
- pop.style.display='flex';
- pop.style.visibility='visible';
- pop.setAttribute('aria-hidden','false');
-}
-function closeCurrentUpdatePopup(){
- try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION);}catch(_){}
- const pop=document.getElementById('updatePopup');
- if(pop)pop.style.display='none';
-}
-window.showUpdatePopup=showCurrentUpdatePopup;
-window.__OUTLAST_CURRENT_UPDATE_POPUP_VERSION=VERSION;
-try{document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});}catch(_){}
-try{const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content=VERSION;if(b)b.content=VERSION;document.title='OUTLAST v'+VERSION;window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;}catch(_){}
-function wire(){
- const close=document.getElementById('updatePopupClose');
- const pop=document.getElementById('updatePopup');
- if(close)close.onclick=closeCurrentUpdatePopup;
- if(pop)pop.addEventListener('click',e=>{if(e.target===pop)closeCurrentUpdatePopup()});
-}
-function boot(){
- wire();
- [150,500,1200,2500].forEach(ms=>setTimeout(()=>{try{wire();showCurrentUpdatePopup(false);}catch(_){}},ms));
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
-})();
-</script>
 <style id="outlast-v3300-hansen-railgun-skin">
 .hansen-skin-card{border-color:#d6a84f!important;background:linear-gradient(145deg,#241d12,#11161d)!important}
 .hansen-tier-badge{display:inline-block;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.06em;margin-left:5px;background:#4a3918;color:#ffd86a;border:1px solid #9f7d2f}

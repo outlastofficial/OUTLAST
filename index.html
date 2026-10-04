@@ -7855,7 +7855,7 @@ window.__OUTLAST_CORE_AUDIT_33023=function(){return {version:VERSION,startCore:t
 <script id="outlast-batch1-stability-and-systems">
 (function(){
 'use strict';
-const V='3.30.25', RELEASE='v'+V;
+const V='3.30.26', RELEASE='v'+V;
 const root=document.documentElement;
 function q(s){try{return document.querySelector(s)}catch(_){return null}}
 function qs(s){try{return Array.from(document.querySelectorAll(s))}catch(_){return []}}
@@ -7877,12 +7877,13 @@ function syncRelease(){
   });
 }
 const INFO={
- title:RELEASE+' — Stability + Systems Batch',
+ title:RELEASE+' — Stability + Systems Batch — Gate 2',
  summary:'A large stability and quality batch is now active. Existing progression and the stable Start Run core are preserved.',
  items:[
   'Final release/version authority now stays on '+RELEASE+'.',
   'Save recovery, settings persistence, responsive controls, and UI overflow guards were strengthened.',
   'Run-start and enemy-spawn safety guards were added without replacing the stable Start Run core.',
+  'The spawn clamp now uses the actual game canvas reference and cannot fail from an undeclared variable.',
   'Update News and How To now point to the current release instead of legacy runtime markers.'
  ]
 };
@@ -7975,8 +7976,8 @@ function installSpawnGuard(){
       if(!Array.isArray(arr)||arr.length<=before)return;
       const e=arr[arr.length-1];
       if(!e)return;
-      e.x=Math.max(-24,Math.min((window.W||canvas?.width||innerWidth)+24,Number(e.x)||0));
-      e.y=Math.max(-24,Math.min((window.H||canvas?.height||innerHeight)+24,Number(e.y)||0));
+      e.x=Math.max(-24,Math.min((window.W||(q('#game')?.width)||innerWidth)+24,Number(e.x)||0));
+      e.y=Math.max(-24,Math.min((window.H||(q('#game')?.height)||innerHeight)+24,Number(e.y)||0));
     });
     return out;
   }

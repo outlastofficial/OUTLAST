@@ -115,7 +115,8 @@
     while(out.length<3&&guard++<90){
       const available=UPGRADE_RARITY_ORDER.filter(r=>eligible(r,usedNames).length);
       if(!available.length)break;
-      const rarity=available.includes(rollUpgradeRarity())?rollUpgradeRarity():weightedAvailableRarity(available);
+      const rolled=rollUpgradeRarity();
+      const rarity=available.includes(rolled)?rolled:weightedAvailableRarity(available);
       const pool=eligible(rarity,usedNames);
       if(!pool.length)continue;
       const categoryPool=(typeof upgradeCategory==='function')?pool.filter(n=>!usedCats.has(upgradeCategory(n))):pool;

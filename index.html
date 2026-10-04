@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.34">
-<meta name="build-version" content="3.30.34">
-<title>OUTLAST v3.30.34</title>
+<meta name="outlast-build" content="3.30.35">
+<meta name="build-version" content="3.30.35">
+<title>OUTLAST v3.30.35</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2122,6 +2122,31 @@ function startGame(fromRoom=false){
    /* A player may already be fully constructed when an optional launch hook fails.
       Never throw away a valid run because a secondary UI/system hook errored. */
    if(game&&game.player){
+     /* v3.30.35: a launch hook can throw after the player is constructed but
+        before game.stats is assigned. Never enter the update loop with partial
+        run state; repair the minimum required runtime state first. */
+     if(!game.stats){
+       const d=diffDefs?.[save?.difficulty]||diffDefs?.Normal||{enemy:1,spawn:1,reward:1};
+       const m=modeDefs?.[save?.mode]||modeDefs?.Classic||{timeLimit:0,scoreMult:1};
+       game.stats={
+         enemyMult:Number(d.enemy)||1,
+         spawnMult:Number(d.spawn)||1,
+         rewardMult:Number(d.reward)||1,
+         bossEvery:90,
+         timeLimit:Number(m.timeLimit)||0,
+         scoreMult:Number(m.scoreMult)||1,
+         difficulty:d
+       };
+     }
+     game.enemies=Array.isArray(game.enemies)?game.enemies:[];
+     game.bullets=Array.isArray(game.bullets)?game.bullets:[];
+     game.gems=Array.isArray(game.gems)?game.gems:[];
+     game.coins=Array.isArray(game.coins)?game.coins:[];
+     game.shots=Array.isArray(game.shots)?game.shots:[];
+     game.effects=Array.isArray(game.effects)?game.effects:[];
+     game.particles=Array.isArray(game.particles)?game.particles:[];
+     game.powerups=Array.isArray(game.powerups)?game.powerups:[];
+     game.shrines=Array.isArray(game.shrines)?game.shrines:[];
      game.running=true;
      game.paused=false;
      game.over=false;
@@ -8766,5 +8791,76 @@ else boot();
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
+})();
+</script>
+
+<script id="outlast-v33035-start-finalizer">
+(function(){
+'use strict';
+const RELEASE='v3.30.35';
+function q(s){try{return document.querySelector(s)}catch(_){return null}}
+function wire(){
+ const old=q('#startBtn'); if(!old)return;
+ if(old.dataset.v33035Start==='1')return;
+ const btn=old.cloneNode(true);
+ btn.id='startBtn'; btn.type='button'; btn.dataset.v33035Start='1';
+ btn.removeAttribute('data-action'); btn.removeAttribute('data-mobile-action'); btn.removeAttribute('data-quality');
+ btn.onclick=null; btn.onpointerup=null; btn.onpointerdown=null;
+ btn.style.pointerEvents='auto'; btn.style.touchAction='manipulation';
+ btn.addEventListener('click',function(e){
+   e.preventDefault(); e.stopPropagation();
+   if(btn.dataset.startBusy==='1')return;
+   btn.dataset.startBusy='1';
+   try{
+     if(typeof window.__OUTLAST_START_AUDIT_33034==='function'){}
+     const core=window.__OUTLAST_ORIGINAL_START_CORE_33014;
+     if(typeof core==='function'){
+       try{if(typeof window.newRunStats==='function')window.newRunStats()}catch(_){}
+       core(false);
+     }else if(typeof window.startGame==='function'){
+       window.startGame(false);
+     }
+     const g=window.game;
+     if(g&&g.player){
+       if(!g.stats)g.stats={enemyMult:1,spawnMult:1,rewardMult:1,bossEvery:90,timeLimit:0,scoreMult:1,difficulty:{}};
+       g.enemies=Array.isArray(g.enemies)?g.enemies:[];
+       g.bullets=Array.isArray(g.bullets)?g.bullets:[];
+       g.gems=Array.isArray(g.gems)?g.gems:[];
+       g.coins=Array.isArray(g.coins)?g.coins:[];
+       g.shots=Array.isArray(g.shots)?g.shots:[];
+       g.effects=Array.isArray(g.effects)?g.effects:[];
+       g.particles=Array.isArray(g.particles)?g.particles:[];
+       g.powerups=Array.isArray(g.powerups)?g.powerups:[];
+       g.shrines=Array.isArray(g.shrines)?g.shrines:[];
+       g.running=true; g.paused=false; g.over=false; g.starting=false;
+       g.upgradeOpen=false;
+       window.fatalGameError=''; window.fatalErrorShown=false;
+       const menu=q('#menu'); if(menu)menu.style.display='none';
+       const sub=q('#subPanel'); if(sub)sub.style.display='none';
+       if(window.c&&typeof window.c.focus==='function')window.c.focus();
+       if(typeof window.syncMobileControls==='function')window.syncMobileControls();
+       if(typeof window.syncExtractUI==='function')window.syncExtractUI();
+     }
+   }catch(err){
+     try{console.error('[OUTLAST Start]',err)}catch(_){}
+   }finally{
+     setTimeout(function(){btn.dataset.startBusy='0'},500);
+   }
+ });
+ old.replaceWith(btn);
+}
+function sync(){
+ document.title='OUTLAST '+RELEASE;
+ const a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
+ if(a)a.content='3.30.35'; if(b)b.content='3.30.35';
+ document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
+ document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
+}
+sync(); wire();
+[100,300,700,1500,3000,5000].forEach(ms=>setTimeout(function(){sync();wire()},ms));
+window.__OUTLAST_START_FINAL_AUDIT_33035=function(){
+ const b=q('#startBtn'),g=window.game;
+ return {version:RELEASE,wired:!!(b&&b.dataset.v33035Start==='1'),running:!!g?.running,player:!!g?.player,stats:!!g?.stats};
+};
 })();
 </script>

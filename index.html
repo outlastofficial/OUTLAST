@@ -4182,7 +4182,7 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.28.8';
+const CURRENT_UPDATE_VERSION='3.28.9';
 const CURRENT_UPDATE_INFO={title:'v3.28.8 — UI Revert',summary:'Reverted the previous Halloween UI presentation layer while keeping the Owner access changes intact.',items:['Reverted the previous Halloween menu styling.','Restored the prior stable menu presentation.','Kept BillyBimbo Owner access and owner-only panel visibility.','Kept the no-secondary-password Owner flow.']};
 function showUpdatePopup(force=false){
   let seen='';
@@ -7440,5 +7440,53 @@ forceVersion();setTimeout(forceVersion,100);setTimeout(forceVersion,1000);
 })();
 </script>
 
+
+<script id="outlast-v3289-update-popup-final-guard">
+(function(){
+'use strict';
+const VERSION='3.28.9';
+const INFO={
+ title:'v3.28.9 — Update Popup Fix',
+ summary:'Restored the main-menu Update News popup after the recent UI revert.',
+ items:[
+  'The Update News popup now uses the current release version.',
+  'It appears once for a new version and can still be reopened from the normal update flow.',
+  'Existing login, saves, Owner access, and Owner Panel permissions were not changed.'
+ ]
+};
+function showCurrentUpdatePopup(force){
+ let seen='';
+ try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
+ if(!force&&seen===VERSION)return;
+ const pop=document.getElementById('updatePopup');
+ if(!pop)return;
+ const version=document.getElementById('updatePopupVersion');
+ const body=document.getElementById('updatePopupBody');
+ if(version)version.textContent=INFO.title;
+ if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+ pop.style.display='flex';
+ pop.style.visibility='visible';
+ pop.setAttribute('aria-hidden','false');
+}
+function closeCurrentUpdatePopup(){
+ try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION);}catch(_){}
+ const pop=document.getElementById('updatePopup');
+ if(pop)pop.style.display='none';
+}
+window.showUpdatePopup=showCurrentUpdatePopup;
+window.__OUTLAST_CURRENT_UPDATE_POPUP_VERSION=VERSION;
+function wire(){
+ const close=document.getElementById('updatePopupClose');
+ const pop=document.getElementById('updatePopup');
+ if(close)close.onclick=closeCurrentUpdatePopup;
+ if(pop)pop.addEventListener('click',e=>{if(e.target===pop)closeCurrentUpdatePopup()});
+}
+function boot(){
+ wire();
+ [150,500,1200,2500].forEach(ms=>setTimeout(()=>{try{wire();showCurrentUpdatePopup(false);}catch(_){}},ms));
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
 </body>
 </html>

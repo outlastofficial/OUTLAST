@@ -3,7 +3,7 @@
   'use strict';
   if(window.__outlastRecoveryAuthority3281)return;
   window.__outlastRecoveryAuthority3281=true;
-  const VERSION='v3.28.1';
+  const VERSION='v3.30.3';
 
   function menuVisible(){
     const el=document.getElementById('menu');
@@ -88,7 +88,7 @@
   function addDocs(){
     try{
       if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('Game Viewport Recovery'))){
-        updates.unshift(['v3.28.1 — Game Viewport Recovery','Fixed the blank in-game screen recovery state, restored the menu when a run stops unexpectedly, repaired invalid camera coordinates, and corrected the stale Quality version badge. Login was not changed.']);
+        updates.unshift(['v3.28.1 — Game Viewport Recovery','Maintained the stable in-game recovery path, restored the menu when a run stops unexpectedly, repaired invalid camera coordinates, and corrected the stale Quality version badge. Login was not changed.']);
       }
       if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('blank in-game screen'))){
         helpArticles.unshift(['What should I do if the game screen is blank?','Troubleshooting','OUTLAST now automatically repairs invalid camera/player state and returns to the menu if a run stops without a proper game-over screen. Refreshing is no longer required for the normal recovery path.']);

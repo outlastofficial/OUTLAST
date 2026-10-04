@@ -3,7 +3,7 @@
   'use strict';
   if(window.__outlastRecoveryAuthority3281)return;
   window.__outlastRecoveryAuthority3281=true;
-  const VERSION='v3.30.3';
+  const VERSION='v3.30.9';
 
   function menuVisible(){
     const el=document.getElementById('menu');

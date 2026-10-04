@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.31">
-<meta name="build-version" content="3.30.31">
-<title>OUTLAST v3.30.31</title>
+<meta name="outlast-build" content="3.30.32">
+<meta name="build-version" content="3.30.32">
+<title>OUTLAST v3.30.32</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3888,7 +3888,7 @@ document.getElementById('extrasBtn').onclick=renderExtras;
 document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
-const RUNTIME_FIX_HELP_ENTRY=['What changed in v3.27.113?','Updates','Small bug fixes and game stability improvements. The runtime now safely handles special-enemy repositioning when no clear position exists and gives special weapons a safe projectile-size fallback. Login was not changed.'];
+const RUNTIME_FIX_HELP_ENTRY=['What changed in v3.30.32?','Updates','Small bug fixes and game stability improvements. Start Run now correctly treats already-safe player and pickup positions as valid and no longer cancels a live run on the first update tick.'];
 try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.27.113?')))helpArticles.unshift(RUNTIME_FIX_HELP_ENTRY);}catch(_){}
 
 const OWNER_PERMISSION_HELP_ENTRY=['How do owner permissions work?','Owner Panel','Recognized owner usernames can open the Owner Panel directly without a second password prompt. Normal player login is unchanged.']; if(!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How do owner permissions work?')))helpArticles.unshift(OWNER_PERMISSION_HELP_ENTRY); const BAN_HELP_ENTRY=['How does player banning work?','Owner Panel','Use Owner Panel → Players → BAN PLAYER. The server immediately disconnects the target and blocks the username from registration, chat, rooms, event contributions, rewards, feedback, and leaderboard submissions until it is unbanned.'];
@@ -6563,7 +6563,7 @@ function recordRun(victory){
 }
 function install(){
  ensure();apply();
- const badge=document.createElement('div');badge.id='outlastQualityBadge';badge.textContent=VERSION+' • QUALITY';document.body.appendChild(badge);
+ const badge=document.createElement('div');badge.id='outlastQualityBadge';badge.textContent='v3.30.32 • QUALITY';document.body.appendChild(badge);
  const more=document.querySelector('[data-page-content="more"] .menu-cards'),progress=document.querySelector('[data-page-content="progress"] .menu-cards'),play=document.querySelector('[data-page-content="play"] .menu-cards');
  document.getElementById('qualityHubBtn')?.closest('.menu-card')?.remove();
  if(progress&&!document.getElementById('runHistoryBtn')){const d=document.createElement('div');d.className='menu-card';d.innerHTML='<h3>Run History</h3><button class="menu-btn" id="runHistoryBtn">🗂️ Run History</button>';progress.appendChild(d)}
@@ -7220,7 +7220,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
       const before=game.enemies.length,result=oldEnemy.apply(this,arguments);
       for(let i=before;i<game.enemies.length;i++){
         const e=game.enemies[i];
-        if(!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
+        if(e&&blocked(e.x,e.y,Math.max(6,Number(e.r)||15))&&!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
       }
       return result;
     };
@@ -7232,7 +7232,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
       const before=game.enemies.length,result=oldBoss.apply(this,arguments);
       for(let i=before;i<game.enemies.length;i++){
         const e=game.enemies[i];
-        if(!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
+        if(e&&blocked(e.x,e.y,Math.max(6,Number(e.r)||15))&&!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
       }
       return result;
     };
@@ -7244,7 +7244,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
       const before=game.shrines.length,result=oldShrine.apply(this,arguments);
       for(let i=before;i<game.shrines.length;i++){
         const e=game.shrines[i];
-        if(!repair(e,null,null,true))game.shrines.splice(i--,1);
+        if(e&&blocked(e.x,e.y,Math.max(6,Number(e.r)||18))&&!repair(e,null,null,true))game.shrines.splice(i--,1);
       }
       return result;
     };
@@ -7277,11 +7277,11 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
     window.update=function(dt){
       oldUpdate(dt);
       try{
-        if(game.player&&!repair(game.player,null,null,false)){game.running=false;return;}
+        if(game.player&&blocked(game.player.x,game.player.y,Math.max(6,Number(game.player.r)||20))&&!repair(game.player,null,null,false)){game.running=false;return;}
         if(game.player2)repair(game.player2,game.player?.x??null,game.player?.y??null,false);
         for(let i=(game.enemies||[]).length-1;i>=0;i--)if(!repair(game.enemies[i],game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i,1);
         for(let i=(game.shrines||[]).length-1;i>=0;i--)if(!repair(game.shrines[i],null,null,true))game.shrines.splice(i,1);
-        for(const list of [game.coins||[],game.gems||[],game.powerups||[]])for(let i=list.length-1;i>=0;i--)if(!repair(list[i],null,null,true))list.splice(i,1);
+        for(const list of [game.coins||[],game.gems||[],game.powerups||[]])for(let i=list.length-1;i>=0;i--){const item=list[i];if(item&&blocked(item.x,item.y,Math.max(6,Number(item.r)||12))&&!repair(item,null,null,true))list.splice(i,1);}
       }catch(_){/* spawn safety must never break the main game loop */}
     };
   }
@@ -8204,7 +8204,7 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 <script id="outlast-v33029-start-bug-isolation">
 (function(){
 'use strict';
-const VERSION='3.30.31', RELEASE='v'+VERSION;
+const VERSION='3.30.32', RELEASE='v'+VERSION;
 function q(s){try{return document.querySelector(s)}catch(_){return null}}
 function safe(fn,fallback){try{return fn()}catch(_){return fallback}}
 function setRelease(){
@@ -8229,8 +8229,8 @@ function docs(){
       return Array.isArray(x)&&String(x[0]).indexOf(RELEASE)>=0;
     })){
       window.updates.unshift([
-        RELEASE+' — Start Run Recovery Race Fix',
-        'Small bug fixes and game stability improvements. Start Run no longer races the legacy recovery guard during player initialization, and remains isolated from Bug Reporting.'
+        RELEASE+' — Start Run Spawn Guard Fix',
+        'Small bug fixes and game stability improvements. Start Run now correctly treats already-safe player and pickup positions as valid and no longer cancels a live run on the first update tick.'
       ]);
     }
   });

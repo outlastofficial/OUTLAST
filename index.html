@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.5">
-<meta name="build-version" content="3.28.9">
-<title>OUTLAST v3.30.5</title>
+<meta name="outlast-build" content="3.30.6">
+<meta name="build-version" content="3.30.6">
+<title>OUTLAST v3.30.6</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2104,6 +2104,8 @@ function startGame(fromRoom=false){
    }
  }
 }
+/* v3.30.6 — Stable Start Core */
+if(typeof window.__OUTLAST_CORE_START_GAME!=='function')window.__OUTLAST_CORE_START_GAME=startGame;
 function exitGame(){
   coopLaunchActive=false;
   if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
@@ -3310,34 +3312,35 @@ document.getElementById('subContent').addEventListener('click',e=>{
 });
 const startBtn=document.getElementById('startBtn');
 function activateStartRun(ev){
-  if(ev){ev.preventDefault();ev.stopPropagation();}
+  if(ev){ev.preventDefault();ev.stopImmediatePropagation();}
   if(startBtn.dataset.startLock==='1')return;
   startBtn.dataset.startLock='1';
   try{
-    newRunStats();
-    startGame(false);
-    if(game.running&&game.player){
-      document.getElementById('menu').style.display='none';
-      document.getElementById('subPanel').style.display='none';
-      fatalErrorShown=false;fatalGameError='';
-      syncMobileControls();syncGameAdminUI();
-      setTimeout(()=>c.focus(),0);
-    }else{
-      game.running=false;
-      game.paused=false;
-      document.getElementById('menu').style.display='flex';
-    }
+    if(typeof newRunStats==='function')newRunStats();
+    const core=window.__OUTLAST_CORE_START_GAME;
+    if(typeof core!=='function')throw new Error('Stable Start Core is unavailable');
+    core.call(window,false);
+    if(!game.running||!game.player)throw new Error('Run did not enter gameplay state');
+    try{if(typeof applyMapModifiers==='function')applyMapModifiers()}catch(_){}
+    try{if(typeof window.__applyAllSets==='function')window.__applyAllSets()}catch(_){}
+    document.getElementById('menu').style.display='none';
+    document.getElementById('subPanel').style.display='none';
+    fatalErrorShown=false;fatalGameError='';game.over=false;game.paused=false;
+    syncMobileControls();syncGameAdminUI();
+    setTimeout(()=>c.focus(),0);
   }catch(err){
     fatalGameError=err?.message||String(err);
     fatalErrorShown=true;
     game.running=false;game.paused=false;game.over=true;
-    document.getElementById('menu').style.display='flex';
-    document.getElementById('subPanel').style.display='none';
+    try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';}catch(_){}
+    try{syncMobileControls();}catch(_){}
+    try{toast('⚠️ Start Run failed: '+fatalGameError);}catch(_){}
   }finally{
-    setTimeout(()=>{startBtn.dataset.startLock='';},400);
+    setTimeout(()=>{startBtn.dataset.startLock='';},500);
   }
 }
 startBtn.onclick=activateStartRun;
+startBtn.addEventListener('pointerup',activateStartRun,{passive:false});
 document.getElementById('mapBtn').onclick=()=>{openSub('🗺️ Choose Map','<div class="grid">'+Object.keys(mapDefs).map(x=>`<button class="option ${save.map===x?'selected':''}" data-action="map" data-value="${x}"><b>${x}</b></button>`).join('')+'</div>')};
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
@@ -7546,6 +7549,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
 try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.4')))updates.unshift(['v3.30.4 — Stability Update','Small bug fixes and stability improvements.']);}catch(_){}
 try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.30.4?')))helpArticles.unshift(['What changed in v3.30.4?','Updates','Small bug fixes and stability improvements, including restoration of the stable Start Run path, removal of the unstable Halloween presentation layer, and the Update News popup repair.']);}catch(_){}
+})();
+</script>
+<script id="outlast-v3306-start-rewire">
+(function(){
+'use strict';
+const VERSION='v3.30.6';
+const INFO={title:'v3.30.6 — Stable Start Run Rebuild',summary:'Small bug fixes and stability improvements.',items:['Rebuilt Start Run around the stable core launcher.','The Start button no longer depends on later gameplay wrapper layers.','Map and build-set effects are applied after launch without blocking the run.']};
+try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(INFO.title)))updates.unshift([INFO.title,INFO.summary]);}catch(_){}
+try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the rebuilt Start Run system work?')))helpArticles.unshift(['How does the rebuilt Start Run system work?','Updates','Start Run uses a dedicated stable core launcher captured before later feature wrappers load. Map modifiers and build-set bonuses are applied after the core launch so feature hooks cannot block the run.']);}catch(_){}
+function setVersion(){
+ try{
+  document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
+  document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';});
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.30.6';if(b)b.content='3.30.6';
+  document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.6';window.OUTLAST_VERSION=VERSION;
+ }catch(_){}
+}
+function boot(){setVersion();const b=document.getElementById('startBtn');if(b)b.setAttribute('aria-label','Start Run');}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
 </body>

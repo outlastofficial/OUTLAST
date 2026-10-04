@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.32">
-<meta name="build-version" content="3.30.32">
-<title>OUTLAST v3.30.32</title>
+<meta name="outlast-build" content="3.30.33">
+<meta name="build-version" content="3.30.33">
+<title>OUTLAST v3.30.33</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -8361,6 +8361,54 @@ window.__OUTLAST_START_AUDIT_33029=function(){
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
 else boot();
+})();
+</script>
+
+<script id="outlast-v33033-release-cleanup">
+(function(){
+'use strict';
+const VERSION='3.30.33', RELEASE='v3.30.33';
+const q=s=>{try{return document.querySelector(s)}catch(_){return null}};
+const qs=s=>{try{return Array.from(document.querySelectorAll(s))}catch(_){return []}};
+function sync(){
+  try{
+    document.title='OUTLAST '+RELEASE;
+    const a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
+    if(a)a.content=VERSION;if(b)b.content=VERSION;
+    window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION=RELEASE;
+    window.__OUTLAST_CURRENT_RELEASE_VERSION__=RELEASE;
+    qs('[data-outlast-version]').forEach(e=>e.textContent=RELEASE);
+    qs('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=RELEASE+' • SURVIVOR HUB'});
+    const vb=q('#outlastVersionBadge');if(vb)vb.textContent=RELEASE;
+    const qb=q('#outlastQualityBadge');if(qb)qb.textContent=RELEASE+' • QUALITY';
+    const bb=q('#outlastBatch2Bar .b2v');if(bb)bb.textContent=RELEASE;
+    const upVer=q('#updatePopupVersion');if(upVer)upVer.textContent=RELEASE+' — Start Run Spawn Guard Fix';
+  }catch(_){}
+}
+function docs(){
+  try{
+    if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(RELEASE))){
+      window.updates.unshift([RELEASE+' — Start Run Spawn Guard Fix','Small bug fixes and game stability improvements. Corrected the spawn-safety guard so valid player positions no longer cancel the run on the first update tick.']);
+    }
+  }catch(_){}
+  try{
+    if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the Start Run spawn guard work?'))){
+      window.helpArticles.unshift(['How does the Start Run spawn guard work?','Troubleshooting','A valid player, enemy, or pickup position is now treated as safe. The guard only repairs or removes an entity when it is actually blocked or impossible to place.']);
+    }
+  }catch(_){}
+}
+function popup(force){
+  const p=q('#updatePopup');if(!p)return;
+  let seen='';try{seen=localStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
+  if(!force&&seen===VERSION)return;
+  const v=q('#updatePopupVersion'),body=q('#updatePopupBody');
+  if(v)v.textContent=RELEASE+' — Start Run Spawn Guard Fix';
+  if(body)body.innerHTML='<p class="note">Small bug fixes and game stability improvements.</p><ul class="update-pop-list"><li>Fixed the spawn-safety guard that was cancelling valid runs on the first game tick.</li><li>Start Run remains isolated from Bug Reporting and feedback routing.</li><li>Current map, save data, and login behavior were preserved.</li></ul>';
+  p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
+}
+window.showUpdatePopup=popup;
+sync();docs();
+[100,500,1200,2500,5000,6500].forEach(function(ms){setTimeout(function(){sync();docs()},ms)});
 })();
 </script>
 </html>\n

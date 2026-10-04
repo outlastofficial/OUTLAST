@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.5">
-<meta name="build-version" content="3.28.5">
-<title>OUTLAST v3.28.5</title>
+<meta name="outlast-build" content="3.28.6">
+<meta name="build-version" content="3.28.6">
+<title>OUTLAST v3.28.6</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -4173,6 +4173,7 @@ const updates=[['v3.28.2 — Upgrade Rarity Balance','Higher-rarity upgrades now
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
+const HALLOWEEN_UI_UPDATE_ENTRY=['v3.28.6 — Halloween UI','Added a lightweight Halloween presentation pass with moonlit gradients, pumpkin/candle accents, spooky cards, and responsive styling without changing gameplay or login.']; try{ if(Array.isArray(updates)) updates.unshift(HALLOWEEN_UI_UPDATE_ENTRY); }catch(_){ }
 const POOL_AUDIT_UPDATE_ENTRY=['v3.27.94 — Rarity Pool Audit Fix','Moved the upgrade-pool consistency audit until after all upgrade batches load, preventing false console errors.']; try{ if(Array.isArray(updates)) updates.unshift(POOL_AUDIT_UPDATE_ENTRY); }catch(_){ }
 const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.94 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
 const TUTORIAL_UPDATE_ENTRY=['v3.27.85 — Tutorial Reliability Final Fix','Fixed the New Player Tutorial overlay so focused gameplay elements cannot cover the tutorial controls, and made the tutorial launch reliably from PC clicks and mobile touch/pointer input. Login was not changed.'];
@@ -4181,8 +4182,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.28.5';
-const CURRENT_UPDATE_INFO={title:'v3.28.5 — Stable UI Rebuild',summary:'Rebuilt the main interface on the last stable layout and removed the broken Nightfall presentation layer.',items:['Restored the stable menu layout and interaction flow.','Removed the unstable animated Nightfall UI layer that could interfere with the menu/game boot state.','Kept gameplay, login, moderation, saving, and rarity systems unchanged.','Improved PC and mobile menu sizing and scrolling without changing controls.']};
+const CURRENT_UPDATE_VERSION='3.28.6';
+const CURRENT_UPDATE_INFO={title:'v3.28.6 — Halloween UI',summary:'Added a lightweight Halloween presentation pass built entirely from stable CSS so the menu stays responsive and reliable.',items:['Added a Halloween moonlit menu background with orange and purple accents.','Added subtle pumpkin, candle, and spooky-card details without adding runtime UI overlays.','Kept the existing menu structure, buttons, login, saving, and gameplay logic unchanged.','Built the visual layer to scale cleanly on PC and mobile.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -7263,7 +7264,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.28.5';
+  const VERSION='v3.28.6';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
@@ -7365,10 +7366,10 @@ function repair(){
     if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
   });
   const build=document.querySelector('meta[name="build-version"]');
-  if(build)build.content='3.28.5';
+  if(build)build.content='3.28.6';
   const out=document.querySelector('meta[name="outlast-build"]');
-  if(out)out.content='3.28.5';
-  window.OUTLAST_BUILD='3.28.5';
+  if(out)out.content='3.28.6';
+  window.OUTLAST_BUILD='3.28.6';
   window.OUTLAST_VERSION=VERSION;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
@@ -7439,5 +7440,107 @@ function forceVersion(){
 forceVersion();setTimeout(forceVersion,100);setTimeout(forceVersion,1000);
 })();
 </script>
+<style id="outlast-v3286-halloween-ui">
+/* OUTLAST v3.28.6 — Halloween UI, presentation-only */
+#menu{
+  position:relative!important;
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 82% 8%,rgba(255,183,78,.16),transparent 15%),
+    radial-gradient(circle at 14% 88%,rgba(132,62,183,.13),transparent 24%),
+    linear-gradient(180deg,#090a11 0%,#0d0d16 52%,#08090e 100%)!important;
+}
+#menu:before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    radial-gradient(circle at 84% 11%,rgba(255,239,190,.9) 0 24px,rgba(255,205,110,.16) 25px 58px,transparent 59px),
+    linear-gradient(115deg,transparent 0 62%,rgba(76,38,91,.10) 63% 100%);
+}
+#menu:after{
+  content:'🎃  🕯️  🦇';
+  position:absolute;
+  right:18px;
+  bottom:12px;
+  pointer-events:none;
+  z-index:0;
+  font-size:20px;
+  letter-spacing:9px;
+  opacity:.42;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.7));
+}
+#menu .menu-topbar,
+#menu .menu-side,
+#menu .menu-card,
+#menu .quick-card{
+  position:relative;
+  z-index:1;
+}
+#menu .menu-topbar{
+  background:linear-gradient(180deg,rgba(24,17,28,.98),rgba(11,13,20,.94))!important;
+  border-bottom-color:#4a3045!important;
+}
+#menu .menu-topbar .title{
+  color:#f3e9dc!important;
+  text-shadow:0 0 20px rgba(255,166,63,.18)!important;
+}
+#menu .menu-topbar .subtitle{color:#a895aa!important}
+#menu .menu-chip{
+  background:linear-gradient(135deg,#24172a,#13101a)!important;
+  border-color:#70415a!important;
+  color:#ffc16a!important;
+  box-shadow:0 0 16px rgba(255,150,61,.08)!important;
+}
+#menu .menu-nav-btn{
+  background:rgba(25,17,30,.92)!important;
+  border-color:#493249!important;
+}
+#menu .menu-nav-btn:hover{
+  background:#312039!important;
+  border-color:#87536a!important;
+}
+#menu .menu-nav-btn.active{
+  background:linear-gradient(135deg,#66304a,#87472f)!important;
+  border-color:#e0a15c!important;
+  color:#fff4e0!important;
+  box-shadow:0 7px 22px rgba(168,79,48,.18)!important;
+}
+#menu .quick-card{
+  background:linear-gradient(120deg,#1b1421,#15131d 58%,#21151b)!important;
+  border-color:#684255!important;
+  box-shadow:inset 0 1px 0 rgba(255,220,180,.04),0 18px 40px rgba(0,0,0,.25)!important;
+}
+#menu .menu-card{
+  background:linear-gradient(145deg,rgba(27,18,31,.97),rgba(13,13,20,.97))!important;
+  border-color:#452f45!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.2)!important;
+}
+#menu .menu-card:hover{
+  border-color:#875266!important;
+  box-shadow:0 14px 32px rgba(0,0,0,.3),0 0 20px rgba(205,102,62,.07)!important;
+}
+#menu .menu-card h3{color:#dfc7d5!important}
+#menu .menu-card .menu-btn{
+  background:rgba(29,20,33,.94)!important;
+  border-color:#52384f!important;
+}
+#menu .menu-card .menu-btn:hover{
+  background:#38223a!important;
+  border-color:#a16057!important;
+}
+#menu .hero-btn{
+  background:linear-gradient(135deg,#914b2e,#c1743b)!important;
+  border-color:#e3a45f!important;
+  box-shadow:0 7px 0 #55301f,0 14px 30px rgba(171,83,45,.2)!important;
+}
+@media(max-width:760px){
+  #menu:before{background:radial-gradient(circle at 86% 8%,rgba(255,239,190,.72) 0 19px,rgba(255,205,110,.12) 20px 44px,transparent 45px)}
+  #menu:after{right:8px;bottom:8px;font-size:16px;letter-spacing:4px}
+  #menu .menu-card{box-shadow:0 8px 22px rgba(0,0,0,.2)!important}
+}
+</style>
 </body>
 </html>

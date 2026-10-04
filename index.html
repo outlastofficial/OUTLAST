@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.7">
-<meta name="build-version" content="3.30.7">
-<title>OUTLAST v3.30.7</title>
+<meta name="outlast-build" content="3.30.8">
+<meta name="build-version" content="3.30.8">
+<title>OUTLAST v3.30.8</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2965,7 +2965,7 @@ function draw(){
  syncGameAdminUI;
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
  if(save.mode==='1v1 Arena'&&game.player2&&!game.paused&&!game.upgradeOpen){drawSurvivalSplit();drawMinimap();return;}
- const md=mapDefs[save.map];ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
+ const md=mapDefs[save.map]||mapDefs.Forest;ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
  ctx.strokeStyle=md.grid;ctx.lineWidth=1;for(let x=0;x<=W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<=H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
  ctx.strokeStyle=md.accent;ctx.lineWidth=5;ctx.strokeRect(2,2,W-4,H-4);drawMapObjects(1,0,0); for(const fx of game.effects){const alpha=Math.max(0,fx.t/.8);ctx.save();ctx.globalAlpha=alpha;if(fx.type==='lightning'){ctx.strokeStyle=fx.color||'#8fe8ff';ctx.lineWidth=3+3*alpha;ctx.shadowColor=fx.color||'#8fe8ff';ctx.shadowBlur=16;ctx.beginPath();const dx=fx.x2-fx.x1,dy=fx.y2-fx.y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;for(let k=0;k<=8;k++){const u=k/8,wig=(k===0||k===8)?0:Math.sin(game.time*35+k*2.7)*10;const xx=fx.x1+dx*u+nx*wig,yy=fx.y1+dy*u+ny*wig;if(k===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy)}ctx.stroke();ctx.restore();continue;}ctx.strokeStyle=fx.color||'#fff';ctx.lineWidth=fx.fill?3:4;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*(1+(1-alpha)*.35),0,Math.PI*2);if(fx.fill){ctx.fillStyle=fx.color||'#fff';ctx.globalAlpha=alpha*.35;ctx.fill();}else ctx.stroke();ctx.restore()} for(const a of game.particles){ctx.save();ctx.globalAlpha=Math.max(0,a.t/a.max);ctx.fillStyle=a.color;ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);ctx.fill();ctx.restore()}
  for(const g of game.gems){ctx.fillStyle='#59d8ff';ctx.beginPath();ctx.arc(g.x,g.y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#08314a';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.icon||'◆',g.x,g.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
@@ -7390,52 +7390,10 @@ forceVersion();setTimeout(forceVersion,100);setTimeout(forceVersion,1000);
 
 
 <script id="outlast-v3289-update-popup-final-guard">
+/* Legacy popup compatibility stub. The current release popup is authoritative at the end of index.html. */
 (function(){
 'use strict';
-const VERSION='3.28.9';
-const INFO={
- title:'v3.28.9 — Update Popup Fix',
- summary:'Restored the main-menu Update News popup after the recent UI revert.',
- items:[
-  'The Update News popup now uses the current release version.',
-  'It appears once for a new version and can still be reopened from the normal update flow.',
-  'Existing login, saves, Owner access, and Owner Panel permissions were not changed.'
- ]
-};
-function showCurrentUpdatePopup(force){
- let seen='';
- try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
- if(!force&&seen===VERSION)return;
- const pop=document.getElementById('updatePopup');
- if(!pop)return;
- const version=document.getElementById('updatePopupVersion');
- const body=document.getElementById('updatePopupBody');
- if(version)version.textContent=INFO.title;
- if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
- pop.style.display='flex';
- pop.style.visibility='visible';
- pop.setAttribute('aria-hidden','false');
-}
-function closeCurrentUpdatePopup(){
- try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION);}catch(_){}
- const pop=document.getElementById('updatePopup');
- if(pop)pop.style.display='none';
-}
-window.showUpdatePopup=showCurrentUpdatePopup;
-window.__OUTLAST_CURRENT_UPDATE_POPUP_VERSION=VERSION;
-try{document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});}catch(_){}
-try{const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content=VERSION;if(b)b.content=VERSION;document.title='OUTLAST v'+VERSION;window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;}catch(_){}
-function wire(){
- const close=document.getElementById('updatePopupClose');
- const pop=document.getElementById('updatePopup');
- if(close)close.onclick=closeCurrentUpdatePopup;
- if(pop)pop.addEventListener('click',e=>{if(e.target===pop)closeCurrentUpdatePopup()});
-}
-function boot(){
- wire();
- [150,500,1200,2500].forEach(ms=>setTimeout(()=>{try{wire();showCurrentUpdatePopup(false);}catch(_){}},ms));
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.__OUTLAST_LEGACY_POPUP_DISABLED__=true;
 })();
 </script>
 <style id="outlast-v3300-hansen-railgun-skin">
@@ -7596,6 +7554,107 @@ function setVersion(){
 }
 function boot(){setVersion();const b=document.getElementById('startBtn');if(b)b.setAttribute('aria-label','Start Run');}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+<script id="outlast-v3308-start-system-rebuild">
+(function(){
+'use strict';
+const VERSION='v3.30.8';
+let launchBusy=false;
+
+function normalizeRunConfig(){
+ try{if(typeof ensureMegaSave==='function')ensureMegaSave();}catch(_){}
+ try{if(typeof mapDefs!=='undefined'&&!mapDefs[save.map])save.map='Forest';}catch(_){save.map='Forest';}
+ try{if(typeof diffDefs!=='undefined'&&!diffDefs[save.difficulty])save.difficulty='Normal';}catch(_){save.difficulty='Normal';}
+ try{if(typeof modeDefs!=='undefined'&&!modeDefs[save.mode])save.mode='Classic';}catch(_){save.mode='Classic';}
+ try{if(typeof chars!=='undefined'&&!chars[save.selectedChar])save.selectedChar='Survivor';}catch(_){save.selectedChar='Survivor';}
+ try{if(typeof weapons!=='undefined'&&!weapons[save.selectedWeapon])save.selectedWeapon='Blaster';}catch(_){save.selectedWeapon='Blaster';}
+ try{if(typeof skins!=='undefined'&&!skins[save.selectedSkin])save.selectedSkin='Classic';}catch(_){save.selectedSkin='Classic';}
+ try{if(typeof pets!=='undefined'&&!pets[save.selectedPet])save.selectedPet='None';}catch(_){save.selectedPet='None';}
+ try{if(typeof relics!=='undefined'&&!relics[save.selectedRelic])save.selectedRelic='None';}catch(_){save.selectedRelic='None';}
+ try{if(typeof charms!=='undefined'&&!charms[save.selectedCharm])save.selectedCharm='None';}catch(_){save.selectedCharm='None';}
+ try{if(typeof challengeModes!=='undefined'&&(save.challengeMode!=='None'&&!challengeModes[save.challengeMode]))save.challengeMode='None';}catch(_){save.challengeMode='None';}
+ try{if(!save.stats||typeof save.stats!=='object')save.stats={kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0};}catch(_){}
+ try{if(typeof worldZones!=='undefined'&&!worldZones[save.selectedZone])save.selectedZone='Greenbelt';}catch(_){save.selectedZone='Greenbelt';}
+ try{if(typeof worldObjectives!=='undefined'&&!worldObjectives[save.currentObjective])save.currentObjective='Zombie Hunt';}catch(_){save.currentObjective='Zombie Hunt';}
+}
+
+function closeLaunchOverlays(){
+ try{document.getElementById('subPanel').style.display='none'}catch(_){}
+ try{
+  document.querySelectorAll('.update-pop').forEach(p=>{
+   p.style.display='none';p.style.visibility='hidden';p.setAttribute('aria-hidden','true');
+  });
+ }catch(_){}
+ try{document.getElementById('menu').style.display='none'}catch(_){}
+}
+
+function launch(){
+ if(launchBusy)return;
+ launchBusy=true;
+ const btn=document.getElementById('startBtn');
+ if(btn)btn.disabled=true;
+ try{
+  normalizeRunConfig();
+  if(typeof newRunStats==='function')newRunStats();
+  const core=window.__OUTLAST_CORE_START_GAME;
+  if(typeof core!=='function')throw new Error('Start core unavailable');
+  closeLaunchOverlays();
+  fatalErrorShown=false;fatalGameError='';game.over=false;game.paused=false;
+  core.call(window,false);
+  if(!game.running||!game.player){
+   const firstError=fatalGameError||'Run did not enter gameplay state';
+   /* One controlled re-entry handles stale saved-state initialization without
+      creating a chain of wrapper retries. */
+   normalizeRunConfig();
+   fatalErrorShown=false;fatalGameError='';game.over=false;game.paused=false;
+   if(typeof newRunStats==='function')newRunStats();
+   core.call(window,false);
+   if(!game.running||!game.player)throw new Error(fatalGameError||firstError);
+  }
+  try{if(typeof applyMapModifiers==='function')applyMapModifiers()}catch(_){}
+  try{if(typeof window.__applyAllSets==='function')window.__applyAllSets()}catch(_){}
+  try{syncMobileControls();syncGameAdminUI();}catch(_){}
+  try{c.focus()}catch(_){}
+ }catch(err){
+  game.running=false;game.paused=false;game.over=true;
+  fatalErrorShown=true;fatalGameError=err?.message||String(err);
+  try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none'}catch(_){}
+  try{syncMobileControls()}catch(_){}
+  try{toast('⚠️ Start Run failed: '+fatalGameError)}catch(_){}
+ }finally{
+  setTimeout(()=>{launchBusy=false;if(btn)btn.disabled=false},1200);
+ }
+}
+
+function bind(){
+ const btn=document.getElementById('startBtn');if(!btn)return;
+ btn.onclick=null;
+ if(btn.dataset.outlastStartRebuilt==='1')return;
+ btn.dataset.outlastStartRebuilt='1';
+ btn.removeAttribute('disabled');
+ const intercept=e=>{
+  e.preventDefault();e.stopImmediatePropagation();
+  launch();
+ };
+ btn.addEventListener('pointerdown',intercept,true);
+ btn.addEventListener('click',intercept,true);
+}
+function docs(){
+ try{if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.8 — Start Run System Rebuild')))updates.unshift(['v3.30.8 — Start Run System Rebuild','Rebuilt the Start Run launch path, normalized stale saved run settings before launch, and isolated the start button from legacy gameplay wrappers.']);}catch(_){}
+ try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the rebuilt Start Run launch path work?')))helpArticles.unshift(['How does the rebuilt Start Run launch path work?','Troubleshooting','Start Run now uses a dedicated core launcher. Saved map, difficulty, mode, loadout, and objective settings are normalized before launch, and one controlled re-entry handles stale state initialization.']);}catch(_){}
+}
+function version(){
+ try{
+  document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
+  document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';});
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.30.8';if(b)b.content='3.30.8';document.title='OUTLAST '+VERSION;window.OUTLAST_BUILD='3.30.8';window.OUTLAST_VERSION=VERSION;
+ }catch(_){}
+}
+function boot(){version();docs();bind();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+[0,100,500,1500,3000].forEach(ms=>setTimeout(()=>{try{version();bind()}catch(_){}},ms));
 })();
 </script>
 </body>

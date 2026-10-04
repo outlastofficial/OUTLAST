@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.8">
-<meta name="build-version" content="3.28.8">
-<title>OUTLAST v3.28.8</title>
+<meta name="outlast-build" content="3.28.9">
+<meta name="build-version" content="3.28.9">
+<title>OUTLAST v3.28.9</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -4173,6 +4173,7 @@ const updates=[['v3.28.2 — Upgrade Rarity Balance','Higher-rarity upgrades now
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
+const UPDATE_POPUP_FIX_ENTRY=['v3.28.9 — Update Popup Fix','Restored the main-menu Update News popup after the recent UI revert.']; try{ if(Array.isArray(updates)) updates.unshift(UPDATE_POPUP_FIX_ENTRY); }catch(_){ }
 const HALLOWEEN_UI_UPDATE_ENTRY=['v3.28.8 — UI Revert','Reverted the previous Halloween UI presentation layer while keeping the Owner access changes intact.']; try{ if(Array.isArray(updates)) updates.unshift(HALLOWEEN_UI_UPDATE_ENTRY); }catch(_){ }
 const POOL_AUDIT_UPDATE_ENTRY=['v3.27.94 — Rarity Pool Audit Fix','Moved the upgrade-pool consistency audit until after all upgrade batches load, preventing false console errors.']; try{ if(Array.isArray(updates)) updates.unshift(POOL_AUDIT_UPDATE_ENTRY); }catch(_){ }
 const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.94 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
@@ -4183,7 +4184,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='3.28.9';
-const CURRENT_UPDATE_INFO={title:'v3.28.8 — UI Revert',summary:'Reverted the previous Halloween UI presentation layer while keeping the Owner access changes intact.',items:['Reverted the previous Halloween menu styling.','Restored the prior stable menu presentation.','Kept BillyBimbo Owner access and owner-only panel visibility.','Kept the no-secondary-password Owner flow.']};
+const CURRENT_UPDATE_INFO={title:'v3.28.9 — Update Popup Fix',summary:'Restored the main-menu Update News popup after the recent UI revert.',items:['The Update News popup now uses the current release version.','It appears once for a new version and can still be reopened from the normal update flow.','Existing login, saves, Owner access, and Owner Panel permissions were not changed.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -7475,6 +7476,8 @@ function closeCurrentUpdatePopup(){
 }
 window.showUpdatePopup=showCurrentUpdatePopup;
 window.__OUTLAST_CURRENT_UPDATE_POPUP_VERSION=VERSION;
+try{document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});}catch(_){}
+try{const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');if(a)a.content=VERSION;if(b)b.content=VERSION;document.title='OUTLAST v'+VERSION;window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;}catch(_){}
 function wire(){
  const close=document.getElementById('updatePopupClose');
  const pop=document.getElementById('updatePopup');

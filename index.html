@@ -8152,4 +8152,158 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 })();
 </script>
 
-</body>\n</html>
+</body>\n</html>\n
+<script id="outlast-v33028-final-start-authority">
+(function(){
+  'use strict';
+  const VERSION='3.30.28';
+  const RELEASE='v'+VERSION;
+
+  function q(s){try{return document.querySelector(s)}catch(_){return null}}
+  function safe(fn){try{return fn()}catch(_){return null}}
+
+  function syncRelease(){
+    safe(function(){
+      document.title='OUTLAST '+RELEASE;
+      document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent=RELEASE});
+      document.querySelectorAll('.menu-chip').forEach(function(el){
+        if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=RELEASE+' • SURVIVOR HUB';
+      });
+      var a=q('meta[name="outlast-build"]'),b=q('meta[name="build-version"]');
+      if(a)a.content=VERSION;
+      if(b)b.content=VERSION;
+      window.OUTLAST_BUILD=VERSION;
+      window.OUTLAST_VERSION=RELEASE;
+    });
+  }
+
+  function docs(){
+    safe(function(){
+      if(Array.isArray(window.updates)&&!window.updates.some(function(x){
+        return Array.isArray(x)&&String(x[0]).indexOf(RELEASE)>=0;
+      })){
+        window.updates.unshift([
+          RELEASE+' — Final Start Run Authority',
+          'Rebuilt Start Run as one final launcher using the stable gameplay core. Login and the current map were not changed.'
+        ]);
+      }
+    });
+    safe(function(){
+      if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){
+        return Array.isArray(x)&&String(x[0]).indexOf('Final Start Run Authority')>=0;
+      })){
+        window.helpArticles.unshift([
+          'How does the final Start Run launcher work?',
+          'Troubleshooting',
+          'Start Run now has one final click authority at the end of the runtime. It calls the stable gameplay core, verifies that a player was created, and only then closes the menu.'
+        ]);
+      }
+    });
+  }
+
+  function closeUi(){
+    safe(function(){var p=q('#subPanel');if(p)p.style.display='none'});
+    safe(function(){
+      document.querySelectorAll('.update-pop').forEach(function(el){
+        if(el.id!=='loginPopup')el.style.display='none';
+      });
+    });
+  }
+
+  function verifyStarted(){
+    return !!(window.game&&window.game.running&&window.game.player);
+  }
+
+  function launch(){
+    closeUi();
+    safe(function(){if(typeof window.newRunStats==='function')window.newRunStats()});
+    var started=false;
+
+    if(typeof window.startGame==='function'){
+      started=!!safe(function(){
+        window.startGame(false);
+        return verifyStarted();
+      });
+    }
+
+    if(!started&&typeof window.__OUTLAST_ORIGINAL_START_CORE_33014==='function'){
+      started=!!safe(function(){
+        window.__OUTLAST_ORIGINAL_START_CORE_33014(false);
+        return verifyStarted();
+      });
+    }
+
+    if(started){
+      safe(function(){window.game.fatalError=''});
+      safe(function(){window.fatalGameError=''});
+      safe(function(){window.fatalErrorShown=false});
+      safe(function(){var m=q('#menu');if(m)m.style.display='none'});
+      safe(function(){if(window.c&&typeof window.c.focus==='function')window.c.focus()});
+      safe(function(){if(typeof window.syncMobileControls==='function')window.syncMobileControls()});
+      safe(function(){if(typeof window.syncExtractUI==='function')window.syncExtractUI()});
+      return true;
+    }
+
+    safe(function(){
+      if(typeof window.toast==='function')window.toast('Start Run failed to initialize.');
+    });
+    return false;
+  }
+
+  function wire(){
+    var btn=q('#startBtn');
+    if(!btn)return false;
+    if(btn.dataset.finalStartAuthority===VERSION)return true;
+
+    var replacement=btn.cloneNode(true);
+    replacement.id='startBtn';
+    replacement.type='button';
+    replacement.dataset.finalStartAuthority=VERSION;
+    replacement.style.pointerEvents='auto';
+    replacement.style.touchAction='manipulation';
+    replacement.style.position='relative';
+    replacement.style.zIndex='1000000';
+
+    replacement.onclick=function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(replacement.dataset.startBusy==='1')return;
+      replacement.dataset.startBusy='1';
+      var ok=false;
+      try{ok=launch()}finally{
+        setTimeout(function(){
+          replacement.dataset.startBusy='0';
+        },700);
+      }
+      return ok;
+    };
+
+    btn.replaceWith(replacement);
+    return true;
+  }
+
+  function boot(){
+    syncRelease();
+    docs();
+    wire();
+    [100,500,1200,2500,5000].forEach(function(ms){
+      setTimeout(function(){syncRelease();docs();wire()},ms);
+    });
+  }
+
+  window.__OUTLAST_START_FINAL_AUDIT_33028=function(){
+    var b=q('#startBtn');
+    return {
+      version:RELEASE,
+      wired:!!(b&&b.dataset.finalStartAuthority===VERSION),
+      startFunction:typeof window.startGame==='function',
+      originalCore:typeof window.__OUTLAST_ORIGINAL_START_CORE_33014==='function',
+      running:!!(window.game&&window.game.running),
+      player:!!(window.game&&window.game.player)
+    };
+  };
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
+})();
+</script>

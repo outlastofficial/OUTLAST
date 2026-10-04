@@ -7297,7 +7297,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script src="outlast-v327103-coin-farm-hardening.js?v=3.27.105"></script>
 <script src="outlast-v327105-event-hardening.js?v=3.27.105"></script>
 <script src="outlast-v327108-rarity-card-authority.js?v=3.27.108"></script>
-<script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
+<script src="outlast-v3281-game-recovery.js?v=3.30.32"></script>
 <style id="outlast-v3285-stable-ui">
 /* v3.28.5 — stable UI rebuild: presentation only, no gameplay/boot hooks */
 #menu{background:linear-gradient(180deg,#080b10 0%,#0b1016 55%,#080c11 100%)!important}
@@ -8367,7 +8367,7 @@ else boot();
 <script id="outlast-v33028-final-start-authority">
 (function(){
   'use strict';
-  const VERSION='3.30.28';
+  const VERSION='3.30.32';
   const RELEASE='v'+VERSION;
 
   function q(s){try{return document.querySelector(s)}catch(_){return null}}
@@ -8394,8 +8394,8 @@ else boot();
         return Array.isArray(x)&&String(x[0]).indexOf(RELEASE)>=0;
       })){
         window.updates.unshift([
-          RELEASE+' — Final Start Run Authority',
-          'Rebuilt Start Run as one final launcher using the stable gameplay core. Login and the current map were not changed.'
+          RELEASE+' — Final Start Run Recovery Fix',
+          'Small bug fixes and game stability improvements. The final Start Run launcher now wins the runtime race, holds an explicit startup state, and remains isolated from Bug Reporting.'
         ]);
       }
     });
@@ -8404,9 +8404,9 @@ else boot();
         return Array.isArray(x)&&String(x[0]).indexOf('Final Start Run Authority')>=0;
       })){
         window.helpArticles.unshift([
-          'How does the final Start Run launcher work?',
+          'How does the v3.30.32 Start Run launcher work?',
           'Troubleshooting',
-          'Start Run now has one final click authority at the end of the runtime. It calls the stable gameplay core, verifies that a player was created, and only then closes the menu.'
+          'The final launcher holds an explicit startup state while calling the stable gameplay core. The menu only closes after a valid player exists, and the recovery guard ignores that startup window.'
         ]);
       }
     });
@@ -8428,6 +8428,7 @@ else boot();
   function launch(){
     closeUi();
     safe(function(){if(typeof window.newRunStats==='function')window.newRunStats()});
+    safe(function(){if(window.game){window.game.starting=true;window.game.startStartedAt=Date.now();}});
     var started=false;
 
     if(typeof window.startGame==='function'){
@@ -8448,6 +8449,7 @@ else boot();
       safe(function(){window.game.fatalError=''});
       safe(function(){window.fatalGameError=''});
       safe(function(){window.fatalErrorShown=false});
+      safe(function(){if(window.game){window.game.starting=false;window.game.startStartedAt=0;}});
       safe(function(){var m=q('#menu');if(m)m.style.display='none'});
       safe(function(){if(window.c&&typeof window.c.focus==='function')window.c.focus()});
       safe(function(){if(typeof window.syncMobileControls==='function')window.syncMobileControls()});
@@ -8455,6 +8457,7 @@ else boot();
       return true;
     }
 
+    safe(function(){if(window.game){window.game.starting=false;window.game.startStartedAt=0;}});
     safe(function(){
       if(typeof window.toast==='function')window.toast('Start Run failed to initialize.');
     });
@@ -8502,7 +8505,7 @@ else boot();
     });
   }
 
-  window.__OUTLAST_START_FINAL_AUDIT_33028=function(){
+  window.__OUTLAST_START_FINAL_AUDIT_33032=function(){
     var b=q('#startBtn');
     return {
       version:RELEASE,

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.27">
-<meta name="build-version" content="3.30.27">
-<title>OUTLAST v3.30.30</title>
+<meta name="outlast-build" content="3.30.31">
+<meta name="build-version" content="3.30.31">
+<title>OUTLAST v3.30.31</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -2082,10 +2082,12 @@ function closeAllOverlays(){
   try{document.querySelectorAll('.update-pop').forEach(el=>{if(el.id!=='loginPopup')el.style.display='none';});}catch(_){}
 }
 
-const game={running:false,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,time:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,worldEventApplied:false,worldEventBaseFireRate:0,upgradeChoices:[],player:null,player2:null,stats:null,survivalWinner:null,survival:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};
+const game={running:false,starting:false,startStartedAt:0,paused:false,upgradeOpen:false,over:false,level:1,xp:0,xpNeed:10,score:0,spawn:0,bossClock:0,shake:0,camera:{x:0,y:0},enemies:[],bullets:[],gems:[],coins:[],shots:[],effects:[],particles:[],powerups:[],shrines:[],shrineClock:35,combo:0,comboTimer:0,event:'',eventTimer:0,worldEvent:'',worldEventTimer:0,worldEventCooldown:75,worldEventApplied:false,worldEventBaseFireRate:0,upgradeChoices:[],player:null,player2:null,stats:null,survivalWinner:null,survival:{round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false},mapEventTimer:0,mapEvent:null,lowHpAlert:0,selectedZone:'Greenbelt',objective:'Zombie Hunt',objectiveStartKills:0,objectiveStartBosses:0,objectiveStartCoins:0,objectiveStartXP:0,objectiveComplete:false,raidBoss:null,zoneBonus:''};
 setupMobileControls();syncMobileControls();
 function startGame(fromRoom=false){
  try{
+  game.starting=true;
+  game.startStartedAt=Date.now();
   ensureMegaSave();
   const d=diffDefs[save.difficulty]||diffDefs.Normal,m=modeDefs[save.mode]||modeDefs.Classic,ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;
   const cm=save.challengeMode==='None'?{enemy:1,spawn:1,reward:1}:challengeModes[save.challengeMode]||{enemy:1,spawn:1,reward:1};
@@ -2113,8 +2115,9 @@ function startGame(fromRoom=false){
     game.player2={x:player2Spawn.x,y:player2Spawn.y,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
   }
   game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0)*relicScale)*(1+(charm.score||0)*charmScale)*d.reward*(cm.reward||1)*modReward,difficulty:d};
-  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();if(typeof connectOutlastServer==='function')connectOutlastServer();syncOutlastChatUI();
+  game.starting=false;game.startStartedAt=0;fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();if(typeof connectOutlastServer==='function')connectOutlastServer();syncOutlastChatUI();
  }catch(err){
+   game.starting=false;game.startStartedAt=0;
    fatalGameError=err?.message||String(err);
    /* A player may already be fully constructed when an optional launch hook fails.
       Never throw away a valid run because a secondary UI/system hook errored. */
@@ -7614,6 +7617,8 @@ window.__OUTLAST_V310_CORE_RESTORED__=true;
 
 function v310StartCore(fromRoom=false){
  try{
+  game.starting=true;
+  game.startStartedAt=Date.now();
   ensureMegaSave();
   const d=diffDefs[save.difficulty]||diffDefs.Normal,m=modeDefs[save.mode]||modeDefs.Classic,ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;
   const cm=save.challengeMode==='None'?{enemy:1,spawn:1,reward:1}:challengeModes[save.challengeMode]||{enemy:1,spawn:1,reward:1};
@@ -7635,8 +7640,9 @@ function v310StartCore(fromRoom=false){
     game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.pvp.started=true;
   }
   game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
-  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';syncExtractUI();c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
+  game.starting=false;game.startStartedAt=0;fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';syncExtractUI();c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
  }catch(err){
+   game.starting=false;game.startStartedAt=0;
    fatalGameError=err?.message||String(err);
    /* A player may already be fully constructed when an optional launch hook fails.
       Never throw away a valid run because a secondary UI/system hook errored. */
@@ -8062,7 +8068,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 \n<script id="outlast-batch2-expansion-v33027">
 (function(){
 'use strict';
-const V='3.30.27',R='v3.30.27';
+const V='3.30.31',R='v3.30.31';
 const $=s=>{try{return document.querySelector(s)}catch(_){return null}};
 const $=s=>{try{return Array.from(document.querySelectorAll(s))}catch(_){return []}};
 const safe=(fn,f)=>{try{return fn()}catch(_){return f}};
@@ -8198,7 +8204,7 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 <script id="outlast-v33029-start-bug-isolation">
 (function(){
 'use strict';
-const VERSION='3.30.30', RELEASE='v'+VERSION;
+const VERSION='3.30.31', RELEASE='v'+VERSION;
 function q(s){try{return document.querySelector(s)}catch(_){return null}}
 function safe(fn,fallback){try{return fn()}catch(_){return fallback}}
 function setRelease(){
@@ -8223,8 +8229,8 @@ function docs(){
       return Array.isArray(x)&&String(x[0]).indexOf(RELEASE)>=0;
     })){
       window.updates.unshift([
-        RELEASE+' — Start Run Launch Recovery Fix',
-        'Small bug fixes and game stability improvements. Start Run now preserves a valid gameplay initialization when a secondary UI or system hook fails during launch, while remaining isolated from Bug Reporting.'
+        RELEASE+' — Start Run Recovery Race Fix',
+        'Small bug fixes and game stability improvements. Start Run no longer races the legacy recovery guard during player initialization, and remains isolated from Bug Reporting.'
       ]);
     }
   });
@@ -8281,7 +8287,7 @@ function launch(){
     safe(function(){
       window.fatalGameError='';
       window.fatalErrorShown=false;
-      if(window.game)window.game.over=false;
+      if(window.game){window.game.over=false;window.game.starting=false;window.game.startStartedAt=0;}
       const menu=q('#menu');
       if(menu)menu.style.display='none';
       if(window.c&&typeof window.c.focus==='function')window.c.focus();

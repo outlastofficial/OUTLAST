@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.24">
-<meta name="build-version" content="3.30.24">
-<title>OUTLAST v3.30.24</title>
+<meta name="outlast-build" content="3.30.27">
+<meta name="build-version" content="3.30.27">
+<title>OUTLAST v3.30.27</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -8017,4 +8017,139 @@ function bootBatch(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootBatch,{once:true});else bootBatch();
 })();
 </script>
-\n</body>\n</html>
+\n<script id="outlast-batch2-expansion-v33027">
+(function(){
+'use strict';
+const V='3.30.27',R='v3.30.27';
+const $=s=>{try{return document.querySelector(s)}catch(_){return null}};
+const $=s=>{try{return Array.from(document.querySelectorAll(s))}catch(_){return []}};
+const safe=(fn,f)=>{try{return fn()}catch(_){return f}};
+const get=(k)=>safe(()=>localStorage.getItem(k),null);
+const set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);
+function version(){
+ safe(()=>{
+  document.title='OUTLAST '+R;
+  const a=$('meta[name="outlast-build"]'),b=$('meta[name="build-version"]');
+  if(a)a.content=V;if(b)b.content=V;
+  window.OUTLAST_BUILD=V;window.OUTLAST_VERSION=R;
+  $('[data-outlast-version]').forEach(e=>e.textContent=R);
+  $('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=R+' • SURVIVOR HUB'});
+ });
+}
+function addStyle(){
+ if($('#outlast-batch2-style'))return;
+ const st=document.createElement('style');st.id='outlast-batch2-style';
+ st.textContent=`
+#outlastBatch2Bar{position:fixed;left:10px;bottom:10px;z-index:99970;display:flex;gap:6px;align-items:center;background:rgba(8,14,20,.92);border:1px solid #29475d;border-radius:12px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.28);font:700 10px Arial;backdrop-filter:blur(7px)}
+#outlastBatch2Bar button{font:700 10px Arial;padding:6px 8px;border-radius:8px;background:#132330;color:#dceaf4;border:1px solid #31546a;box-shadow:none}
+#outlastBatch2Bar .b2v{color:#79c8ff;padding:0 4px}
+.outlast-hidden{display:none!important}
+#outlastToastStack{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+#outlastToastStack .b2toast{padding:8px 12px;border:1px solid #35556b;background:rgba(10,18,26,.96);border-radius:10px;color:#e8f4fb;font:700 12px Arial;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#outlastQuickSettings{position:fixed;right:12px;bottom:58px;z-index:99971;width:240px;display:none;background:#0c151e;border:1px solid #315068;border-radius:14px;padding:12px;box-shadow:0 16px 50px rgba(0,0,0,.5);font:12px Arial;color:#d7e5ef}
+#outlastQuickSettings.open{display:block}
+#outlastQuickSettings h4{margin:0 0 9px;font-size:13px}
+#outlastQuickSettings label{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #1c303f}
+#outlastQuickSettings select,#outlastQuickSettings input{accent-color:#62b8ee}
+@media(max-width:700px){#outlastBatch2Bar{left:7px;bottom:58px}#outlastQuickSettings{right:7px;bottom:106px;width:min(240px,calc(100vw - 28px))}}
+`;
+ document.head.appendChild(st);
+}
+function toast(msg){
+ const host=$('#outlastToastStack')||safe(()=>{const x=document.createElement('div');x.id='outlastToastStack';document.body.appendChild(x);return x},null);
+ if(!host)return;
+ const t=document.createElement('div');t.className='b2toast';t.textContent=msg;host.appendChild(t);
+ setTimeout(()=>t.remove(),2200);
+}
+function settings(){
+ if($('#outlastBatch2Bar'))return;
+ const bar=document.createElement('div');bar.id='outlastBatch2Bar';
+ bar.innerHTML='<span class="b2v">'+R+'</span><button id="b2Settings">Settings</button><button id="b2HUD">HUD</button><button id="b2Diag">Diagnostics</button>';
+ document.body.appendChild(bar);
+ const panel=document.createElement('div');panel.id='outlastQuickSettings';
+ panel.innerHTML='<h4>Quick Settings</h4>'+
+ '<label>Reduced motion <input id="b2Motion" type="checkbox"></label>'+
+ '<label>Auto-save recovery <input id="b2Recovery" type="checkbox"></label>'+
+ '<label>Compact HUD <input id="b2Compact" type="checkbox"></label>'+
+ '<label>Quality <select id="b2Quality"><option>Auto</option><option>Low</option><option>Medium</option><option>High</option></select></label>';
+ document.body.appendChild(panel);
+ $('#b2Settings').onclick=()=>panel.classList.toggle('open');
+ $('#b2Motion').checked=get('outlastReducedMotion')==='1';
+ $('#b2Recovery').checked=get('outlastRecoveryEnabled')!=='0';
+ $('#b2Compact').checked=get('outlastCompactHud')==='1';
+ $('#b2Quality').value=get('outlastQuality')||'Auto';
+ $('#b2Motion').onchange=e=>{set('outlastReducedMotion',e.target.checked?'1':'0');document.documentElement.classList.toggle('outlast-reduced-motion',e.target.checked);toast('Reduced motion '+(e.target.checked?'enabled':'disabled'))};
+ $('#b2Recovery').onchange=e=>{set('outlastRecoveryEnabled',e.target.checked?'1':'0');toast('Save recovery '+(e.target.checked?'enabled':'disabled'))};
+ $('#b2Compact').onchange=e=>{set('outlastCompactHud',e.target.checked?'1':'0');document.documentElement.classList.toggle('outlast-compact-hud',e.target.checked);toast('Compact HUD '+(e.target.checked?'enabled':'disabled'))};
+ $('#b2Quality').onchange=e=>{set('outlastQuality',e.target.value);toast('Quality set to '+e.target.value)};
+ $('#b2HUD').onclick=()=>{document.documentElement.classList.toggle('outlast-compact-hud');set('outlastCompactHud',document.documentElement.classList.contains('outlast-compact-hud')?'1':'0');toast('HUD layout toggled')};
+ $('#b2Diag').onclick=()=>diagnostics();
+ document.documentElement.classList.toggle('outlast-reduced-motion',get('outlastReducedMotion')==='1');
+ document.documentElement.classList.toggle('outlast-compact-hud',get('outlastCompactHud')==='1');
+}
+function diagnostics(){
+ const audit=safe(()=>window.__OUTLAST_BATCH1_AUDIT?window.__OUTLAST_BATCH1_AUDIT():null,null);
+ const core=safe(()=>window.__outlastCoreAudit33023?window.__outlastCoreAudit33023():null,null);
+ const report={
+  version:window.OUTLAST_VERSION||R,
+  title:document.title,
+  canvas:!!$('#game'),
+  menu:!!$('#menu'),
+  start:typeof window.startGame==='function',
+  exit:typeof window.exitGame==='function',
+  save:typeof window.saveGame==='function'||typeof window.save==='object',
+  batch1:audit,
+  stableCore:core,
+  online:typeof window.connectOutlastServer==='function',
+  mobile:innerWidth<=700,
+  reducedMotion:get('outlastReducedMotion')==='1',
+  compactHud:get('outlastCompactHud')==='1'
+ };
+ safe(()=>console.log('[OUTLAST Batch 2 diagnostics]',report));
+ toast('Diagnostics captured in the browser console');
+ window.__OUTLAST_BATCH2_AUDIT=()=>report;
+}
+function recovery(){
+ if(get('outlastRecoveryEnabled')==='0')return;
+ safe(()=>{
+  if(typeof save==='undefined'||!save)return;
+  const payload=JSON.stringify({version:V,time:Date.now(),save:JSON.parse(JSON.stringify(save))});
+  set('outlastRecoverySaveV327',payload);
+ });
+}
+function wireRecovery(){
+ ['pagehide','beforeunload'].forEach(ev=>addEventListener(ev,recovery,{capture:true}));
+ addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')recovery()},{capture:true});
+}
+function installInputSafety(){
+ const c=$('#game');if(!c||c.dataset.b2Input)return;
+ c.dataset.b2Input='1';
+ c.addEventListener('contextmenu',e=>{if(window.game?.running)e.preventDefault()});
+ c.addEventListener('dblclick',e=>{if(window.game?.running)e.preventDefault()});
+}
+function installMenuSafety(){
+ $('#menu button').forEach(b=>{
+  if(b.dataset.b2Bound)return;
+  b.dataset.b2Bound='1';
+  b.addEventListener('pointerdown',()=>{b.dataset.b2LastPointer=String(Date.now())},{passive:true});
+ });
+}
+function docs(){
+ safe(()=>{
+  if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(R)))
+    window.updates.unshift([R+' — Expansion Systems Batch','Expanded settings, HUD controls, recovery, diagnostics, input safety, and reusable runtime infrastructure while preserving the stable Start Run core.']);
+ });
+ safe(()=>{
+  if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('Batch 2 expansion systems')))
+    window.helpArticles.unshift(['Batch 2 expansion systems','Updates','This batch adds quick settings, HUD controls, save recovery, diagnostics, input safety, and persistent quality preferences without replacing the stable gameplay core.']);
+ });
+}
+function boot(){
+ version();addStyle();settings();wireRecovery();installInputSafety();installMenuSafety();docs();
+ [250,1000,2500,5000].forEach(ms=>setTimeout(()=>{version();installMenuSafety()},ms));
+}
+if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+
+</body>\n</html>

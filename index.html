@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.17">
-<meta name="build-version" content="3.30.17">
-<title>OUTLAST v3.30.17</title>
+<meta name="outlast-build" content="3.30.18">
+<meta name="build-version" content="3.30.18">
+<title>OUTLAST v3.30.18</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -895,7 +895,7 @@ button:hover{filter:brightness(1.12) saturate(1.1)}
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.17 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.18 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -7888,6 +7888,203 @@ function boot(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 window.__outlastGameplayAudit33017=function(){
  return {version:'v3.30.17',spawnRebuilt:window.spawnEnemy===rebuiltSpawnEnemy,bossSpawnRebuilt:window.spawnBoss===rebuiltSpawnBoss,exitRebuilt:window.exitGame===hardExitGame,exitWired:document.getElementById('exitGameBtn')?.dataset?.v33017Wired==='1',running:!!game?.running,enemies:Number(game?.enemies?.length||0)};
+};
+})();
+</script>
+
+
+<script id="outlast-v33018-v310-core-restore">
+(function(){
+'use strict';
+if(window.__OUTLAST_V310_CORE_RESTORED__)return;
+window.__OUTLAST_V310_CORE_RESTORED__=true;
+
+function v310StartCore(fromRoom=false){
+ try{
+  ensureMegaSave();
+  const d=diffDefs[save.difficulty]||diffDefs.Normal,m=modeDefs[save.mode]||modeDefs.Classic,ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;
+  const cm=save.challengeMode==='None'?{enemy:1,spawn:1,reward:1}:challengeModes[save.challengeMode]||{enemy:1,spawn:1,reward:1};
+  const safeBuilderMods=Array.isArray(save.builderMods)?save.builderMods:[];const modifiers=[save.selectedModifier,...safeBuilderMods].filter(n=>n&&n!=='None'&&runModifiers[n]).map(n=>runModifiers[n]);
+  const modEnemy=modifiers.reduce((a,v)=>a*(v.enemy||1),1),modSpawn=modifiers.reduce((a,v)=>a*(v.spawn||1),1),modReward=modifiers.reduce((a,v)=>a*(v.reward||1),1);
+  const up=(name)=>save.upgrades[name]||0;
+  const pet=pets[save.selectedPet]||pets.None,relic=relics[save.selectedRelic]||relics.None,charm=charms[save.selectedCharm]||charms.None;
+  const hp=(ch.hp+15*up('Iron Heart')-8*up('Glass Cannon'))*(1+(sk.hp||0));
+  const speedCap=ch.speed*1.4;
+  const speed=Math.min(speedCap,ch.speed*(1+.08*up('Quick Step')+.05*up('Fleet Foot'))*(1+(sk.speed||0))*(pet.speed?1+pet.speed:1)*(charm.speed?1+charm.speed:1));
+  const weaponLevels=(save.weaponLevels&&typeof save.weaponLevels==='object')?save.weaponLevels:{};const weaponLevel=Number(weaponLevels[save.selectedWeapon])||0;
+  const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
+  const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
+  coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.pvpWinner=null;game.pvp={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
+  game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
+  game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
+  game.player2=null;
+  if(save.mode==='1v1 Arena'){
+    game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.pvp.started=true;
+  }
+  game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
+  fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';syncExtractUI();c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();
+ }catch(err){
+   fatalGameError=err?.message||String(err);
+   fatalErrorShown=true;
+   coopLaunchActive=false;
+   game.running=false;game.paused=false;game.over=true;
+   syncMobileControls();
+   hideGameOverActions();
+   try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';}catch(_){}
+   if(window.matchMedia?.('(max-width:760px)').matches){
+     toast('⚠️ Start failed safely. Please try again.');
+   }
+ }
+}
+function v310SpawnCore(type){
+ const p=game.player,side=Math.floor(Math.random()*4);let x,y;if(side===0){x=Math.random()*W;y=-30}else if(side===1){x=W+30;y=Math.random()*H}else if(side===2){x=Math.random()*W;y=H+30}else{x=-30;y=Math.random()*H}
+ const lvl=game.level, dm=game.stats.enemyMult;
+ const roll=Math.random();let kind=type|| (lvl<4?'normal':roll<0.05?'runner':roll<0.09?'fast':roll<0.13?'tank':roll<0.17?'ranged':roll<0.21?'spitter':roll<0.24?'crawler':roll<0.27?'armored':roll<0.29?'golden':roll<0.32?'swarm':roll<0.35?'elite':roll<0.375?'leaper':roll<0.395?'brute':roll<0.415?'screamer':roll<0.435?'leech':roll<0.455?'toxic':roll<0.47?'phantom':roll<0.485?'juggernaut':roll<0.50?'frostbitten':roll<0.515?'volt':'normal');
+ let base={normal:[22,70,15],fast:[16,120,11],runner:[12,175,9],tank:[70,48,20],ranged:[28,58,12],spitter:[30,48,18],crawler:[18,140,13],armored:[140,54,28],golden:[80,88,22],swarm:[7,165,5],elite:[95,82,23],leaper:[42,165,20],brute:[220,46,38],screamer:[55,65,14],leech:[70,95,16],toxic:[60,78,19],phantom:[48,130,24],juggernaut:[360,38,45],frostbitten:[95,72,22],volt:[75,74,21],splitter:[110,72,20],LeechKing:[180,88,24],WastelandStalker:[260,155,32],RiftBrute:[520,52,48]}[kind]||[22,70,15];
+ const levelHP=1+Math.pow(Math.max(0,lvl-1),1.18)*0.062;const levelSpeed=1+Math.max(0,lvl-1)*0.026;const levelDamage=1+Math.pow(Math.max(0,lvl-1),1.12)*0.034;
+ let scale=levelHP*dm;let xp=Math.max(1,Math.floor(1+(lvl-1)*0.24));
+ if(game.enemies.length<MAX_ENEMIES){game.enemies.push({x,y,kind,hp:base[0]*scale,max:base[0]*scale,speed:base[1]*levelSpeed,r:['tank','armored','brute','juggernaut'].includes(kind)?24:['elite','golden','phantom','LeechKing','WastelandStalker','RiftBrute'].includes(kind)?20:['crawler','swarm'].includes(kind)?12:15,damage:base[2]*levelDamage,xp:kind==='golden'?xp*5:xp,shoot:['ranged','spitter','volt'].includes(kind)?1.5:99,golden:kind==='golden'});if(save.codex)save.codex[kind]=true;if(kind==='splitter'){game.enemies.push({x:x+12,y:y+12,kind:'runner',hp:12*scale,max:12*scale,speed:175*levelSpeed,r:9,damage:9*levelDamage,xp:2,shoot:99})}}
+}
+function v310BossCore(){
+ const side=Math.floor(Math.random()*4);let x,y;if(side===0){x=Math.random()*W;y=-70}else if(side===1){x=W+70;y=Math.random()*H}else if(side===2){x=Math.random()*W;y=H+70}else{x=-70;y=Math.random()*H}
+ const bossLevel=1+Math.pow(Math.max(0,game.level-1),1.16)*0.10;const raidDef=game.raidBoss&&raidBossDefs[game.raidBoss]?raidBossDefs[game.raidBoss]:null;const dm=game.stats.enemyMult*game.stats.difficulty.boss*bossLevel*(raidDef?raidDef.hpMult:1);const hp=500*dm;
+ const bossEmoji=bossEmojis[Math.floor(Math.random()*bossEmojis.length)];
+ ring(x,y,'#ffd86b',50,.8);burst(x,y,'#ffd86b',18,120);game.enemies.push({x,y,kind:'boss',hp,max:hp,speed:(42+game.level*1.7)*Math.pow(bossLevel,.22),r:42,damage:30*game.player.bossMult*Math.pow(bossLevel,1.08),xp:30+Math.floor(game.level*.8),shoot:Math.max(.7,2.2-game.level*.012),boss:true,phase:1,bossEmoji,summonTimer:7,summonCount:0});
+ toast((raidDef?'♛ RAID: '+game.raidBoss+' — ':'')+bossEmoji+' BOSS INCOMING!');
+}
+function v310ExitCore(){
+  coopLaunchActive=false;
+  if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
+  endRun(false,true,false);
+  game.running=false;
+  syncMobileControls();
+  game.paused=false;
+  game.upgradeOpen=false;
+  document.getElementById('subPanel').style.display='none';
+  document.getElementById('menu').style.display='flex';
+  const exit=document.getElementById('exitGameBtn');
+  if(exit)exit.style.display='none';
+  syncExtractUI();
+  updateMenuSummary();
+}
+
+function modernStart(){
+  const result=v310StartCore.apply(this,arguments);
+  try{
+    // Keep current systems compatible with the v3.10 core.
+    game.survival=game.pvp||game.survival;
+    game.survivalWinner=game.pvpWinner||game.survivalWinner||null;
+    if(game.player){
+      save.petLevels=save.petLevels||{};
+      save.relicLevels=save.relicLevels||{};
+      save.charmLevels=save.charmLevels||{};
+      game.player.petLevel=Math.max(1,Math.min(5,Number(save.petLevels[save.selectedPet])||1));
+      game.player.relicLevel=Math.max(1,Math.min(5,Number(save.relicLevels[save.selectedRelic])||1));
+      game.player.charmLevel=Math.max(1,Math.min(5,Number(save.charmLevels[save.selectedCharm])||1));
+    }
+    if(typeof window.__applyAllSets==='function')window.__applyAllSets();
+    else if(typeof window.__outlastApplyBuildSets32767==='function')window.__outlastApplyBuildSets32767();
+    if(typeof connectOutlastServer==='function')connectOutlastServer();
+    if(typeof syncOutlastChatUI==='function')syncOutlastChatUI();
+    if(typeof syncExtractUI==='function')syncExtractUI();
+  }catch(_){}
+  return result;
+}
+function modernExit(){
+  try{return v310ExitCore.apply(this,arguments)}catch(_){
+    try{game.running=false;game.paused=false;game.over=false;game.upgradeOpen=false;game.endScreen=false;game.endVictory=false}catch(__){}
+    try{document.getElementById('subPanel').style.display='none'}catch(__){}
+    try{document.getElementById('menu').style.display='flex'}catch(__){}
+    try{const b=document.getElementById('exitGameBtn');if(b)b.style.display='none'}catch(__){}
+  }
+}
+window.startGame=modernStart;
+window.spawnEnemy=v310SpawnCore;
+window.spawnBoss=v310BossCore;
+window.exitGame=modernExit;
+
+function wireStart(){
+ const old=document.getElementById('startBtn');if(!old)return;
+ if(old.dataset.v310Restored==='1')return;
+ const btn=old.cloneNode(true);
+ btn.dataset.v310Restored='1';
+ btn.onclick=function(e){e.preventDefault();e.stopPropagation();try{newRunStats()}catch(_){};modernStart(false);try{c.focus()}catch(_){}};
+ old.replaceWith(btn);
+}
+function wireExit(){
+ const old=document.getElementById('exitGameBtn');if(!old)return;
+ if(old.dataset.v310Restored==='1')return;
+ const btn=old.cloneNode(true);
+ btn.dataset.v310Restored='1';
+ btn.style.zIndex='999999';
+ btn.style.pointerEvents='auto';
+ btn.onclick=function(e){e.preventDefault();e.stopPropagation();modernExit()};
+ btn.onpointerdown=function(e){e.preventDefault();e.stopPropagation()};
+ old.replaceWith(btn);
+}
+
+const INFO={
+ title:'v3.30.18 — v3.10 Core Restore',
+ summary:'Restored the proven v3.10 gameplay core underneath the current OUTLAST systems.',
+ items:[
+  'Start Run, enemy spawning, boss spawning, and Exit Game now use the historical v3.10 core.',
+  'Modern save data, chat, progression, Owner/Admin systems, and current UI remain in place.',
+  'Conflicting v3.28.3/v3.30.x runtime repair layers were removed from the final path.'
+ ]
+};
+function syncVersion(){
+ try{
+  document.querySelectorAll('.menu-chip').forEach(function(el){
+   if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent='v3.30.18 • SURVIVOR HUB';
+  });
+  document.querySelectorAll('[data-outlast-version]').forEach(function(el){el.textContent='v3.30.18'});
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.30.18';if(b)b.content='3.30.18';
+  document.title='OUTLAST v3.30.18';
+  window.OUTLAST_BUILD='3.30.18';window.OUTLAST_VERSION='v3.30.18';
+ }catch(_){}
+}
+function docs(){
+ try{
+  if(Array.isArray(updates)&&!updates.some(function(x){return Array.isArray(x)&&String(x[0]).includes('v3.30.18');}))
+   updates.unshift(['v3.30.18 — v3.10 Core Restore','Restored the proven v3.10 core for Start Run, enemy spawning, boss spawning, and Exit Game while retaining current OUTLAST systems.']);
+ }catch(_){}
+ try{
+  if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return Array.isArray(x)&&String(x[0]).includes('Why is OUTLAST using the v3.10 core?');}))
+   helpArticles.unshift(['Why is OUTLAST using the v3.10 core?','Troubleshooting','The historical v3.10 gameplay core is now authoritative for Start Run, enemy spawning, boss spawning, and Exit Game. Newer systems remain layered around that stable core rather than replacing it.']);
+ }catch(_){}
+}
+function showUpdatePopup(force){
+ let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
+ if(!force&&seen==='3.30.18')return;
+ const pop=document.getElementById('updatePopup');if(!pop)return;
+ const ver=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
+ if(ver)ver.textContent=INFO.title;
+ if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>';
+ pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
+}
+function closePopup(){
+ try{outlastStorage.setItem('outlastSeenUpdateVersion','3.30.18')}catch(_){}
+ const pop=document.getElementById('updatePopup');if(pop)pop.style.display='none';
+}
+function boot(){
+ syncVersion();docs();wireStart();wireExit();
+ const close=document.getElementById('updatePopupClose'),pop=document.getElementById('updatePopup');
+ if(close)close.onclick=closePopup;
+ if(pop&&!pop.dataset.v33018Wired){pop.addEventListener('click',function(e){if(e.target===pop)closePopup()});pop.dataset.v33018Wired='1'}
+ [100,500,1000,2000,4000].forEach(function(ms){setTimeout(function(){syncVersion();wireStart();wireExit();docs()},ms)});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.__outlastCoreAudit33018=function(){
+ return {
+  version:'v3.30.18',
+  startCore:window.startGame===modernStart,
+  enemyCore:window.spawnEnemy===v310SpawnCore,
+  bossCore:window.spawnBoss===v310BossCore,
+  exitCore:window.exitGame===modernExit,
+  startWired:document.getElementById('startBtn')?.dataset?.v310Restored==='1',
+  exitWired:document.getElementById('exitGameBtn')?.dataset?.v310Restored==='1'
+ };
 };
 })();
 </script>

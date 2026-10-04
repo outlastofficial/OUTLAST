@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="outlast-build" content="3.30.20">
+<meta name="outlast-build" content="3.30.22">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="build-version" content="3.30.20">
-<title>OUTLAST v3.30.20</title>
+<meta name="build-version" content="3.30.22">
+<title>OUTLAST v3.30.22</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -787,7 +787,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.9.7 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.22 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div><div class="row" style="justify-content:flex-start;margin:0 0 10px"><button id="switchUserBtn" class="menu-btn" style="width:auto;padding:8px 12px;font-size:12px;background:#172532;border:1px solid #31495d;box-shadow:none">Switch Username</button></div>
 
@@ -3063,8 +3063,8 @@ const updates=[
  ];
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, oldest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
-const CURRENT_UPDATE_VERSION='3.9.7';
-const CURRENT_UPDATE_INFO={title:'v3.9.7 — Nightfall Countdown',summary:'Added the in-game countdown for the Nightfall Event, scheduled to open October 1, 2026.',items:['Added a live Nightfall Event countdown to the main Play menu.','Countdown uses each player’s local time and reaches zero at October 1, 2026 at 12:00 AM.','The timer switches to NIGHTFALL IS LIVE when the event start time is reached.','Updated the game version marker and update popup to v3.9.7.']};
+const CURRENT_UPDATE_VERSION='3.30.22';
+const CURRENT_UPDATE_INFO={title:'v3.30.22 — Stability Core Restore',summary:'Restored the proven v3.10-era gameplay core and cleaned up conflicting runtime layers.',items:['Added a live Nightfall Event countdown to the main Play menu.','Countdown uses each player’s local time and reaches zero at October 1, 2026 at 12:00 AM.','The timer switches to NIGHTFALL IS LIVE when the event start time is reached.','Updated the game version marker and update popup for the current stability release.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3831,7 +3831,7 @@ function renderOnlinePanel(){if(coopLaunchActive||(typeof game!=='undefined'&&ga
 document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a==='roomCreate')createRoom();else if(a==='roomJoin')joinRoom();else if(a==='roomLeave')leaveRoom();else if(a==='roomStart'){coopLaunchActive=true;closeAllOverlays?.();roomStarted=true;broadcastRoomStart();if(!game.running)startGame(false);const sp=document.getElementById('subPanel');if(sp)sp.style.display='none';setTimeout(()=>{const sp2=document.getElementById('subPanel');if(sp2)sp2.style.display='none';const menu=document.getElementById('menu');if(menu&&game.running)menu.style.display='none';},50)}else if(a==='onlineConnect')connectOutlastServer();else if(a==='onlineDisconnect')disconnectOutlastServer();else if(a==='onlinePing')sendOnlinePing()});
 (function(){function refreshMobileAvatar(){const cv=document.getElementById('mobileAvatarCanvas');if(!cv||!currentUsername||typeof chars==='undefined'||typeof skins==='undefined')return;const mctx=cv.getContext('2d');mctx.save();mctx.scale(cv.width/180,cv.height/220);const ch=chars[save.selectedChar]||chars.Survivor,sk=skins[save.selectedSkin]||skins.Classic;drawAvatarPreview(mctx,{...(ch.visual||{}),body:sk.color},sk.color||'#5e9fff');mctx.restore()}setInterval(refreshMobileAvatar,500)})();
 </script>
-<div class="update-entry"><b>v3.30.20 — Stability Core Restore</b><br>Restored the proven v3.10-era gameplay baseline for Start Run, enemy spawning, boss spawning, and Exit Game. Removed the layered runtime rebuilds that were causing conflicting behavior. How To and version marker updated.</div><div class="update-entry"><b>v2.6.0 — Rooms & Mobile</b><br>Mobile joystick/actions now appear only during gameplay, plus online co-op rooms for up to 4 players with room codes, shared player positions, and room-start synchronization.</div><div class="update-entry"><b>v2.6.0 — Cumulative Update</b><br>server-backed bug/idea reports, clearer Luck systems, clickable Level Up choices, upgrade behavior fixes, Treasure Radar drop tuning, mobile/device selection, co-op rooms, and mobile/UI polish consolidated from all post-v2.5.7 changes.</div>
+<div class="update-entry"><b>v3.30.22 — Stability Core Restore</b><br>Restored the proven v3.10-era gameplay baseline for Start Run, enemy spawning, boss spawning, and Exit Game. Removed the layered runtime rebuilds that were causing conflicting behavior. How To and version marker updated.</div><div class="update-entry"><b>v2.6.0 — Rooms & Mobile</b><br>Mobile joystick/actions now appear only during gameplay, plus online co-op rooms for up to 4 players with room codes, shared player positions, and room-start synchronization.</div><div class="update-entry"><b>v2.6.0 — Cumulative Update</b><br>server-backed bug/idea reports, clearer Luck systems, clickable Level Up choices, upgrade behavior fixes, Treasure Radar drop tuning, mobile/device selection, co-op rooms, and mobile/UI polish consolidated from all post-v2.5.7 changes.</div>
 <div class="update-entry"><b>v2.4.0 — Bug Fix Update</b><br>
 Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy bonus score, and movement speed. Added a community poll for the next update.</div>
 <script>
@@ -4109,7 +4109,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 
 <script>
 (function(){
-  const BUILD='3.30.20';
+  const BUILD='3.30.22';
   function mark(){
     document.documentElement.setAttribute('data-outlast-build',BUILD);
     document.querySelectorAll('[data-build-version]').forEach(function(el){el.textContent='v'+BUILD;});

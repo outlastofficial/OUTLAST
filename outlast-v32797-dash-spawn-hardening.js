@@ -90,17 +90,6 @@
     return !remove;
   }
 
-  const oldStart=window.startGame;
-  if(typeof oldStart==='function'&&!window.__outlastStartHardening32797){
-    window.__outlastStartHardening32797=true;
-    window.startGame=function(){
-      const result=oldStart.apply(this,arguments);
-      if(game.player)repairEntity(game.player,null,null,false);
-      if(game.player2)repairEntity(game.player2,game.player?.x??null,game.player?.y??null,false);
-      return result;
-    };
-  }
-
   const oldEnemy=window.spawnEnemy;
   if(typeof oldEnemy==='function'&&!window.__outlastEnemyHardening32797){
     window.__outlastEnemyHardening32797=true;

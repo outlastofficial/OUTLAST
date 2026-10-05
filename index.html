@@ -4148,8 +4148,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.30.24';
-const CURRENT_UPDATE_INFO={title:'v3.30.24 — Stability & Update Authority Fix',summary:'Synchronized the Update News popup and release version so legacy scripts cannot overwrite the current build marker.',items:['The Update News popup now uses the current release version.', 'Legacy version overrides no longer replace the live build marker.', 'Existing login, saves, Owner access, and Owner Panel permissions were not changed.']};
+const CURRENT_UPDATE_VERSION='3.27.34';
+const CURRENT_UPDATE_INFO={title:'v3.27.34 — Stability Fix',summary:'Small bug fixes and stability improvements.',items:['The Update News popup no longer returns on every reload after it is dismissed.','The normal Settings screen keeps PC/Mobile and Joystick ON/OFF controls available.','Removed later movement/collision overrides that could interfere with player movement.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6648,7 +6648,6 @@ window.__outlastSkinAreaVersion=VERSION;
   window.addEventListener('beforeunload',clearSpeed);
 })();
 </script>
-<script src="settings-expansion-v3.27.48.js?v=3.27.77"></script>
 <script src="event-admin-preview-v3.27.30.js?v=3.27.105"></script>
 <script id="weapon-uniqueness-v32766">
 (function(){
@@ -6993,200 +6992,9 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   };
 })();
 </script>
-<script id="outlast-v32780-spawn-collision-guard">
-/* v3.27.80 spawn + collision guard: keep live entities outside solid map geometry. */
-(function(){
-  if(window.__outlastSpawnCollisionGuard32780)return;
-  window.__outlastSpawnCollisionGuard32780=true;
-  function finiteEntity(e){return !!e&&Number.isFinite(e.x)&&Number.isFinite(e.y)}
-  function freePoint(x,y,r,avoidX=null,avoidY=null){return findSafePlayerSpawn(Number(x)||W/2,Number(y)||H/2,Math.max(6,Number(r)||15),avoidX,avoidY)}
-  function repairEntity(e,avoidX=null,avoidY=null){
-    if(!finiteEntity(e))return false;
-    const r=Math.max(6,Number(e.r)||15);
-    if(!blocked(e.x,e.y,r))return false;
-    const p=freePoint(e.x,e.y,r,avoidX,avoidY);e.x=p.x;e.y=p.y;return true;
-  }
-  function repairPickups(){
-    const lists=[game.gems||[],game.coins||[],game.powerups||[],game.shrines||[]];
-    for(let li=0;li<lists.length;li++)for(const item of lists[li]){
-      if(!finiteEntity(item))continue;
-      const r=li===3?18:12;
-      if(blocked(item.x,item.y,r)){const p=freePoint(item.x,item.y,r);item.x=p.x;item.y=p.y}
-    }
-  }
-  const baseTryMove=tryMoveEntity;
-  tryMoveEntity=function(ent,nx,ny){
-    if(!finiteEntity(ent))return;
-    const r=Math.max(6,Number(ent.r)||18);
-    if(blocked(ent.x,ent.y,r))repairEntity(ent);
-    const ox=ent.x,oy=ent.y;
-    baseTryMove(ent,nx,ny);
-    if(blocked(ent.x,ent.y,r)){ent.x=ox;ent.y=oy;if(blocked(ent.x,ent.y,r))repairEntity(ent)}
-  };
-  const baseStartGame=startGame;
-  
-  const baseSpawnEnemy=spawnEnemy;
-  spawnEnemy=function(){
-    const before=game.enemies.length,result=baseSpawnEnemy.apply(this,arguments);
-    for(let i=before;i<game.enemies.length;i++){const e=game.enemies[i];if(e)repairEntity(e,game.player?.x??null,game.player?.y??null)}
-    return result;
-  };
-  const baseSpawnBoss=spawnBoss;
-  spawnBoss=function(){
-    const before=game.enemies.length,result=baseSpawnBoss.apply(this,arguments);
-    for(let i=before;i<game.enemies.length;i++){const e=game.enemies[i];if(e?.boss)repairEntity(e,game.player?.x??null,game.player?.y??null)}
-    return result;
-  };
-  const baseSpawnShrine=spawnShrine;
-  spawnShrine=function(){
-    const before=game.shrines.length,result=baseSpawnShrine.apply(this,arguments);
-    for(let i=before;i<game.shrines.length;i++)if(game.shrines[i])repairEntity(game.shrines[i]);
-    return result;
-  };
-  const baseUpdate=update;
-  update=function(dt){
-    baseUpdate(dt);
-    try{
-      if(game.player)repairEntity(game.player);
-      if(game.player2)repairEntity(game.player2,game.player?.x??null,game.player?.y??null);
-      for(const e of game.enemies||[])repairEntity(e,game.player?.x??null,game.player?.y??null);
-      repairPickups();
-    }catch(_){ }
-  };
-})();
-</script>
 
-<script id="outlast-v32781-guaranteed-safe-spawns">
-/* v3.27.81 — Guaranteed Safe Spawns: never accept a blocked spawn fallback. */
-(function(){
-  'use strict';
-  if(window.__outlastGuaranteedSafeSpawns32781)return;
-  window.__outlastGuaranteedSafeSpawns32781=true;
 
-  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-  function isClear(x,y,r){
-    return Number.isFinite(x)&&Number.isFinite(y)&&Number.isFinite(r)&&
-      x>=r+2&&x<=W-r-2&&y>=r+2&&y<=H-r-2&&!blocked(x,y,r);
-  }
-  function findGuaranteed(x,y,r=18,avoidX=null,avoidY=null){
-    r=Math.max(6,Number(r)||18);
-    const bx=clamp(Number(x)||W/2,r+4,W-r-4),by=clamp(Number(y)||H/2,r+4,H-r-4);
-    const acceptable=(px,py)=>{
-      px=clamp(px,r+4,W-r-4);py=clamp(py,r+4,H-r-4);
-      if(!isClear(px,py,r))return null;
-      if(avoidX!==null&&avoidY!==null&&Math.hypot(px-avoidX,py-avoidY)<Math.max(70,r*3.5))return null;
-      return {x:px,y:py,d:Math.hypot(px-bx,py-by)};
-    };
-    const direct=acceptable(bx,by);if(direct)return direct;
-    // Dense radial search handles large objects and narrow clearings.
-    for(let ring=12;ring<=1600;ring+=12){
-      for(let step=0;step<72;step++){
-        const a=step*Math.PI*2/72,p=acceptable(bx+Math.cos(a)*ring,by+Math.sin(a)*ring);
-        if(p)return p;
-      }
-    }
-    // Full-map scan is the final deterministic fallback. No blocked fallback is allowed.
-    for(let yy=r+6;yy<=H-r-6;yy+=16){
-      for(let xx=r+6;xx<=W-r-6;xx+=16){
-        const p=acceptable(xx,yy);if(p)return p;
-      }
-    }
-    return null;
-  }
 
-  // Replace the old helper so every later caller gets a guaranteed clear point.
-  window.findSafePlayerSpawn=function(x,y,r=20,avoidX=null,avoidY=null){
-    const p=findGuaranteed(x,y,r,avoidX,avoidY);
-    return p?{x:p.x,y:p.y}:null;
-  };
-  window.findOpenEnemyPoint=function(x,y,r=15,spread=180){
-    const p=findGuaranteed(x,y,r);return p?{x:p.x,y:p.y}:null;
-  };
-
-  function repair(e,avoidX=null,avoidY=null,removeIfImpossible=false){
-    if(!e||!Number.isFinite(e.x)||!Number.isFinite(e.y))return false;
-    const r=Math.max(6,Number(e.r)||16);
-    if(isClear(e.x,e.y,r))return true;
-    const p=findGuaranteed(e.x,e.y,r,avoidX,avoidY);
-    if(p){e.x=p.x;e.y=p.y;return true;}
-    return !removeIfImpossible;
-  }
-
-  // Strengthen the existing movement guard: an entity can never finish a move inside geometry.
-  const oldMove=window.tryMoveEntity;
-  if(typeof oldMove==='function'&&!window.__outlastMoveGuard32781){
-    window.__outlastMoveGuard32781=true;
-    window.tryMoveEntity=function(ent,nx,ny){
-      if(!ent)return;
-      oldMove(ent,nx,ny);
-      repair(ent,game.player?.x??null,game.player?.y??null,false);
-    };
-  }
-
-  // Wrap spawn entry points so every newly created entity is validated immediately.
-  const oldEnemy=window.spawnEnemy;
-  if(typeof oldEnemy==='function'&&!window.__outlastEnemyGuard32781){
-    window.__outlastEnemyGuard32781=true;
-    window.spawnEnemy=function(){
-      const before=game.enemies.length,result=oldEnemy.apply(this,arguments);
-      for(let i=before;i<game.enemies.length;i++){
-        const e=game.enemies[i];
-        if(e&&blocked(e.x,e.y,Math.max(6,Number(e.r)||15))&&!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
-      }
-      return result;
-    };
-  }
-  const oldBoss=window.spawnBoss;
-  if(typeof oldBoss==='function'&&!window.__outlastBossGuard32781){
-    window.__outlastBossGuard32781=true;
-    window.spawnBoss=function(){
-      const before=game.enemies.length,result=oldBoss.apply(this,arguments);
-      for(let i=before;i<game.enemies.length;i++){
-        const e=game.enemies[i];
-        if(e&&blocked(e.x,e.y,Math.max(6,Number(e.r)||15))&&!repair(e,game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i--,1);
-      }
-      return result;
-    };
-  }
-  const oldShrine=window.spawnShrine;
-  if(typeof oldShrine==='function'&&!window.__outlastShrineGuard32781){
-    window.__outlastShrineGuard32781=true;
-    window.spawnShrine=function(){
-      const before=game.shrines.length,result=oldShrine.apply(this,arguments);
-      for(let i=before;i<game.shrines.length;i++){
-        const e=game.shrines[i];
-        if(e&&blocked(e.x,e.y,Math.max(6,Number(e.r)||18))&&!repair(e,null,null,true))game.shrines.splice(i--,1);
-      }
-      return result;
-    };
-  }
-
-  // Player start/restart is the strictest case: if the requested spawn is blocked,
-  // move to the nearest valid point before the run is allowed to continue.
-  const oldStart=window.startGame;
-  if(typeof oldStart==='function'&&!window.__outlastStartGuard32781){
-    window.__outlastStartGuard32781=true;
-    
-  }
-
-  // Final invariant check: blocked live entities are relocated; impossible enemy/pickup
-  // placements are removed instead of leaving an object overlapping map geometry.
-  const oldUpdate=window.update;
-  if(typeof oldUpdate==='function'&&!window.__outlastUpdateGuard32781){
-    window.__outlastUpdateGuard32781=true;
-    window.update=function(dt){
-      oldUpdate(dt);
-      try{
-        if(game.player&&blocked(game.player.x,game.player.y,Math.max(6,Number(game.player.r)||20))&&!repair(game.player,null,null,false)){game.running=false;return;}
-        if(game.player2)repair(game.player2,game.player?.x??null,game.player?.y??null,false);
-        for(let i=(game.enemies||[]).length-1;i>=0;i--)if(!repair(game.enemies[i],game.player?.x??null,game.player?.y??null,true))game.enemies.splice(i,1);
-        for(let i=(game.shrines||[]).length-1;i>=0;i--)if(!repair(game.shrines[i],null,null,true))game.shrines.splice(i,1);
-        for(const list of [game.coins||[],game.gems||[],game.powerups||[]])for(let i=list.length-1;i>=0;i--){const item=list[i];if(item&&blocked(item.x,item.y,Math.max(6,Number(item.r)||12))&&!repair(item,null,null,true))list.splice(i,1);}
-      }catch(_){/* spawn safety must never break the main game loop */}
-    };
-  }
-})();
-</script>
 <script src="rarity-rebuild-v3.27.96.js?v=3.27.96"></script>
 <script src="outlast-v32797-dash-spawn-hardening.js?v=3.27.99"></script>
 <script src="outlast-v32798-void-arsenal-balance.js?v=3.27.99"></script>
@@ -7816,53 +7624,34 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 </script>
 
 
-<script id="outlast-v32733-feature-restore-authority">
+
+<script id="outlast-v32734-final-regression-fix">
 (function(){
 'use strict';
-const V='v3.27.33';
-const INFO={
- title:'v3.27.33 — Event Build Feature Restore',
- summary:'Restored later non-Start systems around the stable event-era launcher.',
- items:[
-  'Restored expanded Settings and display preferences.',
-  'Restored event preview, countdown/readiness, lifecycle hardening, and event expansion systems.',
-  'Restored rarity and upgrade balancing, Bouncing Bullets, coin-farm safeguards, dash/spawn safety, and save recovery.',
-  'Restored compatible Owner/online systems without replacing the event-era START RUN function.'
- ]
-};
-function apply(){
+const V='v3.27.34';
+function syncVersion(){
  try{
   document.title='OUTLAST '+V;
   const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-  if(a)a.content='3.27.33';if(b)b.content='3.27.33';
-  window.OUTLAST_BUILD='3.27.33';window.OUTLAST_VERSION=V;
+  if(a)a.content='3.27.34';if(b)b.content='3.27.34';
+  window.OUTLAST_BUILD='3.27.34';window.OUTLAST_VERSION=V;
   document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=V);
   document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=V+' • SURVIVOR HUB'});
  }catch(_){}
- try{
-  if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(V)))
-   window.updates.unshift([INFO.title,INFO.summary]);
- }catch(_){}
- try{
-  if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('feature restore around the event build')))
-   window.helpArticles.unshift(['What was restored around the event build?','Updates','Later independent systems were restored around the untouched v3.27.31 Start Run launcher. The launcher itself was not replaced or wrapped.']);
- }catch(_){}
 }
-function popup(){
- try{
-  const p=document.getElementById('updatePopup');if(!p)return;
-  let seen='';try{seen=localStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
-  if(seen==='3.27.33')return;
-  const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
-  if(v)v.textContent=INFO.title;
-  if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
-  p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
- }catch(_){}
+function docs(){
+ try{if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(V)))window.updates.unshift([V+' — Stability Fix','Small bug fixes and stability improvements.'])}catch(_){}
+ try{if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('joystick controls are available in Settings')))window.helpArticles.unshift(['Where are the joystick controls?','Settings','Open More → Settings. The normal Settings screen includes PC Controls, Mobile Controls, Joystick ON, and Joystick OFF.'])}catch(_){}
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{apply();setTimeout(popup,120)},{once:true});
-else {apply();setTimeout(popup,120)}
-[500,1500,3000,6000].forEach(ms=>setTimeout(apply,ms));
-window.__OUTLAST_FEATURE_RESTORE_AUDIT_32733=()=>({version:V,startFunction:typeof window.startGame==='function',assignedStartWrappers:(document.documentElement.innerHTML.match(/startGame\\s*=\\s*function\\(/g)||[]).length});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{syncVersion();docs()},{once:true});else{syncVersion();docs()}
+[200,800,1600,3000,6000].forEach(ms=>setTimeout(syncVersion,ms));
+window.__OUTLAST_REGRESSION_AUDIT_32734=()=>({
+ version:V,
+ startFunction:typeof window.startGame==='function',
+ settingsAddon:!!document.querySelector('script[src^="settings-expansion-v3.27.48.js"]'),
+ movementGuards:!!document.getElementById('outlast-v32780-spawn-collision-guard')||!!document.getElementById('outlast-v32781-guaranteed-safe-spawns'),
+ popupCoreVersion:(typeof CURRENT_UPDATE_VERSION!=='undefined'?CURRENT_UPDATE_VERSION:null)
+});
 })();
 </script>
 </body>\n
@@ -7896,46 +7685,4 @@ function boot(){clean();[100,500,1200,2500].forEach(ms=>setTimeout(clean,ms))}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
-<script id="outlast-v33043-systems-restore">
-(function(){
-'use strict';
-const VERSION='v3.27.33',BUILD='3.27.33';
-const INFO={title:'v3.27.33 — Event Build Systems Restore',summary:'Small bug fixes and stability improvements.',items:[
-'Restored the current UI, settings, progression, event, rarity, recovery, and gameplay-support systems.',
-'The known-good event-era Start Run implementation is preserved.',
-'Halloween presentation and in-game bug submission remain removed.'
-]};
-function sync(){
- try{
-  document.title='OUTLAST '+VERSION;
-  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-  if(a)a.content=BUILD;if(b)b.content=BUILD;window.OUTLAST_BUILD=BUILD;window.OUTLAST_VERSION=VERSION;
-  document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=VERSION);
-  document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=VERSION+' • SURVIVOR HUB'});
- }catch(_){}
-}
-function docs(){
- try{if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))window.updates.unshift([INFO.title,INFO.summary])}catch(_){}
- try{if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What was restored in v3.27.33?')))window.helpArticles.unshift(['What was restored in v3.27.33?','Updates','Current OUTLAST UI, settings, progression, event, rarity, recovery, and gameplay-support systems are restored around the known-good event-era Start Run.'])}catch(_){}
-}
-function popup(force){
- const p=document.getElementById('updatePopup');if(!p)return;
- let seen='';try{seen=localStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
- if(!force&&seen===BUILD)return;
- const v=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
- if(v)v.textContent=INFO.title;
- if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
- p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
-}
-function closePopup(){
- try{localStorage.setItem('outlastSeenUpdateVersion',BUILD)}catch(_){}
- const p=document.getElementById('updatePopup');if(p){p.style.display='none';p.style.visibility='hidden';p.setAttribute('aria-hidden','true')}
-}
-window.showUpdatePopup=popup;
-document.getElementById('updatePopupClose')?.addEventListener('click',closePopup);
-document.getElementById('updatePopup')?.addEventListener('click',e=>{if(e.target.id==='updatePopup')closePopup()});
-sync();docs();setTimeout(()=>{sync();docs();popup(false)},250);
-[1000,2500,5000].forEach(ms=>setTimeout(()=>{sync();docs()},ms));
-window.__OUTLAST_SYSTEMS_RESTORE_AUDIT_33043=()=>({version:VERSION,startExists:typeof window.startGame==='function',startButton:!!document.getElementById('startBtn'),updatePopup:!!document.getElementById('updatePopup')});
-})();
-</script>
+

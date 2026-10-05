@@ -7976,3 +7976,85 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<script id="outlast-v32736-movement-focus-fix">
+(function(){
+  'use strict';
+  const RELEASE='v3.27.36';
+
+  function visible(el){
+    if(!el||!document.body.contains(el))return false;
+    const s=getComputedStyle(el);
+    return s.display!=='none' && s.visibility!=='hidden' && Number(s.opacity||1)>0;
+  }
+
+  function syncMovementTypingState(){
+    try{
+      if(typeof game==='undefined'||!game.running)return;
+      const active=document.activeElement;
+      const isTyping=!!active &&
+        (active.matches?.('input,textarea,[contenteditable="true"]')||active.isContentEditable);
+      /* Hidden login/settings inputs must never freeze the live game loop. */
+      if(!isTyping || !visible(active) || document.getElementById('menu')?.style.display==='none'){
+        if(!visible(active) || document.getElementById('menu')?.style.display==='none'){
+          game.__outlastTypingActive=false;
+        }
+      }
+    }catch(_){}
+  }
+
+  document.addEventListener('focusin',e=>{
+    try{
+      if(e.target?.id==='game')game.__outlastTypingActive=false;
+    }catch(_){}
+  },true);
+
+  document.addEventListener('pointerdown',e=>{
+    try{
+      if(e.target?.closest?.('#game'))game.__outlastTypingActive=false;
+    }catch(_){}
+  },true);
+
+  /* Covers the exact failure case where an input is hidden without a focusout
+     event reaching the older chat typing guard. */
+  setInterval(syncMovementTypingState,80);
+
+  try{
+    const a=document.querySelector('meta[name="outlast-build"]');
+    const b=document.querySelector('meta[name="build-version"]');
+    if(a)a.content='3.27.36';
+    if(b)b.content='3.27.36';
+    document.title='OUTLAST '+RELEASE;
+    window.OUTLAST_BUILD='3.27.36';
+    window.OUTLAST_VERSION=RELEASE;
+    document.querySelectorAll('.menu-chip').forEach(el=>{
+      if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=RELEASE+' • SURVIVOR HUB';
+    });
+    const badge=document.getElementById('outlastVersionBadge');
+    if(badge)badge.textContent=RELEASE;
+  }catch(_){}
+
+  try{
+    if(Array.isArray(window.updates)&&!window.updates.some(
+      x=>Array.isArray(x)&&String(x[0]).includes(RELEASE)
+    )){
+      window.updates.unshift([
+        RELEASE+' — Stability Update',
+        'Small bug fixes and stability improvements.'
+      ]);
+    }
+  }catch(_){}
+
+  try{
+    if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(
+      x=>Array.isArray(x)&&String(x[0]).includes('Why can I not move after starting a run?')
+    )){
+      window.helpArticles.unshift([
+        'Why can I not move after starting a run?',
+        'Troubleshooting',
+        'The movement input guard now clears correctly when the game canvas becomes active, preventing stale text-input focus from freezing the game loop.'
+      ]);
+    }
+  }catch(_){}
+})();
+</script>

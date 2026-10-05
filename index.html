@@ -2093,8 +2093,6 @@ function startGame(fromRoom=false){
    }
  }
 }
-// v3.30.14 — original Start core capture, before any later startGame wrappers.
-window.__OUTLAST_ORIGINAL_START_CORE_33014=startGame;
 function exitGame(){
   coopLaunchActive=false;
   if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
@@ -4466,25 +4464,7 @@ window.adminReset=function(){if(!isAdmin())return;save=cloneSave(adminSnapshot||
 
 /* ---------- Permanent upgrade effects ---------- */
 const oldStartGame=realStartGame;
-startGame=function(){
-  oldStartGame();
-  if(!game.player)return;
-  const u=n=>save.upgrades[n]||0;
-  game.player.scoreBonus=1+.04*u('Battle Focus');
-  game.player.treasureChance=.10*u('Treasure Sense');
-  game.player.ultDamage=(game.player.ultDamage||1)*(1+.08*u('Overdrive'));
-  const mastery=1+.08*u('Relic Mastery');
-  game.player.regen*=mastery; game.player.ultGain*=mastery;
-  const cm=1+.08*u('Charm Mastery'); game.player.crit*=1; game.player.coinMult*=cm;
-  game.player.vampire=(game.player.vampire||0)+.25*u('Surgeon');
-  game.player.xpBonus*=1+.08*(u('Battle Focus')?0:0);
-  game.player.buildTags=[];game.player.extraction=null;game.player.eventClock=35;game.player.god=!!adminUnlocked;
-  applyMapModifiers();
-  const mods=[save.selectedModifier,...(save.builderMods||[])];
-  if(mods.includes('GlassWorld')){game.player.max*=.75;game.player.hp=game.player.max;}
-  if(mods.includes('BloodMoon'))game.stats.scoreMult*=1.25;
-  if(mods.includes('TreasureRush')){game.player.speed*=.92;}
-};
+
 
 /* ---------- Maps with distinct gameplay ---------- */
 Object.assign(mapDefs,{
@@ -6842,11 +6822,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   const oldStart=startGame;
   if(!window.__outlastStartSet32767){
     window.__outlastStartSet32767=true;
-    startGame=function(){
-      const r=oldStart.apply(this,arguments);
-      try{if(window.__applyAllSets)window.__applyAllSets();else if(game.player)window.__outlastApplyBuildSets32767();}catch(_){}
-      return r;
-    };
+    
   }
 
   // Full build presets: store and restore all run-defining choices.
@@ -7004,7 +6980,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   const oldStartGame68=startGame;
   if(!window.__outlastSetStart68){
     window.__outlastSetStart68=true;
-    startGame=function(){const r=oldStartGame68.apply(this,arguments);try{window.__applyAllSets();}catch(_){}return r;};
+    
   }
 
   // Keep the zombie contact damage path authoritative and stop on zero HP.
@@ -7048,11 +7024,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
     if(blocked(ent.x,ent.y,r)){ent.x=ox;ent.y=oy;if(blocked(ent.x,ent.y,r))repairEntity(ent)}
   };
   const baseStartGame=startGame;
-  startGame=function(){
-    const result=baseStartGame.apply(this,arguments);
-    try{if(game.player)repairEntity(game.player);if(game.player2)repairEntity(game.player2,game.player?.x??null,game.player?.y??null);repairPickups()}catch(_){ }
-    return result;
-  };
+  
   const baseSpawnEnemy=spawnEnemy;
   spawnEnemy=function(){
     const before=game.enemies.length,result=baseSpawnEnemy.apply(this,arguments);
@@ -7194,18 +7166,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
   const oldStart=window.startGame;
   if(typeof oldStart==='function'&&!window.__outlastStartGuard32781){
     window.__outlastStartGuard32781=true;
-    window.startGame=function(){
-      const result=oldStart.apply(this,arguments);
-      if(game.player){
-        const ok=repair(game.player,null,null,false);
-        if(!ok){
-          game.running=false;
-          toast?.('⚠️ No safe player spawn was available on this map. Run cancelled safely.');
-        }
-      }
-      if(game.player2)repair(game.player2,game.player?.x??null,game.player?.y??null,false);
-      return result;
-    };
+    
   }
 
   // Final invariant check: blocked live entities are relocated; impossible enemy/pickup
@@ -7855,69 +7816,55 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 </script>
 
 
-<!-- v3.27.32 restored independent systems. The original v3.27.31 Start Run function is intentionally untouched. -->
-<script src="settings-expansion-v3.27.48.js?v=3.27.48"></script>
-<script src="event-admin-preview-v3.27.30.js?v=3.27.30"></script>
-<script src="rarity-rebuild-v3.27.96.js?v=3.27.96"></script>
-<script src="outlast-v32797-dash-spawn-hardening.js?v=3.27.97"></script>
-<script src="outlast-v32798-void-arsenal-balance.js?v=3.27.98"></script>
-<script src="outlast-v32799-premium-rarity-balance.js?v=3.27.99"></script>
-<script src="outlast-v327100-lower-rarity-balance.js?v=3.27.100"></script>
-<script src="outlast-v327101-all-upgrade-balance.js?v=3.27.101"></script>
-<script src="outlast-v327102-bouncing-bullets.js?v=3.27.102"></script>
-<script src="outlast-v327103-coin-farm-hardening.js?v=3.27.103"></script>
-<script src="outlast-v327105-event-hardening.js?v=3.27.105"></script>
-<script src="outlast-v327108-rarity-card-authority.js?v=3.27.108"></script>
-<script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
-<script id="outlast-v32732-restored-feature-docs">
+<script id="outlast-v32733-feature-restore-authority">
 (function(){
 'use strict';
-const V='v3.27.32';
+const V='v3.27.33';
 const INFO={
- title:'v3.27.32 — Feature Restore',
- summary:'Restored later non-Start gameplay systems on top of the stable event build.',
+ title:'v3.27.33 — Event Build Feature Restore',
+ summary:'Restored later non-Start systems around the stable event-era launcher.',
  items:[
   'Restored expanded Settings and display preferences.',
-  'Restored event admin preview, event lifecycle hardening, and event countdown/readiness updates.',
-  'Restored rarity/upgrade balancing, Bouncing Bullets, coin-farm safeguards, and recovery protection.',
-  'Restored Owner/online systems from the later compatible module without replacing START RUN.'
+  'Restored event preview, countdown/readiness, lifecycle hardening, and event expansion systems.',
+  'Restored rarity and upgrade balancing, Bouncing Bullets, coin-farm safeguards, dash/spawn safety, and save recovery.',
+  'Restored compatible Owner/online systems without replacing the event-era START RUN function.'
  ]
 };
-function docs(){
+function apply(){
+ try{
+  document.title='OUTLAST '+V;
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.27.33';if(b)b.content='3.27.33';
+  window.OUTLAST_BUILD='3.27.33';window.OUTLAST_VERSION=V;
+  document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=V);
+  document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=V+' • SURVIVOR HUB'});
+ }catch(_){}
  try{
   if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(V)))
    window.updates.unshift([INFO.title,INFO.summary]);
  }catch(_){}
  try{
-  if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('restored feature systems'))){
-   window.helpArticles.unshift(['What was restored after the event rollback?','Updates','The stable event-era Start Run remains in place. Independent settings, event, rarity/upgrade, bouncing-shot, coin-safety, recovery, and online/Owner systems were restored around it.']);
-  }
- }catch(_){}
-}
-function markers(){
- try{
-  document.title='OUTLAST '+V;
-  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-  if(a)a.content='3.27.32';if(b)b.content='3.27.32';
-  window.OUTLAST_BUILD='3.27.32';window.OUTLAST_VERSION=V;
-  document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=V);
-  document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=V+' • SURVIVOR HUB'});
+  if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('feature restore around the event build')))
+   window.helpArticles.unshift(['What was restored around the event build?','Updates','Later independent systems were restored around the untouched v3.27.31 Start Run launcher. The launcher itself was not replaced or wrapped.']);
  }catch(_){}
 }
 function popup(){
- const p=document.getElementById('updatePopup');if(!p)return;
- let seen='';try{seen=localStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
- if(seen==='3.27.32')return;
- const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
- if(v)v.textContent=INFO.title;
- if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
- p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
+ try{
+  const p=document.getElementById('updatePopup');if(!p)return;
+  let seen='';try{seen=localStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
+  if(seen==='3.27.33')return;
+  const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
+  if(v)v.textContent=INFO.title;
+  if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
+ }catch(_){}
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){markers();docs();setTimeout(popup,100)},{once:true});
-else {markers();docs();setTimeout(popup,100)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{apply();setTimeout(popup,120)},{once:true});
+else {apply();setTimeout(popup,120)}
+[500,1500,3000,6000].forEach(ms=>setTimeout(apply,ms));
+window.__OUTLAST_FEATURE_RESTORE_AUDIT_32733=()=>({version:V,startFunction:typeof window.startGame==='function',assignedStartWrappers:(document.documentElement.innerHTML.match(/startGame=function\(/g)||[]).length});
 })();
 </script>
-
 </body>\n
 
 

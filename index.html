@@ -3660,7 +3660,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
         const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
         b.innerHTML='<div class="grid"><div class="option"><b>🌐 Server</b><div class="small">'+esc(h.status||'unknown')+'</div></div><div class="option"><b>🧩 Server Version</b><div class="small">'+esc(h.version||'unknown')+'</div></div><div class="option"><b>🟢 Online Players</b><div class="small">'+Number(h.players||0)+'</div></div><div class="option"><b>🔌 Connections</b><div class="small">'+Number(h.connections||0)+'</div></div><div class="option"><b>🚪 Rooms</b><div class="small">'+Number(h.rooms||0)+'</div></div><div class="option"><b>📝 Feedback</b><div class="small">'+Number(h.feedback||0)+'</div></div></div><div class="option" style="margin-top:10px"><b>🌎 Global Event</b><div class="small">'+esc(ev)+'</div></div><button class="option" data-owner-action="tab" data-value="status" style="margin-top:10px">↻ Refresh Server Status</button>';
       }else if(tab==='players'){
-        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[],rows=ps.length?ps.map(p=>'<div class="option owner-player-row" data-player-name="'+esc(p.username).toLowerCase()+'" data-player-online="'+(p.online?'1':'0')+'" data-player-banned="'+(p.banned?'1':'0')+'" style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+(p.banned?' • Restricted':'')+'</div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end"><div class="small">'+(p.createdAt?('Created '+new Date(Number(p.createdAt)).toLocaleDateString()+(p.lastSeen?' • Last seen '+new Date(Number(p.lastSeen)).toLocaleString():'')):'No creation date')+'</div><button class="danger" data-owner-action="playerAccess" data-value="'+esc(p.username)+'">'+(p.banned?'Restore Access':'Restrict Access')+'</button><button class="danger" style="background:linear-gradient(180deg,#7a1f2b,#4a1018)!important;border-color:#ff6878!important" data-owner-action="deletePlayer" data-value="'+esc(p.username)+'">Delete Username</button></div></div>').join(''):'<div class="option">No known players yet.</div>';
+        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[],rows=ps.length?ps.map(p=>'<div class="option owner-player-row" data-player-name="'+esc(p.username).toLowerCase()+'" data-player-online="'+(p.online?'1':'0')+'" data-player-banned="'+(p.banned?'1':'0')+'" style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+(p.banned?' • Restricted':'')+'</div></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end"><div class="small">'+(p.createdAt?('Created '+new Date(Number(p.createdAt)).toLocaleDateString()+(p.lastSeen?' • Last seen '+new Date(Number(p.lastSeen)).toLocaleString():'')):'No creation date')+'</div><button class="danger" data-owner-action="playerAccess" data-value="'+esc(p.username)+'">'+(p.banned?'Restore Access':'Restrict Access')+'</button><button type="button" class="danger" style="background:linear-gradient(180deg,#7a1f2b,#4a1018)!important;border-color:#ff6878!important" data-owner-action="deletePlayer" data-value="'+esc(p.username)+'">🗑️ DELETE ACCOUNT</button></div></div>').join(''):'<div class="option">No known players yet.</div>';
         b.innerHTML='<div class="option"><b>👥 Created Usernames</b><div class="small">Server-registered usernames. Online players are shown first, and previously registered offline names remain in the list.</div><input id="ownerPlayerSearch" type="search" autocomplete="off" placeholder="Search players…" style="width:100%;box-sizing:border-box;margin-top:10px;padding:10px;border-radius:9px;background:#101820;color:#fff;border:1px solid #3b4d60"><label class="small" style="display:flex;align-items:center;gap:8px;margin-top:9px"><input id="ownerPlayersOnlineOnly" type="checkbox"> Online only</label><div class="small" id="ownerPlayerCount" style="margin-top:6px"></div></div><div id="ownerPlayerRows" style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><button class="option" data-owner-action="tab" data-value="players" style="margin-top:10px">↻ Refresh Players</button>';
         const count=document.getElementById('ownerPlayerCount'),search=document.getElementById('ownerPlayerSearch'),onlineOnly=document.getElementById('ownerPlayersOnlineOnly'),allRows=[...document.querySelectorAll('.owner-player-row')];
         const applyPlayerFilter=()=>{const q=String(search?.value||'').trim().toLowerCase(),only=!!onlineOnly?.checked;let shown=0;allRows.forEach(row=>{const matchName=!q||String(row.dataset.playerName||'').includes(q),matchOnline=!only||row.dataset.playerOnline==='1',show=matchName&&matchOnline;row.style.display=show?'flex':'none';if(show)shown++;});if(count)count.textContent=shown+' shown • '+ps.length+' registered username'+(ps.length===1?'':'s');};
@@ -4303,7 +4303,7 @@ function useActiveSkill(){
 function dash(){if(!game.running||game.paused||game.upgradeOpen||!game.player)return;if((game.player.dashCooldown||0)>0)return;let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);if(!dx&&!dy)dy=-1;const len=Math.hypot(dx,dy)||1;game.player.x=Math.max(30,Math.min(W-30,game.player.x+dx/len*220));game.player.y=Math.max(30,Math.min(H-30,game.player.y+dy/len*220));game.player.dashCooldown=4;save.records.totalDodges=(save.records.totalDodges||0)+1;}
 let last=performance.now(), fatalGameError='',fatalErrorShown=false;
 function drawFatal(){syncMobileControls();ctx.fillStyle='#10141a';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='42px Arial';ctx.fillText('RECOVERED FROM GAME ERROR',CW/2,235);ctx.font='20px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('The run was safely stopped.',CW/2,275);ctx.fillText('Return to the menu to keep playing.',CW/2,310);ctx.textAlign='left';showGameOverActions(false);const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');if(title)title.textContent='Game error recovered';if(stats)stats.innerHTML='<div class=\"game-over-stat\">The game was stopped safely so it could recover.</div>';}
-function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown&&!game.__outlastTypingActive)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
+function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
 showUpdatePopup();
 [250,1000,2500].forEach(ms=>setTimeout(()=>{try{showUpdatePopup();}catch(_){ }},ms));
 requestAnimationFrame(loop);
@@ -7746,27 +7746,9 @@ window.__OUTLAST_REGRESSION_AUDIT_32734=()=>({
   }
 
   function addDeleteButtons(root){
-    if(!root)return;
-
-    /* The rebuilt Owner Panel now owns the Delete Account control.
-       Do not inject a second button into its native .owner-table-row markup. */
-
-    /* Keep compatibility only for the legacy player-row markup. */
-    root.querySelectorAll('.owner-player-row').forEach(row=>{
-      if(row.querySelector('[data-outlast-delete-account]'))return;
-      const username=String(row.getAttribute('data-player-name')||'').trim();
-      if(!username)return;
-
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.className='danger';
-      btn.dataset.outlastDeleteAccount=username;
-      btn.setAttribute('data-outlast-delete-account','1');
-      btn.textContent='🗑️ DELETE ACCOUNT';
-      btn.title='Permanently delete this server account and its player records';
-      btn.style.cssText='background:linear-gradient(180deg,#7a1f2b,#4a1018)!important;border:1px solid #ff6878!important;color:#fff!important;box-shadow:none!important;';
-      row.appendChild(btn);
-    });
+    /* v3.27.40: the Owner Panel renders exactly one native delete action.
+       Legacy compatibility injection is intentionally disabled. */
+    return;
   }
 
   function installOwnerDeleteUi(){
@@ -7975,7 +7957,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v32736-movement-focus-fix">
 (function(){
   'use strict';
-  const RELEASE='v3.27.39';
+  const RELEASE='v3.27.40';
 
   function visible(el){
     if(!el||!document.body.contains(el))return false;
@@ -8017,10 +7999,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   try{
     const a=document.querySelector('meta[name="outlast-build"]');
     const b=document.querySelector('meta[name="build-version"]');
-    if(a)a.content='3.27.39';
-    if(b)b.content='3.27.39';
+    if(a)a.content='3.27.40';
+    if(b)b.content='3.27.40';
     document.title='OUTLAST '+RELEASE;
-    window.OUTLAST_BUILD='3.27.39';
+    window.OUTLAST_BUILD='3.27.40';
     window.OUTLAST_VERSION=RELEASE;
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=RELEASE+' • SURVIVOR HUB';

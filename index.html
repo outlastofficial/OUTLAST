@@ -7748,29 +7748,10 @@ window.__OUTLAST_REGRESSION_AUDIT_32734=()=>({
   function addDeleteButtons(root){
     if(!root)return;
 
-    /* Current rebuilt Owner Panel uses .owner-table-row for players. */
-    root.querySelectorAll('.owner-table-row').forEach(row=>{
-      const nameEl=row.querySelector('b');
-      if(!nameEl)return;
-      const username=String(nameEl.textContent||'').trim();
-      if(!username || row.querySelector('[data-outlast-delete-account]'))return;
+    /* The rebuilt Owner Panel now owns the Delete Account control.
+       Do not inject a second button into its native .owner-table-row markup. */
 
-      const buttons=Array.from(row.querySelectorAll('button'));
-      const actions=buttons.length?buttons[buttons.length-1].parentElement:row;
-
-      const btn=document.createElement('button');
-      btn.type='button';
-      btn.className='danger';
-      btn.dataset.outlastDeleteAccount=username;
-      btn.setAttribute('data-outlast-delete-account','1');
-      btn.textContent='🗑️ DELETE ACCOUNT';
-      btn.title='Permanently delete this server account and its player records';
-      btn.style.cssText='background:linear-gradient(180deg,#7a1f2b,#4a1018)!important;border:1px solid #ff6878!important;color:#fff!important;box-shadow:none!important;';
-
-      (actions||row).appendChild(btn);
-    });
-
-    /* Also support the legacy player-row markup still present in older builds. */
+    /* Keep compatibility only for the legacy player-row markup. */
     root.querySelectorAll('.owner-player-row').forEach(row=>{
       if(row.querySelector('[data-outlast-delete-account]'))return;
       const username=String(row.getAttribute('data-player-name')||'').trim();
@@ -7994,7 +7975,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v32736-movement-focus-fix">
 (function(){
   'use strict';
-  const RELEASE='v3.27.37';
+  const RELEASE='v3.27.39';
 
   function visible(el){
     if(!el||!document.body.contains(el))return false;
@@ -8036,10 +8017,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   try{
     const a=document.querySelector('meta[name="outlast-build"]');
     const b=document.querySelector('meta[name="build-version"]');
-    if(a)a.content='3.27.37';
-    if(b)b.content='3.27.37';
+    if(a)a.content='3.27.39';
+    if(b)b.content='3.27.39';
     document.title='OUTLAST '+RELEASE;
-    window.OUTLAST_BUILD='3.27.37';
+    window.OUTLAST_BUILD='3.27.39';
     window.OUTLAST_VERSION=RELEASE;
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=RELEASE+' • SURVIVOR HUB';

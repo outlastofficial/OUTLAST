@@ -7994,7 +7994,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v32736-movement-focus-fix">
 (function(){
   'use strict';
-  const RELEASE='v3.27.36';
+  const RELEASE='v3.27.37';
 
   function visible(el){
     if(!el||!document.body.contains(el))return false;
@@ -8036,10 +8036,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   try{
     const a=document.querySelector('meta[name="outlast-build"]');
     const b=document.querySelector('meta[name="build-version"]');
-    if(a)a.content='3.27.36';
-    if(b)b.content='3.27.36';
+    if(a)a.content='3.27.37';
+    if(b)b.content='3.27.37';
     document.title='OUTLAST '+RELEASE;
-    window.OUTLAST_BUILD='3.27.36';
+    window.OUTLAST_BUILD='3.27.37';
     window.OUTLAST_VERSION=RELEASE;
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=RELEASE+' • SURVIVOR HUB';

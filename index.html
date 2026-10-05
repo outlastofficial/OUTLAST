@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.43">
-<meta name="build-version" content="3.30.43">
-<title>OUTLAST v3.30.43</title>
+<meta name="outlast-build" content="3.27.33">
+<meta name="build-version" content="3.27.33">
+<title>OUTLAST v3.27.33</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -7862,7 +7862,7 @@ function popup(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{apply();setTimeout(popup,120)},{once:true});
 else {apply();setTimeout(popup,120)}
 [500,1500,3000,6000].forEach(ms=>setTimeout(apply,ms));
-window.__OUTLAST_FEATURE_RESTORE_AUDIT_32733=()=>({version:V,startFunction:typeof window.startGame==='function',assignedStartWrappers:(document.documentElement.innerHTML.match(/startGame=function\(/g)||[]).length});
+window.__OUTLAST_FEATURE_RESTORE_AUDIT_32733=()=>({version:V,startFunction:typeof window.startGame==='function',assignedStartWrappers:(document.documentElement.innerHTML.match(/startGame\\s*=\\s*function\\(/g)||[]).length});
 })();
 </script>
 </body>\n
@@ -7877,7 +7877,7 @@ window.__OUTLAST_FEATURE_RESTORE_AUDIT_32733=()=>({version:V,startFunction:typeo
 <script id="outlast-v33042-ui-cleanup">
 (function(){
 'use strict';
-const VERSION='3.30.42',RELEASE='v'+VERSION;
+const VERSION='3.27.33',RELEASE='v'+VERSION;
 function q(s){try{return document.querySelector(s)}catch(_){return null}}
 function clean(){
  try{
@@ -7899,8 +7899,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v33043-systems-restore">
 (function(){
 'use strict';
-const VERSION='v3.30.43',BUILD='3.30.43';
-const INFO={title:'v3.30.43 — Systems Restore',summary:'Small bug fixes and stability improvements.',items:[
+const VERSION='v3.27.33',BUILD='3.27.33';
+const INFO={title:'v3.27.33 — Event Build Systems Restore',summary:'Small bug fixes and stability improvements.',items:[
 'Restored the current UI, settings, progression, event, rarity, recovery, and gameplay-support systems.',
 'The known-good event-era Start Run implementation is preserved.',
 'Halloween presentation and in-game bug submission remain removed.'
@@ -7916,7 +7916,7 @@ function sync(){
 }
 function docs(){
  try{if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))window.updates.unshift([INFO.title,INFO.summary])}catch(_){}
- try{if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What was restored in v3.30.43?')))window.helpArticles.unshift(['What was restored in v3.30.43?','Updates','Current OUTLAST UI, settings, progression, event, rarity, recovery, and gameplay-support systems are restored around the known-good event-era Start Run.'])}catch(_){}
+ try{if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What was restored in v3.27.33?')))window.helpArticles.unshift(['What was restored in v3.27.33?','Updates','Current OUTLAST UI, settings, progression, event, rarity, recovery, and gameplay-support systems are restored around the known-good event-era Start Run.'])}catch(_){}
 }
 function popup(force){
  const p=document.getElementById('updatePopup');if(!p)return;

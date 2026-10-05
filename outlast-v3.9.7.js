@@ -26,7 +26,7 @@
   function ownerPanel() {
     if (!isOwnerAdmin()) { if(typeof toast==='function') toast('Owner access required.'); return; }
     openSub('👑 OWNER TOOLS & PANEL',
-      '<div class="option"><b>OWNER CONTROL CENTER</b><div class="small">Owner-only controls for OUTLAST. Event Preview remains in the Admin Panel.</div></div>' +
+      '<div class="option"><b>OWNER CONTROL CENTER</b><div class="small">Owner-only controls for OUTLAST.</div></div>' +
       '<div class="grid" style="margin-top:12px">' +
       '<button id="ownerStatusOpen" class="option" type="button">👑 Owner Status</button>' +
       '<button id="ownerGiftOpen" class="option gold" type="button">🪙 Give Coins</button>' +
@@ -55,7 +55,7 @@
     openSub('🌎 GLOBAL EVENTS',
       '<div class="option"><b>Global Event Control</b><div class="small">Start or stop a synchronized event for connected players.</div></div>' +
       '<label class="small" style="display:block;margin-top:12px">EVENT</label>' +
-      '<select id="ownerEventType" style="width:100%;padding:12px;border-radius:10px;margin-top:6px"><option value="october">🎃 October Event</option><option value="double_coins">🪙 Double Coins</option><option value="double_xp">⭐ Double XP</option><option value="chaos">⚡ Global Chaos</option><option value="blackout">🌑 Global Blackout</option><option value="boss_rush">👹 Boss Rush</option></select>' +
+      '<select id="ownerEventType" style="width:100%;padding:12px;border-radius:10px;margin-top:6px"><option value="double_coins">🪙 Double Coins</option><option value="double_xp">⭐ Double XP</option><option value="chaos">⚡ Global Chaos</option><option value="blackout">🌑 Global Blackout</option><option value="boss_rush">👹 Boss Rush</option></select>' +
       '<label class="small" style="display:block;margin-top:12px">DURATION (MINUTES)</label><input id="ownerEventMinutes" type="number" min="1" max="1440" value="30" inputmode="numeric" style="width:100%;padding:12px;border-radius:10px;box-sizing:border-box;margin-top:6px">' +
       '<div class="row" style="margin-top:12px"><button id="ownerEventStart" class="gold" type="button">🌎 START EVENT</button><button id="ownerEventStop" type="button">■ STOP EVENT</button></div>' +
       '<div id="ownerEventStatus" class="small" style="margin-top:10px">Loading current event…</div><button id="ownerEventBack" type="button" style="margin-top:12px">← BACK</button>');

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.48">
-<meta name="build-version" content="3.30.48">
-<title>OUTLAST v3.30.48</title>
+<meta name="outlast-build" content="3.30.49">
+<meta name="build-version" content="3.30.49">
+<title>OUTLAST v3.30.49</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -867,7 +867,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.48 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.49 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -8023,6 +8023,294 @@ window.__OUTLAST_START_AUDIT_33048=function(){
     running:!!g?.running,
     player:!!g?.player,
     fatal:window.fatalGameError||''
+  };
+};
+})();
+</script>
+<style id="outlast-v33049-hub-overlay">
+/* v3.30.49 — Survivor Hub is a true in-game pause overlay. */
+#menu.outlast-hub-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:80!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px!important;
+  box-sizing:border-box!important;
+  background:rgba(2,6,10,.48)!important;
+  backdrop-filter:blur(2px)!important;
+}
+#menu.outlast-hub-overlay .main-menu-card{
+  width:min(1180px,96vw)!important;
+  max-width:none!important;
+  max-height:90vh!important;
+  background:rgba(10,16,23,.84)!important;
+  border-color:rgba(74,110,137,.78)!important;
+  box-shadow:0 28px 100px rgba(0,0,0,.58)!important;
+  backdrop-filter:blur(10px)!important;
+}
+#menu.outlast-hub-overlay .menu-topbar,
+#menu.outlast-hub-overlay .menu-side{
+  background:rgba(8,14,20,.82)!important;
+}
+#menu.outlast-hub-overlay .quick-card,
+#menu.outlast-hub-overlay .menu-card,
+#menu.outlast-hub-overlay #menuSummary{
+  background-color:rgba(12,20,28,.78)!important;
+}
+#menu.outlast-hub-overlay #hubPauseStatus{
+  display:block!important;
+  margin:0 0 12px!important;
+  padding:9px 12px!important;
+  border:1px solid rgba(105,160,194,.45)!important;
+  border-radius:12px!important;
+  background:rgba(8,14,20,.72)!important;
+  color:#a9c5d8!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.03em!important;
+}
+@media(max-width:700px){
+  #menu.outlast-hub-overlay{padding:0!important;}
+  #menu.outlast-hub-overlay .main-menu-card{
+    width:100%!important;
+    height:100dvh!important;
+    max-height:none!important;
+    border-radius:0!important;
+  }
+}
+</style>
+<script id="outlast-v33049-hub-overlay-authority">
+(function(){
+'use strict';
+const VERSION='v3.30.49';
+const MENU_ID='menu';
+const BTN_ID='startBtn';
+let hubBooted=false;
+let openingHub=false;
+
+function menu(){return document.getElementById(MENU_ID)}
+function button(){return document.getElementById(BTN_ID)}
+function isPlayable(){return !!(window.game&&game.running&&!game.over&&game.player)}
+function configKey(){
+  try{
+    const s=window.save||{};
+    return JSON.stringify({
+      map:s.map,difficulty:s.difficulty,mode:s.mode,
+      char:s.selectedChar,weapon:s.selectedWeapon,skin:s.selectedSkin,
+      pet:s.selectedPet,relic:s.selectedRelic,charm:s.selectedCharm,
+      element:s.element,skill:s.activeSkill,
+      modifier:s.selectedModifier,builderMods:Array.isArray(s.builderMods)?s.builderMods:[],
+      challengeMode:s.challengeMode,zone:s.selectedZone
+    });
+  }catch(_){return '';}
+}
+function hidePopups(){
+  try{
+    document.querySelectorAll('.update-pop').forEach(function(el){
+      if(el.id!=='loginPopup'){
+        el.style.display='none';
+        el.style.visibility='hidden';
+        el.setAttribute('aria-hidden','true');
+      }
+    });
+  }catch(_){}
+}
+function markOverlay(on){
+  const m=menu(); if(!m)return;
+  if(on){
+    m.classList.add('outlast-hub-overlay');
+    m.style.display='flex';
+    m.setAttribute('aria-hidden','false');
+    document.body.classList.add('outlast-hub-open');
+  }else{
+    m.classList.remove('outlast-hub-overlay');
+    m.style.display='none';
+    m.setAttribute('aria-hidden','true');
+    document.body.classList.remove('outlast-hub-open');
+  }
+}
+function setHubStatus(text){
+  const el=document.getElementById('hubPauseStatus');
+  if(el)el.textContent=text;
+}
+function ensureStatus(){
+  const m=menu(); if(!m)return;
+  let el=document.getElementById('hubPauseStatus');
+  if(!el){
+    el=document.createElement('div');
+    el.id='hubPauseStatus';
+    const top=m.querySelector('.menu-topbar');
+    if(top&&top.parentNode)top.parentNode.insertBefore(el,top.nextSibling);
+    else m.querySelector('.menu-main')?.prepend(el);
+  }
+  setHubStatus('⏸ GAME PAUSED • YOUR RUN IS LOADED UNDER THIS HUB');
+}
+function wireStart(){
+  const old=button(); if(!old)return false;
+  if(old.dataset.hubStart49==='1')return true;
+  const b=old.cloneNode(true);
+  b.id=BTN_ID;
+  b.type='button';
+  b.dataset.hubStart49='1';
+  b.removeAttribute('data-action');
+  b.removeAttribute('data-mobile-action');
+  b.removeAttribute('data-quality');
+  b.onclick=null;b.onpointerdown=null;b.onpointerup=null;b.ontouchstart=null;b.ontouchend=null;
+  let busy=false;
+  const fire=function(e){
+    if(e){e.preventDefault();e.stopImmediatePropagation();e.stopPropagation();}
+    if(busy)return;
+    busy=true;
+    try{
+      const currentKey=configKey();
+      if(window.__OUTLAST_HUB_CONFIG_KEY_49!==currentKey){
+        // A menu selection changed a run-defining setting while the hub was open.
+        // Rebuild the paused run once so Start still enters with the selected setup.
+        try{if(typeof newRunStats==='function')newRunStats();}catch(_){}
+        try{window.startGame(false);}catch(err){console.error('[OUTLAST Hub Start]',err);}
+      }
+      if(window.game&&game.player){
+        game.running=true;
+        game.paused=false;
+        game.over=false;
+        window.fatalGameError='';
+        window.fatalErrorShown=false;
+        markOverlay(false);
+        try{if(typeof hideGameOverActions==='function')hideGameOverActions();}catch(_){}
+        try{if(typeof syncMobileControls==='function')syncMobileControls();}catch(_){}
+        try{if(typeof syncGameAdminUI==='function')syncGameAdminUI();}catch(_){}
+        try{if(typeof syncExtractUI==='function')syncExtractUI();}catch(_){}
+        try{if(window.c&&typeof c.focus==='function')c.focus();}catch(_){}
+      }else{
+        setHubStatus('⚠️ RUN COULD NOT LOAD — THE HUB WILL STAY OPEN');
+      }
+    }finally{
+      setTimeout(function(){busy=false;},500);
+    }
+  };
+  b.addEventListener('click',fire,true);
+  b.addEventListener('pointerup',function(e){
+    if(e.pointerType==='touch'||e.pointerType==='pen')fire(e);
+  },true);
+  old.replaceWith(b);
+  return true;
+}
+function openHub(){
+  if(openingHub)return;
+  openingHub=true;
+  try{
+    hidePopups();
+    // Load the normal game once, then pause it underneath the hub.
+    if(!isPlayable()){
+      try{if(typeof newRunStats==='function')newRunStats();}catch(_){}
+      try{
+        if(typeof window.startGame==='function')window.startGame(false);
+      }catch(err){
+        console.error('[OUTLAST Hub Boot]',err);
+      }
+    }
+    if(window.game&&game.player){
+      game.running=true;
+      game.paused=true;
+      game.over=false;
+      window.fatalGameError='';
+      window.fatalErrorShown=false;
+      window.__OUTLAST_HUB_CONFIG_KEY_49=configKey();
+      ensureStatus();
+      wireStart();
+      markOverlay(true);
+      hidePopups();
+      try{if(typeof syncMobileControls==='function')syncMobileControls();}catch(_){}
+    }else{
+      markOverlay(true);
+      ensureStatus();
+      setHubStatus('⚠️ GAME COULD NOT INITIALIZE — PLEASE RELOAD');
+    }
+  }finally{openingHub=false;}
+}
+function startFromHub(){
+  const m=menu();
+  if(!m)return;
+  if(m.classList.contains('outlast-hub-overlay') && !isPlayable())openHub();
+}
+function updateVersion(){
+  try{
+    document.title='OUTLAST '+VERSION;
+    const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+    if(a)a.content='3.30.49';
+    if(b)b.content='3.30.49';
+    document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent=VERSION);
+    document.querySelectorAll('.menu-chip').forEach(el=>{
+      if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
+    });
+  }catch(_){}
+}
+function docs(){
+  try{
+    if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION))){
+      window.updates.unshift([VERSION+' — Hub Overlay Rebuild','Small bug fixes and stability improvements. The Survivor Hub now sits over the live game while paused; START RUN only unpauses the loaded run.']);
+    }
+  }catch(_){}
+  try{
+    if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('Survivor Hub pause overlay'))){
+      window.helpArticles.unshift(['How does the Survivor Hub pause overlay work?','Start Run','The Survivor Hub is now an overlay on the loaded game. The run is initialized and paused underneath it, and START RUN closes the hub and unpauses that run.']);
+    }
+  }catch(_){}
+}
+function bindEscape(){
+  if(window.__outlastHubEscape49)return;
+  window.__outlastHubEscape49=true;
+  window.addEventListener('keydown',function(e){
+    if(e.key!=='Escape')return;
+    const m=menu();
+    if(m?.classList.contains('outlast-hub-overlay'))return;
+    if(isPlayable()&&!game.upgradeOpen){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      game.paused=true;
+      ensureStatus();
+      window.__OUTLAST_HUB_CONFIG_KEY_49=configKey();
+      wireStart();
+      markOverlay(true);
+      hidePopups();
+    }
+  },true);
+}
+function boot(){
+  updateVersion();
+  docs();
+  bindEscape();
+  wireStart();
+  setTimeout(function(){
+    updateVersion();
+    docs();
+    openHub();
+  },150);
+  [800,1800,3500].forEach(function(ms){
+    setTimeout(function(){
+      updateVersion();
+      docs();
+      wireStart();
+      if(hubBooted===false && ms===3500)openHub();
+    },ms);
+  });
+  hubBooted=true;
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+else boot();
+
+window.__OUTLAST_HUB_AUDIT_33049=function(){
+  const m=menu(),b=button(),g=window.game;
+  return {
+    version:VERSION,
+    overlay:!!m?.classList.contains('outlast-hub-overlay'),
+    paused:!!g?.paused,
+    running:!!g?.running,
+    player:!!g?.player,
+    startWired:!!b?.dataset?.hubStart49,
+    configKey:!!window.__OUTLAST_HUB_CONFIG_KEY_49
   };
 };
 })();

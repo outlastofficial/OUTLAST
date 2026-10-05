@@ -5722,7 +5722,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
           const banned=!!p.banned;
           const safeName=esc(p.username);
           const status=(p.online?'🟢 Online':'⚪ Offline')+(banned?' • 🔒 BANNED':'');
-          return '<div class="owner-table-row" style="align-items:center;gap:10px;flex-wrap:wrap"><div style="min-width:150px;flex:1"><b>'+safeName+'</b><div class="owner-muted">'+status+'</div>'+(banned&&p.banReason?'<div class="owner-muted">Reason: '+esc(p.banReason)+'</div>':'')+'</div><span class="owner-muted">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent activity')+'</span><button type="button" class="'+(banned?'green':'danger')+'" data-owner-remake="'+(banned?'unbanPlayer':'banPlayer')+'" data-value="'+safeName+'">'+(banned?'UNBAN PLAYER':'BAN PLAYER')+'</button></div>';
+          return '<div class="owner-table-row" style="align-items:center;gap:10px;flex-wrap:wrap"><div style="min-width:150px;flex:1"><b>'+safeName+'</b><div class="owner-muted">'+status+'</div>'+(banned&&p.banReason?'<div class="owner-muted">Reason: '+esc(p.banReason)+'</div>':'')+'</div><span class="owner-muted">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent activity')+'</span><button type="button" class="'+(banned?'green':'danger')+'" data-owner-remake="'+(banned?'unbanPlayer':'banPlayer')+'" data-value="'+safeName+'">'+(banned?'UNBAN PLAYER':'BAN PLAYER')+'</button><button type="button" class="danger" data-owner-remake="deleteAccount" data-value="'+safeName+'" style="background:linear-gradient(180deg,#7a1f2b,#4a1018)!important;border-color:#ff6878!important;box-shadow:none!important">🗑️ DELETE ACCOUNT</button></div>';
         }).join('');
         content('<div class="owner-card"><h3>👥 Player Access</h3><div class="owner-muted">Server-enforced bans. Banning immediately disconnects the player and blocks new login, chat, rooms, event contributions, rewards, and leaderboard submissions.</div><div style="margin-top:10px">'+(rows||'<div class="owner-muted">No players recorded.</div>')+'</div><button type="button" class="option" data-owner-remake="refresh" style="margin-top:10px">↻ Refresh Players</button></div>');
       }else if(tab==='bugs'){
@@ -5819,6 +5819,20 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
         return;
       }
       if(name==='rewardAll'){const amount=Math.floor(Number(document.getElementById('ownerRemakeAllAmount')?.value)||0),d=await api('/api/owner/global-reward','POST',{amount});toast?.('🎁 '+d.amount+' coins queued for '+d.players+' players');await render();return;}
+      if(name==='deleteAccount'){
+        const target=String(value||'').trim();
+        if(!target)return;
+        const current=String(typeof currentUsername!=='undefined'?currentUsername:'').trim().toLowerCase();
+        const protectedNames=new Set(['bestgamer','landon','phone landon','poke','billybimbo']);
+        if(target.toLowerCase()===current||protectedNames.has(target.toLowerCase())){
+          toast?.('⚠️ Protected owner account');
+          return;
+        }
+        if(!window.confirm('Delete the account "'+target+'" and all server-side player records? This cannot be undone.'))return;
+        const d=await api('/api/owner/players/delete','POST',{username:target});
+        toast?.('🗑️ Account deleted: '+(d.username||target));
+        tab='players';await render();return;
+      }
       if(name==='banPlayer'||name==='unbanPlayer'){
         const target=String(value||'').trim();
         if(!target)return;

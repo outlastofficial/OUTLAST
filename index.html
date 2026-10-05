@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.17">
-<meta name="build-version" content="3.28.17">
-<title>OUTLAST v3.28.17</title>
+<meta name="outlast-build" content="3.28.18">
+<meta name="build-version" content="3.28.18">
+<title>OUTLAST v3.28.18</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -2083,6 +2083,10 @@ function startGame(fromRoom=false){
    }
  }
 }
+
+// v3.28.18: preserve the original stable Start Run implementation before any later wrapper can replace it.
+window.__outlastStableStartCore=startGame;
+
 function exitGame(){
   coopLaunchActive=false;
   if(!game.running){hideGameOverActions();document.getElementById('subPanel').style.display='none';document.getElementById('menu').style.display='flex';return;}
@@ -5429,7 +5433,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   }
   document.getElementById('discordRewardsBtn')?.addEventListener('click',showDiscordRewards);
 })();
-</script><script src="outlast-owner-controls.js?v=3.28.16"></script>
+</script><script src="outlast-owner-controls.js?v=3.28.18"></script>
 <script src="outlast-v3.14.0.js?v=3.27.28"></script>
 <script id="outlast-v32713-chat-space-fix">
 (function(){
@@ -7213,7 +7217,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.28.17';
+  const VERSION='v3.28.18';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
@@ -7260,7 +7264,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-v3283-ui-boot-repair">
 (function(){
 'use strict';
-const VERSION='v3.28.17';
+const VERSION='v3.28.18';
 function repair(){
   const menu=document.getElementById('menu');
   const canvas=document.getElementById('game');
@@ -7301,10 +7305,10 @@ function repair(){
     if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
   });
   const build=document.querySelector('meta[name="build-version"]');
-  if(build)build.content='3.28.17';
+  if(build)build.content='3.28.18';
   const out=document.querySelector('meta[name="outlast-build"]');
-  if(out)out.content='3.28.17';
-  window.OUTLAST_BUILD='3.28.17';
+  if(out)out.content='3.28.18';
+  window.OUTLAST_BUILD='3.28.18';
   window.OUTLAST_VERSION=VERSION;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
@@ -7320,9 +7324,9 @@ window.__outlastBootRepair3283=repair;
 <script id="outlast-v3289-update-popup-final-guard">
 (function(){
 'use strict';
-const VERSION='3.28.17';
+const VERSION='3.28.18';
 const INFO={
- title:'v3.28.17 — Stability Update',
+ title:'v3.28.18 — Stability Update',
  summary:'Removed the retired event countdown from the top of the game and the main menu.',
  items:[
   'The retired event countdown no longer appears at the top of the game or in the main menu.',
@@ -7330,10 +7334,10 @@ const INFO={
   'Login, saves, gameplay controls, and Owner access were not changed.'
  ]
 };
-const CURRENT_UPDATE_ENTRY=['v3.28.17 — Stability Update','Removed the retired event countdown from the top of the game and the main menu, and kept the current build marker synchronized.'];
-const CURRENT_HELP_ENTRY=['What changed in v3.28.17?','Updates','Removed the retired event countdown from the game and main menu. The Survivor Hub version marker remains synchronized after all page scripts finish loading.'];
-try{ if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.28.17'))) updates.unshift(CURRENT_UPDATE_ENTRY); }catch(_){}
-try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.17?'))) helpArticles.unshift(CURRENT_HELP_ENTRY); }catch(_){}
+const CURRENT_UPDATE_ENTRY=['v3.28.18 — Stability Update','Removed the retired event countdown from the top of the game and the main menu, and kept the current build marker synchronized.'];
+const CURRENT_HELP_ENTRY=['What changed in v3.28.18?','Updates','Removed the retired event countdown from the game and main menu. The Survivor Hub version marker remains synchronized after all page scripts finish loading.'];
+try{ if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.28.18'))) updates.unshift(CURRENT_UPDATE_ENTRY); }catch(_){}
+try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.18?'))) helpArticles.unshift(CURRENT_HELP_ENTRY); }catch(_){}
 function showCurrentUpdatePopup(force){
  let seen='';
  try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
@@ -7401,16 +7405,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     launching=true;
     try{
       try{window.newRunStats?.();}catch(_){}
-      const starter=window.startGame;
-      if(typeof starter!=='function')throw new Error('Start Run launcher is unavailable');
-      starter.call(window,false);
-      if(!validRun()){
-        const core=window.__outlastStableStartCore;
-        if(typeof core==='function'){
-          core.call(window,false);
-          try{window.__applyAllSets?.();}catch(_){}
-        }
-      }
+      const stableCore=window.__outlastStableStartCore;
+      if(typeof stableCore!=='function')throw new Error('Stable Start Run core is unavailable');
+      stableCore.call(window,false);
+      try{window.__applyAllSets?.();}catch(_){}
+      try{window.__outlastApplyBuildSets32767?.();}catch(_){}
+      if(!validRun())throw new Error(window.fatalGameError||'Stable Start Run core did not enter gameplay');
       if(!validRun())throw new Error(window.fatalGameError||'Start Run did not enter gameplay');
       finish();
     }catch(err){

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.21">
-<meta name="build-version" content="3.28.21">
-<title>OUTLAST v3.28.21</title>
+<meta name="outlast-build" content="3.28.22">
+<meta name="build-version" content="3.28.22">
+<title>OUTLAST v3.28.22</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -1893,24 +1893,6 @@ function renderQuestBoard(){
 function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,dailyChallengeDay:'',dailyChallengeClaimed:false,weeklyGoalWeek:'',weeklyGoalClaimed:false,weeklyGoalProgress:{kills:0,bosses:0,time:0,games:0},buildHistory:[]}}
 function ensureMegaSave(){
   if(!save||typeof save!=='object')return;
-  // v3.28.21: repair legacy/incomplete save fields before Start Run reads them.
-  if(!save.stats||typeof save.stats!=='object')save.stats={};
-  save.stats={kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0,...save.stats};
-  if(!save.upgrades||typeof save.upgrades!=='object')save.upgrades={};
-  if(!save.weaponLevels||typeof save.weaponLevels!=='object')save.weaponLevels={};
-  if(!save.records||typeof save.records!=='object')save.records={};
-  if(!save.selectedChar||typeof save.selectedChar!=='string'||!chars[save.selectedChar])save.selectedChar='Survivor';
-  if(!save.selectedWeapon||typeof save.selectedWeapon!=='string'||!weapons[save.selectedWeapon])save.selectedWeapon='Blaster';
-  if(!save.selectedSkin||typeof save.selectedSkin!=='string'||!skins[save.selectedSkin])save.selectedSkin='Classic';
-  if(!save.selectedPet||typeof save.selectedPet!=='string'||!pets[save.selectedPet])save.selectedPet='None';
-  if(!save.selectedRelic||typeof save.selectedRelic!=='string'||!relics[save.selectedRelic])save.selectedRelic='None';
-  if(!save.selectedCharm||typeof save.selectedCharm!=='string'||!charms[save.selectedCharm])save.selectedCharm='None';
-  if(!save.selectedModifier||typeof save.selectedModifier!=='string'||(save.selectedModifier!=='None'&&!runModifiers[save.selectedModifier]))save.selectedModifier='None';
-  if(!save.difficulty||typeof save.difficulty!=='string'||!diffDefs[save.difficulty])save.difficulty='Normal';
-  if(!save.mode||typeof save.mode!=='string'||!modeDefs[save.mode])save.mode='Classic';
-  if(!save.map||typeof save.map!=='string'||!mapDefs[save.map])save.map='Forest';
-  if(typeof save.coins!=='number'||!Number.isFinite(save.coins))save.coins=0;
-  if(typeof save.permanentLuck!=='number'||!Number.isFinite(save.permanentLuck))save.permanentLuck=0;
   if(!Array.isArray(save.builderMods))save.builderMods=[];
   if(typeof save.element!=='string'||!elements[save.element])save.element='Fire';
   if(typeof save.activeSkill!=='string'||!activeSkills[save.activeSkill])save.activeSkill='Nova';
@@ -4135,8 +4117,8 @@ const updates=[['v3.28.2 — Upgrade Rarity Balance','Higher-rarity upgrades now
  openSub('▤ Update Log',`<p class="small">${updates.length} update entries recorded, newest first.</p><div class="feature-list">${updates.map((u,i)=>`<div class="option"><b>${i+1}. ${u[0]}</b><div class="small">${u[1]}</div></div>`).join('')}</div>`);
 }
 
-const START_CORE_UPDATE_ENTRY=['v3.28.11 — Start Run Stability','Restored the proven Start Run launcher core from the stable 3.20 baseline while preserving the surrounding 3.28.x gameplay systems.']; try{ if(Array.isArray(updates)) updates.unshift(START_CORE_UPDATE_ENTRY); }catch(_){ }
-const UPDATE_POPUP_FIX_ENTRY=['v3.28.9 — Update Popup Fix','Restored the main-menu Update News popup after the recent UI revert.']; const CORE328_UPDATE_ENTRY=['v3.28.11 — Core Baseline Cleanup','Restored the 3.28 feature baseline and removed the retired presentation layer.']; try{ if(Array.isArray(updates)) updates.unshift(CORE328_UPDATE_ENTRY); }catch(_){ } try{ if(Array.isArray(updates)) updates.unshift(UPDATE_POPUP_FIX_ENTRY); }catch(_){ }
+const START_CORE_UPDATE_ENTRY=['v3.28.22 — Start Run Stability','Restored the proven Start Run launcher core from the stable 3.20 baseline while preserving the surrounding 3.28.x gameplay systems.']; try{ if(Array.isArray(updates)) updates.unshift(START_CORE_UPDATE_ENTRY); }catch(_){ }
+const UPDATE_POPUP_FIX_ENTRY=['v3.28.9 — Update Popup Fix','Restored the main-menu Update News popup after the recent UI revert.']; const CORE328_UPDATE_ENTRY=['v3.28.22 — Core Baseline Cleanup','Restored the 3.28 feature baseline and removed the retired presentation layer.']; try{ if(Array.isArray(updates)) updates.unshift(CORE328_UPDATE_ENTRY); }catch(_){ } try{ if(Array.isArray(updates)) updates.unshift(UPDATE_POPUP_FIX_ENTRY); }catch(_){ }
 const POOL_AUDIT_UPDATE_ENTRY=['v3.27.94 — Rarity Pool Audit Fix','Moved the upgrade-pool consistency audit until after all upgrade batches load, preventing false console errors.']; try{ if(Array.isArray(updates)) updates.unshift(POOL_AUDIT_UPDATE_ENTRY); }catch(_){ }
 const RARITY_UPGRADE_UPDATE_ENTRY=['v3.27.94 — Premium Rarity Upgrade Rework','Higher rarities now have stronger exclusive upgrades, premium multi-stat effects, and stronger top-tier multipliers.']; try{ if(Array.isArray(updates)) updates.unshift(RARITY_UPGRADE_UPDATE_ENTRY); }catch(_){ }
 const TUTORIAL_UPDATE_ENTRY=['v3.27.85 — Tutorial Reliability Final Fix','Fixed the New Player Tutorial overlay so focused gameplay elements cannot cover the tutorial controls, and made the tutorial launch reliably from PC clicks and mobile touch/pointer input. Login was not changed.'];
@@ -4145,10 +4127,10 @@ const BUGFIX_UPDATE_ENTRY=['v3.27.46 — Leaderboard Persistence Fix','Fixed lea
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const START_CORE_HELP_ENTRY=['What changed in v3.28.11?','Updates','Restored the proven Start Run launcher core from the stable 3.20 baseline while keeping the current 3.28.x systems around it.']; try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.11?'))) helpArticles.unshift(START_CORE_HELP_ENTRY); }catch(_){ }
-const PRE_EVENT_328_HELP_ENTRY=['What changed in v3.28.11?','Updates','Restored the 3.28 feature baseline while removing the retired presentation layer. Gameplay, login, saving, and Owner access remain available.']; try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.11?'))) helpArticles.unshift(PRE_EVENT_328_HELP_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.28.11';
-const CURRENT_UPDATE_INFO={title:'v3.28.11 — Core Baseline Cleanup',summary:'Restored the 3.28 feature baseline while removing the retired presentation layer.',items:['The game is based on the stable 3.28.x feature set.','Retired presentation code was removed without changing the normal player flow.','Existing login, saves, gameplay, and Owner access remain available.']};
+const START_CORE_HELP_ENTRY=['What changed in v3.28.22?','Updates','Restored the proven Start Run launcher core from the stable 3.20 baseline while keeping the current 3.28.x systems around it.']; try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.22?'))) helpArticles.unshift(START_CORE_HELP_ENTRY); }catch(_){ }
+const PRE_EVENT_328_HELP_ENTRY=['What changed in v3.28.22?','Updates','Restored the 3.28 feature baseline while removing the retired presentation layer. Gameplay, login, saving, and Owner access remain available.']; try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.22?'))) helpArticles.unshift(PRE_EVENT_328_HELP_ENTRY); }catch(_){ }
+const CURRENT_UPDATE_VERSION='3.28.22';
+const CURRENT_UPDATE_INFO={title:'v3.28.22 — Core Baseline Cleanup',summary:'Restored the 3.28 feature baseline while removing the retired presentation layer.',items:['The game is based on the stable 3.28.x feature set.','Retired presentation code was removed without changing the normal player flow.','Existing login, saves, gameplay, and Owner access remain available.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -7329,9 +7311,9 @@ window.__outlastBootRepair3283=repair;
 <script id="outlast-v3289-update-popup-final-guard">
 (function(){
 'use strict';
-const VERSION='3.28.11';
+const VERSION='3.28.22';
 const INFO={
- title:'v3.28.11 — Update Popup Fix',
+ title:'v3.28.22 — Update Popup Fix',
  summary:'Restored the main-menu Update News popup after the recent UI revert.',
  items:[
   'The Update News popup now uses the current release version.',
@@ -7375,20 +7357,5 @@ function boot(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
-<script id="outlast-v32821-baseline-version">
-(function(){
-  window.OUTLAST_BUILD='3.28.21';
-  window.OUTLAST_VERSION='v3.28.21';
-  try{document.title='OUTLAST v3.28.21';}catch(_){}
-  try{
-    const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
-    if(a)a.content='3.28.21'; if(b)b.content='3.28.21';
-  }catch(_){}
-  try{
-    if(Array.isArray(updates)) updates.unshift(['v3.28.21 — Start Run Baseline Restore','Small bug fixes and stability improvements. Restored the known-working v3.28.11 Start Run baseline and removed the broken v3.28.19 launcher rebuild.']);
-    if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)) helpArticles.unshift(['What changed in v3.28.21?','Updates','The Start Run system was restored to the known-working v3.28.11 baseline.']);
-  }catch(_){}
-})();
-</script>
-<script id="outlast-v32822-remove-in-game-bug-report">(function(){'use strict';function r(){try{document.querySelectorAll('#bugReportBtn,[data-quality="bug"],#reportBugChoice,#submitBugBtn').forEach(e=>e.remove());document.querySelectorAll('.outlast-quality-card').forEach(e=>{if(/Bug Report|Report a Bug/i.test(e.textContent||''))e.remove()});if(window.game&&game.running){const s=document.getElementById('subPanel'),c=document.getElementById('subContent');if(c&&/Bug Report|Bug Reports|Submit Bug/i.test(c.textContent||''))if(s)s.style.display='none'}}catch(_){}}r();[0,50,150,300,600,1200,2500].forEach(ms=>setTimeout(r,ms));document.addEventListener('click',e=>{const b=e.target?.closest?.('#bugReportBtn,[data-quality="bug"],[data-action="reportBug"],#reportBugChoice');if(b){e.preventDefault();e.stopImmediatePropagation()}},true);document.addEventListener('pointerup',e=>{const b=e.target?.closest?.('#bugReportBtn,[data-quality="bug"],[data-action="reportBug"],#reportBugChoice');if(b){e.preventDefault();e.stopImmediatePropagation()}},true)})();</script>
-</body>\n</html>\n
+</body>
+</html>

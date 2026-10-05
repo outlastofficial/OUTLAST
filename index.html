@@ -7434,5 +7434,250 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   });
 })();
 </script>
+<script id="outlast-v32819-start-rebuild-final">
+(function(){
+  'use strict';
+  if(window.__outlastStartRebuildFinal32819)return;
+  window.__outlastStartRebuildFinal32819=true;
+
+  const safe=(fn, fallback=null)=>{try{return typeof fn==='function'?fn():fallback}catch(_){return fallback}};
+  const num=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+
+  function rebuiltStartRun(fromRoom=false){
+    try{
+      safe(()=>ensureMegaSave());
+
+      const d=(typeof diffDefs!=='undefined'&&diffDefs[save.difficulty])?diffDefs[save.difficulty]:(typeof diffDefs!=='undefined'&&diffDefs.Normal)||{enemy:1,spawn:1,reward:1};
+      const m=(typeof modeDefs!=='undefined'&&modeDefs[save.mode])?modeDefs[save.mode]:(typeof modeDefs!=='undefined'&&modeDefs.Classic)||{spawn:1,reward:1,scoreMult:1};
+      const ch=(typeof chars!=='undefined'&&chars[save.selectedChar])?chars[save.selectedChar]:(typeof chars!=='undefined'&&chars.Survivor)||{hp:100,speed:3,damage:10,range:220,visual:{}};
+      const sk=(typeof skins!=='undefined'&&skins[save.selectedSkin])?skins[save.selectedSkin]:(typeof skins!=='undefined'&&skins.Classic)||{color:'#5e9fff'};
+      const cm=(save.challengeMode==='None')?{enemy:1,spawn:1,reward:1}:((typeof challengeModes!=='undefined'&&challengeModes[save.challengeMode])||{enemy:1,spawn:1,reward:1});
+      const mods=Array.isArray(save.builderMods)?save.builderMods:[];
+      const modDefs=[save.selectedModifier,...mods].filter(n=>n&&n!=='None'&&typeof runModifiers!=='undefined'&&runModifiers[n]).map(n=>runModifiers[n]);
+      const modEnemy=modDefs.reduce((a,v)=>a*(num(v.enemy,1)),1);
+      const modSpawn=modDefs.reduce((a,v)=>a*(num(v.spawn,1)),1);
+      const modReward=modDefs.reduce((a,v)=>a*(num(v.reward,1)),1);
+      const up=n=>num(save.upgrades?.[n],0);
+      const pet=(typeof pets!=='undefined'&&pets[save.selectedPet])?pets[save.selectedPet]:((typeof pets!=='undefined'&&pets.None)||{});
+      const relic=(typeof relics!=='undefined'&&relics[save.selectedRelic])?relics[save.selectedRelic]:((typeof relics!=='undefined'&&relics.None)||{});
+      const charm=(typeof charms!=='undefined'&&charms[save.selectedCharm])?charms[save.selectedCharm]:((typeof charms!=='undefined'&&charms.None)||{});
+      const element=(typeof elements!=='undefined'&&elements[save.element])?save.element:'Fire';
+      const activeSkill=(typeof activeSkills!=='undefined'&&activeSkills[save.activeSkill])?save.activeSkill:'Nova';
+
+      const hpBase=(num(ch.hp,100)+15*up('Iron Heart')-8*up('Glass Cannon'))*(1+num(sk.hp,0));
+      const speedBase=num(ch.speed,3);
+      const speedCap=speedBase*1.4;
+      const speed=Math.min(speedCap,speedBase*(1+.08*up('Quick Step')+.05*up('Fleet Foot'))*(1+num(sk.speed,0))*(pet.speed?1+num(pet.speed):1)*(charm.speed?1+num(charm.speed):1));
+      const weaponLevels=(save.weaponLevels&&typeof save.weaponLevels==='object')?save.weaponLevels:{};
+      const weaponLevel=num(weaponLevels[save.selectedWeapon],0);
+      const weakWeaponBoost=({Blaster:.06,TwinShot:.03,SMG:.03})[save.selectedWeapon]||0;
+      const damageBase=(num(ch.damage,10)+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+num(sk.damage,0))*(1+num(pet.damage,0)+num(charm.damage,0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
+      const range=num(ch.range,220)+80*up('Long Arm');
+      const magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+num(charm.magnet,0);
+
+      safe(()=>newRunStats());
+      coopLaunchActive=!!fromRoom||!!roomStarted;
+
+      game.running=true;
+      game.paused=false;
+      game.over=false;
+      game.__outlastTypingActive=false;
+      game.level=1; game.xp=0; game.xpNeed=10; game.score=0; game.time=0;
+      game.spawn=0; game.bossClock=0; game.lastShot=0; game.shake=0;
+      game.camera={x:0,y:0};
+      game.survivalWinner=null;
+      game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};
+      const hazard=(typeof mapHazards!=='undefined'&&mapHazards[save.map])?(mapHazards[save.map]):((typeof mapHazards!=='undefined'&&mapHazards.Forest)||{interval:35});
+      game.mapEventTimer=num(hazard.interval,35); game.mapEvent=null;
+      game.lowHpAlert=0; game.worldEvent=''; game.worldEventTimer=0; game.worldEventCooldown=75; game.worldEventApplied=false; game.worldEventBaseFireRate=0;
+      game.enemies=[]; game.bullets=[]; game.gems=[]; game.coins=[]; game.shots=[]; game.effects=[]; game.particles=[]; game.powerups=[]; game.shrines=[];
+      game.shrineClock=35; game.combo=0; game.comboTimer=0; game.event=''; game.eventTimer=0; game.upgradeChoices=[];
+      game.selectedZone=save.selectedZone||'Greenbelt';
+      game.objective=save.currentObjective||'Zombie Hunt';
+      game.objectiveStartKills=num(save.stats?.kills,0);
+      game.objectiveStartBosses=num(save.stats?.bosses,0);
+      game.objectiveStartCoins=num(save.stats?.totalCoins,0);
+      game.objectiveStartXP=0; game.objectiveComplete=false;
+      game.raidBoss=(save.mode==='Boss Rush'&&typeof raidBossDefs!=='undefined'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;
+      game.zoneBonus=(typeof worldZones!=='undefined'&&worldZones[game.selectedZone]?worldZones[game.selectedZone]:((typeof worldZones!=='undefined'&&worldZones.Greenbelt)||{bonus:''})).bonus||'';
+
+      const playerMax=Math.max(1,hpBase+num(relic.hp,0)+num(charm.hp,0));
+      game.player={
+        x:W/2,y:H/2,
+        hp:playerMax,max:playerMax,
+        speed,speedCap,
+        damage:damageBase*(1+.05*safe(()=>skillBonus('combatTraining'),0)),
+        range,magnet,r:20,
+        characterName:save.selectedChar,
+        projectileSpeed:1,
+        characterVisual:{...(ch.visual||{}),body:sk.color},
+        regen:.5*up('Recovery')+.4*up('Vital Flow')+num(relic.regen,0),
+        crit:Math.min(.95,.05*up('Lucky Strike')+num(sk.crit,0)+num(charm.crit,0)+num(pet.crit,0)),
+        critMult:1.8+.04*up('Critical Mastery'),
+        pierce:up('Piercing Mastery'),
+        multiShot:up('Ammo Mastery')*2,
+        ult:0,
+        ultGain:1+.08*up('Arcane Power')+num(relic.ult,0),
+        shield:0,
+        shieldEfficiency:1+.04*up('Shield Core'),
+        armor:Math.max(.2,1-.06*up('Thick Armor')-num(charm.armor,0)),
+        coinMult:(1+.1*up('Coin Hunter'))*(1+.04*safe(()=>skillBonus('scavenger'),0))+num(sk.coins,0)+num(pet.coins,0)+num(relic.coins,0)+num(charm.coins,0),
+        bossMult:1+.08*up('Boss Hunter')+num(relic.boss,0),
+        vampire:.2*up('Vampire'),
+        skinColor:sk.color||'#5e9fff',
+        pet,relic,charm,
+        element,activeSkill,
+        skillCooldown:0,
+        petPower:1+.05*safe(()=>skillBonus('petBond'),0),
+        elementPower:1,
+        damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,
+        upgradeLuck:3*up('Lucky Drops')+num(save.permanentLuck,0),
+        lootLuck:0,treasureLuck:0,
+        luck:3*up('Lucky Drops')+num(save.permanentLuck,0),
+        xpBonus:(1+.1*up('Scholar'))*(1+.04*safe(()=>skillBonus('xpResearch'),0))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+num(pet.xp,0)+num(charm.xp,0),
+        fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)
+      };
+      game.player.eventClock=35;
+      game.player.godMode=false; game.player.god=false;
+      game.player.extraction=null;
+      game.player.buildTags=[];
+
+      game.player2=null;
+      if(save.mode==='1v1 Arena'){
+        game.player2={x:W-120,y:H/2,hp:playerMax,max:playerMax,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:game.player.skinColor,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};
+        game.survival.started=true;
+      }
+
+      game.stats={
+        enemyMult:num(d.enemy,1)*num(cm.enemy,1)*modEnemy,
+        spawnMult:num(d.spawn,1)*num(m.spawn,1)*num(cm.spawn,1)*modSpawn,
+        rewardMult:num(d.reward,1)*num(cm.reward,1)*modReward,
+        bossEvery:90,
+        timeLimit:num(m.timeLimit,0),
+        scoreMult:num(m.scoreMult,1)*(1+.04*up('Wavebreaker'))*(1+num(relic.score,0))*(1+num(charm.score,0))*num(d.reward,1)*num(cm.reward,1)*modReward,
+        difficulty:d
+      };
+
+      safe(()=>applyMapModifiers());
+      safe(()=>window.__applyAllSets?.());
+      safe(()=>window.__outlastApplyBuildSets32767?.());
+      safe(()=>hideGameOverActions());
+      safe(()=>syncGameAdminUI());
+      safe(()=>closeAllOverlays());
+
+      const menu=document.getElementById('menu');
+      const sub=document.getElementById('subPanel');
+      if(menu)menu.style.display='none';
+      if(sub)sub.style.display='none';
+      const popups=document.querySelectorAll('.update-pop,#newPlayerTutorial,#deviceModePopup');
+      popups.forEach(el=>{if(el.id!=='loginPopup')el.style.display='none';});
+      fatalGameError='';
+      fatalErrorShown=false;
+      safe(()=>syncMobileControls());
+      const canvas=document.getElementById('game'); if(canvas)canvas.focus();
+      safe(()=>{if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();});
+      return true;
+    }catch(err){
+      console.error('[OUTLAST v3.28.19] Start Run rebuilt failure:',err);
+      game.running=false; game.paused=false; game.over=true; coopLaunchActive=false;
+      try{fatalGameError=err?.message||String(err);fatalErrorShown=true;}catch(_){}
+      try{document.querySelectorAll('.update-pop,#newPlayerTutorial,#deviceModePopup').forEach(el=>{if(el.id!=='loginPopup')el.style.display='none';});}catch(_){}
+      const menu=document.getElementById('menu'); if(menu)menu.style.display='flex';
+      safe(()=>hideGameOverActions());
+      safe(()=>syncMobileControls());
+      safe(()=>toast('⚠️ Start Run failed — menu restored safely.'));
+      return false;
+    }
+  }
+
+  window.startGame=rebuiltStartRun;
+  window.__outlastStableStartCore=rebuiltStartRun;
+
+  function isStartButtonTarget(e){
+    const b=e?.target?.closest?.('#startBtn');
+    if(b)return true;
+    const btn=document.getElementById('startBtn');
+    if(!btn||getComputedStyle(btn).display==='none'||getComputedStyle(btn).visibility==='hidden')return false;
+    if(!Number.isFinite(e?.clientX)||!Number.isFinite(e?.clientY))return false;
+    const r=btn.getBoundingClientRect();
+    return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
+  }
+
+  let launching=false;
+  function launch(e){
+    if(!isStartButtonTarget(e))return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if(launching||game.running)return;
+    launching=true;
+    try{
+      document.querySelectorAll('.update-pop,#newPlayerTutorial,#deviceModePopup').forEach(el=>{if(el.id!=='loginPopup')el.style.display='none';});
+      const ok=rebuiltStartRun(false);
+      if(!ok)throw new Error('Rebuilt Start Run could not initialize gameplay');
+    }catch(err){
+      console.error('[OUTLAST v3.28.19] Start click failure:',err);
+    }finally{
+      setTimeout(()=>{launching=false;},500);
+    }
+  }
+
+  window.addEventListener('pointerdown',launch,{capture:true,passive:false});
+  window.addEventListener('click',launch,{capture:true,passive:false});
+
+  const btn=document.getElementById('startBtn');
+  if(btn){
+    btn.disabled=false;
+    btn.type='button';
+    btn.style.touchAction='manipulation';
+    btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){launch(e);}});
+  }
+})();
+</script>
+<script id="outlast-v32819-version-sync">
+(function(){
+  const VERSION='3.28.19';
+  const INFO={
+    title:'v3.28.19 — Start Run Stability',
+    summary:'Small bug fixes and stability improvements.',
+    items:[
+      'Rebuilt the Start Run launcher as one authoritative path.',
+      'Removed conflicting late Start Run wrapper behavior from the active launch path.',
+      'Start Run now survives old overlay and button-routing interference.'
+    ]
+  };
+  try{
+    const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+    if(a)a.content=VERSION;if(b)b.content=VERSION;
+    document.title='OUTLAST v'+VERSION;
+    document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';});
+    window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;
+  }catch(_){}
+  try{
+    if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))
+      updates.unshift([INFO.title,INFO.summary+' '+INFO.items.join(' ')]);
+  }catch(_){}
+  try{
+    if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes(VERSION)))
+      helpArticles.unshift(['What changed in '+VERSION+'?','Updates','Start Run was rebuilt into one authoritative launcher. Old overlay/button routing can no longer block the run from starting.']);
+  }catch(_){}
+  function show(force){
+    let seen='';try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
+    if(!force&&seen===VERSION)return;
+    const pop=document.getElementById('updatePopup');if(!pop)return;
+    const v=document.getElementById('updatePopupVersion'),body=document.getElementById('updatePopupBody');
+    if(v)v.textContent=INFO.title;
+    if(body)body.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+    pop.style.display='flex';pop.style.visibility='visible';pop.setAttribute('aria-hidden','false');
+  }
+  function close(){
+    try{outlastStorage.setItem('outlastSeenUpdateVersion',VERSION);}catch(_){}
+    const pop=document.getElementById('updatePopup');if(pop)pop.style.display='none';
+  }
+  window.showUpdatePopup=show;
+  const closeBtn=document.getElementById('updatePopupClose');if(closeBtn)closeBtn.onclick=close;
+  const pop=document.getElementById('updatePopup');if(pop)pop.onclick=e=>{if(e.target===pop)close()};
+  try{if(typeof boot!=='undefined'){} }catch(_){}
+})();
+</script>
 </body>
 </html>

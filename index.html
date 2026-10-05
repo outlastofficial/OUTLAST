@@ -7663,6 +7663,296 @@ window.__OUTLAST_REGRESSION_AUDIT_32734=()=>({
 
 
 </html>
+<script id="outlast-v32735-owner-account-settings-fix">
+(function(){
+  'use strict';
+
+  /* v3.27.35 — maintenance-only patch.
+     Start Run code is intentionally untouched. */
+
+  const RELEASE='v3.27.35';
+
+  function getUsername(){
+    try{return String(typeof currentUsername!=='undefined'?currentUsername:'').trim();}catch(_){return '';}
+  }
+
+  /* -------- Owner Panel: Delete Account -------- */
+  async function ownerDeleteAccount(target){
+    const username=String(target||'').trim();
+    if(!username)return;
+
+    const lower=username.toLowerCase();
+    const current=getUsername().toLowerCase();
+
+    /* Never allow an owner to delete the currently signed-in owner account. */
+    if(current && lower===current){
+      window.toast?.('⚠️ Your current owner account cannot be deleted here.');
+      return;
+    }
+
+    const ownerNames=new Set(['bestgamer','landon','phone landon','poke','billybimbo']);
+    if(ownerNames.has(lower)){
+      window.toast?.('⚠️ Protected owner account.');
+      return;
+    }
+
+    const ok=window.confirm(
+      'Delete the account "'+username+'" and its server-side player records? This cannot be undone.'
+    );
+    if(!ok)return;
+
+    try{
+      const response=await fetch('https://outlast-server.onrender.com/api/owner/players/delete',{
+        method:'POST',
+        cache:'no-store',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username,ownerUsername:getUsername()})
+      });
+      const data=await response.json().catch(()=>({ok:false,error:'Invalid server response'}));
+      if(!response.ok || data.ok===false){
+        throw new Error(data.error||('Server request failed ('+response.status+')'));
+      }
+
+      window.toast?.('🗑️ Account deleted: '+username);
+
+      /* Refresh the rebuilt Owner Panel player list without reopening it. */
+      const refreshBtn=document.querySelector(
+        '#outlastOwnerRemake [data-owner-remake="refresh"]'
+      );
+      if(refreshBtn) refreshBtn.click();
+      else{
+        const playersTab=document.querySelector(
+          '#outlastOwnerRemake [data-owner-remake="tab"][data-value="players"]'
+        );
+        if(playersTab)playersTab.click();
+      }
+    }catch(err){
+      window.toast?.('⚠️ '+(err?.message||'Account deletion failed'));
+    }
+  }
+
+  function addDeleteButtons(root){
+    if(!root)return;
+
+    /* Current rebuilt Owner Panel uses .owner-table-row for players. */
+    root.querySelectorAll('.owner-table-row').forEach(row=>{
+      const nameEl=row.querySelector('b');
+      if(!nameEl)return;
+      const username=String(nameEl.textContent||'').trim();
+      if(!username || row.querySelector('[data-outlast-delete-account]'))return;
+
+      const buttons=Array.from(row.querySelectorAll('button'));
+      const actions=buttons.length?buttons[buttons.length-1].parentElement:row;
+
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='danger';
+      btn.dataset.outlastDeleteAccount=username;
+      btn.setAttribute('data-outlast-delete-account','1');
+      btn.textContent='🗑️ DELETE ACCOUNT';
+      btn.title='Permanently delete this server account and its player records';
+      btn.style.cssText='background:linear-gradient(180deg,#7a1f2b,#4a1018)!important;border:1px solid #ff6878!important;color:#fff!important;box-shadow:none!important;';
+
+      (actions||row).appendChild(btn);
+    });
+
+    /* Also support the legacy player-row markup still present in older builds. */
+    root.querySelectorAll('.owner-player-row').forEach(row=>{
+      if(row.querySelector('[data-outlast-delete-account]'))return;
+      const username=String(row.getAttribute('data-player-name')||'').trim();
+      if(!username)return;
+
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='danger';
+      btn.dataset.outlastDeleteAccount=username;
+      btn.setAttribute('data-outlast-delete-account','1');
+      btn.textContent='🗑️ DELETE ACCOUNT';
+      btn.title='Permanently delete this server account and its player records';
+      btn.style.cssText='background:linear-gradient(180deg,#7a1f2b,#4a1018)!important;border:1px solid #ff6878!important;color:#fff!important;box-shadow:none!important;';
+      row.appendChild(btn);
+    });
+  }
+
+  function installOwnerDeleteUi(){
+    const panel=document.getElementById('outlastOwnerRemake');
+    if(!panel){
+      setTimeout(installOwnerDeleteUi,250);
+      return;
+    }
+
+    const content=document.getElementById('outlastOwnerContent');
+    const target=content||panel;
+    addDeleteButtons(target);
+
+    if(!panel.__outlastDeleteObserver){
+      const observer=new MutationObserver(()=>addDeleteButtons(target));
+      observer.observe(target,{childList:true,subtree:true});
+      panel.__outlastDeleteObserver=observer;
+    }
+
+    if(!panel.__outlastDeleteHandler){
+      const handler=(e)=>{
+        const btn=e.target?.closest?.('[data-outlast-delete-account]');
+        if(!btn || !panel.contains(btn))return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        ownerDeleteAccount(btn.dataset.outlastDeleteAccount);
+      };
+      panel.addEventListener('click',handler,true);
+      panel.__outlastDeleteHandler=handler;
+    }
+  }
+
+  /* -------- Settings: final direct bindings -------- */
+  function safeRedrawSettings(){
+    try{
+      if(typeof window.openSettingsSafe==='function'){
+        window.openSettingsSafe();
+        return true;
+      }
+      if(typeof window.settingsOpen==='function'){
+        window.settingsOpen();
+        return true;
+      }
+    }catch(err){
+      console.error('OUTLAST settings open error:',err);
+    }
+    return false;
+  }
+
+  function bindButton(id,fn){
+    const b=document.getElementById(id);
+    if(!b || b.dataset.outlastSettingsBound==='1')return;
+    b.dataset.outlastSettingsBound='1';
+    b.type='button';
+    b.addEventListener('click',e=>{
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      try{fn();}catch(err){console.error('OUTLAST settings action error:',err);}
+    },true);
+  }
+
+  function installSettingsRepair(){
+    bindButton('settingsNewBtn',safeRedrawSettings);
+    bindButton('settingsBtn',safeRedrawSettings);
+    bindButton('controlsBtn',safeRedrawSettings);
+
+    bindButton('devicePcBtn',()=>{
+      if(typeof window.setDeviceMode==='function')window.setDeviceMode('pc');
+      if(typeof window.updateDeviceModeStatus==='function')window.updateDeviceModeStatus();
+      safeRedrawSettings();
+    });
+
+    bindButton('deviceMobileBtn',()=>{
+      if(typeof window.setDeviceMode==='function')window.setDeviceMode('mobile');
+      if(typeof window.updateDeviceModeStatus==='function')window.updateDeviceModeStatus();
+      safeRedrawSettings();
+    });
+
+    bindButton('joystickOnBtn',()=>{
+      if(typeof window.setJoystickMode==='function')window.setJoystickMode('on');
+      if(typeof window.updateDeviceModeStatus==='function')window.updateDeviceModeStatus();
+      safeRedrawSettings();
+    });
+
+    bindButton('joystickOffBtn',()=>{
+      if(typeof window.setJoystickMode==='function')window.setJoystickMode('off');
+      if(typeof window.updateDeviceModeStatus==='function')window.updateDeviceModeStatus();
+      safeRedrawSettings();
+    });
+
+    const actions={
+      olSetPC:()=>{
+        if(typeof window.setDeviceMode==='function')window.setDeviceMode('pc');
+        safeRedrawSettings();
+      },
+      olSetMobile:()=>{
+        if(typeof window.setDeviceMode==='function')window.setDeviceMode('mobile');
+        safeRedrawSettings();
+      },
+      olSetJoyOn:()=>{
+        if(typeof window.setJoystickMode==='function')window.setJoystickMode('on');
+        safeRedrawSettings();
+      },
+      olSetJoyOff:()=>{
+        if(typeof window.setJoystickMode==='function')window.setJoystickMode('off');
+        safeRedrawSettings();
+      }
+    };
+    Object.entries(actions).forEach(([id,fn])=>bindButton(id,fn));
+  }
+
+  function addDocs(){
+    try{
+      if(Array.isArray(window.updates) && !window.updates.some(
+        x=>Array.isArray(x) && String(x[0]).includes(RELEASE)
+      )){
+        window.updates.unshift([
+          RELEASE+' — Stability Update',
+          'Small bug fixes and stability improvements.'
+        ]);
+      }
+    }catch(_){}
+
+    try{
+      if(Array.isArray(window.helpArticles) && !window.helpArticles.some(
+        x=>Array.isArray(x) && String(x[0]).includes('Where are joystick controls located?')
+      )){
+        window.helpArticles.unshift([
+          'Where are joystick controls located?',
+          'Settings',
+          'Open More → Settings. PC Controls, Mobile Controls, Joystick ON, and Joystick OFF are available there.'
+        ]);
+      }
+    }catch(_){}
+  }
+
+  function syncVersion(){
+    try{
+      document.querySelectorAll('.menu-chip').forEach(el=>{
+        if(/SURVIVOR HUB/i.test(el.textContent||'')){
+          el.textContent=RELEASE+' • SURVIVOR HUB';
+        }
+      });
+      const a=document.querySelector('meta[name="outlast-build"]');
+      const b=document.querySelector('meta[name="build-version"]');
+      if(a)a.content=RELEASE;
+      if(b)b.content=RELEASE;
+      document.title='OUTLAST '+RELEASE;
+      window.OUTLAST_BUILD=RELEASE;
+      window.OUTLAST_VERSION=RELEASE;
+      const badge=document.getElementById('outlastVersionBadge');
+      if(badge)badge.textContent=RELEASE;
+    }catch(_){}
+  }
+
+  function boot(){
+    addDocs();
+    installOwnerDeleteUi();
+    installSettingsRepair();
+    syncVersion();
+
+    [100,400,800,1600,3000,6000,9000].forEach(ms=>{
+      setTimeout(()=>{
+        addDocs();
+        installOwnerDeleteUi();
+        installSettingsRepair();
+        syncVersion();
+      },ms);
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',boot,{once:true});
+  }else{
+    boot();
+  }
+})();
+</script>
+
 <script id="outlast-v33042-ui-cleanup">
 (function(){
 'use strict';

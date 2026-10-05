@@ -7213,7 +7213,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.28.8';
+  const VERSION='v3.28.15';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
@@ -7260,7 +7260,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-v3283-ui-boot-repair">
 (function(){
 'use strict';
-const VERSION='v3.28.3';
+const VERSION='v3.28.15';
 function repair(){
   const menu=document.getElementById('menu');
   const canvas=document.getElementById('game');
@@ -7301,10 +7301,10 @@ function repair(){
     if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
   });
   const build=document.querySelector('meta[name="build-version"]');
-  if(build)build.content='3.28.6';
+  if(build)build.content='3.28.15';
   const out=document.querySelector('meta[name="outlast-build"]');
   if(out)out.content='3.28.6';
-  window.OUTLAST_BUILD='3.28.8';
+  window.OUTLAST_BUILD='3.28.15';
   window.OUTLAST_VERSION=VERSION;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
@@ -7320,16 +7320,20 @@ window.__outlastBootRepair3283=repair;
 <script id="outlast-v3289-update-popup-final-guard">
 (function(){
 'use strict';
-const VERSION='3.28.14';
+const VERSION='3.28.15';
 const INFO={
- title:'v3.28.14 — Update Popup Fix',
- summary:'Restored the main-menu Update News popup after the recent UI revert.',
+ title:'v3.28.15 — Stability Update',
+ summary:'Fixed the Survivor Hub version marker being overwritten by a legacy boot script.',
  items:[
-  'The Update News popup now uses the current release version.',
-  'It appears once for a new version and can still be reopened from the normal update flow.',
-  'Existing login, saves, Owner access, and Owner Panel permissions were not changed.'
+  'The Survivor Hub marker now stays on the current release version.',
+  'The Update News popup now uses the current release version and keeps its normal reopen behavior.',
+  'Login, saves, gameplay controls, and Owner access were not changed.'
  ]
 };
+const CURRENT_UPDATE_ENTRY=['v3.28.15 — Stability Update','Fixed the Survivor Hub version marker so legacy version scripts can no longer reset it after load.'];
+const CURRENT_HELP_ENTRY=['What changed in v3.28.15?','Updates','Fixed the Survivor Hub version marker so it remains on the current release after all page scripts finish loading.'];
+try{ if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.28.15'))) updates.unshift(CURRENT_UPDATE_ENTRY); }catch(_){}
+try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.15?'))) helpArticles.unshift(CURRENT_HELP_ENTRY); }catch(_){}
 function showCurrentUpdatePopup(force){
  let seen='';
  try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}

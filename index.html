@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.28.16">
-<meta name="build-version" content="3.28.16">
-<title>OUTLAST v3.28.16</title>
+<meta name="outlast-build" content="3.28.17">
+<meta name="build-version" content="3.28.17">
+<title>OUTLAST v3.28.17</title>
 <style>
 html,body{margin:0;padding:0;background:#0b0e12;color:#fff;font-family:Arial,sans-serif;overflow:hidden}
 canvas{display:block;margin:0 auto;background:#172019}
@@ -1008,7 +1008,7 @@ document.addEventListener('click',e=>{const b=e.target?.closest?.('#discordBtn')
       runSettingButton(b);
       return;
     }
-    const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit') && b.id!=='skinBtn';
+    const hasRoute=!!(b.id||b.dataset.action||b.dataset.gameAdmin||b.dataset.page||b.dataset.mobileAction||b.type==='submit') && b.id!=='skinBtn' && b.id!=='startBtn';
     if(!hasRoute)return;
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -5181,7 +5181,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     if(nav){e.preventDefault();e.stopImmediatePropagation();setMenuPage(nav.dataset.page);return;}
     const b=e.target.closest?.('button'); if(!b||b.disabled)return;
     const id=b.id;
-    if(id!=='skinBtn'&&routes[id]){e.preventDefault();e.stopImmediatePropagation();run(routes[id]);return;}
+    if(id!=='skinBtn'&&id!=='startBtn'&&routes[id]){e.preventDefault();e.stopImmediatePropagation();run(routes[id]);return;}
     const a=b.dataset.action;
     if(a){
       const v=b.dataset.value; e.preventDefault();e.stopImmediatePropagation();
@@ -7213,7 +7213,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-authoritative-version-v32794">
 (function(){
   'use strict';
-  const VERSION='v3.28.16';
+  const VERSION='v3.28.17';
   function forceVersion(){
     document.querySelectorAll('.menu-chip').forEach(el=>{
       if(/SURVIVOR HUB/i.test(el.textContent||'')) el.textContent=VERSION+' • SURVIVOR HUB';
@@ -7260,7 +7260,7 @@ window.OUTLAST_WEAPON_PROJECTILES=P;
 <script id="outlast-v3283-ui-boot-repair">
 (function(){
 'use strict';
-const VERSION='v3.28.16';
+const VERSION='v3.28.17';
 function repair(){
   const menu=document.getElementById('menu');
   const canvas=document.getElementById('game');
@@ -7301,10 +7301,10 @@ function repair(){
     if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB';
   });
   const build=document.querySelector('meta[name="build-version"]');
-  if(build)build.content='3.28.16';
+  if(build)build.content='3.28.17';
   const out=document.querySelector('meta[name="outlast-build"]');
-  if(out)out.content='3.28.16';
-  window.OUTLAST_BUILD='3.28.16';
+  if(out)out.content='3.28.17';
+  window.OUTLAST_BUILD='3.28.17';
   window.OUTLAST_VERSION=VERSION;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();
@@ -7320,9 +7320,9 @@ window.__outlastBootRepair3283=repair;
 <script id="outlast-v3289-update-popup-final-guard">
 (function(){
 'use strict';
-const VERSION='3.28.16';
+const VERSION='3.28.17';
 const INFO={
- title:'v3.28.16 — Stability Update',
+ title:'v3.28.17 — Stability Update',
  summary:'Removed the retired event countdown from the top of the game and the main menu.',
  items:[
   'The retired event countdown no longer appears at the top of the game or in the main menu.',
@@ -7330,10 +7330,10 @@ const INFO={
   'Login, saves, gameplay controls, and Owner access were not changed.'
  ]
 };
-const CURRENT_UPDATE_ENTRY=['v3.28.16 — Stability Update','Removed the retired event countdown from the top of the game and the main menu, and kept the current build marker synchronized.'];
-const CURRENT_HELP_ENTRY=['What changed in v3.28.16?','Updates','Removed the retired event countdown from the game and main menu. The Survivor Hub version marker remains synchronized after all page scripts finish loading.'];
-try{ if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.28.16'))) updates.unshift(CURRENT_UPDATE_ENTRY); }catch(_){}
-try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.16?'))) helpArticles.unshift(CURRENT_HELP_ENTRY); }catch(_){}
+const CURRENT_UPDATE_ENTRY=['v3.28.17 — Stability Update','Removed the retired event countdown from the top of the game and the main menu, and kept the current build marker synchronized.'];
+const CURRENT_HELP_ENTRY=['What changed in v3.28.17?','Updates','Removed the retired event countdown from the game and main menu. The Survivor Hub version marker remains synchronized after all page scripts finish loading.'];
+try{ if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.28.17'))) updates.unshift(CURRENT_UPDATE_ENTRY); }catch(_){}
+try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.17?'))) helpArticles.unshift(CURRENT_HELP_ENTRY); }catch(_){}
 function showCurrentUpdatePopup(force){
  let seen='';
  try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){}
@@ -7368,6 +7368,70 @@ function boot(){
  [150,500,1200,2500].forEach(ms=>setTimeout(()=>{try{wire();showCurrentUpdatePopup(false);}catch(_){}},ms));
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+
+<script id="outlast-v32817-start-rebuild">
+(function(){
+  'use strict';
+  if(window.__outlastStartRebuild32817)return;
+  window.__outlastStartRebuild32817=true;
+  const old=document.getElementById('startBtn');
+  if(!old)return;
+  const btn=old.cloneNode(true);
+  old.replaceWith(btn);
+  let launching=false;
+  function validRun(){
+    return !!window.game?.running && !!window.game?.player &&
+      Number.isFinite(Number(window.game.player.x)) &&
+      Number.isFinite(Number(window.game.player.y)) &&
+      !!window.game?.stats && !window.game?.over && !window.fatalErrorShown;
+  }
+  function finish(){
+    try{window.game.paused=false;window.game.over=false;}catch(_){}
+    try{window.fatalErrorShown=false;window.fatalGameError='';}catch(_){}
+    try{document.getElementById('subPanel').style.display='none';}catch(_){}
+    try{document.getElementById('menu').style.display='none';}catch(_){}
+    try{window.syncMobileControls?.();}catch(_){}
+    try{document.getElementById('game')?.focus();}catch(_){}
+  }
+  function launch(e){
+    if(e){e.preventDefault();e.stopPropagation();}
+    if(launching||validRun())return;
+    launching=true;
+    try{
+      try{window.newRunStats?.();}catch(_){}
+      const starter=window.startGame;
+      if(typeof starter!=='function')throw new Error('Start Run launcher is unavailable');
+      starter.call(window,false);
+      if(!validRun()){
+        const core=window.__outlastStableStartCore;
+        if(typeof core==='function'){
+          core.call(window,false);
+          try{window.__applyAllSets?.();}catch(_){}
+        }
+      }
+      if(!validRun())throw new Error(window.fatalGameError||'Start Run did not enter gameplay');
+      finish();
+    }catch(err){
+      console.error('[OUTLAST] Start Run failed:',err);
+      try{window.game.running=false;window.game.paused=false;window.game.over=false;}catch(_){}
+      try{window.document.getElementById('menu').style.display='flex';}catch(_){}
+      try{window.toast?.('⚠️ Start Run failed — the menu was kept safe.');}catch(_){}
+    }finally{
+      setTimeout(()=>{launching=false;},500);
+    }
+  }
+  btn.addEventListener('click',launch,{passive:false});
+  btn.addEventListener('pointerup',e=>{
+    if(e.pointerType==='touch'||e.pointerType==='pen')launch(e);
+  },{passive:false});
+  window.__outlastStartRebuildAudit32817=()=>({
+    button:!!document.getElementById('startBtn'),
+    handler:true,
+    running:!!window.game?.running,
+    playerValid:!!window.game?.player&&Number.isFinite(Number(window.game.player.x))&&Number.isFinite(Number(window.game.player.y))
+  });
 })();
 </script>
 </body>

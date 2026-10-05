@@ -7854,6 +7854,70 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 })();
 </script>
 
+
+<!-- v3.27.32 restored independent systems. The original v3.27.31 Start Run function is intentionally untouched. -->
+<script src="settings-expansion-v3.27.48.js?v=3.27.48"></script>
+<script src="event-admin-preview-v3.27.30.js?v=3.27.30"></script>
+<script src="rarity-rebuild-v3.27.96.js?v=3.27.96"></script>
+<script src="outlast-v32797-dash-spawn-hardening.js?v=3.27.97"></script>
+<script src="outlast-v32798-void-arsenal-balance.js?v=3.27.98"></script>
+<script src="outlast-v32799-premium-rarity-balance.js?v=3.27.99"></script>
+<script src="outlast-v327100-lower-rarity-balance.js?v=3.27.100"></script>
+<script src="outlast-v327101-all-upgrade-balance.js?v=3.27.101"></script>
+<script src="outlast-v327102-bouncing-bullets.js?v=3.27.102"></script>
+<script src="outlast-v327103-coin-farm-hardening.js?v=3.27.103"></script>
+<script src="outlast-v327105-event-hardening.js?v=3.27.105"></script>
+<script src="outlast-v327108-rarity-card-authority.js?v=3.27.108"></script>
+<script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
+<script id="outlast-v32732-restored-feature-docs">
+(function(){
+'use strict';
+const V='v3.27.32';
+const INFO={
+ title:'v3.27.32 — Feature Restore',
+ summary:'Restored later non-Start gameplay systems on top of the stable event build.',
+ items:[
+  'Restored expanded Settings and display preferences.',
+  'Restored event admin preview, event lifecycle hardening, and event countdown/readiness updates.',
+  'Restored rarity/upgrade balancing, Bouncing Bullets, coin-farm safeguards, and recovery protection.',
+  'Restored Owner/online systems from the later compatible module without replacing START RUN.'
+ ]
+};
+function docs(){
+ try{
+  if(Array.isArray(window.updates)&&!window.updates.some(x=>Array.isArray(x)&&String(x[0]).includes(V)))
+   window.updates.unshift([INFO.title,INFO.summary]);
+ }catch(_){}
+ try{
+  if(Array.isArray(window.helpArticles)&&!window.helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('restored feature systems'))){
+   window.helpArticles.unshift(['What was restored after the event rollback?','Updates','The stable event-era Start Run remains in place. Independent settings, event, rarity/upgrade, bouncing-shot, coin-safety, recovery, and online/Owner systems were restored around it.']);
+  }
+ }catch(_){}
+}
+function markers(){
+ try{
+  document.title='OUTLAST '+V;
+  const a=document.querySelector('meta[name="outlast-build"]'),b=document.querySelector('meta[name="build-version"]');
+  if(a)a.content='3.27.32';if(b)b.content='3.27.32';
+  window.OUTLAST_BUILD='3.27.32';window.OUTLAST_VERSION=V;
+  document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=V);
+  document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=V+' • SURVIVOR HUB'});
+ }catch(_){}
+}
+function popup(){
+ const p=document.getElementById('updatePopup');if(!p)return;
+ let seen='';try{seen=localStorage.getItem('outlastSeenUpdateVersion')||''}catch(_){}
+ if(seen==='3.27.32')return;
+ const v=document.getElementById('updatePopupVersion'),b=document.getElementById('updatePopupBody');
+ if(v)v.textContent=INFO.title;
+ if(b)b.innerHTML='<p class="note">'+INFO.summary+'</p><ul class="update-pop-list">'+INFO.items.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+ p.style.display='flex';p.style.visibility='visible';p.setAttribute('aria-hidden','false');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){markers();docs();setTimeout(popup,100)},{once:true});
+else {markers();docs();setTimeout(popup,100)}
+})();
+</script>
+
 </body>\n
 
 

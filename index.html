@@ -1893,6 +1893,24 @@ function renderQuestBoard(){
 function freshSave(){return {coins:0,worldKeys:0,skillTree:{fieldTraining:0,combatTraining:0,scavenger:0,xpResearch:0,petBond:0},quests:{},questDay:'',dayKey:'',dailyStreak:0,weeklyKey:'',selectedChar:'Survivor',selectedWeapon:'Blaster',selectedSkin:'Classic',selectedPet:'None',selectedRelic:'None',selectedCharm:'None',selectedTitle:'Rookie',selectedModifier:'None',builderMods:[],element:'Fire',activeSkill:'Nova',challengeMode:'None',ownedSkills:{Nova:true},materials:0,keys:0,mythicDust:0,gemsCrafted:0,worldEventWins:0,caseCredits:0,records:{bestCombo:0,bestDamage:0,bestRunTime:0,totalChests:0,totalCrafted:0,totalDodges:0},skins:{Classic:true},pets:{None:true},relics:{None:true},charms:{None:true},titles:{Rookie:true},forgeCores:0,weaponLevels:{},map:'Forest',difficulty:'Normal',mode:'Classic',upgrades:{},unlockedChars:{Survivor:true},unlockedWeapons:{Blaster:true},ach:{},missionClaimed:{},stats:{kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0},leaderboard:[],petLevels:{None:1},petXP:{},relicLevels:{None:1},charmLevels:{None:1},battlePassXP:0,prestige:0,prestigeClaimed:0,codex:{},weaponEvolutions:{},setBonuses:{},secretRooms:{},challengeProgress:{},worldBosses:{},season:1,selectedZone:'Greenbelt',currentObjective:'Zombie Hunt',buildPresets:{},survivorMastery:{Survivor:1},petMastery:{None:1},raidBoss:'Grave Titan',raidClears:0,worldKeys:0,dailyChallengeDay:'',dailyChallengeClaimed:false,weeklyGoalWeek:'',weeklyGoalClaimed:false,weeklyGoalProgress:{kills:0,bosses:0,time:0,games:0},buildHistory:[]}}
 function ensureMegaSave(){
   if(!save||typeof save!=='object')return;
+  // v3.28.21: repair legacy/incomplete save fields before Start Run reads them.
+  if(!save.stats||typeof save.stats!=='object')save.stats={};
+  save.stats={kills:0,totalCoins:0,bestLevel:1,bestTime:0,bosses:0,highScore:0,games:0,...save.stats};
+  if(!save.upgrades||typeof save.upgrades!=='object')save.upgrades={};
+  if(!save.weaponLevels||typeof save.weaponLevels!=='object')save.weaponLevels={};
+  if(!save.records||typeof save.records!=='object')save.records={};
+  if(!save.selectedChar||typeof save.selectedChar!=='string'||!chars[save.selectedChar])save.selectedChar='Survivor';
+  if(!save.selectedWeapon||typeof save.selectedWeapon!=='string'||!weapons[save.selectedWeapon])save.selectedWeapon='Blaster';
+  if(!save.selectedSkin||typeof save.selectedSkin!=='string'||!skins[save.selectedSkin])save.selectedSkin='Classic';
+  if(!save.selectedPet||typeof save.selectedPet!=='string'||!pets[save.selectedPet])save.selectedPet='None';
+  if(!save.selectedRelic||typeof save.selectedRelic!=='string'||!relics[save.selectedRelic])save.selectedRelic='None';
+  if(!save.selectedCharm||typeof save.selectedCharm!=='string'||!charms[save.selectedCharm])save.selectedCharm='None';
+  if(!save.selectedModifier||typeof save.selectedModifier!=='string'||(save.selectedModifier!=='None'&&!runModifiers[save.selectedModifier]))save.selectedModifier='None';
+  if(!save.difficulty||typeof save.difficulty!=='string'||!diffDefs[save.difficulty])save.difficulty='Normal';
+  if(!save.mode||typeof save.mode!=='string'||!modeDefs[save.mode])save.mode='Classic';
+  if(!save.map||typeof save.map!=='string'||!mapDefs[save.map])save.map='Forest';
+  if(typeof save.coins!=='number'||!Number.isFinite(save.coins))save.coins=0;
+  if(typeof save.permanentLuck!=='number'||!Number.isFinite(save.permanentLuck))save.permanentLuck=0;
   if(!Array.isArray(save.builderMods))save.builderMods=[];
   if(typeof save.element!=='string'||!elements[save.element])save.element='Fire';
   if(typeof save.activeSkill!=='string'||!activeSkills[save.activeSkill])save.activeSkill='Nova';

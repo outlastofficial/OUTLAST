@@ -7323,15 +7323,15 @@ window.__outlastBootRepair3283=repair;
 const VERSION='3.28.16';
 const INFO={
  title:'v3.28.16 — Stability Update',
- summary:'Fixed the Survivor Hub version marker being overwritten by a legacy boot script.',
+ summary:'Removed the retired event countdown from the top of the game and the main menu.',
  items:[
-  'The Survivor Hub marker now stays on the current release version.',
+  'The retired event countdown no longer appears at the top of the game or in the main menu.',
   'The Update News popup now uses the current release version and keeps its normal reopen behavior.',
   'Login, saves, gameplay controls, and Owner access were not changed.'
  ]
 };
-const CURRENT_UPDATE_ENTRY=['v3.28.16 — Stability Update','Fixed the Survivor Hub version marker so legacy version scripts can no longer reset it after load.'];
-const CURRENT_HELP_ENTRY=['What changed in v3.28.16?','Updates','Fixed the Survivor Hub version marker so it remains on the current release after all page scripts finish loading.'];
+const CURRENT_UPDATE_ENTRY=['v3.28.16 — Stability Update','Removed the retired event countdown from the top of the game and the main menu, and kept the current build marker synchronized.'];
+const CURRENT_HELP_ENTRY=['What changed in v3.28.16?','Updates','Removed the retired event countdown from the game and main menu. The Survivor Hub version marker remains synchronized after all page scripts finish loading.'];
 try{ if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.28.16'))) updates.unshift(CURRENT_UPDATE_ENTRY); }catch(_){}
 try{ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('What changed in v3.28.16?'))) helpArticles.unshift(CURRENT_HELP_ENTRY); }catch(_){}
 function showCurrentUpdatePopup(force){

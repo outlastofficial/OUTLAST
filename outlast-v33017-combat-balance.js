@@ -19,7 +19,7 @@ function applyBalancedRarities(){
    for(const item of tempUp){
     if(!item)continue;
     if(/^Breach /.test(String(item[0]||''))){
-      item[1]=m=>\`+\${Math.max(1,Math.min(7,Math.round(Number(m)||1)))} pierce\`;
+      item[1]=m=>`+${Math.max(1,Math.min(7,Math.round(Number(m)||1)))} pierce`;
       item[2]=m=>{const gain=Math.max(1,Math.min(7,Math.round(Number(m)||1)));game.player.pierce=(game.player.pierce||0)+gain;};
     }
    }

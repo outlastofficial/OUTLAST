@@ -2075,6 +2075,7 @@ function shoot(){
  sendRoomPlayerShoot(p.x,p.y,ang,weapon);
  let count=1+Math.max(0,Math.floor(Number(p.multiShot)||0)),spread=.16,speed=720,size=6,mult=1,pierce=p.pierce;
  const weaponLevel=Math.max(0,Math.floor(Number(save.weaponLevels?.[weapon])||0));
+ const visualProjectileScale=(weapon==='Laser'||weapon==='FrostNova')?.18:1;
  count+=Math.floor(weaponLevel/2);
  mult*=1+((p.tempDamage||0)/Math.max(1,p.damage));
  const evo=save.weaponEvolutions?.[weapon]; if(evo==='Thunderstorm')mult*=1.45; if(evo==='Inferno')mult*=1.35; if(evo==='Glacier')mult*=1.25; if(evo==='Plasma Overdrive')mult*=1.5; if(evo==='Shadow Shuriken')pierce+=3; if(evo==='Missile Barrage')count+=1;
@@ -2104,7 +2105,7 @@ function shoot(){
  }else if(weapon!=='FrostNova'){
    for(let i=0;i<shotsToFire;i++){
      let a=ang+(i-(shotsToFire-1)/2)*spread;
-     game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult)?Math.max(1,p.damage*mult):Math.max(1,p.damage||1),hits:0,type:weapon,pierce,bounceLeft:Math.max(0,Math.floor(Number(p.bounceCount)||0)),bounceDamage:Number(p.bounceDamage)||.60,bounceRange:Number(p.bounceRange)||360,bounceTargets:null});
+     game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult*visualProjectileScale)?Math.max(0,p.damage*mult*visualProjectileScale):Math.max(0,(p.damage||1)*visualProjectileScale),hits:0,type:weapon,pierce,bounceLeft:Math.max(0,Math.floor(Number(p.bounceCount)||0)),bounceDamage:Number(p.bounceDamage)||.60,bounceRange:Number(p.bounceRange)||360,bounceTargets:null});
    }
  } if(!['Laser','FrostNova'].includes(weapon)){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
  if(weapon==='Laser'){const limit=Math.min(game.enemies.length,4+Math.max(0,Math.floor(p.multiShot||0))),targets=[];for(const e of game.enemies){const dx=e.x-p.x,dy=e.y-p.y,d2=dx*dx+dy*dy;if(d2>=p.range*p.range)continue;if(targets.length<limit){targets.push({e,d2});continue;}let far=0;for(let ti=1;ti<targets.length;ti++)if(targets[ti].d2>targets[far].d2)far=ti;if(d2<targets[far].d2)targets[far]={e,d2};}targets.sort((a,b)=>a.d2-b.d2);for(const t of targets){const e=t.e;damageEnemy(e,p.damage*3.2);applyElement(e);game.effects.push({x:e.x,y:e.y,t:.35,r:18});if(e.hp<=0)killEnemy(e);}}
@@ -3626,6 +3627,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.30.17 — Laser/FrostNova projectile fix','Laser and FrostNova now spawn their own visible projectiles too; their existing special effects remain in place.'],
    ['v3.30.16 — Full-Arena Map Layout','Rebalanced every map’s real obstacle layout across the full arena. Objects now occupy upper, middle, and lower zones while the center start area stays clear.'],
    ['v3.34.0 — Omega Shield','Added the Omega Shield permanent upgrade. It costs 20,000 coins per level, blocks incoming hits with shield charges, restores 1 charge every 5 seconds, and gains +1 hit capacity per level up to 5. Omega Vacuum and Omega Shield both use a fixed 20,000-coin price per level.'],
    ['v3.30.15 — 200+ Upgrades + Boss Restore','Expanded the authoritative level-up pool to 298 distinct upgrade choices across all 11 rarity tiers and restored a guaranteed first boss by 30 seconds with mode-based boss cadence. Start Run and login were not changed.'],

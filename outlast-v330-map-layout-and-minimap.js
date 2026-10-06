@@ -1,4 +1,4 @@
-/* OUTLAST v3.30.0 — Unique Map Layouts + Functional Minimap
+/* OUTLAST v3.30.1 — Unique Map Layouts + Functional Minimap
    Purpose: give every map a distinct navigational layout and make the minimap useful.
    Does not modify Start Run, login, or server connection flow.
 */
@@ -179,22 +179,7 @@ function drawMapLayout(ctx,map,W,H){
   }
 }
 
-function installWorldRenderer(){
-  if(typeof window.drawMapObjects!=='function'||window.__outlast330MapObjectsWrapped)return;
-  window.__outlast330MapObjectsWrapped=true;
-  const base=window.drawMapObjects;
-  window.drawMapObjects=function(...args){
-    const scale=args[0]??1,ox=args[1]??0,oy=args[2]??0;
-    if(typeof ctx!=='undefined'&&typeof W!=='undefined'&&typeof H!=='undefined'){
-      ctx.save();
-      ctx.translate(ox,oy);ctx.scale(scale,scale);
-      drawMapLayout(ctx,typeof save!=='undefined'?save.map:'Forest',W,H);
-      ctx.restore();
-    }
-    return base.apply(this,args);
-  };
-}
-
+function installWorldRenderer(){if(window.__outlast330MapRendererInstalled)return;window.__outlast330MapRendererInstalled=true;window.__outlast330MapRenderer=drawMapLayout;}
 function drawBetterMinimap(){
   if(typeof game==='undefined'||!game.running||game.upgradeOpen||typeof ctx==='undefined')return;
   const mw=Math.min(190,Math.max(155,CW*.19)),mh=mw*H/W,mx=10,my=145,sx=mw/W,sy=mh/H,map=typeof save!=='undefined'?save.map:'Forest';
@@ -244,11 +229,11 @@ function installMinimap(){
 function audit(){
   const maps=Object.keys(MAP_LAYOUT_INFO);
   return {
-    version:'3.30.0',
+    version:'3.30.1',
     mapCount:maps.length,
     uniqueProfiles:maps.length===16,
     minimapFunctional:typeof window.drawMinimap==='function',
-    mapRendererInstalled:!!window.__outlast330MapObjectsWrapped,
+    mapRendererInstalled:!!window.__outlast330MapRendererInstalled,
     startGameUntouched:true
   };
 }
@@ -256,8 +241,8 @@ function audit(){
 function boot(){
   installWorldRenderer();
   installMinimap();
-  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.0 — Unique Map Layouts'))){
-    updates.unshift(['v3.30.0 — Unique Map Layouts','Reworked every map with its own navigational layout and rebuilt the minimap to show terrain, structures, players, enemies, loot, and the current camera view.']);
+  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.30.1 — Unique Map Layouts'))){
+    updates.unshift(['v3.30.1 — Unique Map Layouts','Reworked every map with its own navigational layout and rebuilt the minimap to show terrain, structures, players, enemies, loot, and the current camera view.']);
   }
   if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('minimap show'))){
     helpArticles.unshift(['How does the new minimap work?','Maps','The minimap now mirrors the current map layout, including major terrain shapes, solid objects, loot, enemies, players, and the current camera viewport. Each map has a distinct layout such as streets, corridors, tracks, docks, rivers, lava lanes, or swamp pools.']);

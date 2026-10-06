@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.31.0">
-<meta name="build-version" content="3.31.0">
-<title>OUTLAST v3.31.0</title>
+<meta name="outlast-build" content="3.30.12">
+<meta name="build-version" content="3.30.12">
+<title>OUTLAST v3.30.12</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3448,12 +3448,12 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['How does the Seizure map work?','Maps','Seizure is a chaotic sensory-overload map with dense obstacles, a fast hazard cycle, and unique static geometry. It deliberately avoids strobe or flashing effects that could be unsafe for players with photosensitive epilepsy.'],
-  ['What changed in v3.30.11?','Maps','Expanded every map to 12 solid, collision-aware landmarks with distinct formations and map-specific scenery. The minimap uses the same geometry, and Start Run/login were not changed.'],
-  ['What changed in v3.30.11?','Updates','Fixed the fatal game-error crash caused by the map rebuild calling a missing map-detail renderer. The renderer is now safe and minimal; Owner Panel, Start Run, and login were not changed.'],
-  ['What changed in v3.30.11?','Updates','Added a small pink, sparkly toy in the top-right corner as a non-clickable decorative game element. It does not affect gameplay or controls.'],
-  ['What changed in v3.30.11?','Updates','Testing build: every map now has a distinct navigational layout, and the minimap mirrors terrain, solid scenery, players, enemies, loot, and the camera viewport. Start Run remains unchanged.'],
+  ['What changed in v3.30.12?','Maps','Expanded every map to 12 solid, collision-aware landmarks with distinct formations and map-specific scenery. The minimap uses the same geometry, and Start Run/login were not changed.'],
+  ['What changed in v3.30.12?','Updates','Fixed the fatal game-error crash caused by the map rebuild calling a missing map-detail renderer. The renderer is now safe and minimal; Owner Panel, Start Run, and login were not changed.'],
+  ['What changed in v3.30.12?','Updates','Added a small pink, sparkly toy in the top-right corner as a non-clickable decorative game element. It does not affect gameplay or controls.'],
+  ['What changed in v3.30.12?','Updates','Testing build: every map now has a distinct navigational layout, and the minimap mirrors terrain, solid scenery, players, enemies, loot, and the camera viewport. Start Run remains unchanged.'],
   ['How does the new minimap work?','Maps','The minimap mirrors the current map layout and tracks solid scenery, players, enemies, loot, and the camera viewport. Every map has its own visual layout identity.'],
-  ['What changed in v3.30.11?','Updates','Tester Start Run now uses one authoritative startGame path. The old post-load override was removed to reduce startup conflicts and recovery errors.'],
+  ['What changed in v3.30.12?','Updates','Tester Start Run now uses one authoritative startGame path. The old post-load override was removed to reduce startup conflicts and recovery errors.'],
   ['What changed in v3.27.48?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.43?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.42?','Updates','This maintenance update expanded local leaderboard retention so separate mode and difficulty records are less likely to be evicted. The server filters remain separated by mode and difficulty.'],
@@ -3717,7 +3717,7 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.30.11';
+const CURRENT_UPDATE_VERSION='3.30.12';
 const CURRENT_UPDATE_INFO={title:'v3.30.8 — Map Expansion',summary:'Expanded every map with denser, distinct layouts and stronger map-specific landmarks.',items:['Every map now has 12 collision-aware objects instead of 8.','Map layouts use unique formations, landmarks, and traversal patterns.','Minimap and movement collisions use the same map geometry.','Start Run and login were left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
@@ -6249,5 +6249,5 @@ function boot(){sync();ui();addEventListener('pagehide',recover,{capture:true});
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{once:true});else boot();})();
 </script>
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
-</body>
+<script id="outlast-upgrade-restoration-v3-30-12">(function(){'use strict';function restore(){try{if(typeof tempUp!=='undefined'&&Array.isArray(tempUp)){const bouncing=['Bouncing Bullets',()=> 'Shots bounce to up to 2 nearby enemies at 60% damage per bounce',()=>{const p=game.player;if(!p)return;p.bouncingBullets=true;p.bounceCount=Math.min(4,(Number(p.bounceCount)||0)+2);p.bounceDamage=.60;p.bounceRange=360;}];if(!tempUp.some(x=>x&&x[0]==='Bouncing Bullets'))tempUp.push(bouncing);}if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&window.OUTLAST_UPGRADE_RARITY_POOLS){const pools=window.OUTLAST_UPGRADE_RARITY_POOLS;if(pools.Rare&&!pools.Rare.includes('Bouncing Bullets'))pools.Rare.push('Bouncing Bullets');}if(typeof window.OUTLAST_UPGRADE_RARITY_BY_NAME==='object'&&window.OUTLAST_UPGRADE_RARITY_BY_NAME)window.OUTLAST_UPGRADE_RARITY_BY_NAME['Bouncing Bullets']='Rare';if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&typeof tempUp!=='undefined'&&Array.isArray(tempUp)){const pools=window.OUTLAST_UPGRADE_RARITY_POOLS,byName=window.OUTLAST_UPGRADE_RARITY_BY_NAME||{};let missing=0;for(const rarity of Object.keys(pools))for(const name of pools[rarity]||[]){if(!tempUp.some(x=>x&&x[0]===name))missing++;else byName[name]=rarity;}if(!missing&&typeof window.makeChoices==='function'&&window.__outlastUpgradeRestorationApplied!==true){window.__outlastUpgradeRestorationApplied=true;const authoritative=window.makeChoices;window.makeChoices=function(){const choices=authoritative.apply(this,arguments);if(Array.isArray(choices))for(const u of choices)if(u&&byName[u[0]])u[3]=byName[u[0]];return choices;};}}}catch(_){}}restore();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore,{once:true});setTimeout(restore,0);setTimeout(restore,250);})();</script></body>
 </html>

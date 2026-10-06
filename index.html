@@ -2018,6 +2018,7 @@ function shoot(){
  sendRoomPlayerShoot(p.x,p.y,ang,weapon);
  let count=1+Math.max(0,Math.floor(Number(p.multiShot)||0)),spread=.16,speed=720,size=6,mult=1,pierce=p.pierce;
  const weaponLevel=Math.max(0,Math.floor(Number(save.weaponLevels?.[weapon])||0));
+ const visualProjectileScale=(weapon==='Laser'||weapon==='FrostNova')?.18:1;
  count+=Math.floor(weaponLevel/2);
  mult*=1+((p.tempDamage||0)/Math.max(1,p.damage));
  const evo=save.weaponEvolutions?.[weapon]; if(evo==='Thunderstorm')mult*=1.45; if(evo==='Inferno')mult*=1.35; if(evo==='Glacier')mult*=1.25; if(evo==='Plasma Overdrive')mult*=1.5; if(evo==='Shadow Shuriken')pierce+=3; if(evo==='Missile Barrage')count+=1;
@@ -2036,7 +2037,7 @@ function shoot(){
  // Special weapons also respect every Multi-Shot level instead of ignoring it.
  const multiBonus=Math.max(0,Number(p.multiShot)||0);
  if(weapon==='OrbitBlades'){}
- speed*=Math.max(.1,Number(p.projectileSpeed)||1); if(!['Laser','FrostNova'].includes(weapon)){const shotsToFire=count+(p.doubleTap&&Math.random()<.20?1:0);for(let i=0;i<shotsToFire;i++){let a=ang+(i-(shotsToFire-1)/2)*spread;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult)?Math.max(1,p.damage*mult):Math.max(1,p.damage||1),hits:0,type:weapon,pierce});}} if(!['Laser','FrostNova'].includes(weapon)){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
+ speed*=Math.max(.1,Number(p.projectileSpeed)||1); if(true){const shotsToFire=count+(p.doubleTap&&Math.random()<.20?1:0);for(let i=0;i<shotsToFire;i++){let a=ang+(i-(shotsToFire-1)/2)*spread;game.bullets.push({x:p.x,y:p.y,a,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:size*(p.bulletSize||1),dmg:Number.isFinite(p.damage*mult*visualProjectileScale)?Math.max(0,p.damage*mult*visualProjectileScale):Math.max(0,(p.damage||1)*visualProjectileScale),hits:0,type:weapon,pierce});}} if(true){const fx=p.x+Math.cos(ang)*22,fy=p.y+Math.sin(ang)*22;const wc={Flame:'#ff7a2f',RocketLauncher:'#ffb347',Lightning:'#7fd8ff',Railgun:'#d7f0ff',Plasma:'#e993ff',Meteor:'#ff6d6d',FrostNova:'#9cecff',GravityOrb:'#ae8cff'}[weapon]||'#fff08a';ring(fx,fy,wc,12,.14,true);burst(fx,fy,wc,5,70);}
  if(weapon==='Laser'){const targets=game.enemies.filter(e=>Math.hypot(e.x-p.x,e.y-p.y)<p.range).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)).slice(0,Math.min(game.enemies.length,4+Math.max(0,Math.floor(p.multiShot||0))));targets.forEach(e=>{damageEnemy(e,p.damage*3.2);applyElement(e);game.effects.push({x:e.x,y:e.y,t:.35,r:18});if(e.hp<=0)killEnemy(e)});}
  if(weapon==='FrostNova'){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(e.x-p.x,e.y-p.y)<210){damageEnemy(e,p.damage*1.9);applyElement(e);e.burn=Math.max(e.burn||0,0);e.slowTimer=3;if(e.hp<=0)killEnemy(e)}}game.effects.push({x:p.x,y:p.y,t:.45,r:210})}
  // Lightning is projectile-count driven; no extra chain shots are spawned here.
@@ -3523,6 +3524,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.30.17 — Laser/FrostNova projectile fix','Laser and FrostNova now spawn their own visible projectiles too; their existing special effects remain in place.'],
    ['v3.30.16 — Full-Arena Map Layout','Rebalanced every map’s real obstacle layout across the full arena. Objects now occupy upper, middle, and lower zones while the center start area stays clear.'],
    ['v3.34.0 — Omega Shield','Added the Omega Shield permanent upgrade. It costs 20,000 coins per level, blocks incoming hits with shield charges, restores 1 charge every 5 seconds, and gains +1 hit capacity per level up to 5. Omega Vacuum and Omega Shield both use a fixed 20,000-coin price per level.'],
    ['v3.30.15 — 200+ Upgrades + Boss Restore','Expanded the authoritative level-up pool to 298 distinct upgrade choices across all 11 rarity tiers and restored a guaranteed first boss by 30 seconds with mode-based boss cadence. Start Run and login were not changed.'],

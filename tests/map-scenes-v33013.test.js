@@ -1,11 +1,15 @@
 const fs = require('fs');
 const assert = require('assert');
+const path = require('path');
 
-const html = fs.readFileSync(require('path').join(__dirname, '..', 'index.html'), 'utf8');
+const root = path.join(__dirname, '..');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const scene = fs.readFileSync(path.join(root, 'outlast-v33013-map-scenes.js'), 'utf8');
 
-assert.match(html, /OUTLAST_MAP_SCENE_VERSION/);
-assert.match(html, /3\.30\.13/);
-assert.match(html, /OUTLAST_MAP_SCENE_THEMES/);
+assert.match(html, /outlast-v33013-map-scenes\.js\?v=3\.30\.13/);
+assert.match(scene, /OUTLAST_MAP_SCENE_VERSION=['"]3\.30\.13['"]/);
+assert.match(scene, /OUTLAST_MAP_SCENE_THEMES/);
+assert.match(scene, /Hospital:\s*\{[^}]*bg:'#101821'/s);
 
 const requiredMaps = [
   'Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway',
@@ -13,7 +17,8 @@ const requiredMaps = [
   'Wasteland','Seizure','Ribhouse'
 ];
 for (const map of requiredMaps) {
-  assert.match(html, new RegExp(map + '[^\\n]*OUTLAST_MAP_SCENE_THEMES', 's'));
+  assert.match(scene, new RegExp('^\\s*' + map.replace(/[.*+?^$\\{\\}()|[\\]\\]/g,'\\$&') + ':', 'm'));
 }
 
+assert(!/Hospital:\s*\{[^}]*bg:'#fff/i.test(scene));
 console.log('OUTLAST v3.30.13 map-scene regression checks passed');

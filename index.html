@@ -1788,13 +1788,14 @@ async function leaderboardFetch(path,options={},timeoutMs=7000){
  try{const res=await fetch('https://outlast-server.onrender.com'+path,{...options,cache:'no-store',signal:controller.signal});const data=await res.json().catch(()=>({ok:false,error:'Invalid server response'}));if(!res.ok)throw new Error(data.error||('HTTP '+res.status));return data;}
  finally{clearTimeout(timer);}
 }
+function leaderboardRecordKey(entry){return String(entry?.name||'').trim().toLowerCase()+'|'+String(entry?.mode||'Classic').trim().toLowerCase()+'|'+String(entry?.difficulty||'Normal').trim().toLowerCase();}
 function mergeLeaderboardEntry(entry){
  if(!entry||!entry.name)return;
  save.leaderboard=Array.isArray(save.leaderboard)?save.leaderboard:[];
- const key=String(entry.name).trim().toLowerCase(),i=save.leaderboard.findIndex(x=>String(x.name||'').trim().toLowerCase()===key);
+ const key=leaderboardRecordKey(entry),i=save.leaderboard.findIndex(x=>leaderboardRecordKey(x)===key);
  if(i<0)save.leaderboard.push(entry);else if(Number(entry.score||0)>=Number(save.leaderboard[i].score||0))save.leaderboard[i]=entry;
  save.leaderboard.sort((a,b)=>Number(b.score||0)-Number(a.score||0));
- save.leaderboard=save.leaderboard.slice(0,100);
+ save.leaderboard=save.leaderboard.slice(0,500);
 }
 async function submitServerLeaderboard(entry){
  try{
@@ -1805,29 +1806,41 @@ async function submitServerLeaderboard(entry){
    return data;
  }catch(err){console.warn('Leaderboard submit failed',err);return null;}
 }
-async function fetchServerLeaderboard(){
+async function fetchServerLeaderboard(mode=save.mode,difficulty=save.difficulty){
  try{
-   const data=await leaderboardFetch('/api/leaderboard?limit=100');
+   const params=new URLSearchParams({limit:'100'});
+   if(mode)params.set('mode',mode);
+   if(difficulty)params.set('difficulty',difficulty);
+   const data=await leaderboardFetch('/api/leaderboard?'+params.toString());
    const entries=Array.isArray(data.entries)?data.entries:[];
    entries.forEach(mergeLeaderboardEntry);persist();
    return entries.sort((a,b)=>Number(b.score||0)-Number(a.score||0));
  }catch(err){
    console.warn('Leaderboard server unavailable',err);
-   return Array.isArray(save.leaderboard)?save.leaderboard.slice().sort((a,b)=>Number(b.score||0)-Number(a.score||0)):null;
+   const m=String(mode||'Classic').toLowerCase(),d=String(difficulty||'Normal').toLowerCase();
+   return Array.isArray(save.leaderboard)?save.leaderboard.filter(x=>String(x.mode||'Classic').toLowerCase()===m&&String(x.difficulty||'Normal').toLowerCase()===d).sort((a,b)=>Number(b.score||0)-Number(a.score||0)):null;
  }
 }
-function renderServerLeaderboard(entries){
+function renderServerLeaderboard(entries,mode=save.mode,difficulty=save.difficulty){
  const host=document.getElementById('leaderboardRows');if(!host)return;
  if(entries===null){host.innerHTML='<p class="small dangerText">No leaderboard data is available right now.</p>';return;}
- const rows=entries.length?entries.map((r,i)=>'<div class="option"><b>#'+(i+1)+' '+String(r.name||'Player')+'</b><div class="small">Score '+Number(r.score||0).toLocaleString()+' • Level '+Number(r.level||1)+' • Kills '+Number(r.kills||0)+'</div><div class="small">'+String(r.mode||'Classic')+' • '+String(r.difficulty||'Normal')+' • '+String(r.date||'')+'</div></div>').join(''):'<p>No scores yet. Be the first record.</p>';
- host.innerHTML='<div class="small" style="margin-bottom:8px">Server records • top '+Math.min(entries.length,100)+' players</div>'+rows;
+ const rows=entries.length?entries.map((r,i)=>'<div class="option"><b>#'+(i+1)+' '+String(r.name||'Player')+'</b><div class="small">Score '+Number(r.score||0).toLocaleString()+' • Level '+Number(r.level||1)+' • Kills '+Number(r.kills||0)+'</div><div class="small">'+String(r.mode||'Classic')+' • '+String(r.difficulty||'Normal')+' • '+String(r.date||'')+'</div></div>').join(''):'<p>No scores yet for this mode and difficulty.</p>';
+ host.innerHTML='<div class="small" style="margin-bottom:8px">Server records • '+String(mode||'Classic')+' • '+String(difficulty||'Normal')+' • top '+Math.min(entries.length,100)+' players</div>'+rows;
 }
 async function openServerLeaderboard(){
- openSub('★ Leaderboard','<p class="small">Server leaderboard • one best record per player name.</p><div class="row"><button class="green" id="refreshLeaderboardBtn">↻ Refresh</button></div><div id="leaderboardRows" style="margin-top:10px;display:grid;gap:8px"><p class="small">Loading leaderboard…</p></div>');
+ const initialMode=save.mode||'Classic',initialDifficulty=save.difficulty||'Normal';
+ openSub('★ Leaderboard','<p class="small">Separate leaderboard for every mode and difficulty.</p><div id="leaderboardFilters" class="row" style="justify-content:flex-start;gap:7px;margin-bottom:8px"></div><div class="row"><button class="green" id="refreshLeaderboardBtn">↻ Refresh</button></div><div id="leaderboardRows" style="margin-top:10px;display:grid;gap:8px"><p class="small">Loading leaderboard…</p></div>');
+ const filters=document.getElementById('leaderboardFilters');
+ const modes=Object.keys(modeDefs||{}),diffs=Object.keys(diffDefs||{});
+ let selectedMode=initialMode,selectedDifficulty=initialDifficulty;
+ if(filters){
+   filters.innerHTML='<select id="leaderboardModeSelect" aria-label="Leaderboard mode" style="padding:8px;border-radius:9px;background:#101820;color:#fff;border:1px solid #385064">'+modes.map(m=>'<option value="'+String(m).replace(/"/g,'&quot;')+'" '+(m===selectedMode?'selected':'')+'>'+String(m)+'</option>').join('')+'</select><select id="leaderboardDifficultySelect" aria-label="Leaderboard difficulty" style="padding:8px;border-radius:9px;background:#101820;color:#fff;border:1px solid #385064">'+diffs.map(d=>'<option value="'+String(d).replace(/"/g,'&quot;')+'" '+(d===selectedDifficulty?'selected':'')+'>'+String(d)+'</option>').join('')+'</select>';
+   document.getElementById('leaderboardModeSelect')?.addEventListener('change',async e=>{selectedMode=e.target.value;renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);});
+   document.getElementById('leaderboardDifficultySelect')?.addEventListener('change',async e=>{selectedDifficulty=e.target.value;renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);});
+ }
  const refresh=document.getElementById('refreshLeaderboardBtn');
- if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='Loading…';renderServerLeaderboard(await fetchServerLeaderboard());refresh.disabled=false;refresh.textContent='↻ Refresh';};
- renderServerLeaderboard(Array.isArray(save.leaderboard)?save.leaderboard.slice().sort((a,b)=>Number(b.score||0)-Number(a.score||0)):[]);
- renderServerLeaderboard(await fetchServerLeaderboard());
+ if(refresh)refresh.onclick=async()=>{refresh.disabled=true;refresh.textContent='Loading…';renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);refresh.disabled=false;refresh.textContent='↻ Refresh';};
+ renderServerLeaderboard(await fetchServerLeaderboard(selectedMode,selectedDifficulty),selectedMode,selectedDifficulty);
 }
 function updateWorldObjective(dt){
   const o=worldObjectives[game.objective]; if(!o||game.objectiveComplete)return;
@@ -1869,7 +1882,7 @@ function endRun(victory,recordScore=true,showEnd=true){
    save.leaderboard=Array.isArray(save.leaderboard)?save.leaderboard:[];
    const name=currentUsername.slice(0,18);
    const entry={name,score:Math.floor(game.score),level:game.level,kills:run.kills,mode:save.mode,difficulty:save.difficulty,date:new Date().toLocaleDateString()};
-   const existingIndex=save.leaderboard.findIndex(r=>String(r.name||'').trim().toLowerCase()===name.toLowerCase());
+   const entryKey=leaderboardRecordKey(entry);\n   const existingIndex=save.leaderboard.findIndex(r=>leaderboardRecordKey(r)===entryKey);
    let shouldSubmit=false;
    if(existingIndex>=0){
      if(entry.score>Number(save.leaderboard[existingIndex].score||0)){
@@ -1885,7 +1898,7 @@ function endRun(victory,recordScore=true,showEnd=true){
      toast('Leaderboard record added!');
    }
    save.leaderboard.sort((a,b)=>b.score-a.score);
-   save.leaderboard=save.leaderboard.slice(0,100);
+   save.leaderboard=save.leaderboard.slice(0,500);
    submitServerLeaderboard(entry);
  }
  checkAchievements();persist();
@@ -3325,7 +3338,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.29.1 — Map Rebuild & Gameplay Update','Synced newer non-UI gameplay systems from the isolated tester build without replacing the current Start Run or UI implementation.'],
+   ['v3.29.2 — Leaderboards + Solid Maps Restore','Restored separate mode/difficulty leaderboard boards, solid map scenery, and blocked spawn/dash handling without changing Start Run.'],
    ['v3.27.1 — Chat Menu Fix','Fixed the main-menu CHAT button and synchronized Global Chat when the main menu loads.'],
    ['v3.27.0 — XP & Input Fix','Added XP Vacuum, fixed the zombie spawn regression, and made Space inert outside text fields.'],
    ['v3.26.2 — Zombie Spawn Recovery','Restored reliable zombie spawning during normal runs and added a safety recovery for a run that becomes empty.'],
@@ -3452,8 +3465,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.29.1';
-const CURRENT_UPDATE_INFO={title:'v3.29.1 — Map & Gameplay Display Update',summary:'Updated the map area with live map details and restored the in-run boss countdown display.',items:['Map selection now shows each map’s hazard, zone, and solid-object information.','The in-run boss countdown is visible in the lower-right corner.','The existing Start Run flow was left unchanged.']};
+const CURRENT_UPDATE_VERSION='3.29.2';
+const CURRENT_UPDATE_INFO={title:'v3.29.2 — Leaderboards + Solid Maps Restore',summary:'Restored separate leaderboards for every mode and difficulty and made the visible map scenery solid.',items:['Leaderboard filters now separate records by mode and difficulty.','Map scenery is now collision-aware, including dash movement.','Enemy spawning is rescued from blocked map objects.','The existing Start Run flow was left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -5811,5 +5824,6 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
 <script src="outlast-v327108-rarity-card-authority.js?v=3.29.1"></script>
 
 <script src="outlast-v3291-map-and-boss-display.js?v=3.29.1"></script>
+<script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
 </body>
 </html>

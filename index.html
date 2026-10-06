@@ -2724,7 +2724,7 @@ const p=game.player;if(p){
   game.__upgradeRollActive=hasRollingRarity&&rollProgress<1;
   ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',CW/2,76);
   ctx.font='20px Arial';ctx.fillStyle='#dbe9f5';ctx.fillText('Choose 1, 2, or 3',CW/2,110);
-  ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0)+' • 200+ upgrade pool',CW/2,140);
+  ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0)+' • '+((window.OUTLAST_UPGRADE_LIBRARY_COUNT||298))+' upgrade choices',CW/2,140);
   game.upgradeChoices.forEach((u,i)=>{
     const x=45+i*350,y=180,w=325,h=285,cx=x+w/2,cy=y+h/2;
     const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r;

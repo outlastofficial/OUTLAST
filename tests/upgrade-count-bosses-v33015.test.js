@@ -1,0 +1,12 @@
+const fs=require('fs'),assert=require('assert'),path=require('path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const authority=fs.readFileSync(path.join(root,'outlast-v327108-rarity-card-authority.js'),'utf8');
+assert.match(html,/OUTLAST_UPGRADE_LIBRARY_COUNT/);
+assert.match(html,/3\.30\.15/);
+assert.match(html,/bossTarget/);
+assert.doesNotMatch(html,/bossEvery:90/);
+const poolMatch=authority.match(/Common:\[([^\]]+)\]/);
+assert(poolMatch,'Common rarity pool missing');
+assert.match(html,/OUTLAST_UPGRADE_RARITY_POOLS/);
+console.log('OUTLAST v3.30.15 upgrade-count + boss-cadence regression test passed');

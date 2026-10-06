@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.32.0">
+<meta name="outlast-build" content="3.33.0">
 <meta name="build-version" content="3.32.0">
-<title>OUTLAST v3.32.0</title>
+<title>OUTLAST v3.33.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1473,7 +1473,7 @@ const permanent=[
   ['Recovery','Start +0.5 regen',250],['Piercing Mastery','Start +1 piercing',400],
   ['Thick Armor','Start -6% incoming damage',350],['Battle Focus','Start +4% score',300],['Coin Hunter','Start +10% coin drops',350],
   ['XP Surge','Start +5% XP gain',300],['XP Mastery','Start +8% XP gain',500],['XP Core','Start +10% XP gain',750],
-  ['Glass Cannon','Start +8 damage but -8 max HP',500],['Vampire','Start +1 HP per 5 kills',550],['Arcane Power','Start +8 ultimate gain',500],
+  ['Glass Cannon','Start +8 damage but -8 max HP',500],['Vampire','Start +1 HP per 5 kills',550],['Omega Vacuum','Every 30s, collect all coins + XP • -3s per level',1200],['Arcane Power','Start +8 ultimate gain',500],
   ['Ammo Mastery','Start +1 multi-shot',650],['Critical Mastery','Start +4% crit damage',700],['Boss Hunter','Start +8% boss damage',800],['Lucky Drops','Start +3% extra item drops',450],
   ...extraPermanent
 ];
@@ -1801,7 +1801,7 @@ function startGame(fromRoom=false){
   const weaponLevels=(save.weaponLevels&&typeof save.weaponLevels==='object')?save.weaponLevels:{};const weaponLevel=Number(weaponLevels[save.selectedWeapon])||0;
   const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
   const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
-  coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
+  coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.omegaVacuumTimer=30;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
   game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
   game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
   const testerUp=n=>save.upgrades[n]||0;
@@ -2295,6 +2295,28 @@ function update(dt){
   if(Math.hypot(p.x-p2.x,p.y-p2.y)<p.r+p2.r){p.hp=Math.max(0,p.hp-p2.damage*.8*dt);p2.hp=Math.max(0,p2.hp-p.damage*.35*dt);}
   if(p.hp<=0||p2.hp<=0){survivalRoundWinner(p.hp>0?1:2);return;}
   if(game.survival.time<=0){const hp1=p.hp/p.max,hp2=p2.hp/p2.max;survivalRoundWinner(hp1>hp2?1:2);return;}
+ }
+ if(game.time>0){
+   game.omegaVacuumTimer-=dt;
+   if(game.omegaVacuumTimer<=0){
+     const omegaLevel=Math.min(5,Number(save.upgrades['Omega Vacuum']||0));
+     const omegaInterval=Math.max(15,30-omegaLevel*3);
+     let vacuumXP=0,vacuumCoins=0;
+     for(const g of game.gems)vacuumXP+=Number(g.value)||0;
+     for(const q of game.coins)vacuumCoins+=Number(q.value)||0;
+     if(vacuumXP>0){
+       const xpMult=(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;
+       game.xp+=vacuumXP*xpMult;
+     }
+     if(vacuumCoins>0){
+       run.coins+=vacuumCoins*(game.event==='COIN RUSH'?2:1);
+       game.score+=vacuumCoins*25*game.stats.scoreMult;
+     }
+     game.gems=[];game.coins=[];
+     game.omegaVacuumTimer=omegaInterval;
+     if(vacuumXP>0||vacuumCoins>0)toast('Ω OMEGA VACUUM — ALL COINS + XP COLLECTED!');
+     while(game.xp>=game.xpNeed&&!game.upgradeOpen)levelUp();
+   }
  }
  const activeEvent=game.eventTimer>0;
  const eventBoost=activeEvent&&game.event==='XP FRENZY'?1.5:1;
@@ -3480,6 +3502,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['How does the Omega Vacuum upgrade work?','Upgrades','Omega Vacuum automatically collects every coin and XP pickup on the map. It starts at a 27-second cycle at Level 1, then drops by 3 seconds per level to 15 seconds at Level 5. Normal coin and XP multipliers still apply.'],
   ['How does the Ribhouse map work?','Maps','Ribhouse is an original BBQ restaurant-style map with wood-plank scenery, booths, grills, rib platters, sauce stations, and a Hot Grill hazard. It uses custom game art rather than a copied restaurant advertisement or photo.'],
   ['How does the Seizure map work?','Maps','Seizure is a chaotic sensory-overload map with dense obstacles, a fast hazard cycle, and unique static geometry. It deliberately avoids strobe or flashing effects that could be unsafe for players with photosensitive epilepsy.'],
   ['What changed in v3.30.12?','Maps','Expanded every map to 12 solid, collision-aware landmarks with distinct formations and map-specific scenery. The minimap uses the same geometry, and Start Run/login were not changed.'],
@@ -3579,6 +3602,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.33.0 — Omega Vacuum Upgrade','Added the Omega Vacuum permanent upgrade. It automatically collects all coins and XP every 27 seconds at Level 1; each upgrade level cuts 3 seconds from the cycle, down to 15 seconds at Level 5.'],
    ['v3.32.0 — Ribhouse Map','Added the new Ribhouse BBQ map with an original wood-and-grill background, booth/grill/platter scenery, solid collision-aware landmarks, and a Hot Grill hazard. It is inspired by classic baby-back-ribs restaurant vibes without copying branded artwork.'],
    ['v3.31.0 — Seizure Map','Added the new Seizure map with dense obstacle layouts, a sensory-overload hazard, and unique static map geometry. The map uses no seizure-inducing strobe or flashing effects. Start Run, login, and existing maps were not changed.'],
    ['v3.30.8 — Map Expansion','Expanded every map to 12 solid, collision-aware landmarks with distinct formations, traversal patterns, and map-specific scenery. The minimap uses the same geometry. Start Run and login were not changed.'],
@@ -3752,7 +3776,7 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.32.0';
+const CURRENT_UPDATE_VERSION='3.33.0';
 const CURRENT_UPDATE_INFO={title:'v3.30.8 — Map Expansion',summary:'Expanded every map with denser, distinct layouts and stronger map-specific landmarks.',items:['Every map now has 12 collision-aware objects instead of 8.','Map layouts use unique formations, landmarks, and traversal patterns.','Minimap and movement collisions use the same map geometry.','Start Run and login were left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';

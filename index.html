@@ -6160,8 +6160,6 @@ function recover(){safe(()=>{if(typeof save!=='undefined'&&save)localStorage.set
 function boot(){sync();ui();addEventListener('pagehide',recover,{capture:true});addEventListener('beforeunload',recover,{capture:true});}
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{once:true});else boot();})();
 </script>
-<script src="outlast-v3291-map-and-boss-display.js?v=3.29.1"></script>
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
-<script src="outlast-v330-map-layout-and-minimap.js?v=3.30.3"></script>
 </body>
 </html>

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.9">
-<meta name="build-version" content="3.30.9">
-<title>OUTLAST v3.30.9</title>
+<meta name="outlast-build" content="3.30.10">
+<meta name="build-version" content="3.30.10">
+<title>OUTLAST v3.30.10</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -740,19 +740,6 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 @keyframes outlastToySpark{0%,100%{opacity:.35;transform:scale(.8) rotate(0deg)}50%{opacity:1;transform:scale(1.18) rotate(12deg)}}
 @media(max-width:760px){#outlastPinkToy{top:8px!important;right:8px!important;transform:scale(.88)!important;transform-origin:top right!important}}
 </style>
-<style id="outlast-rainbow-title">
-#menu .menu-topbar .title,#menu .menu-topbar h1.title{
-  background:linear-gradient(90deg,#ff4d6d,#ff9f43,#ffe66d,#4ee1a0,#4db8ff,#9b7cff,#ff5ec4,#ff4d6d);
-  background-size:300% 100%;
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent!important;
-  -webkit-text-fill-color:transparent;
-  animation:outlastRainbowTitle 5s linear infinite;
-  text-shadow:none!important;
-}
-@keyframes outlastRainbowTitle{0%{background-position:0% 50%}100%{background-position:300% 50%}}
-</style>
 </head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
@@ -864,7 +851,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.9 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.10 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3356,7 +3343,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.30.9?','Updates','The main Survivor Hub title now has a smooth animated rainbow effect. Start Run, maps, login, and gameplay logic were not changed.'],
+  ['What changed in v3.30.10?','Updates','Reverted the animated rainbow main-menu title back to the normal OUTLAST title styling. Start Run, maps, login, and gameplay logic were not changed.']
   ['What changed in v3.30.8?','Maps','Expanded every map to 12 solid, collision-aware landmarks with distinct formations and map-specific scenery. The minimap uses the same geometry, and Start Run/login were not changed.'],
   ['What changed in v3.30.7?','Updates','Fixed the fatal game-error crash caused by the map rebuild calling a missing map-detail renderer. The renderer is now safe and minimal; Owner Panel, Start Run, and login were not changed.'],
   ['What changed in v3.30.6?','Updates','Added a small pink, sparkly toy in the top-right corner as a non-clickable decorative game element. It does not affect gameplay or controls.'],
@@ -3436,7 +3423,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.30.9 — Rainbow Main Title','Added a smooth animated rainbow effect to the main Survivor Hub OUTLAST title. Start Run, maps, login, and gameplay logic were not changed.'],
+   ['v3.30.10 — Main Title Reverted','Reverted the animated rainbow main-menu title back to the normal OUTLAST title styling. Start Run, maps, login, and gameplay logic were not changed.'],
    ['v3.30.8 — Map Expansion','Expanded every map to 12 solid, collision-aware landmarks with distinct formations, traversal patterns, and map-specific scenery. The minimap uses the same geometry. Start Run and login were not changed.'],
    ['v3.30.7 — Map Renderer Crash Fix','Restored the missing map-detail renderer with a safe, minimal implementation so map drawing no longer crashes the game loop. Owner Panel, Start Run, and login were not changed.'],
    ['v3.30.6 — Pink Sparkly Toy','Added a small pink, sparkly decorative toy to the top-right of the screen. It is non-clickable and does not affect gameplay or controls.'],
@@ -3568,8 +3555,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.30.9';
-const CURRENT_UPDATE_INFO={title:'v3.30.9 — Rainbow Main Title',summary:'Added a smooth animated rainbow effect to the main Survivor Hub OUTLAST title.',items:['The main OUTLAST title now cycles through a rainbow gradient.','The effect is visual-only and does not change gameplay.','Start Run, maps, and login were left unchanged.']};
+const CURRENT_UPDATE_VERSION='3.30.10';
+const CURRENT_UPDATE_INFO={title:'v3.30.10 — Main Title Reverted',summary:'Reverted the rainbow main-menu title so the OUTLAST title is back to its normal styling.',items:['Removed the animated rainbow title styling.','Main-menu title styling is back to the normal game design.','Start Run, maps, and login were left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

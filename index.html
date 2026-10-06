@@ -1158,7 +1158,8 @@ const mapDefs={
   Swamp:{bg:'#182019',grid:'#30442e',accent:'#82b56a'},
   Skyscraper:{bg:'#141922',grid:'#2c3b50',accent:'#8db7ff'},
   Wasteland:{bg:'#241d18',grid:'#4b382b',accent:'#e6a04f'},
-  Seizure:{bg:'#171321',grid:'#3c3152',accent:'#c78cff'}
+  Seizure:{bg:'#171321',grid:'#3c3152',accent:'#c78cff'},
+  Ribhouse:{bg:'#24170f',grid:'#4b3021',accent:'#e36b3d'}
 };
 Object.defineProperties(mapDefs,{Lab:{value:mapDefs.Laboratory,enumerable:false},'Military Base':{value:mapDefs.MilitaryBase,enumerable:false}});
 
@@ -1179,7 +1180,8 @@ const mapObstacles={
   Swamp:[['DeadTree',220,200,135,115],['MudPatch',520,620,220,85],['ReedBed',840,250,220,70],['BogRock',1120,1040,160,100],['DeadTree',1420,240,135,115],['MudPatch',1760,700,220,85],['ReedBed',2080,260,220,70],['BogRock',2420,980,160,100],['DeadTree',2740,300,135,115],['MudPatch',2980,700,200,85],['ReedBed',700,1180,220,70],['DeadTree',1980,1180,135,115]],
   Skyscraper:[['Desk',220,220,180,80],['Column',520,560,70,180],['Generator',840,250,170,100],['Desk',1120,1040,180,80],['Column',1420,280,70,180],['Elevator',1760,680,140,190],['Generator',2080,220,170,100],['Desk',2420,980,180,80],['Column',2740,300,70,180],['Elevator',2980,700,140,190],['Desk',700,1180,180,80],['Generator',1980,1180,170,100]],
   Wasteland:[['Wreck',220,240,180,95],['Rock',520,650,200,75],['Wreck',840,260,180,95],['Barrier',1120,1030,220,55],['Bunker',1420,250,190,100],['Rock',1760,680,200,75],['Wreck',2080,240,180,95],['Barrier',2420,980,220,55],['Wreck',2740,300,180,95],['Rock',2980,700,180,75],['Barrier',700,1180,220,55],['Wreck',1980,1180,180,95]],
-  Seizure:[['PrismBlock',220,220,150,105],['Anchor',520,620,85,180],['PrismBlock',820,250,210,70],['Anchor',1120,1040,85,180],['PrismBlock',1420,280,150,105],['Anchor',1760,660,85,180],['PrismBlock',2080,220,210,70],['Anchor',2420,980,85,180],['PrismBlock',2740,300,150,105],['Anchor',2980,700,85,180],['PrismBlock',700,1180,210,70],['Anchor',1980,1180,85,180]]
+  Seizure:[['PrismBlock',220,220,150,105],['Anchor',520,620,85,180],['PrismBlock',820,250,210,70],['Anchor',1120,1040,85,180],['PrismBlock',1420,280,150,105],['Anchor',1760,660,85,180],['PrismBlock',2080,220,210,70],['Anchor',2420,980,85,180],['PrismBlock',2740,300,150,105],['Anchor',2980,700,85,180],['PrismBlock',700,1180,210,70],['Anchor',1980,1180,85,180]],
+  Ribhouse:[['Booth',220,220,210,85],['Grill',540,610,155,105],['RibPlatter',840,250,180,75],['SauceRack',1120,1030,100,150],['Booth',1400,280,210,85],['Grill',1760,670,155,105],['RibPlatter',2080,230,180,75],['SauceRack',2420,980,100,150],['Booth',2740,300,210,85],['Grill',2980,700,155,105],['RibPlatter',700,1180,180,75],['Booth',1980,1180,210,85]]
 };
 Object.defineProperties(mapObstacles,{Lab:{value:mapObstacles.Laboratory,enumerable:false},'Military Base':{value:mapObstacles.MilitaryBase,enumerable:false}});
 function obstacleRects(map=save.map){return (mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));}
@@ -1230,10 +1232,18 @@ function drawMapObjects(scale=1,ox=0,oy=0){
     else if(o.type==='Elevator'){fill='#59616b';stroke='#2b3036';}
     else if(o.type==='PrismBlock'){fill='#6b4b87';stroke='#38264a';}
     else if(o.type==='Anchor'){fill='#4e607b';stroke='#29384d';}
+    else if(o.type==='Booth'){fill='#6b3327';stroke='#3a1b16';}
+    else if(o.type==='Grill'){fill='#3b3b3b';stroke='#171717';}
+    else if(o.type==='RibPlatter'){fill='#b96a3b';stroke='#65351f';}
+    else if(o.type==='SauceRack'){fill='#7b2420';stroke='#401210';}
     ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=3*scale;
     ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h);
     if(o.type==='Tree'){ctx.fillStyle='#6d4930';ctx.fillRect(x+w*.42,y+h*.55,w*.16,h*.4);ctx.fillStyle='#3f7c46';ctx.beginPath();ctx.arc(x+w*.5,y+h*.38,Math.min(w,h)*.34,0,Math.PI*2);ctx.fill();}
     if(o.type==='Car'||o.type==='Vehicle'){ctx.fillStyle='#20252b';ctx.fillRect(x+w*.12,y+h*.12,w*.76,h*.35);ctx.fillRect(x+w*.12,y+h*.58,w*.18,h*.16);ctx.fillRect(x+w*.70,y+h*.58,w*.18,h*.16);}
+    if(o.type==='Booth'){ctx.fillStyle='#9a4b36';ctx.fillRect(x+w*.06,y+h*.18,w*.88,h*.62);ctx.fillStyle='#d28b55';ctx.fillRect(x+w*.12,y+h*.05,w*.76,h*.18);}
+    if(o.type==='Grill'){ctx.strokeStyle='#777';ctx.lineWidth=Math.max(1,2*scale);for(let gx=1;gx<6;gx++){ctx.beginPath();ctx.moveTo(x+w*gx/6,y+h*.18);ctx.lineTo(x+w*gx/6,y+h*.82);ctx.stroke();}}
+    if(o.type==='RibPlatter'){ctx.fillStyle='#ead7b8';ctx.beginPath();ctx.ellipse(x+w*.5,y+h*.5,w*.42,h*.38,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8f3e25';for(let k=0;k<4;k++){ctx.fillRect(x+w*(.25+k*.14),y+h*.35,w*.10,h*.30);}}
+    if(o.type==='SauceRack'){ctx.fillStyle='#d9d9d9';for(let k=0;k<3;k++){ctx.fillStyle=k===1?'#e36b3d':'#8f2e25';ctx.beginPath();ctx.arc(x+w*.5,y+h*(.25+k*.25),Math.min(w,h)*.10,0,Math.PI*2);ctx.fill();}}
   }
   ctx.restore();
 
@@ -1255,7 +1265,8 @@ const mapHazards={
   Bunker:{name:'Security Pulse',color:'#d9b66a',interval:13,damage:10,slow:0},
   Swamp:{name:'Toxic Mist',color:'#82b56a',interval:15,damage:7,slow:.30},
   Skyscraper:{name:'Glass Storm',color:'#8db7ff',interval:12,damage:9,slow:0},
-  Seizure:{name:'Sensory Overload',color:'#c78cff',interval:7,damage:4,slow:.12}
+  Seizure:{name:'Sensory Overload',color:'#c78cff',interval:7,damage:4,slow:.12},
+  Ribhouse:{name:'Hot Grill',color:'#ff8b4a',interval:18,damage:7,slow:.08}
 };
 Object.defineProperties(mapHazards,{Lab:{value:mapHazards.Laboratory,enumerable:false},'Military Base':{value:mapHazards.MilitaryBase,enumerable:false}});
 
@@ -2339,6 +2350,28 @@ function drawMapDetails(scale=1,ox=0,oy=0){
       ctx.beginPath();ctx.moveTo(ox+d*scale,oy);ctx.lineTo(ox+(d+H)*scale,oy+H*scale);ctx.stroke();
     }
   }
+  if(save?.map==='Ribhouse'){
+    /* Original BBQ restaurant atmosphere: wood, booths, grill lanes, and rib-platter motifs. */
+    ctx.globalAlpha=.18;
+    ctx.strokeStyle=md.grid||'#4b3021';
+    ctx.lineWidth=Math.max(2,2*scale);
+    for(let y=70;y<H;y+=72){
+      ctx.beginPath();ctx.moveTo(ox+20*scale,oy+y*scale);ctx.lineTo(ox+(W-20)*scale,oy+y*scale);ctx.stroke();
+    }
+    ctx.globalAlpha=.10;
+    ctx.fillStyle=md.accent||'#e36b3d';
+    for(let x=110;x<W;x+=280){
+      for(let y=120;y<H;y+=260){
+        ctx.fillRect(ox+x*scale,oy+y*scale,150*scale,12*scale);
+      }
+    }
+    ctx.globalAlpha=.16;
+    ctx.strokeStyle='#ffb36f';
+    ctx.lineWidth=Math.max(2,3*scale);
+    for(let x=130;x<W-100;x+=420){
+      ctx.beginPath();ctx.arc(ox+x*scale,oy+95*scale,28*scale,0,Math.PI*2);ctx.stroke();
+    }
+  }
   ctx.restore();
 }
 
@@ -3357,6 +3390,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['How does the Ribhouse map work?','Maps','Ribhouse is an original BBQ restaurant-style map with wood-plank scenery, booths, grills, rib platters, sauce stations, and a Hot Grill hazard. It uses custom game art rather than a copied restaurant advertisement or photo.'],
   ['How does the Seizure map work?','Maps','Seizure is a chaotic sensory-overload map with dense obstacles, a fast hazard cycle, and unique static geometry. It deliberately avoids strobe or flashing effects that could be unsafe for players with photosensitive epilepsy.'],
   ['What changed in v3.30.12?','Updates','Restored and locked the full gameplay upgrade ladder, including Bouncing Bullets and all rarity tiers. The title and top-corner UI cleanup remain unchanged. Start Run, maps, login, and gameplay logic were not changed.']
   ['What changed in v3.30.8?','Maps','Expanded every map to 12 solid, collision-aware landmarks with distinct formations and map-specific scenery. The minimap uses the same geometry, and Start Run/login were not changed.'],
@@ -3438,6 +3472,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.32.0 — Ribhouse Map','Added the new Ribhouse BBQ map with an original wood-and-grill background, booth/grill/platter scenery, solid collision-aware landmarks, and a Hot Grill hazard. It is inspired by classic baby-back-ribs restaurant vibes without copying branded artwork.'],
    ['v3.31.0 — Seizure Map','Added the new Seizure map with dense obstacle layouts, a sensory-overload hazard, and unique static map geometry. The map uses no seizure-inducing strobe or flashing effects. Start Run, login, and existing maps were not changed.'],
    ['v3.30.12 — Full Upgrade Restoration','Reverted the animated rainbow main-menu title back to the normal OUTLAST title styling. Start Run, maps, login, and gameplay logic were not changed.'],
    ['v3.30.8 — Map Expansion','Expanded every map to 12 solid, collision-aware landmarks with distinct formations, traversal patterns, and map-specific scenery. The minimap uses the same geometry. Start Run and login were not changed.'],

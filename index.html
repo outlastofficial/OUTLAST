@@ -1801,7 +1801,7 @@ function startGame(fromRoom=false){
   const weaponLevels=(save.weaponLevels&&typeof save.weaponLevels==='object')?save.weaponLevels:{};const weaponLevel=Number(weaponLevels[save.selectedWeapon])||0;
   const weakWeaponBoost={Blaster:.06,TwinShot:.03,SMG:.03}[save.selectedWeapon]||0;const damage=(ch.damage+3*up('Sharpshooter')+8*up('Glass Cannon')+5*up('Impact Training'))*(1+(sk.damage||0))*(1+(pet.damage||0)+(charm.damage||0))*(1+weaponLevel*.06)*(1+weakWeaponBoost);
   const range=ch.range+80*up('Long Arm'),magnet=45+30*up('Collector')+(save.selectedPet==='Ghost'?80:0)+(charm.magnet||0);
-  coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.omegaVacuumTimer=30;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
+  coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.bossCount=0;game.lastShot=0;game.survivalWinner=null;game.omegaVacuumTimer=30;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
   game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
   game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
   const testerUp=n=>save.upgrades[n]||0;
@@ -1817,7 +1817,7 @@ function startGame(fromRoom=false){
   if(save.mode==='1v1 Arena'){
     game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
   }
-  game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
+  game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:m.bossEvery||60,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
   if(typeof applyMapModifiers==='function')applyMapModifiers();
   const activeMods=[save.selectedModifier,...(save.builderMods||[])];
   if(activeMods.includes('GlassWorld')){game.player.max*=.75;game.player.hp=game.player.max;}
@@ -2374,7 +2374,7 @@ if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game
      game.spawn=Math.min(Number.isFinite(game.spawn)?game.spawn:.45,.45);
    }
  }
- if(save.mode!=='1v1 Arena'&&game.bossClock>=game.stats.bossEvery){game.bossClock=0;spawnBoss()}
+ const bossTarget=(game.bossCount||0)===0?30:(game.stats.bossEvery||60);if(save.mode!=='1v1 Arena'&&game.bossClock>=bossTarget){game.bossClock=0;game.bossCount=(game.bossCount||0)+1;spawnBoss()}
  // Power-ups no longer spawn randomly in the world; they come from enemy drops/events.
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
  for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;
@@ -2743,7 +2743,7 @@ const p=game.player;if(p){
    const threat=game.enemies.length>160?'EXTREME':game.enemies.length>90?'HIGH':'RISING';
    ctx.fillText((game.combo>1?'×'+game.combo+'  ':'')+'Threat '+threat+(save.mode==='Speed Run'?' • '+Math.max(0,Math.ceil(game.stats.timeLimit-game.time))+'s':''),20,96);
    if(game.event)ctx.fillText('Event '+game.event+' • '+Math.ceil(game.eventTimer)+'s',20,116);
-   const bossRemaining=Math.max(0,game.stats.bossEvery-game.bossClock);
+   const bossTarget=(game.bossCount||0)===0?30:(game.stats.bossEvery||60);const bossRemaining=Math.max(0,bossTarget-game.bossClock);
    const bossMin=String(Math.floor(bossRemaining/60)).padStart(2,'0'),bossSec=String(Math.ceil(bossRemaining%60)).padStart(2,'0');
    ctx.save();ctx.fillStyle='rgba(5,8,12,.72)';ctx.fillRect(CW-188,CH-42,178,28);ctx.strokeStyle='rgba(105,192,255,.32)';ctx.strokeRect(CW-188,CH-42,178,28);ctx.fillStyle='#fff';ctx.font='bold 12px Arial';ctx.fillText('Boss '+bossMin+':'+bossSec+' • '+save.selectedWeapon,CW-178,CH-24);ctx.restore();
    ctx.font='12px Arial';ctx.fillText('Skill '+(game.player.skillCooldown>0?Math.ceil(game.player.skillCooldown)+'s':'READY')+' • Ult '+Math.floor(game.player.ult)+'%',CW-288,52);
@@ -2777,7 +2777,7 @@ const p=game.player;if(p){
   ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle='#071018';ctx.fillRect(0,0,CW,CH);
   const now=performance.now()/1000;
-  const fx={Common:{c:'#9aa5ad',r:0},Uncommon:{c:'#71d68a',r:1},Rare:{c:'#72a8ff',r:2},Epic:{c:'#d28cff',r:3},Legendary:{c:'#ffd84d',r:4},Mythic:{c:'#ff65e8',r:5}};
+  const fx={Common:{c:'#9aa5ad',r:0},Uncommon:{c:'#71d68a',r:1},Rare:{c:'#72a8ff',r:2},Epic:{c:'#d28cff',r:3},Legendary:{c:'#ffd84d',r:4},Mythic:{c:'#ff65e8',r:5},Divine:{c:'#ffffff',r:6},Celestial:{c:'#7ce7ff',r:7},Transcendent:{c:'#ff9cf2',r:8},Eternal:{c:'#b8a7ff',r:9},Omega:{c:'#ff6b6b',r:10}};
   const choiceKey=game.upgradeChoices.map(u=>String(u[0])+'|'+String(u[3]||'Common')).join('||');
   if(game.__upgradeRollKey!==choiceKey){
     game.__upgradeRollKey=choiceKey;
@@ -2795,7 +2795,7 @@ const p=game.player;if(p){
   game.__upgradeRollActive=hasRollingRarity&&rollProgress<1;
   ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',CW/2,76);
   ctx.font='20px Arial';ctx.fillStyle='#dbe9f5';ctx.fillText('Choose 1, 2, or 3',CW/2,110);
-  ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0),CW/2,140);
+  ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0)+' • 200+ upgrade pool',CW/2,140);
   game.upgradeChoices.forEach((u,i)=>{
     const x=45+i*350,y=180,w=325,h=285,cx=x+w/2,cy=y+h/2;
     const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r;
@@ -3603,6 +3603,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.30.15 — 200+ Upgrades + Boss Restore','Expanded the authoritative level-up pool to 298 distinct upgrade choices across all 11 rarity tiers and restored a guaranteed first boss by 30 seconds with mode-based boss cadence. Start Run and login were not changed.'],
    ['v3.30.14 — Bouncing Bullets + Upgrade Luck','Rebuilt projectile bouncing so Bouncing Bullets now chains each hit to a nearby enemy, with up to 4 total bounces and 60% damage per bounce. Restored Upgrade Luck as a real level-up card that directly improves higher-rarity upgrade odds. Start Run and login were not changed.'],
    ['v3.33.1 — Omega Vacuum Pricing','Omega Vacuum now costs 20,000 coins for each upgrade level.'] ,['v3.33.1 — Omega Vacuum Upgrade','Added the Omega Vacuum permanent upgrade. It automatically collects all coins and XP every 27 seconds at Level 1; each upgrade level cuts 3 seconds from the cycle, down to 15 seconds at Level 5.'],
    ['v3.32.0 — Ribhouse Map','Added the new Ribhouse BBQ map with an original wood-and-grill background, booth/grill/platter scenery, solid collision-aware landmarks, and a Hot Grill hazard. It is inspired by classic baby-back-ribs restaurant vibes without copying branded artwork.'],
@@ -6371,5 +6372,5 @@ try{
  }
 }catch(_){}
 })();
-</script></body>
+</script><script src="outlast-v33015-upgrade-library.js?v=3.30.15"></script><script id="outlast-v33015-final">(function(){try{document.title='OUTLAST v3.30.15';window.OUTLAST_BUILD='3.30.15';window.OUTLAST_VERSION='v3.30.15';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.15'});}catch(_){}})();</script></body>
 </html>

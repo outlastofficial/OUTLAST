@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.26.2">
-<meta name="build-version" content="3.26.2">
-<title>OUTLAST v3.26.2</title>
+<meta name="outlast-build" content="3.28.22">
+<meta name="build-version" content="3.28.22">
+<title>OUTLAST v3.28.22</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3450,8 +3450,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.1';
-const CURRENT_UPDATE_INFO={title:'v3.27.1 — Chat Menu Fix',summary:'Fixed the main-menu chat button and improved chat UI startup reliability.',items:['Added a dedicated CHAT button to the main menu.','Main-menu CHAT now opens the same Global Chat used during runs.','Chat visibility and connection UI now sync when the menu loads.']};
+const CURRENT_UPDATE_VERSION='3.28.22';
+const CURRENT_UPDATE_INFO={title:'v3.28.22 — Core Baseline Cleanup',summary:'Restored the 3.28 feature baseline while removing the retired presentation layer.',items:['The game is based on the stable 3.28.x feature set.','Retired presentation code was removed without changing the normal player flow.','Existing login, saves, gameplay, and Owner access remain available.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

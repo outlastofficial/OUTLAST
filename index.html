@@ -3342,6 +3342,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.30.8?','Maps','Expanded every map to 12 solid, collision-aware landmarks with distinct formations and map-specific scenery. The minimap uses the same geometry, and Start Run/login were not changed.'],
   ['What changed in v3.30.7?','Updates','Fixed the fatal game-error crash caused by the map rebuild calling a missing map-detail renderer. The renderer is now safe and minimal; Owner Panel, Start Run, and login were not changed.'],
   ['What changed in v3.30.6?','Updates','Added a small pink, sparkly toy in the top-right corner as a non-clickable decorative game element. It does not affect gameplay or controls.'],
   ['What changed in v3.30.5?','Updates','Restored the newest Owner Panel feature set from the latest testing build, including Server Status, player search/filtering, Activity, raffle tools, rewards, events, admin-abuse controls, and protected live chat monitoring. Start Run and login behavior were not changed.'],
@@ -3420,6 +3421,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.30.8 — Map Expansion','Expanded every map to 12 solid, collision-aware landmarks with distinct formations, traversal patterns, and map-specific scenery. The minimap uses the same geometry. Start Run and login were not changed.'],
    ['v3.30.7 — Map Renderer Crash Fix','Restored the missing map-detail renderer with a safe, minimal implementation so map drawing no longer crashes the game loop. Owner Panel, Start Run, and login were not changed.'],
    ['v3.30.6 — Pink Sparkly Toy','Added a small pink, sparkly decorative toy to the top-right of the screen. It is non-clickable and does not affect gameplay or controls.'],
    ['v3.30.5 — Owner Panel + Global Chat Fix','Restored the newest Owner Panel feature set on the main server with the existing owner-password gate, and fixed Global Chat status reporting. Start Run and login were not changed.'],

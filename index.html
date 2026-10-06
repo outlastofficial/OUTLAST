@@ -3685,8 +3685,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.27.96';
-const CURRENT_UPDATE_INFO={title:'v3.27.96 — Premium Rarity Rebuild',summary:'High-rarity upgrades now have substantially stronger signature effects while projectile counts are capped to protect performance.',items:['Divine, Celestial, Transcendent, Eternal, and Omega upgrades now have stronger damage, survivability, boss, ultimate, pierce, and chain effects.','Top-tier projectile bonuses are capped to avoid runaway projectile spam and lag.','Omega Ascension now guarantees critical hits and adds major boss, ultimate, chain, shockwave, and Phoenix power.','Login flow was not changed.']};
+const CURRENT_UPDATE_VERSION='3.30.7';
+const CURRENT_UPDATE_INFO={title:'v3.30.7 — Map Crash Fix',summary:'Fixed a map rendering crash that could stop the game and show the recovery screen.',items:['Restored the missing map detail renderer used by the game map and minimap.','Map layouts and collision objects remain unchanged by this fix.','Start Run and login were left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

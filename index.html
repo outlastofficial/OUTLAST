@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.4">
-<meta name="build-version" content="3.30.4">
-<title>OUTLAST v3.30.4</title>
+<meta name="outlast-build" content="3.30.5">
+<meta name="build-version" content="3.30.5">
+<title>OUTLAST v3.30.5</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.4 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.5 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1018,7 +1018,7 @@ let adminRole=outlastStorage.getItem('outlastAdminRole')|| (outlastStorage.getIt
 let adminUnlocked=adminRole==='tester'||adminRole==='full';
 function isAdmin(){return adminUnlocked}
 function isFullAdmin(){return adminUnlocked&&adminRole==='full'}
-function isOwner(){const name=String(currentUsername||'').trim().toLowerCase();return name==='bestgamer'||name==='landon'}
+const OWNER_USERNAMES=new Set(['bestgamer','landon','phone landon']); function isOwner(){const name=String(currentUsername||'').trim().toLowerCase();return OWNER_USERNAMES.has(name)}
 
 function setMenuPage(page){
   document.querySelectorAll('.menu-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.page===page));
@@ -3076,7 +3076,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     const msgs=(typeof outlastChatMessages!=='undefined'?outlastChatMessages:[]).slice(-80);
     if(!msgs.length){const e=document.createElement('div');e.className='small';e.style.color='#718795';e.textContent='No live chat messages yet.';box.appendChild(e);return;}
     msgs.forEach(m=>{const row=document.createElement('div');row.style.cssText='font-size:11px;line-height:1.35;padding:4px 0;border-bottom:1px solid rgba(92,136,166,.12)';
-      const name=document.createElement('b');name.textContent=String(m.username||'Player');
+      const name=document.createElement('b');name.textContent=outlastDisplayChatUsername(m.username);if(isOutlastOwnerChatMessage(m)){const tag=document.createElement('span');tag.className='owner-chat-tag';tag.textContent='👑 OWNER';name.appendChild(tag);}else if(isOutlastTesterChatMessage(m)){const tag=document.createElement('span');tag.className='tester-chat-tag';tag.textContent='🧪 TESTER';name.appendChild(tag);}
       const tm=document.createElement('span');tm.style.cssText='font-size:9px;color:#6f8797;margin-left:6px';tm.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
       const msg=document.createElement('span');msg.textContent=': '+String(m.message||'');
       row.append(name,tm,msg);box.appendChild(row);});
@@ -3086,11 +3086,13 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     return '<div class="option"><b>👑 OWNER CONTROL CENTER</b><div class="small">Password-verified owner tools. All protected actions are checked by the server.</div></div>'+
     '<div class="row" style="justify-content:flex-start;margin:10px 0;overflow:auto">'+
     '<button class="option" data-owner-action="tab" data-value="overview">Overview</button>'+
+    '<button class="option" data-owner-action="tab" data-value="status">Server Status</button>'+
     '<button class="option" data-owner-action="tab" data-value="players">Players</button>'+
     '<button class="option" data-owner-action="tab" data-value="events">Global Events</button>'+
     '<button class="option" data-owner-action="tab" data-value="abuse">Admin Abuse</button>'+
     '<button class="option" data-owner-action="tab" data-value="rewards">Rewards</button>'+
     '<button class="option" data-owner-action="tab" data-value="raffle">🎟️ Raffle</button>'+
+    '<button class="option" data-owner-action="tab" data-value="activity">Activity</button>'+
     '<button class="option" data-owner-action="tab" data-value="announce">Announcements</button>'+
     '<button class="danger" data-owner-action="logout">🔒 Lock</button></div><div id="ownerPanelBody"></div>';
   }
@@ -3098,6 +3100,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     /* Route the old owner launcher into the rebuilt Owner Control Center. */
     if(window.openOwnerPanel){ window.openOwnerPanel(); return; }
     if(!owner()){openSub('👑 Owner Panel','<div class="option"><b>Owner access required.</b><div class="small">Use an owner account to access this control center.</div></div>');return;}
+    if(unlocked){if(typeof connectOutlastServer==='function')connectOutlastServer();openSub('👑 Owner Panel',shell());render(tab);return;}
     if(unlocked){if(typeof connectOutlastServer==='function')connectOutlastServer();openSub('👑 Owner Panel',shell());render(tab);return;}
     openSub('🔐 Owner Panel Unlock','<div class="option"><b style="font-size:24px">OWNER VERIFICATION</b><div class="small" style="margin:8px 0 12px">Enter the owner password to unlock all owner controls.</div><input id="ownerPasswordInput" type="password" autocomplete="off" placeholder="Owner password" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:2px solid #3b4d60;background:#0f151c;color:#fff;font-size:18px;margin-bottom:10px><button class="gold" data-owner-action="login">🔓 UNLOCK OWNER PANEL</button><div id="ownerLoginError" class="small" style="color:#ff8c8c;min-height:20px;margin-top:8px"></div></div>');
     setTimeout(()=>document.getElementById('ownerPasswordInput')?.focus(),0);
@@ -3114,9 +3117,15 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
       if(tab==='overview'){
         const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
         b.innerHTML='<div class="grid"><div class="option"><b>👑 Owner</b><div class="small">'+esc(currentUsername)+'</div></div><div class="option"><b>🌐 Server</b><div class="small">'+esc(h.status||'unknown')+'</div></div><div class="option"><b>🟢 Online</b><div class="small">'+Number(h.players||0)+' players</div></div><div class="option"><b>🌎 Event</b><div class="small">'+esc(ev)+'</div></div></div><button class="option" data-owner-action="tab" data-value="overview" style="margin-top:10px">↻ Refresh</button>';
+      }else if(tab==='status'){
+        const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
+        b.innerHTML='<div class="grid"><div class="option"><b>🌐 Server</b><div class="small">'+esc(h.status||'unknown')+'</div></div><div class="option"><b>🧩 Server Version</b><div class="small">'+esc(h.version||'unknown')+'</div></div><div class="option"><b>🟢 Online Players</b><div class="small">'+Number(h.players||0)+'</div></div><div class="option"><b>🔌 Connections</b><div class="small">'+Number(h.connections||0)+'</div></div><div class="option"><b>🚪 Rooms</b><div class="small">'+Number(h.rooms||0)+'</div></div><div class="option"><b>📝 Feedback</b><div class="small">'+Number(h.feedback||0)+'</div></div></div><div class="option" style="margin-top:10px"><b>🌎 Global Event</b><div class="small">'+esc(ev)+'</div></div><button class="option" data-owner-action="tab" data-value="status" style="margin-top:10px">↻ Refresh Server Status</button>';
       }else if(tab==='players'){
-        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[],rows=ps.length?ps.map(p=>'<div class="option" style="display:flex;justify-content:space-between;gap:10px"><div><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+'</div></div><div class="small">'+(p.createdAt?('Created '+new Date(Number(p.createdAt)).toLocaleDateString()+(p.lastSeen?' • Last seen '+new Date(Number(p.lastSeen)).toLocaleString():'')):'No creation date')+'</div></div>').join(''):'<div class="option">No known players yet.</div>';
-        b.innerHTML='<div class="option"><b>👥 Created Usernames</b><div class="small">Server-registered usernames. Online players are shown first, and previously registered offline names remain in the list.</div><div class="small" id="ownerPlayerCount" style="margin-top:6px"></div></div><div style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><button class="option" data-owner-action="tab" data-value="players" style="margin-top:10px">↻ Refresh Players</button>';const count=document.getElementById('ownerPlayerCount');if(count)count.textContent=ps.length+' registered username'+(ps.length===1?'':'s');
+        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[],rows=ps.length?ps.map(p=>'<div class="option owner-player-row" data-player-name="'+esc(p.username).toLowerCase()+'" data-player-online="'+(p.online?'1':'0')+'" style="display:flex;justify-content:space-between;gap:10px"><div><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+'</div></div><div class="small">'+(p.createdAt?('Created '+new Date(Number(p.createdAt)).toLocaleDateString()+(p.lastSeen?' • Last seen '+new Date(Number(p.lastSeen)).toLocaleString():'')):'No creation date')+'</div></div>').join(''):'<div class="option">No known players yet.</div>';
+        b.innerHTML='<div class="option"><b>👥 Created Usernames</b><div class="small">Server-registered usernames. Online players are shown first, and previously registered offline names remain in the list.</div><input id="ownerPlayerSearch" type="search" autocomplete="off" placeholder="Search players…" style="width:100%;box-sizing:border-box;margin-top:10px;padding:10px;border-radius:9px;background:#101820;color:#fff;border:1px solid #3b4d60"><label class="small" style="display:flex;align-items:center;gap:8px;margin-top:9px"><input id="ownerPlayersOnlineOnly" type="checkbox"> Online only</label><div class="small" id="ownerPlayerCount" style="margin-top:6px"></div></div><div id="ownerPlayerRows" style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><button class="option" data-owner-action="tab" data-value="players" style="margin-top:10px">↻ Refresh Players</button>';
+        const count=document.getElementById('ownerPlayerCount'),search=document.getElementById('ownerPlayerSearch'),onlineOnly=document.getElementById('ownerPlayersOnlineOnly'),allRows=[...document.querySelectorAll('.owner-player-row')];
+        const applyPlayerFilter=()=>{const q=String(search?.value||'').trim().toLowerCase(),only=!!onlineOnly?.checked;let shown=0;allRows.forEach(row=>{const matchName=!q||String(row.dataset.playerName||'').includes(q),matchOnline=!only||row.dataset.playerOnline==='1',show=matchName&&matchOnline;row.style.display=show?'flex':'none';if(show)shown++;});if(count)count.textContent=shown+' shown • '+ps.length+' registered username'+(ps.length===1?'':'s');};
+        search?.addEventListener('input',applyPlayerFilter);onlineOnly?.addEventListener('change',applyPlayerFilter);applyPlayerFilter();
       }else if(tab==='events'){
         const d=await api('/api/owner/global-event'),names=['october','double_coins','double_xp','chaos','blackout','boss_rush'],opts=names.map(x=>'<option value="'+x+'">'+x.split('_').join(' ')+'</option>').join(''),cur=d.active?d.label:'No global event active';
         b.innerHTML='<div class="option"><b>🌎 Global Event Controller</b><div class="small">Current: '+esc(cur)+'</div></div><div class="option" style="margin-top:10px"><label class="small">Event</label><select id="ownerEventType" style="width:100%;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60">'+opts+'</select><label class="small" style="display:block;margin-top:10px">Duration (minutes)</label><input id="ownerEventDuration" type="number" min="1" max="1440" value="30" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><div class="row" style="justify-content:flex-start;margin-top:10px"><button class="gold" data-owner-action="startEvent">▶ Start Global Event</button><button class="danger" data-owner-action="stopEvent">■ Stop Event</button></div></div>';
@@ -3127,6 +3136,11 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
         const d=await api('/api/owner/players'),ps=(Array.isArray(d.players)?d.players:[]).filter(p=>p&&String(p.username||'').trim());
         const rows=ps.length?ps.map((p,i)=>'<label class="option" style="display:flex;align-items:center;gap:10px;cursor:pointer"><input type="checkbox" class="ownerRaffleEntry" value="'+esc(p.username)+'" '+(p.online?'checked':'')+'><span><b>'+esc(p.username)+'</b><div class="small">'+(p.online?'🟢 Online':'⚪ Offline')+'</div></span></label>').join(''):'<div class="option">No known players yet.</div>';
         b.innerHTML='<div class="option"><b>🎟️ Free Raffle Giveaway</b><div class="small">Owner-only raffle. Players do not pay to enter. Select eligible players, choose a coin prize, then draw one winner.</div></div><div class="option" style="margin-top:10px"><label class="small">Prize (coins)</label><input id="ownerRafflePrize" type="number" min="1" max="10000000" value="1000" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><div class="row" style="justify-content:flex-start;margin-top:10px"><button class="option" data-owner-action="raffleAll">☑️ Select All</button><button class="option" data-owner-action="raffleNone">☐ Clear</button><button class="gold" data-owner-action="raffleDraw">🎟️ DRAW WINNER</button></div></div><div class="option" style="margin-top:10px"><b>Eligible Players</b><div class="small">Online players are selected by default.</div></div><div style="display:grid;gap:8px;margin-top:10px">'+rows+'</div><div id="ownerRaffleResult" class="option" style="margin-top:10px;display:none"></div>';
+      }else if(tab==='activity'){
+        const results=await Promise.all([api('/api/owner/chat'),api('/api/announcements?limit=25')]),msgs=Array.isArray(results[0]?.messages)?results[0].messages:[],anns=Array.isArray(results[1]?.announcements)?results[1].announcements:[];
+        const chatRows=msgs.length?msgs.slice(-40).reverse().map(m=>'<div class="option" style="padding:9px"><b>'+esc(m.username||'Player')+'</b><div class="small">'+new Date(Number(m.at)||Date.now()).toLocaleString()+'</div><div style="margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">'+esc(m.message||'')+'</div></div>').join(''):'<div class="option">No chat messages yet.</div>';
+        const annRows=anns.length?anns.slice().reverse().map(a=>'<div class="option" style="padding:9px"><b>📣 '+esc(a.from||'Owner')+'</b><div class="small">'+new Date(Number(a.at)||Date.now()).toLocaleString()+'</div><div style="margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere">'+esc(a.message||'')+'</div></div>').join(''):'<div class="option">No announcements recorded.</div>';
+        b.innerHTML='<div class="option"><b>📡 Owner Activity Monitor</b><div class="small">Recent chat and announcement activity visible only inside the protected Owner Panel.</div></div><div class="option" style="margin-top:10px"><b>💬 Recent Global Chat</b><div style="display:grid;gap:7px;margin-top:9px;max-height:280px;overflow:auto">'+chatRows+'</div></div><div class="option" style="margin-top:10px"><b>📣 Recent Announcements</b><div style="display:grid;gap:7px;margin-top:9px;max-height:240px;overflow:auto">'+annRows+'</div></div><button class="option" data-owner-action="tab" data-value="activity" style="margin-top:10px">↻ Refresh Activity</button>';
       }else if(tab==='rewards'){
         b.innerHTML='<div class="option"><b>🎁 Player Rewards</b><div class="small">Gifts are stored server-side until the player claims them.</div></div><div class="option" style="margin-top:10px"><h3 style="margin:0 0 8px">Gift Coins</h3><input id="ownerGiftUser" maxlength="18" placeholder="Player username" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60;margin-bottom:8px"><input id="ownerGiftAmount" type="number" min="1" max="10000000" value="1000" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><button class="gold" data-owner-action="gift">● Gift Coins</button></div><div class="option" style="margin-top:10px"><h3 style="margin:0 0 8px">Global Reward</h3><input id="ownerGlobalAmount" type="number" min="1" max="100000" value="100" style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;background:#101820;color:#fff;border:1px solid #3b4d60"><button class="green" data-owner-action="globalReward">🎁 Reward All Known Players</button></div>';
       }else{
@@ -3263,7 +3277,8 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.30.4?','Updates','Fixed Global Chat status so the HTTP fallback correctly reports Online, keeps retry polling alive, and still leaves Start Run unchanged.'],
+  ['What changed in v3.30.5?','Updates','Restored the newest Owner Panel feature set from the latest testing build, including Server Status, player search/filtering, Activity, raffle tools, rewards, events, admin-abuse controls, and protected live chat monitoring. Start Run and login behavior were not changed.'],
+  ['What changed in v3.30.5?','Updates','Fixed Global Chat status so the HTTP fallback correctly reports Online, keeps retry polling alive, and still leaves Start Run unchanged.'],
   ['How does the new minimap work?','Maps','The minimap now shows the current map layout, solid scenery, players, enemies, loot, and the camera viewport. Each map has a different layout identity such as streets, rooms, tracks, docks, rivers, lava lanes, or swamp pools.'],
   ['What changed in v3.29.2?','Updates','Restored separate leaderboards for every mode and difficulty, made visible map scenery solid, restored safe enemy spawning around objects, and brought back the gameplay-only upgrade layers without changing Start Run.'],
   ['How do I use the Quality Center?','Quality & Recovery','Open Settings → Quality & Recovery for the current objective, run history, favorites, bug reporting, and Practice Mode.'],
@@ -3338,7 +3353,8 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.30.4 — Global Chat Status Fix','Fixed the HTTP chat fallback so successful polling changes Global Chat to Online, refreshes messages, and keeps retrying when WebSocket is unavailable. Start Run was not changed.'],
+   ['v3.30.5 — Owner Panel Restoration','Restored the newest Owner Panel feature set on the main server while preserving the main owner-password gate. Added Server Status, player search/filtering, Activity, raffle tools, and the newest protected owner controls. Start Run and login were not changed.'],
+   ['v3.30.5 — Global Chat Status Fix','Fixed the HTTP chat fallback so successful polling changes Global Chat to Online, refreshes messages, and keeps retrying when WebSocket is unavailable. Start Run was not changed.'],
    ['v3.29.2 — Leaderboards + Solid Maps Restore','Restored separate mode/difficulty leaderboard boards, solid map scenery, and blocked spawn/dash handling without changing Start Run.'],
    ['v3.27.1 — Chat Menu Fix','Fixed the main-menu CHAT button and synchronized Global Chat when the main menu loads.'],
    ['v3.27.0 — XP & Input Fix','Added XP Vacuum, fixed the zombie spawn regression, and made Space inert outside text fields.'],
@@ -4299,6 +4315,10 @@ function pushOutlastChatMessage(entry){
  if(typeof renderOwnerChatBox==='function')renderOwnerChatBox();
 }
 function mergeOutlastChatMessages(messages){if(!Array.isArray(messages))return;messages.forEach(pushOutlastChatMessage);renderOutlastChat();}
+function isOutlastOwnerChatMessage(m){const name=String(m?.username||'').trim().toLowerCase();return name==='bestgamer'||name==='landon'||name==='phone landon';}
+function normalizeOutlastChatBadgeName(v){return String(v??'').trim().toLowerCase().replace(/[^a-z0-9]/g,'');}
+function isOutlastTesterChatMessage(m){const name=normalizeOutlastChatBadgeName(m?.username);return name==='max'||name==='ss';}
+function outlastDisplayChatUsername(v){const raw=String(v??'').trim()||'Player';const normalized=normalizeOutlastChatBadgeName(raw);if(normalized==='max')return 'Max';if(normalized==='ss')return 'SS';return raw;}
 function renderOutlastChat(){
  const box=document.getElementById('outlastChatMessages'),status=document.getElementById('outlastChatStatus'),toggle=document.getElementById('outlastChatToggle');if(!box)return;
  if(status)status.textContent=(outlastOnline||outlastChatHttpOnline)?'🟢 Online':'🔴 Offline';

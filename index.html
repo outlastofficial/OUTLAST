@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.31.0">
-<meta name="build-version" content="3.31.0">
-<title>OUTLAST v3.31.0</title>
+<meta name="outlast-build" content="3.30.12">
+<meta name="build-version" content="3.30.12">
+<title>OUTLAST v3.30.12</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -3358,7 +3358,7 @@ document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
   ['How does the Seizure map work?','Maps','Seizure is a chaotic sensory-overload map with dense obstacles, a fast hazard cycle, and unique static geometry. It deliberately avoids strobe or flashing effects that could be unsafe for players with photosensitive epilepsy.'],
-  ['What changed in v3.30.11?','Updates','Removed the leftover title effect and extra top-corner gameplay control. Start Run, maps, login, and gameplay logic were not changed.']
+  ['What changed in v3.30.12?','Updates','Restored and locked the full gameplay upgrade ladder, including Bouncing Bullets and all rarity tiers. The title and top-corner UI cleanup remain unchanged. Start Run, maps, login, and gameplay logic were not changed.']
   ['What changed in v3.30.8?','Maps','Expanded every map to 12 solid, collision-aware landmarks with distinct formations and map-specific scenery. The minimap uses the same geometry, and Start Run/login were not changed.'],
   ['What changed in v3.30.7?','Updates','Fixed the fatal game-error crash caused by the map rebuild calling a missing map-detail renderer. The renderer is now safe and minimal; Owner Panel, Start Run, and login were not changed.'],
   ['What changed in v3.30.6?','Updates','Added a small pink, sparkly toy in the top-right corner as a non-clickable decorative game element. It does not affect gameplay or controls.'],
@@ -3439,7 +3439,7 @@ function renderUpdates(){
  
 const updates=[
    ['v3.31.0 — Seizure Map','Added the new Seizure map with dense obstacle layouts, a sensory-overload hazard, and unique static map geometry. The map uses no seizure-inducing strobe or flashing effects. Start Run, login, and existing maps were not changed.'],
-   ['v3.30.11 — UI Cleanup','Reverted the animated rainbow main-menu title back to the normal OUTLAST title styling. Start Run, maps, login, and gameplay logic were not changed.'],
+   ['v3.30.12 — Full Upgrade Restoration','Reverted the animated rainbow main-menu title back to the normal OUTLAST title styling. Start Run, maps, login, and gameplay logic were not changed.'],
    ['v3.30.8 — Map Expansion','Expanded every map to 12 solid, collision-aware landmarks with distinct formations, traversal patterns, and map-specific scenery. The minimap uses the same geometry. Start Run and login were not changed.'],
    ['v3.30.7 — Map Renderer Crash Fix','Restored the missing map-detail renderer with a safe, minimal implementation so map drawing no longer crashes the game loop. Owner Panel, Start Run, and login were not changed.'],
    ['v3.30.6 — Pink Sparkly Toy','Added a small pink, sparkly decorative toy to the top-right of the screen. It is non-clickable and does not affect gameplay or controls.'],
@@ -3571,8 +3571,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.30.11';
-const CURRENT_UPDATE_INFO={title:'v3.30.10 — Main Title Reverted',summary:'Removed the leftover title effect and extra top-corner gameplay control.',items:['Removed the animated rainbow title styling.','Main-menu title styling is back to the normal game design.','Start Run, maps, and login were left unchanged.']};
+const CURRENT_UPDATE_VERSION='3.30.12';
+const CURRENT_UPDATE_INFO={title:'v3.30.10 — Main Title Reverted',summary:'Restored and locked the full gameplay upgrade ladder, including Bouncing Bullets and all rarity tiers. The title and top-corner UI cleanup remain unchanged.',items:['Removed the animated rainbow title styling.','Main-menu title styling is back to the normal game design.','Start Run, maps, and login were left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -5935,5 +5935,54 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
 <script src="outlast-v327108-rarity-card-authority.js?v=3.29.1"></script>
 
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
-</body>
+<script id="outlast-upgrade-restoration-v3-30-12">
+(function(){
+'use strict';
+function restore(){
+  try{
+    if(typeof tempUp!=='undefined'&&Array.isArray(tempUp)){
+      const bouncing=['Bouncing Bullets',()=> 'Shots bounce to up to 2 nearby enemies at 60% damage per bounce',()=>{
+        const p=game.player;if(!p)return;
+        p.bouncingBullets=true;
+        p.bounceCount=Math.min(4,(Number(p.bounceCount)||0)+2);
+        p.bounceDamage=.60;p.bounceRange=360;
+      }];
+      if(!tempUp.some(x=>x&&x[0]==='Bouncing Bullets'))tempUp.push(bouncing);
+    }
+    if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&window.OUTLAST_UPGRADE_RARITY_POOLS){
+      const pools=window.OUTLAST_UPGRADE_RARITY_POOLS;
+      if(pools.Rare&&!pools.Rare.includes('Bouncing Bullets'))pools.Rare.push('Bouncing Bullets');
+    }
+    if(typeof window.OUTLAST_UPGRADE_RARITY_BY_NAME==='object'&&window.OUTLAST_UPGRADE_RARITY_BY_NAME){
+      window.OUTLAST_UPGRADE_RARITY_BY_NAME['Bouncing Bullets']='Rare';
+    }
+    if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&typeof tempUp!=='undefined'&&Array.isArray(tempUp)){
+      const pools=window.OUTLAST_UPGRADE_RARITY_POOLS;
+      const byName=window.OUTLAST_UPGRADE_RARITY_BY_NAME||{};
+      const missing=[];
+      for(const rarity of Object.keys(pools)){
+        for(const name of pools[rarity]||[]){
+          if(!tempUp.some(x=>x&&x[0]===name))missing.push(name);
+          else byName[name]=rarity;
+        }
+      }
+      if(missing.length===0&&typeof window.makeChoices==='function'&&window.__outlastUpgradeRestorationApplied!==true){
+        window.__outlastUpgradeRestorationApplied=true;
+        const authoritative=window.makeChoices;
+        window.makeChoices=function(){
+          const choices=authoritative.apply(this,arguments);
+          if(Array.isArray(choices))for(const u of choices){
+            if(u&&byName[u[0]])u[3]=byName[u[0]];
+          }
+          return choices;
+        };
+      }
+    }
+  }catch(_){}
+}
+restore();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore,{once:true});
+setTimeout(restore,0);setTimeout(restore,250);
+})();
+</script></body>
 </html>

@@ -4,7 +4,7 @@
   if(window.__outlastRarityAuthority327108)return;
   window.__outlastRarityAuthority327108=true;
   const POOLS={
-    Common:['Power Shot','Vitality','Swift Feet','Magnet','Regeneration','Second Wind','Berserker','XP Boost','Second Heart'],
+    Common:['Power Shot','Vitality','Swift Feet','Magnet','Regeneration','Second Wind','Berserker','XP Boost','Second Heart','Upgrade Luck'],
     Uncommon:['Rapid Fire','Piercing','Big Bullets','Projectile Speed','Swift Aim','Fortified Core','XP Burst'],
     Rare:['Multi-Shot','Frost Aura','Crit Chance','Rapid Recovery','Armor Pierce','Coin Magnetism','Bouncing Bullets'],
     Epic:['Heavy Rounds','Chain Reaction','Lifesteal','Shockwave','Deadeye','Scavenger Luck','Elite Hunter','Void Arsenal'],
@@ -50,7 +50,7 @@
   if(typeof oldDraw==='function'&&!window.__outlastRarityDrawGuard327108){window.__outlastRarityDrawGuard327108=true;window.draw=function(){try{sanitizeChoices();}catch(_){}return oldDraw.apply(this,arguments);};}
   try{
     const u=['v3.27.108 — Rarity Card Authority Fix','Fixed upgrade rarity cards so every upgrade displays its true rarity from the authoritative rarity pool. Transcendent Fury now shows TRANSCENDENT, Omega upgrades show OMEGA, and lower tiers can no longer receive a mismatched rarity label or multiplier. Login was not changed.'];
-    const h=['Why does every upgrade now show the correct rarity?','Rarities','Each upgrade is assigned to one authoritative rarity pool. The card label, rarity chance, and power multiplier all use that same rarity, so an upgrade such as Transcendent Fury cannot appear with an Uncommon label.'];
+    const h=['Why does every upgrade now show the correct rarity?','Rarities','Upgrade Luck is a Common upgrade that directly increases the higher-rarity roll chance. Each upgrade is assigned to one authoritative rarity pool. The card label, rarity chance, and power multiplier all use that same rarity, so an upgrade such as Transcendent Fury cannot appear with an Uncommon label.'];
     if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('Rarity Card Authority Fix')))updates.unshift(u);
     if(Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('every upgrade now show the correct rarity')))helpArticles.unshift(h);
   }catch(_){}

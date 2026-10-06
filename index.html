@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="outlast-build" content="3.33.0">
 <meta name="build-version" content="3.32.0">
-<title>OUTLAST v3.33.0</title>
+<title>OUTLAST v3.33.1</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1434,7 +1434,7 @@ const permanent=[
   ['Recovery','Start +0.5 regen',250],['Piercing Mastery','Start +1 piercing',400],
   ['Thick Armor','Start -6% incoming damage',350],['Battle Focus','Start +4% score',300],['Coin Hunter','Start +10% coin drops',350],
   ['XP Surge','Start +5% XP gain',300],['XP Mastery','Start +8% XP gain',500],['XP Core','Start +10% XP gain',750],
-  ['Glass Cannon','Start +8 damage but -8 max HP',500],['Vampire','Start +1 HP per 5 kills',550],['Omega Vacuum','Every 30s, collect all coins + XP • -3s per level',1200],['Arcane Power','Start +8 ultimate gain',500],
+  ['Glass Cannon','Start +8 damage but -8 max HP',500],['Vampire','Start +1 HP per 5 kills',550],['Omega Vacuum','Every 30s, collect all coins + XP • -3s per level',20000],['Arcane Power','Start +8 ultimate gain',500],
   ['Ammo Mastery','Start +1 multi-shot',650],['Critical Mastery','Start +4% crit damage',700],['Boss Hunter','Start +8% boss damage',800],['Lucky Drops','Start +3% extra item drops',450],
   ...extraPermanent
 ];
@@ -3413,7 +3413,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['How does the Omega Vacuum upgrade work?','Upgrades','Omega Vacuum automatically collects every coin and XP pickup on the map. It starts at a 27-second cycle at Level 1, then drops by 3 seconds per level to 15 seconds at Level 5. Normal coin and XP multipliers still apply.'],
+  ['How does the Omega Vacuum upgrade work?','Upgrades','Omega Vacuum costs 20,000 coins per level. It automatically collects every coin and XP pickup on the map. It starts at a 27-second cycle at Level 1, then drops by 3 seconds per level to 15 seconds at Level 5. Normal coin and XP multipliers still apply.'],
   ['How does the Ribhouse map work?','Maps','Ribhouse is an original BBQ restaurant-style map with wood-plank scenery, booths, grills, rib platters, sauce stations, and a Hot Grill hazard. It uses custom game art rather than a copied restaurant advertisement or photo.'],
   ['How does the Seizure map work?','Maps','Seizure is a chaotic sensory-overload map with dense obstacles, a fast hazard cycle, and unique static geometry. It deliberately avoids strobe or flashing effects that could be unsafe for players with photosensitive epilepsy.'],
   ['What changed in v3.30.12?','Updates','Restored and locked the full gameplay upgrade ladder, including Bouncing Bullets and all rarity tiers. The title and top-corner UI cleanup remain unchanged. Start Run, maps, login, and gameplay logic were not changed.']
@@ -3497,7 +3497,7 @@ function renderUpdates(){
  
 const updates=[
    ['v3.30.14 — Bouncing Bullets + Upgrade Luck','Rebuilt projectile bouncing so Bouncing Bullets now chains each hit to a nearby enemy, with up to 4 total bounces and 60% damage per bounce. Restored Upgrade Luck as a real level-up card that directly improves higher-rarity upgrade odds. Start Run and login were not changed.'],
-   ['v3.33.0 — Omega Vacuum Upgrade','Added the Omega Vacuum permanent upgrade. It automatically collects all coins and XP every 27 seconds at Level 1; each upgrade level cuts 3 seconds from the cycle, down to 15 seconds at Level 5.'],
+   ['v3.33.1 — Omega Vacuum Pricing','Omega Vacuum now costs 20,000 coins for each upgrade level.'] ,['v3.33.0 — Omega Vacuum Upgrade','Added the Omega Vacuum permanent upgrade. It automatically collects all coins and XP every 27 seconds at Level 1; each upgrade level cuts 3 seconds from the cycle, down to 15 seconds at Level 5.'],
    ['v3.32.0 — Ribhouse Map','Added the new Ribhouse BBQ map with an original wood-and-grill background, booth/grill/platter scenery, solid collision-aware landmarks, and a Hot Grill hazard. It is inspired by classic baby-back-ribs restaurant vibes without copying branded artwork.'],
    ['v3.31.0 — Seizure Map','Added the new Seizure map with dense obstacle layouts, a sensory-overload hazard, and unique static map geometry. The map uses no seizure-inducing strobe or flashing effects. Start Run, login, and existing maps were not changed.'],
    ['v3.30.12 — Full Upgrade Restoration','Reverted the animated rainbow main-menu title back to the normal OUTLAST title styling. Start Run, maps, login, and gameplay logic were not changed.'],

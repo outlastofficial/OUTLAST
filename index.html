@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.3">
-<meta name="build-version" content="3.30.3">
-<title>OUTLAST v3.30.3</title>
+<meta name="outlast-build" content="3.30.4">
+<meta name="build-version" content="3.30.4">
+<title>OUTLAST v3.30.4</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.3 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.4 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3263,7 +3263,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.30.3?','Updates','Fixed the Map selector, removed duplicate map definitions and mixed scenery layers, and kept each of the 16 maps on one clean unique layout. Start Run remains unchanged.'],
+  ['What changed in v3.30.4?','Updates','Fixed Global Chat status so the HTTP fallback correctly reports Online, keeps retry polling alive, and still leaves Start Run unchanged.'],
   ['How does the new minimap work?','Maps','The minimap now shows the current map layout, solid scenery, players, enemies, loot, and the camera viewport. Each map has a different layout identity such as streets, rooms, tracks, docks, rivers, lava lanes, or swamp pools.'],
   ['What changed in v3.29.2?','Updates','Restored separate leaderboards for every mode and difficulty, made visible map scenery solid, restored safe enemy spawning around objects, and brought back the gameplay-only upgrade layers without changing Start Run.'],
   ['How do I use the Quality Center?','Quality & Recovery','Open Settings → Quality & Recovery for the current objective, run history, favorites, bug reporting, and Practice Mode.'],
@@ -3338,7 +3338,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.30.3 — Map Stability Rebuild','Removed the two stacked map-renderer layers, kept the stable minimap/object system, and rebuilt the 16 maps as one clean collision/object layer.'],
+   ['v3.30.4 — Global Chat Status Fix','Fixed the HTTP chat fallback so successful polling changes Global Chat to Online, refreshes messages, and keeps retrying when WebSocket is unavailable. Start Run was not changed.'],
    ['v3.29.2 — Leaderboards + Solid Maps Restore','Restored separate mode/difficulty leaderboard boards, solid map scenery, and blocked spawn/dash handling without changing Start Run.'],
    ['v3.27.1 — Chat Menu Fix','Fixed the main-menu CHAT button and synchronized Global Chat when the main menu loads.'],
    ['v3.27.0 — XP & Input Fix','Added XP Vacuum, fixed the zombie spawn regression, and made Space inert outside text fields.'],
@@ -4344,7 +4344,7 @@ async function postOutlastChatMessage(message){
 }
 async function pollOutlastChat(){
  if(outlastOnline)return;
- try{const res=await fetch(OUTLAST_HTTP_URL+'/api/chat?limit=200',{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(data?.ok)mergeOutlastChatMessages(data.messages);}catch(_){}
+ try{const res=await fetch(OUTLAST_HTTP_URL+'/api/chat?limit=200',{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();if(!data?.ok)throw new Error('Invalid chat response');outlastChatHttpOnline=true;mergeOutlastChatMessages(data.messages);renderOutlastChat();}catch(_){outlastChatHttpOnline=false;renderOutlastChat();}
 }
 function startOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=setInterval(()=>{if(!outlastOnline)pollOutlastChat()},2500);pollOutlastChat();}
 function stopOutlastChatPolling(){clearInterval(outlastChatPollTimer);outlastChatPollTimer=null;}

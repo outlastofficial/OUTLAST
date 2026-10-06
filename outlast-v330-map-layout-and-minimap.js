@@ -179,11 +179,7 @@ function drawMapLayout(ctx,map,W,H){
   }
 }
 
-function installWorldRenderer(){
-  if(window.__outlast330MapRendererInstalled)return;
-  window.__outlast330MapRendererInstalled=true;
-  window.__outlast330MapRenderer=drawMapLayout;
-}
+function installWorldRenderer(){if(window.__outlast330MapRendererInstalled)return;window.__outlast330MapRendererInstalled=true;window.__outlast330MapRenderer=drawMapLayout;}
 function drawBetterMinimap(){
   if(typeof game==='undefined'||!game.running||game.upgradeOpen||typeof ctx==='undefined')return;
   const mw=Math.min(190,Math.max(155,CW*.19)),mh=mw*H/W,mx=10,my=145,sx=mw/W,sy=mh/H,map=typeof save!=='undefined'?save.map:'Forest';

@@ -970,6 +970,7 @@ document.addEventListener('click',e=>{const b=e.target?.closest?.('#discordBtn')
     /* Top-level settings button still needs capture-level protection because
        older menu routers can otherwise intercept it before its direct handler. */
     if(b.id==='mapBtn'){e.preventDefault();e.stopImmediatePropagation();try{window.openMapSelector?.()}catch(err){console.error('OUTLAST map button error:',err);if(typeof toast==='function')toast('⚠️ Map button error')}return;}
+    if(b.id==='mapBtn'){e.preventDefault();e.stopImmediatePropagation();try{window.openMapSelector?.()}catch(err){console.error('OUTLAST map button error:',err);if(typeof toast==='function')toast('⚠️ Map button error')}return;}
     if(b.id==='newPlayerTutorialBtn'){ return; }
     if(b.id==='settingsNewBtn' || settingActions.has(b.dataset.action)){
       e.preventDefault();
@@ -1149,6 +1150,7 @@ const mapObstacles={
   Bunker:[['BlastDoor',410,230,150,85],['Console',760,510,120,100],['BlastDoor',1160,290,150,85],['Barrier',590,750,190,55],['Crate',1320,690,150,90]],
   Swamp:[['DeadTree',410,230,120,100],['MudPatch',760,510,180,70],['DeadTree',1160,290,120,100],['ReedBed',590,750,190,55],['Rock',1320,690,150,90]],
   Skyscraper:[['Desk',410,230,150,65],['Column',760,510,60,150],['Desk',1160,290,150,65],['Column',590,750,60,150],['Generator',1320,690,150,90]],
+  Wasteland:[['Wreck',410,230,150,80],['Rock',760,510,180,65],['Wreck',1160,290,150,80],['Barrier',590,750,190,55],['Rock',1320,690,150,90]],
   Wasteland:[['Wreck',410,230,150,80],['Rock',760,510,180,65],['Wreck',1160,290,150,80],['Barrier',590,750,190,55],['Rock',1320,690,150,90]]
 };
 function obstacleRects(map=save.map){return (mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));}

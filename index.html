@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.1">
-<meta name="build-version" content="3.30.1">
-<title>OUTLAST v3.30.1</title>
+<meta name="outlast-build" content="3.30.2">
+<meta name="build-version" content="3.30.2">
+<title>OUTLAST v3.30.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -825,7 +825,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.1 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.2 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1133,6 +1133,7 @@ const mapDefs={
   Skyscraper:{bg:'#141922',grid:'#2c3b50',accent:'#8db7ff'},
   Wasteland:{bg:'#241d18',grid:'#4b382b',accent:'#e6a04f'}
 };
+Object.defineProperties(mapDefs,{Lab:{value:mapDefs.Laboratory,enumerable:false},'Military Base':{value:mapDefs.MilitaryBase,enumerable:false}});
 
 const mapObstacles={
   Forest:[['Tree',430,230,70,110],['Tree',790,520,75,105],['Rock',1160,270,95,65],['Log',620,760,150,42],['Rock',1320,720,100,70]],
@@ -1153,6 +1154,7 @@ const mapObstacles={
   Wasteland:[['Wreck',410,230,150,80],['Rock',760,510,180,65],['Wreck',1160,290,150,80],['Barrier',590,750,190,55],['Rock',1320,690,150,90]],
   Wasteland:[['Wreck',410,230,150,80],['Rock',760,510,180,65],['Wreck',1160,290,150,80],['Barrier',590,750,190,55],['Rock',1320,690,150,90]]
 };
+Object.defineProperties(mapObstacles,{Lab:{value:mapObstacles.Laboratory,enumerable:false},'Military Base':{value:mapObstacles.MilitaryBase,enumerable:false}});
 function obstacleRects(map=save.map){return (mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));}
 function circleRectHit(x,y,r,o){const cx=Math.max(o.x,Math.min(x,o.x+o.w)),cy=Math.max(o.y,Math.min(y,o.y+o.h));return Math.hypot(x-cx,y-cy)<r;}
 function blocked(x,y,r){return obstacleRects().some(o=>circleRectHit(x,y,r,o));}
@@ -1211,6 +1213,7 @@ const mapHazards={
   Swamp:{name:'Toxic Mist',color:'#82b56a',interval:15,damage:7,slow:.30},
   Skyscraper:{name:'Glass Storm',color:'#8db7ff',interval:12,damage:9,slow:0}
 };
+Object.defineProperties(mapHazards,{Lab:{value:mapHazards.Laboratory,enumerable:false},'Military Base':{value:mapHazards.MilitaryBase,enumerable:false}});
 
 
 // World 2.0 / Endgame expansion
@@ -2412,7 +2415,7 @@ function draw(){
  syncGameAdminUI();
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
  if(save.mode==='1v1 Arena'&&game.player2&&!game.paused&&!game.upgradeOpen){drawSurvivalSplit();drawMinimap();return;}
- const md=mapDefs[save.map];ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
+ const md=mapDefs[save.map]||mapDefs.Forest;ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
  ctx.strokeStyle=md.grid;ctx.lineWidth=1;for(let x=0;x<=W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<=H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
  ctx.strokeStyle=md.accent;ctx.lineWidth=5;ctx.strokeRect(2,2,W-4,H-4);drawMapDetails(1,0,0);drawMapObjects(1,0,0); for(const fx of game.effects){const alpha=Math.max(0,fx.t/.8);ctx.save();ctx.globalAlpha=alpha;if(fx.type==='lightning'){ctx.strokeStyle=fx.color||'#8fe8ff';ctx.lineWidth=3+3*alpha;ctx.shadowColor=fx.color||'#8fe8ff';ctx.shadowBlur=16;ctx.beginPath();const dx=fx.x2-fx.x1,dy=fx.y2-fx.y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;for(let k=0;k<=8;k++){const u=k/8,wig=(k===0||k===8)?0:Math.sin(game.time*35+k*2.7)*10;const xx=fx.x1+dx*u+nx*wig,yy=fx.y1+dy*u+ny*wig;if(k===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy)}ctx.stroke();ctx.restore();continue;}ctx.strokeStyle=fx.color||'#fff';ctx.lineWidth=fx.fill?3:4;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*(1+(1-alpha)*.35),0,Math.PI*2);if(fx.fill){ctx.fillStyle=fx.color||'#fff';ctx.globalAlpha=alpha*.35;ctx.fill();}else ctx.stroke();ctx.restore()} for(const a of game.particles){ctx.save();ctx.globalAlpha=Math.max(0,a.t/a.max);ctx.fillStyle=a.color;ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);ctx.fill();ctx.restore()}
  for(const g of game.gems){ctx.fillStyle='#59d8ff';ctx.beginPath();ctx.arc(g.x,g.y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#08314a';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.icon||'◆',g.x,g.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
@@ -3261,7 +3264,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.30.1?','Updates','Fixed the Map selector, removed duplicate map definitions and mixed scenery layers, and kept each of the 16 maps on one clean unique layout. Start Run remains unchanged.'],
+  ['What changed in v3.30.2?','Updates','Fixed the Map selector, removed duplicate map definitions and mixed scenery layers, and kept each of the 16 maps on one clean unique layout. Start Run remains unchanged.'],
   ['How does the new minimap work?','Maps','The minimap now shows the current map layout, solid scenery, players, enemies, loot, and the camera viewport. Each map has a different layout identity such as streets, rooms, tracks, docks, rivers, lava lanes, or swamp pools.'],
   ['What changed in v3.29.2?','Updates','Restored separate leaderboards for every mode and difficulty, made visible map scenery solid, restored safe enemy spawning around objects, and brought back the gameplay-only upgrade layers without changing Start Run.'],
   ['How do I use the Quality Center?','Quality & Recovery','Open Settings → Quality & Recovery for the current objective, run history, favorites, bug reporting, and Practice Mode.'],
@@ -3336,7 +3339,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.30.1 — Map Selector + Clean Map Layers','Fixed the Map selector, removed duplicate map definitions and overlapping scenery layers, and kept the 16 unique map layouts clean and consistent.'],
+   ['v3.30.2 — Map Selector + Clean Map Layers','Fixed the Map selector, removed duplicate map definitions and overlapping scenery layers, and kept the 16 unique map layouts clean and consistent.'],
    ['v3.29.2 — Leaderboards + Solid Maps Restore','Restored separate mode/difficulty leaderboard boards, solid map scenery, and blocked spawn/dash handling without changing Start Run.'],
    ['v3.27.1 — Chat Menu Fix','Fixed the main-menu CHAT button and synchronized Global Chat when the main menu loads.'],
    ['v3.27.0 — XP & Input Fix','Added XP Vacuum, fixed the zombie spawn regression, and made Space inert outside text fields.'],
@@ -5825,6 +5828,6 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
 
 <script src="outlast-v3291-map-and-boss-display.js?v=3.29.1"></script>
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
-<script src="outlast-v330-map-layout-and-minimap.js?v=3.30.1"></script>
+<script src="outlast-v330-map-layout-and-minimap.js?v=3.30.2"></script>
 </body>
 </html>

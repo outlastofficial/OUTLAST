@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.1">
-<meta name="build-version" content="3.30.1">
-<title>OUTLAST v3.30.1</title>
+<meta name="outlast-build" content="3.30.2">
+<meta name="build-version" content="3.30.2">
+<title>OUTLAST v3.30.2</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1156,6 +1156,7 @@ const mapDefs={
   Skyscraper:{bg:'#141922',grid:'#2c3b50',accent:'#8db7ff'},
   Wasteland:{bg:'#241d18',grid:'#4b382b',accent:'#e6a04f'}
 };
+Object.defineProperties(mapDefs,{Lab:{value:mapDefs.Laboratory,enumerable:false},'Military Base':{value:mapDefs.MilitaryBase,enumerable:false}});
 
 const mapObstacles={
   Forest:[['Tree',430,230,70,110],['Tree',790,520,75,105],['Rock',1160,270,95,65],['Log',620,760,150,42],['Rock',1320,720,100,70]],
@@ -1175,6 +1176,7 @@ const mapObstacles={
   Skyscraper:[['Desk',410,230,150,65],['Column',760,510,60,150],['Desk',1160,290,150,65],['Column',590,750,60,150],['Generator',1320,690,150,90]],
   Wasteland:[['Wreck',410,230,150,80],['Rock',760,510,180,65],['Wreck',1160,290,150,80],['Barrier',590,750,190,55],['Rock',1320,690,150,90]]
 };
+Object.defineProperties(mapObstacles,{Lab:{value:mapObstacles.Laboratory,enumerable:false},'Military Base':{value:mapObstacles.MilitaryBase,enumerable:false}});
 function obstacleRects(map=save.map){return (mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));}
 function circleRectHit(x,y,r,o){const cx=Math.max(o.x,Math.min(x,o.x+o.w)),cy=Math.max(o.y,Math.min(y,o.y+o.h));return Math.hypot(x-cx,y-cy)<r;}
 function blocked(x,y,r){return obstacleRects().some(o=>circleRectHit(x,y,r,o));}
@@ -1250,6 +1252,7 @@ const mapHazards={
   Swamp:{name:'Toxic Mist',color:'#82b56a',interval:15,damage:7,slow:.30},
   Skyscraper:{name:'Glass Storm',color:'#8db7ff',interval:12,damage:9,slow:0}
 };
+Object.defineProperties(mapHazards,{Lab:{value:mapHazards.Laboratory,enumerable:false},'Military Base':{value:mapHazards.MilitaryBase,enumerable:false}});
 
 
 // World 2.0 / Endgame expansion
@@ -2507,7 +2510,7 @@ function draw(){
  syncGameAdminUI();
  if(!game.running){ if(game.endScreen){ drawEnd(game.endVictory); } return; }
  if(save.mode==='1v1 Arena'&&game.player2&&!game.paused&&!game.upgradeOpen){drawSurvivalSplit();drawMinimap();return;}
- const md=mapDefs[save.map];ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
+ const md=mapDefs[save.map]||mapDefs.Forest;ctx.fillStyle=md.bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.translate(-game.camera.x,-game.camera.y);
  ctx.strokeStyle=md.grid;ctx.lineWidth=1;for(let x=0;x<=W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<=H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
  ctx.strokeStyle=md.accent;ctx.lineWidth=5;ctx.strokeRect(2,2,W-4,H-4);drawMapDetails(1,0,0);drawMapObjects(1,0,0); for(const fx of game.effects){const alpha=Math.max(0,fx.t/.8);ctx.save();ctx.globalAlpha=alpha;if(fx.type==='lightning'){ctx.strokeStyle=fx.color||'#8fe8ff';ctx.lineWidth=3+3*alpha;ctx.shadowColor=fx.color||'#8fe8ff';ctx.shadowBlur=16;ctx.beginPath();const dx=fx.x2-fx.x1,dy=fx.y2-fx.y1,len=Math.hypot(dx,dy)||1,nx=-dy/len,ny=dx/len;for(let k=0;k<=8;k++){const u=k/8,wig=(k===0||k===8)?0:Math.sin(game.time*35+k*2.7)*10;const xx=fx.x1+dx*u+nx*wig,yy=fx.y1+dy*u+ny*wig;if(k===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy)}ctx.stroke();ctx.restore();continue;}ctx.strokeStyle=fx.color||'#fff';ctx.lineWidth=fx.fill?3:4;ctx.beginPath();ctx.arc(fx.x,fx.y,fx.r*(1+(1-alpha)*.35),0,Math.PI*2);if(fx.fill){ctx.fillStyle=fx.color||'#fff';ctx.globalAlpha=alpha*.35;ctx.fill();}else ctx.stroke();ctx.restore()} for(const a of game.particles){ctx.save();ctx.globalAlpha=Math.max(0,a.t/a.max);ctx.fillStyle=a.color;ctx.beginPath();ctx.arc(a.x,a.y,a.size,0,Math.PI*2);ctx.fill();ctx.restore()}
  for(const g of game.gems){ctx.fillStyle='#59d8ff';ctx.beginPath();ctx.arc(g.x,g.y,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#08314a';ctx.font='bold 11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(g.icon||'◆',g.x,g.y);ctx.textAlign='left';ctx.textBaseline='alphabetic'}
@@ -3364,7 +3367,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.30.1?','Updates','Testing build: every map now has a distinct navigational layout, and the minimap mirrors terrain, solid scenery, players, enemies, loot, and the camera viewport. Start Run remains unchanged.'],
+  ['What changed in v3.30.2?','Updates','Testing build: every map now has a distinct navigational layout, and the minimap mirrors terrain, solid scenery, players, enemies, loot, and the camera viewport. Start Run remains unchanged.'],
   ['How does the new minimap work?','Maps','The minimap mirrors the current map layout and tracks solid scenery, players, enemies, loot, and the camera viewport. Every map has its own visual layout identity.'],
   ['What changed in v3.30.28?','Updates','Tester Start Run now uses one authoritative startGame path. The old post-load override was removed to reduce startup conflicts and recovery errors.'],
   ['What changed in v3.27.48?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
@@ -3458,7 +3461,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.30.1 — Unique Map Layouts + Functional Minimap','Testing build: every map now has a distinct navigational layout and the minimap mirrors terrain, solid objects, players, enemies, loot, and the current camera view. Start Run remains unchanged.'],
+   ['v3.30.2 — Unique Map Layouts + Functional Minimap','Testing build: every map now has a distinct navigational layout and the minimap mirrors terrain, solid objects, players, enemies, loot, and the current camera view. Start Run remains unchanged.'],
    ['v3.30.28 — Tester Start Run Rebuild','Removed the conflicting tester startGame override and moved its startup effects into the single authoritative Start Run initializer.'],
    ['v3.27.48 — Test Access Fix','Testing build: owner and admin tools open without a password in the isolated testing environment.'],
    ['v3.27.48 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
@@ -6148,9 +6151,9 @@ window.__outlastSkinAreaVersion=VERSION;
 <script src="outlast-v327108-rarity-card-authority.js?v=3.27.108"></script>
 <script src="outlast-version-v3.28.1.js?v=3.28.1"></script>
 <script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
-<script id="outlast-v3283-ui-boot-repair">(function(){'use strict';const VERSION='v3.30.1';function repair(){const menu=document.getElementById('menu'),canvas=document.getElementById('game');if(!menu||!canvas||typeof game==='undefined')return;const p=game.player,valid=!!p&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y));const active=!!game.running&&valid&&!game.over&&!fatalErrorShown;if(game.running&&!valid){game.running=false;game.paused=false;game.over=false;game.endScreen=false;try{fatalErrorShown=false;fatalGameError=''}catch(_){}}if(!active){menu.style.display='flex';canvas.style.display='block';document.body.classList.remove('outlast-in-game');try{document.getElementById('subPanel').style.display='none'}catch(_){}try{syncMobileControls();updateMenuSummary()}catch(_){}}else{menu.style.display='none';canvas.style.display='block';document.body.classList.add('outlast-in-game')}const q=document.getElementById('outlastQualityBadge');if(q)q.remove();document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});const b=document.querySelector('meta[name="build-version"]'),o=document.querySelector('meta[name="outlast-build"]');if(b)b.content='3.28.3';if(o)o.content='3.28.3';window.OUTLAST_BUILD='3.28.3';window.OUTLAST_VERSION=VERSION}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();[0,100,500,1000,2000,4000].forEach(ms=>setTimeout(repair,ms))})();</script>
+<script id="outlast-v3283-ui-boot-repair">(function(){'use strict';const VERSION='v3.30.2';function repair(){const menu=document.getElementById('menu'),canvas=document.getElementById('game');if(!menu||!canvas||typeof game==='undefined')return;const p=game.player,valid=!!p&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y));const active=!!game.running&&valid&&!game.over&&!fatalErrorShown;if(game.running&&!valid){game.running=false;game.paused=false;game.over=false;game.endScreen=false;try{fatalErrorShown=false;fatalGameError=''}catch(_){}}if(!active){menu.style.display='flex';canvas.style.display='block';document.body.classList.remove('outlast-in-game');try{document.getElementById('subPanel').style.display='none'}catch(_){}try{syncMobileControls();updateMenuSummary()}catch(_){}}else{menu.style.display='none';canvas.style.display='block';document.body.classList.add('outlast-in-game')}const q=document.getElementById('outlastQualityBadge');if(q)q.remove();document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});const b=document.querySelector('meta[name="build-version"]'),o=document.querySelector('meta[name="outlast-build"]');if(b)b.content='3.28.3';if(o)o.content='3.28.3';window.OUTLAST_BUILD='3.28.3';window.OUTLAST_VERSION=VERSION}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();[0,100,500,1000,2000,4000].forEach(ms=>setTimeout(repair,ms))})();</script>
 <script id="outlast-batch2-expansion-v33027">
-(function(){'use strict';const V='3.30.1',R='v3.30.1';const $=s=>{try{return document.querySelector(s)}catch(_){return null}},safe=(f,d)=>{try{return f()}catch(_){return d}},get=k=>safe(()=>localStorage.getItem(k),null),set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);
+(function(){'use strict';const V='3.30.2',R='v3.30.2';const $=s=>{try{return document.querySelector(s)}catch(_){return null}},safe=(f,d)=>{try{return f()}catch(_){return d}},get=k=>safe(()=>localStorage.getItem(k),null),set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);
 function sync(){safe(()=>{document.title='OUTLAST '+R;const a=$('meta[name="outlast-build"]'),b=$('meta[name="build-version"]');if(a)a.content=V;if(b)b.content=V;window.OUTLAST_BUILD=V;window.OUTLAST_VERSION=R;document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=R);document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=R+' • SURVIVOR HUB'})})}
 function ui(){if($('#outlastBatch2Bar'))return;const st=document.createElement('style');st.textContent='#outlastBatch2Bar{position:fixed;left:8px;bottom:8px;z-index:99970;background:rgba(8,14,20,.94);border:1px solid #31546a;border-radius:10px;padding:6px;font:700 10px Arial}#outlastBatch2Bar button{font:700 10px Arial;padding:6px 8px;margin-left:4px;border-radius:7px;background:#132330;color:#e8f5ff;border:1px solid #31546a}';document.head.appendChild(st);const d=document.createElement('div');d.id='outlastBatch2Bar';d.innerHTML='<span>'+R+'</span><button id="b2diag">Diagnostics</button>';document.body.appendChild(d);$('#b2diag').onclick=()=>{const r={version:R,canvas:!!$('#game'),menu:!!$('#menu'),start:typeof window.startGame==='function',exit:typeof window.exitGame==='function',mobile:innerWidth<=700};safe(()=>console.log('[OUTLAST tester diagnostics]',r));alert('Tester diagnostics captured in console.')}} 
 function recover(){safe(()=>{if(typeof save!=='undefined'&&save)localStorage.setItem('outlastRecoverySaveV327',JSON.stringify({version:V,time:Date.now(),save:JSON.parse(JSON.stringify(save))}))})}
@@ -6159,6 +6162,6 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 </script>
 <script src="outlast-v3291-map-and-boss-display.js?v=3.29.1"></script>
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
-<script src="outlast-v330-map-layout-and-minimap.js?v=3.30.1"></script>
+<script src="outlast-v330-map-layout-and-minimap.js?v=3.30.2"></script>
 </body>
 </html>

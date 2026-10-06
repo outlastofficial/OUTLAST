@@ -4,7 +4,7 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const authority=fs.readFileSync(path.join(root,'outlast-v327108-rarity-card-authority.js'),'utf8');
 assert.match(html,/OUTLAST_UPGRADE_LIBRARY_COUNT/);
 assert.match(html,/3\.30\.15/);
-assert.match(html,/bossTarget/);
+assert.match(html,/const bossTarget=\(game\.bossCount\|\|0\)===0\?30:/);
 assert.doesNotMatch(html,/bossEvery:90/);
 const poolMatch=authority.match(/Common:\[([^\]]+)\]/);
 assert(poolMatch,'Common rarity pool missing');

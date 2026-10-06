@@ -3101,7 +3101,6 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     if(window.openOwnerPanel){ window.openOwnerPanel(); return; }
     if(!owner()){openSub('👑 Owner Panel','<div class="option"><b>Owner access required.</b><div class="small">Use an owner account to access this control center.</div></div>');return;}
     if(unlocked){if(typeof connectOutlastServer==='function')connectOutlastServer();openSub('👑 Owner Panel',shell());render(tab);return;}
-    if(unlocked){if(typeof connectOutlastServer==='function')connectOutlastServer();openSub('👑 Owner Panel',shell());render(tab);return;}
     openSub('🔐 Owner Panel Unlock','<div class="option"><b style="font-size:24px">OWNER VERIFICATION</b><div class="small" style="margin:8px 0 12px">Enter the owner password to unlock all owner controls.</div><input id="ownerPasswordInput" type="password" autocomplete="off" placeholder="Owner password" style="width:100%;box-sizing:border-box;padding:14px;border-radius:10px;border:2px solid #3b4d60;background:#0f151c;color:#fff;font-size:18px;margin-bottom:10px><button class="gold" data-owner-action="login">🔓 UNLOCK OWNER PANEL</button><div id="ownerLoginError" class="small" style="color:#ff8c8c;min-height:20px;margin-top:8px"></div></div>');
     setTimeout(()=>document.getElementById('ownerPasswordInput')?.focus(),0);
   }
@@ -3353,8 +3352,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-   ['v3.30.5 — Owner Panel Restoration','Restored the newest Owner Panel feature set on the main server while preserving the main owner-password gate. Added Server Status, player search/filtering, Activity, raffle tools, and the newest protected owner controls. Start Run and login were not changed.'],
-   ['v3.30.5 — Global Chat Status Fix','Fixed the HTTP chat fallback so successful polling changes Global Chat to Online, refreshes messages, and keeps retrying when WebSocket is unavailable. Start Run was not changed.'],
+   ['v3.30.5 — Owner Panel + Global Chat Fix','Restored the newest Owner Panel feature set on the main server with the existing owner-password gate, and fixed Global Chat status reporting. Start Run and login were not changed.'],
    ['v3.29.2 — Leaderboards + Solid Maps Restore','Restored separate mode/difficulty leaderboard boards, solid map scenery, and blocked spawn/dash handling without changing Start Run.'],
    ['v3.27.1 — Chat Menu Fix','Fixed the main-menu CHAT button and synchronized Global Chat when the main menu loads.'],
    ['v3.27.0 — XP & Input Fix','Added XP Vacuum, fixed the zombie spawn regression, and made Space inert outside text fields.'],

@@ -1251,6 +1251,20 @@ function drawMapObjects(scale=1,ox=0,oy=0){
     else if(o.type==='Desk'){fill='#6f5a4c';stroke='#43362e';}
     else if(o.type==='Ruins'){fill='#776c5c';stroke='#40392f';}
     else if(o.type==='SnowBank'){fill='#d8eef8';stroke='#89aebb';}
+    else if(['Boulder','FallenTree'].includes(o.type)){fill='#5b5147';stroke='#302b26';}
+    else if(['Arch','DuneRock'].includes(o.type)){fill='#8d7049';stroke='#4d3a25';}
+    else if(o.type==='IceCave'){fill='#9ed7ee';stroke='#4e8da8';}
+    else if(o.type==='ObsidianPillar'){fill='#302d38';stroke='#17151c';}
+    else if(['Bus','Truck'].includes(o.type)){fill='#4f6572';stroke='#25343c';}
+    else if(o.type==='Dumpster'){fill='#4f685f';stroke='#293b35';}
+    else if(o.type==='Containment'){fill='#536f79';stroke='#27383e';}
+    else if(o.type==='SignalBox'){fill='#66584a';stroke='#312a24';}
+    else if(o.type==='WatchTower'){fill='#6a6255';stroke='#373229';}
+    else if(o.type==='Bunker'){fill='#3f464c';stroke='#22272b';}
+    else if(o.type==='RuinedHouse'){fill='#655951';stroke='#342e2a';}
+    else if(o.type==='Boat'){fill='#476d78';stroke='#263f46';}
+    else if(o.type==='BogRock'){fill='#4e5a43';stroke='#293025';}
+    else if(o.type==='Elevator'){fill='#59616b';stroke='#2b3036';}
     ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=3*scale;
     ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h);
     if(o.type==='Tree'){ctx.fillStyle='#6d4930';ctx.fillRect(x+w*.42,y+h*.55,w*.16,h*.4);ctx.fillStyle='#3f7c46';ctx.beginPath();ctx.arc(x+w*.5,y+h*.38,Math.min(w,h)*.34,0,Math.PI*2);ctx.fill();}

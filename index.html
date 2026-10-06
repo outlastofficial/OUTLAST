@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.27">
-<meta name="build-version" content="3.30.27">
-<title>OUTLAST v3.30.27</title>
+<meta name="outlast-build" content="3.30.28">
+<meta name="build-version" content="3.30.28">
+<title>OUTLAST v3.30.28</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1753,14 +1753,28 @@ function startGame(fromRoom=false){
   coopLaunchActive=!!fromRoom||!!roomStarted;if(typeof closeAllOverlays==='function')closeAllOverlays();game.running=true;game.paused=false;game.over=false;fatalGameError='';fatalErrorShown=false;hideGameOverActions();syncMobileControls();syncGameAdminUI();game.upgradeOpen=false;game.level=1;game.xp=0;game.xpNeed=10;game.score=0;game.time=0;game.spawn=0;game.bossClock=0;game.lastShot=0;game.survivalWinner=null;game.survival={round:1,p1Wins:0,p2Wins:0,time:75,roundMax:75,arenaHazardTimer:8,started:false};game.mapEventTimer=(mapHazards[save.map]||mapHazards.Forest).interval;game.mapEvent=null;game.lowHpAlert=0;game.worldEvent='';game.worldEventTimer=0;game.worldEventCooldown=75;game.enemies=[];game.bullets=[];game.gems=[];game.coins=[];game.shots=[];game.effects=[];game.particles=[];game.powerups=[];game.shrines=[];game.shrineClock=35;game.combo=0;game.comboTimer=0;game.event='';game.eventTimer=0;game.upgradeChoices=[];game.selectedZone=save.selectedZone||'Greenbelt';game.objective=save.currentObjective||'Zombie Hunt';game.objectiveStartKills=save.stats.kills||0;game.objectiveStartBosses=save.stats.bosses||0;game.objectiveStartCoins=save.stats.totalCoins||0;game.objectiveStartXP=0;game.objectiveComplete=false;game.raidBoss=(save.mode==='Boss Rush'&&raidBossDefs[save.raidBoss])?save.raidBoss:null;game.zoneBonus=(worldZones[game.selectedZone]||worldZones.Greenbelt).bonus;
   game.player={x:W/2,y:H/2,hp:hp*(1+.05*skillBonus('fieldTraining')),max:hp*(1+.05*skillBonus('fieldTraining')),speed,speedCap,damage:damage*(1+.05*skillBonus('combatTraining')),range,magnet,r:20,characterName:save.selectedChar,projectileSpeed:1,frost:false,frostAuraRadius:130,frostSlow:.50,frostAuraDps:.12,frostAuraHitCooldown:0,characterVisual:{...(ch.visual||{}),body:sk.color},regen:.5*up('Recovery')+.4*up('Vital Flow')+(relic.regen||0),crit:Math.min(.95,.05*up('Lucky Strike')+(sk.crit||0)+(charm.crit||0)+(pet.crit||0)),critMult:1.8+.04*up('Critical Mastery'),pierce:up('Piercing Mastery'),multiShot:up('Ammo Mastery')*2,ult:0,ultGain:1+.08*up('Arcane Power')+(relic.ult||0),shield:0,shieldEfficiency:1+.04*up('Shield Core'),armor:Math.max(.2,1-.06*up('Thick Armor')-(charm.armor||0)),coinMult:(1+.1*up('Coin Hunter'))*(1+.04*skillBonus('scavenger'))+(sk.coins||0)+(pet.coins||0)+(relic.coins||0)+(charm.coins||0),bossMult:1+.08*up('Boss Hunter')+(relic.boss||0),vampire:.2*up('Vampire'),skinColor:sk.color,pet,relic,charm,element:save.element,activeSkill:save.activeSkill,skillCooldown:0,petPower:1+.05*skillBonus('petBond'),elementPower:1,damageTakenMult:save.challengeMode==='GlassCannon'?.55:1,upgradeLuck:3*up('Lucky Drops')+(save.permanentLuck||0),lootLuck:0,treasureLuck:0,luck:3*up('Lucky Drops')+(save.permanentLuck||0),xpBonus:(1+.1*up('Scholar'))*(1+.04*skillBonus('xpResearch'))+.05*up('XP Surge')+.08*up('XP Mastery')+.10*up('XP Core')+(pet.xp||0)+(charm.xp||0),fireRate:Math.max(.2,.45*(1-.08*up('Rapid Hands')-.06*up('Ammo Recycler')))*(save.selectedPet==='Robot'?.92:1)};
   game.player.max=hp+(relic.hp||0)+(charm.hp||0);game.player.hp=game.player.max;
+  const testerUp=n=>save.upgrades[n]||0;
+  game.player.scoreBonus=1+.04*testerUp('Battle Focus');
+  game.player.treasureChance=.10*testerUp('Treasure Sense');
+  game.player.ultDamage=(game.player.ultDamage||1)*(1+.08*testerUp('Overdrive'));
+  const mastery=1+.08*testerUp('Relic Mastery');
+  game.player.regen*=mastery;game.player.ultGain*=mastery;
+  const testerCharmMastery=1+.08*testerUp('Charm Mastery');game.player.crit*=1;game.player.coinMult*=testerCharmMastery;
+  game.player.vampire=(game.player.vampire||0)+.25*testerUp('Surgeon');
+  game.player.buildTags=[];game.player.extraction=null;game.player.eventClock=35;game.player.god=!!adminUnlocked;
   game.player2=null;
   if(save.mode==='1v1 Arena'){
     game.player2={x:W-120,y:H/2,hp:game.player.max,max:game.player.max,speed:game.player.speed,damage:game.player.damage,range:game.player.range,fireRate:game.player.fireRate,shotTimer:.2,skinColor:sk.color,r:20,characterName:save.selectedChar,characterVisual:{...(ch.visual||{}),body:sk.color}};game.survival.started=true;
   }
   game.stats={enemyMult:d.enemy*(cm.enemy||1)*modEnemy,spawnMult:d.spawn*m.spawn*(cm.spawn||1)*modSpawn,rewardMult:d.reward*(cm.reward||1)*modReward,bossEvery:90,timeLimit:m.timeLimit||0,scoreMult:(m.scoreMult||1)*(1+.04*up('Wavebreaker'))*(1+(relic.score||0))*(1+(charm.score||0))*d.reward*(cm.reward||1)*modReward,difficulty:d};
+  if(typeof applyMapModifiers==='function')applyMapModifiers();
+  const activeMods=[save.selectedModifier,...(save.builderMods||[])];
+  if(activeMods.includes('GlassWorld')){game.player.max*=.75;game.player.hp=game.player.max;}
+  if(activeMods.includes('BloodMoon'))game.stats.scoreMult*=1.25;
+  if(activeMods.includes('TreasureRush'))game.player.speed*=.92;
   fatalGameError='';fatalErrorShown=false;document.getElementById('menu').style.display='none';c.focus();if(!fromRoom&&typeof broadcastRoomStart==='function'&&roomCode)broadcastRoomStart();if(typeof connectOutlastServer==='function')connectOutlastServer();syncOutlastChatUI();
  }catch(err){
-   fatalGameError=err?.message||String(err);
+   fatalGameError=err?.message||String(err);window.__OUTLAST_TESTER_LAST_GAME_ERROR=fatalGameError;
    fatalErrorShown=true;
    coopLaunchActive=false;
    game.running=false;game.paused=false;game.over=true;
@@ -3357,6 +3371,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.30.28?','Updates','Tester Start Run now uses one authoritative startGame path. The old post-load override was removed to reduce startup conflicts and recovery errors.'],
   ['What changed in v3.27.48?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.43?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.42?','Updates','This maintenance update expanded local leaderboard retention so separate mode and difficulty records are less likely to be evicted. The server filters remain separated by mode and difficulty.'],
@@ -3448,6 +3463,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.30.28 — Tester Start Run Rebuild','Removed the conflicting tester startGame override and moved its startup effects into the single authoritative Start Run initializer.'],
    ['v3.27.48 — Test Access Fix','Testing build: owner and admin tools open without a password in the isolated testing environment.'],
    ['v3.27.48 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
    ['v3.27.43 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
@@ -3763,7 +3779,7 @@ function useActiveSkill(){
 function dash(){if(!game.running||game.paused||game.upgradeOpen||!game.player)return;if((game.player.dashCooldown||0)>0)return;let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);if(!dx&&!dy)dy=-1;const len=Math.hypot(dx,dy)||1;game.player.x=Math.max(30,Math.min(W-30,game.player.x+dx/len*220));game.player.y=Math.max(30,Math.min(H-30,game.player.y+dy/len*220));game.player.dashCooldown=4;save.records.totalDodges=(save.records.totalDodges||0)+1;}
 let last=performance.now(), fatalGameError='',fatalErrorShown=false;
 function drawFatal(){syncMobileControls();ctx.fillStyle='#10141a';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='42px Arial';ctx.fillText('RECOVERED FROM GAME ERROR',CW/2,235);ctx.font='20px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('The run was safely stopped.',CW/2,275);ctx.fillText('Return to the menu to keep playing.',CW/2,310);ctx.textAlign='left';showGameOverActions(false);const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');if(title)title.textContent='Game error recovered';if(stats)stats.innerHTML='<div class=\"game-over-stat\">The game was stopped safely so it could recover.</div>';}
-function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown&&!game.__outlastTypingActive)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
+function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown&&!game.__outlastTypingActive)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);window.__OUTLAST_TESTER_LAST_GAME_ERROR=fatalGameError;fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
 showUpdatePopup();
 requestAnimationFrame(loop);
 </script>
@@ -3919,27 +3935,6 @@ window.adminWave=function(){if(!isAdmin())return;if(!game.running){newRunStats()
 window.adminReset=function(){if(!isAdmin())return;save=cloneSave(adminSnapshot||freshSave());toast('↩️ Temporary test state reset');document.getElementById('adminBtn').click()};
 
 /* ---------- Permanent upgrade effects ---------- */
-const oldStartGame=realStartGame;
-startGame=function(){
-  oldStartGame();
-  if(!game.player)return;
-  const u=n=>save.upgrades[n]||0;
-  game.player.scoreBonus=1+.04*u('Battle Focus');
-  game.player.treasureChance=.10*u('Treasure Sense');
-  game.player.ultDamage=(game.player.ultDamage||1)*(1+.08*u('Overdrive'));
-  const mastery=1+.08*u('Relic Mastery');
-  game.player.regen*=mastery; game.player.ultGain*=mastery;
-  const cm=1+.08*u('Charm Mastery'); game.player.crit*=1; game.player.coinMult*=cm;
-  game.player.vampire=(game.player.vampire||0)+.25*u('Surgeon');
-  game.player.xpBonus*=1+.08*(u('Battle Focus')?0:0);
-  game.player.buildTags=[];game.player.extraction=null;game.player.eventClock=35;game.player.god=!!adminUnlocked;
-  applyMapModifiers();
-  const mods=[save.selectedModifier,...(save.builderMods||[])];
-  if(mods.includes('GlassWorld')){game.player.max*=.75;game.player.hp=game.player.max;}
-  if(mods.includes('BloodMoon'))game.stats.scoreMult*=1.25;
-  if(mods.includes('TreasureRush')){game.player.speed*=.92;}
-};
-
 /* ---------- Maps with distinct gameplay ---------- */
 Object.assign(mapDefs,{
   Lab:{bg:'#18202b',grid:'#2d4157',accent:'#67c7ff',desc:'Tight corridors; faster enemy pressure.'},
@@ -6162,7 +6157,7 @@ window.__outlastSkinAreaVersion=VERSION;
 <script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
 <script id="outlast-v3283-ui-boot-repair">(function(){'use strict';const VERSION='v3.28.3';function repair(){const menu=document.getElementById('menu'),canvas=document.getElementById('game');if(!menu||!canvas||typeof game==='undefined')return;const p=game.player,valid=!!p&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y));const active=!!game.running&&valid&&!game.over&&!fatalErrorShown;if(game.running&&!valid){game.running=false;game.paused=false;game.over=false;game.endScreen=false;try{fatalErrorShown=false;fatalGameError=''}catch(_){}}if(!active){menu.style.display='flex';canvas.style.display='block';document.body.classList.remove('outlast-in-game');try{document.getElementById('subPanel').style.display='none'}catch(_){}try{syncMobileControls();updateMenuSummary()}catch(_){}}else{menu.style.display='none';canvas.style.display='block';document.body.classList.add('outlast-in-game')}const q=document.getElementById('outlastQualityBadge');if(q)q.remove();document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});const b=document.querySelector('meta[name="build-version"]'),o=document.querySelector('meta[name="outlast-build"]');if(b)b.content='3.28.3';if(o)o.content='3.28.3';window.OUTLAST_BUILD='3.28.3';window.OUTLAST_VERSION=VERSION}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();[0,100,500,1000,2000,4000].forEach(ms=>setTimeout(repair,ms))})();</script>
 <script id="outlast-batch2-expansion-v33027">
-(function(){'use strict';const V='3.30.27',R='v3.30.27';const $=s=>{try{return document.querySelector(s)}catch(_){return null}},safe=(f,d)=>{try{return f()}catch(_){return d}},get=k=>safe(()=>localStorage.getItem(k),null),set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);
+(function(){'use strict';const V='3.30.28',R='v3.30.28';const $=s=>{try{return document.querySelector(s)}catch(_){return null}},safe=(f,d)=>{try{return f()}catch(_){return d}},get=k=>safe(()=>localStorage.getItem(k),null),set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);
 function sync(){safe(()=>{document.title='OUTLAST '+R;const a=$('meta[name="outlast-build"]'),b=$('meta[name="build-version"]');if(a)a.content=V;if(b)b.content=V;window.OUTLAST_BUILD=V;window.OUTLAST_VERSION=R;document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=R);document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=R+' • SURVIVOR HUB'})})}
 function ui(){if($('#outlastBatch2Bar'))return;const st=document.createElement('style');st.textContent='#outlastBatch2Bar{position:fixed;left:8px;bottom:8px;z-index:99970;background:rgba(8,14,20,.94);border:1px solid #31546a;border-radius:10px;padding:6px;font:700 10px Arial}#outlastBatch2Bar button{font:700 10px Arial;padding:6px 8px;margin-left:4px;border-radius:7px;background:#132330;color:#e8f5ff;border:1px solid #31546a}';document.head.appendChild(st);const d=document.createElement('div');d.id='outlastBatch2Bar';d.innerHTML='<span>'+R+'</span><button id="b2diag">Diagnostics</button>';document.body.appendChild(d);$('#b2diag').onclick=()=>{const r={version:R,canvas:!!$('#game'),menu:!!$('#menu'),start:typeof window.startGame==='function',exit:typeof window.exitGame==='function',mobile:innerWidth<=700};safe(()=>console.log('[OUTLAST tester diagnostics]',r));alert('Tester diagnostics captured in console.')}} 
 function recover(){safe(()=>{if(typeof save!=='undefined'&&save)localStorage.setItem('outlastRecoverySaveV327',JSON.stringify({version:V,time:Date.now(),save:JSON.parse(JSON.stringify(save))}))})}

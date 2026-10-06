@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.2">
-<meta name="build-version" content="3.30.2">
-<title>OUTLAST v3.30.2</title>
+<meta name="outlast-build" content="3.30.3">
+<meta name="build-version" content="3.30.3">
+<title>OUTLAST v3.30.3</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -849,7 +849,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.2 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.3 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1159,22 +1159,22 @@ const mapDefs={
 Object.defineProperties(mapDefs,{Lab:{value:mapDefs.Laboratory,enumerable:false},'Military Base':{value:mapDefs.MilitaryBase,enumerable:false}});
 
 const mapObstacles={
-  Forest:[['Tree',430,230,70,110],['Tree',790,520,75,105],['Rock',1160,270,95,65],['Log',620,760,150,42],['Rock',1320,720,100,70]],
-  Desert:[['Rock',430,250,110,70],['Cactus',800,520,55,95],['Rock',1180,300,120,75],['Ruins',620,760,150,55],['Rock',1360,720,110,70]],
-  Snow:[['IceRock',430,230,110,80],['IceBlock',780,540,120,65],['IceRock',1180,280,100,95],['SnowBank',610,770,170,55],['IceBlock',1370,700,120,70]],
-  Lava:[['Rock',430,220,105,80],['LavaRock',800,520,90,75],['Rock',1180,300,115,85],['LavaRock',620,750,150,55],['Rock',1360,700,110,80]],
-  City:[['Car',410,230,150,70],['Blockade',760,520,180,50],['Car',1180,290,150,70],['Barrier',590,760,190,45],['Car',1330,700,150,70]],
-  Hospital:[['Bed',420,240,150,55],['Cabinet',790,510,70,130],['Bed',1160,290,150,55],['Cabinet',610,740,70,130],['Bed',1330,690,150,55]],
-  Laboratory:[['Crate',420,240,120,90],['Tank',800,500,90,120],['Crate',1170,290,130,85],['Console',600,740,170,55],['Crate',1340,700,120,90]],
-  Subway:[['Bench',420,250,170,45],['Pillar',800,500,55,140],['Bench',1160,300,170,45],['Pillar',610,740,55,140],['Bench',1330,700,170,45]],
-  Prison:[['CellBlock',410,230,170,75],['Barrier',770,510,170,55],['CellBlock',1150,290,170,75],['Barrier',600,750,170,55],['CellBlock',1320,690,170,75]],
-  MilitaryBase:[['Sandbags',410,240,170,60],['Vehicle',770,500,150,85],['Sandbags',1160,290,170,60],['Crates',590,750,170,70],['Vehicle',1320,700,160,85]],
-  RuinedTown:[['Rubble',410,230,150,85],['Wall',760,510,190,55],['Rubble',1160,290,150,85],['Wall',590,750,190,55],['Rubble',1320,690,150,90]],
-  Harbor:[['Container',410,230,150,85],['Crane',760,510,180,55],['Container',1160,290,150,85],['DockWall',590,750,190,55],['Container',1320,690,150,90]],
-  Bunker:[['BlastDoor',410,230,150,85],['Console',760,510,120,100],['BlastDoor',1160,290,150,85],['Barrier',590,750,190,55],['Crate',1320,690,150,90]],
-  Swamp:[['DeadTree',410,230,120,100],['MudPatch',760,510,180,70],['DeadTree',1160,290,120,100],['ReedBed',590,750,190,55],['Rock',1320,690,150,90]],
-  Skyscraper:[['Desk',410,230,150,65],['Column',760,510,60,150],['Desk',1160,290,150,65],['Column',590,750,60,150],['Generator',1320,690,150,90]],
-  Wasteland:[['Wreck',410,230,150,80],['Rock',760,510,180,65],['Wreck',1160,290,150,80],['Barrier',590,750,190,55],['Rock',1320,690,150,90]]
+  Forest:[['Tree',280,220,90,130],['Tree',620,430,80,120],['Rock',1050,260,120,80],['Log',480,900,190,45],['Rock',1420,720,110,75],['Tree',2140,300,95,135],['Tree',2520,620,85,120],['Rock',2780,1040,120,80]],
+  Desert:[['Rock',260,260,140,80],['Cactus',620,720,55,100],['Rock',980,420,120,75],['Ruins',1450,260,190,65],['Rock',1940,760,130,85],['Cactus',2320,420,55,100],['Ruins',2550,980,180,70],['Rock',2850,1380,120,75]],
+  Snow:[['IceRock',300,240,130,90],['IceBlock',760,520,140,75],['SnowBank',1180,260,200,60],['IceRock',1520,800,110,110],['SnowBank',1860,470,180,60],['IceBlock',2260,760,140,80],['IceRock',2580,300,120,100],['SnowBank',2860,1080,170,60]],
+  Lava:[['Rock',300,240,120,90],['LavaRock',700,620,110,95],['Rock',1040,260,140,90],['LavaRock',1500,860,120,100],['Rock',1920,500,135,95],['LavaRock',2280,820,115,100],['Rock',2640,280,140,90],['LavaRock',2860,1280,120,90]],
+  City:[['Car',260,300,180,75],['Barrier',620,520,210,55],['Car',980,300,180,75],['Blockade',1280,900,230,55],['Car',1840,360,180,75],['Barrier',2160,650,210,55],['Car',2520,320,180,75],['Barrier',2740,980,210,55]],
+  Hospital:[['Bed',260,300,170,60],['Cabinet',560,520,75,145],['Bed',980,300,170,60],['Cabinet',1260,860,75,145],['Bed',1900,300,170,60],['Cabinet',2200,520,75,145],['Bed',2580,300,170,60],['Cabinet',2780,860,75,145]],
+  Laboratory:[['Crate',260,260,130,100],['Tank',600,610,100,135],['Crate',980,260,145,95],['Console',1320,830,180,60],['Crate',1870,300,145,95],['Tank',2200,590,100,135],['Crate',2550,280,145,95],['Console',2760,870,180,60]],
+  Subway:[['Bench',250,360,190,50],['Pillar',620,520,60,170],['Bench',1000,900,190,50],['Pillar',1430,380,60,170],['Bench',1900,360,190,50],['Pillar',2260,760,60,170],['Bench',2580,980,190,50],['Pillar',2860,420,60,170]],
+  Prison:[['CellBlock',240,240,190,85],['Barrier',650,520,190,60],['CellBlock',980,820,190,85],['Barrier',1390,350,190,60],['CellBlock',1890,240,190,85],['Barrier',2200,690,190,60],['CellBlock',2500,870,190,85],['Barrier',2810,350,190,60]],
+  MilitaryBase:[['Sandbags',240,250,190,65],['Vehicle',620,620,170,95],['Crates',980,300,180,75],['Sandbags',1320,860,200,65],['Vehicle',1880,330,170,95],['Crates',2220,720,180,75],['Sandbags',2580,260,190,65],['Vehicle',2860,980,170,95]],
+  RuinedTown:[['Rubble',260,250,170,95],['Wall',640,520,220,60],['Rubble',1020,880,170,95],['Wall',1360,300,220,60],['Rubble',1920,260,170,95],['Wall',2260,660,220,60],['Rubble',2600,900,170,95],['Wall',2860,360,220,60]],
+  Harbor:[['Container',240,250,180,95],['Crane',620,560,200,60],['Container',980,340,180,95],['DockWall',1260,980,220,55],['Container',1880,250,180,95],['Crane',2200,600,200,60],['Container',2550,350,180,95],['DockWall',2820,980,220,55]],
+  Bunker:[['BlastDoor',240,240,170,95],['Console',600,600,130,110],['Barrier',980,320,210,60],['BlastDoor',1350,900,170,95],['Console',1880,300,130,110],['Barrier',2200,650,210,60],['BlastDoor',2580,250,170,95],['Console',2820,900,130,110]],
+  Swamp:[['DeadTree',260,220,130,110],['MudPatch',620,560,210,80],['ReedBed',1000,300,210,65],['Rock',1320,880,150,95],['DeadTree',1900,250,130,110],['MudPatch',2220,620,210,80],['ReedBed',2580,340,210,65],['Rock',2860,900,150,95]],
+  Skyscraper:[['Desk',240,240,170,75],['Column',620,540,65,170],['Generator',980,300,160,95],['Desk',1320,900,170,75],['Column',1880,260,65,170],['Generator',2200,600,160,95],['Desk',2580,340,170,75],['Column',2860,900,65,170]],
+  Wasteland:[['Wreck',260,260,170,90],['Rock',620,620,190,70],['Wreck',980,330,170,90],['Barrier',1320,860,210,55],['Rock',1900,280,190,70],['Wreck',2220,680,170,90],['Barrier',2580,340,210,55],['Rock',2860,1040,160,80]]
 };
 Object.defineProperties(mapObstacles,{Lab:{value:mapObstacles.Laboratory,enumerable:false},'Military Base':{value:mapObstacles.MilitaryBase,enumerable:false}});
 function obstacleRects(map=save.map){return (mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));}
@@ -3367,9 +3367,9 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
-  ['What changed in v3.30.2?','Updates','Testing build: every map now has a distinct navigational layout, and the minimap mirrors terrain, solid scenery, players, enemies, loot, and the camera viewport. Start Run remains unchanged.'],
+  ['What changed in v3.30.3?','Updates','Testing build: every map now has a distinct navigational layout, and the minimap mirrors terrain, solid scenery, players, enemies, loot, and the camera viewport. Start Run remains unchanged.'],
   ['How does the new minimap work?','Maps','The minimap mirrors the current map layout and tracks solid scenery, players, enemies, loot, and the camera viewport. Every map has its own visual layout identity.'],
-  ['What changed in v3.30.28?','Updates','Tester Start Run now uses one authoritative startGame path. The old post-load override was removed to reduce startup conflicts and recovery errors.'],
+  ['What changed in v3.30.38?','Updates','Tester Start Run now uses one authoritative startGame path. The old post-load override was removed to reduce startup conflicts and recovery errors.'],
   ['What changed in v3.27.48?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.43?','Updates','This maintenance update contains small access and reliability fixes. Existing protected-tool verification remains in place.'],
   ['What changed in v3.27.42?','Updates','This maintenance update expanded local leaderboard retention so separate mode and difficulty records are less likely to be evicted. The server filters remain separated by mode and difficulty.'],
@@ -3461,8 +3461,8 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
-   ['v3.30.2 — Unique Map Layouts + Functional Minimap','Testing build: every map now has a distinct navigational layout and the minimap mirrors terrain, solid objects, players, enemies, loot, and the current camera view. Start Run remains unchanged.'],
-   ['v3.30.28 — Tester Start Run Rebuild','Removed the conflicting tester startGame override and moved its startup effects into the single authoritative Start Run initializer.'],
+   ['v3.30.3 — Unique Map Layouts + Functional Minimap','Testing build: every map now has a distinct navigational layout and the minimap mirrors terrain, solid objects, players, enemies, loot, and the current camera view. Start Run remains unchanged.'],
+   ['v3.30.38 — Tester Start Run Rebuild','Removed the conflicting tester startGame override and moved its startup effects into the single authoritative Start Run initializer.'],
    ['v3.27.48 — Test Access Fix','Testing build: owner and admin tools open without a password in the isolated testing environment.'],
    ['v3.27.48 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
    ['v3.27.43 — Access Reliability Fix','Small bug fixes and access reliability improvements.'],
@@ -4678,7 +4678,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   const run=(fn)=>{try{if(typeof fn==='function')fn();}catch(err){console.error('OUTLAST button error:',err);if(typeof toast==='function')toast('⚠️ Button error');}};
   const routes={
     loginBtn:()=>finishUsernameLogin(),startBtn:()=>{newRunStats();startGame();setTimeout(()=>document.getElementById('game')?.focus(),0)},
-    switchUserBtn:()=>showUsernameLogin(),mapBtn:()=>openMapMenu(),difficultyBtn:()=>openDifficultyMenu(),modeBtn:()=>openModeMenu(),
+    switchUserBtn:()=>showUsernameLogin(),mapBtn:()=>window.openMapSelector?.(),difficultyBtn:()=>openDifficultyMenu(),modeBtn:()=>openModeMenu(),
     runBuilderBtn:()=>renderRunBuilder(),challengeBtn:()=>challengeOpen(),challengeModeBtn:()=>renderChallenges(),fullscreenBtn:()=>toggleFullscreen(),
     upgradeBtn:()=>renderUpgradeTree(),charBtn:()=>openCharacterMenu(),weaponBtn:()=>openWeaponMenu(),skinBtn:()=>{},
     petBtn:()=>openPets(),skillBtn:()=>openSkills(),elementBtn:()=>renderElements(),relicBtn:()=>openRelics(),charmBtn:()=>openCharms(),
@@ -6151,9 +6151,9 @@ window.__outlastSkinAreaVersion=VERSION;
 <script src="outlast-v327108-rarity-card-authority.js?v=3.27.108"></script>
 <script src="outlast-version-v3.28.1.js?v=3.28.1"></script>
 <script src="outlast-v3281-game-recovery.js?v=3.28.1"></script>
-<script id="outlast-v3283-ui-boot-repair">(function(){'use strict';const VERSION='v3.30.2';function repair(){const menu=document.getElementById('menu'),canvas=document.getElementById('game');if(!menu||!canvas||typeof game==='undefined')return;const p=game.player,valid=!!p&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y));const active=!!game.running&&valid&&!game.over&&!fatalErrorShown;if(game.running&&!valid){game.running=false;game.paused=false;game.over=false;game.endScreen=false;try{fatalErrorShown=false;fatalGameError=''}catch(_){}}if(!active){menu.style.display='flex';canvas.style.display='block';document.body.classList.remove('outlast-in-game');try{document.getElementById('subPanel').style.display='none'}catch(_){}try{syncMobileControls();updateMenuSummary()}catch(_){}}else{menu.style.display='none';canvas.style.display='block';document.body.classList.add('outlast-in-game')}const q=document.getElementById('outlastQualityBadge');if(q)q.remove();document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});const b=document.querySelector('meta[name="build-version"]'),o=document.querySelector('meta[name="outlast-build"]');if(b)b.content='3.28.3';if(o)o.content='3.28.3';window.OUTLAST_BUILD='3.28.3';window.OUTLAST_VERSION=VERSION}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();[0,100,500,1000,2000,4000].forEach(ms=>setTimeout(repair,ms))})();</script>
+<script id="outlast-v3283-ui-boot-repair">(function(){'use strict';const VERSION='v3.30.3';function repair(){const menu=document.getElementById('menu'),canvas=document.getElementById('game');if(!menu||!canvas||typeof game==='undefined')return;const p=game.player,valid=!!p&&Number.isFinite(Number(p.x))&&Number.isFinite(Number(p.y));const active=!!game.running&&valid&&!game.over&&!fatalErrorShown;if(game.running&&!valid){game.running=false;game.paused=false;game.over=false;game.endScreen=false;try{fatalErrorShown=false;fatalGameError=''}catch(_){}}if(!active){menu.style.display='flex';canvas.style.display='block';document.body.classList.remove('outlast-in-game');try{document.getElementById('subPanel').style.display='none'}catch(_){}try{syncMobileControls();updateMenuSummary()}catch(_){}}else{menu.style.display='none';canvas.style.display='block';document.body.classList.add('outlast-in-game')}const q=document.getElementById('outlastQualityBadge');if(q)q.remove();document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent=VERSION+' • SURVIVOR HUB'});const b=document.querySelector('meta[name="build-version"]'),o=document.querySelector('meta[name="outlast-build"]');if(b)b.content='3.28.3';if(o)o.content='3.28.3';window.OUTLAST_BUILD='3.28.3';window.OUTLAST_VERSION=VERSION}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',repair,{once:true});else repair();[0,100,500,1000,2000,4000].forEach(ms=>setTimeout(repair,ms))})();</script>
 <script id="outlast-batch2-expansion-v33027">
-(function(){'use strict';const V='3.30.2',R='v3.30.2';const $=s=>{try{return document.querySelector(s)}catch(_){return null}},safe=(f,d)=>{try{return f()}catch(_){return d}},get=k=>safe(()=>localStorage.getItem(k),null),set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);
+(function(){'use strict';const V='3.30.3',R='v3.30.3';const $=s=>{try{return document.querySelector(s)}catch(_){return null}},safe=(f,d)=>{try{return f()}catch(_){return d}},get=k=>safe(()=>localStorage.getItem(k),null),set=(k,v)=>safe(()=>localStorage.setItem(k,v),false);
 function sync(){safe(()=>{document.title='OUTLAST '+R;const a=$('meta[name="outlast-build"]'),b=$('meta[name="build-version"]');if(a)a.content=V;if(b)b.content=V;window.OUTLAST_BUILD=V;window.OUTLAST_VERSION=R;document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent=R);document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent=R+' • SURVIVOR HUB'})})}
 function ui(){if($('#outlastBatch2Bar'))return;const st=document.createElement('style');st.textContent='#outlastBatch2Bar{position:fixed;left:8px;bottom:8px;z-index:99970;background:rgba(8,14,20,.94);border:1px solid #31546a;border-radius:10px;padding:6px;font:700 10px Arial}#outlastBatch2Bar button{font:700 10px Arial;padding:6px 8px;margin-left:4px;border-radius:7px;background:#132330;color:#e8f5ff;border:1px solid #31546a}';document.head.appendChild(st);const d=document.createElement('div');d.id='outlastBatch2Bar';d.innerHTML='<span>'+R+'</span><button id="b2diag">Diagnostics</button>';document.body.appendChild(d);$('#b2diag').onclick=()=>{const r={version:R,canvas:!!$('#game'),menu:!!$('#menu'),start:typeof window.startGame==='function',exit:typeof window.exitGame==='function',mobile:innerWidth<=700};safe(()=>console.log('[OUTLAST tester diagnostics]',r));alert('Tester diagnostics captured in console.')}} 
 function recover(){safe(()=>{if(typeof save!=='undefined'&&save)localStorage.setItem('outlastRecoverySaveV327',JSON.stringify({version:V,time:Date.now(),save:JSON.parse(JSON.stringify(save))}))})}
@@ -6162,6 +6162,6 @@ if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{onc
 </script>
 <script src="outlast-v3291-map-and-boss-display.js?v=3.29.1"></script>
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
-<script src="outlast-v330-map-layout-and-minimap.js?v=3.30.2"></script>
+<script src="outlast-v330-map-layout-and-minimap.js?v=3.30.3"></script>
 </body>
 </html>

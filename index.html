@@ -3536,8 +3536,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.29.2';
-const CURRENT_UPDATE_INFO={title:'v3.29.2 — Leaderboards + Solid Maps Restore',summary:'Restored separate leaderboards for every mode and difficulty and made the visible map scenery solid.',items:['Leaderboard filters now separate records by mode and difficulty.','Map scenery is now collision-aware, including dash movement.','Enemy spawning is rescued from blocked map objects.','The existing Start Run flow was left unchanged.']};
+const CURRENT_UPDATE_VERSION='3.30.7';
+const CURRENT_UPDATE_INFO={title:'v3.30.7 — Map Crash Fix',summary:'Fixed a map rendering crash that could stop the game and show the recovery screen.',items:['Restored the missing map detail renderer used by the game map and minimap.','Map layouts and collision objects remain unchanged by this fix.','Start Run and login were left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

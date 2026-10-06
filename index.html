@@ -2228,6 +2228,7 @@ const tempUp=[
  ['Double Tap',v=>`${Math.round(20*v)}% chance to fire an extra shot`,v=>game.player.doubleTap=true],
  ['Treasure Radar',v=>`3x power-up drop chance`,v=>game.player.treasure=true],
  ['Shockwave',v=>`Every ${Math.max(6,Math.round(12/v))}th kill can blast nearby enemies`,v=>game.player.shockwave=true],
+ ['Upgrade Luck',v=>`+${Math.round(5*v)} Upgrade Luck`,v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
  ['Lucky Charm',v=>`+${Math.round(5*v)} Upgrade Luck`,v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
   ['Fortune',v=>`+${Math.round(10*v)} Loot Luck`,v=>{game.player.lootLuck=(game.player.lootLuck||0)+10*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
   ['Treasure Luck',v=>`+${Math.round(15*v)} Treasure Luck`,v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+15*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
@@ -3602,6 +3603,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.30.14 — Bouncing Bullets + Upgrade Luck','Rebuilt projectile bouncing so Bouncing Bullets now chains each hit to a nearby enemy, with up to 4 total bounces and 60% damage per bounce. Restored Upgrade Luck as a real level-up card that directly improves higher-rarity upgrade odds. Start Run and login were not changed.'],
    ['v3.33.0 — Omega Vacuum Upgrade','Added the Omega Vacuum permanent upgrade. It automatically collects all coins and XP every 27 seconds at Level 1; each upgrade level cuts 3 seconds from the cycle, down to 15 seconds at Level 5.'],
    ['v3.32.0 — Ribhouse Map','Added the new Ribhouse BBQ map with an original wood-and-grill background, booth/grill/platter scenery, solid collision-aware landmarks, and a Hot Grill hazard. It is inspired by classic baby-back-ribs restaurant vibes without copying branded artwork.'],
    ['v3.31.0 — Seizure Map','Added the new Seizure map with dense obstacle layouts, a sensory-overload hazard, and unique static map geometry. The map uses no seizure-inducing strobe or flashing effects. Start Run, login, and existing maps were not changed.'],
@@ -5605,7 +5607,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 /* OUTLAST v3.14.18 — Upgrade System Expansion */
 (function(){
   const META={
-    'Power Shot':'Damage','Rapid Fire':'Weapon','Vitality':'Survival','Swift Feet':'Survival',
+    'Upgrade Luck':'Luck','Power Shot':'Damage','Rapid Fire':'Weapon','Vitality':'Survival','Swift Feet':'Survival',
     'Magnet':'Economy','Regeneration':'Survival','Piercing':'Weapon','Multi-Shot':'Weapon',
     'Frost Aura':'Ability','Berserker':'Survival','Big Bullets':'Weapon','Lucky Hunter':'Luck',
     'Overcharge':'Ability','Second Wind':'Survival','Heavy Rounds':'Damage','Swift Aim':'Weapon',
@@ -6308,5 +6310,66 @@ function boot(){sync();ui();addEventListener('pagehide',recover,{capture:true});
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',boot,{once:true});else boot();})();
 </script>
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
-<script id="outlast-upgrade-restoration-v3-30-12">(function(){'use strict';function restore(){try{if(typeof tempUp!=='undefined'&&Array.isArray(tempUp)){const bouncing=['Bouncing Bullets',()=> 'Shots bounce to up to 2 nearby enemies at 60% damage per bounce',()=>{const p=game.player;if(!p)return;p.bouncingBullets=true;p.bounceCount=Math.min(4,(Number(p.bounceCount)||0)+2);p.bounceDamage=.60;p.bounceRange=360;}];if(!tempUp.some(x=>x&&x[0]==='Bouncing Bullets'))tempUp.push(bouncing);}if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&window.OUTLAST_UPGRADE_RARITY_POOLS){const pools=window.OUTLAST_UPGRADE_RARITY_POOLS;if(pools.Rare&&!pools.Rare.includes('Bouncing Bullets'))pools.Rare.push('Bouncing Bullets');}if(typeof window.OUTLAST_UPGRADE_RARITY_BY_NAME==='object'&&window.OUTLAST_UPGRADE_RARITY_BY_NAME)window.OUTLAST_UPGRADE_RARITY_BY_NAME['Bouncing Bullets']='Rare';if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&typeof tempUp!=='undefined'&&Array.isArray(tempUp)){const pools=window.OUTLAST_UPGRADE_RARITY_POOLS,byName=window.OUTLAST_UPGRADE_RARITY_BY_NAME||{};let missing=0;for(const rarity of Object.keys(pools))for(const name of pools[rarity]||[]){if(!tempUp.some(x=>x&&x[0]===name))missing++;else byName[name]=rarity;}if(!missing&&typeof window.makeChoices==='function'&&window.__outlastUpgradeRestorationApplied!==true){window.__outlastUpgradeRestorationApplied=true;const authoritative=window.makeChoices;window.makeChoices=function(){const choices=authoritative.apply(this,arguments);if(Array.isArray(choices))for(const u of choices)if(u&&byName[u[0]])u[3]=byName[u[0]];return choices;};}}}catch(_){}}restore();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore,{once:true});setTimeout(restore,0);setTimeout(restore,250);})();</script><script src="outlast-v33013-map-scenes.js?v=3.30.13"></script></body>
+<script id="outlast-upgrade-restoration-v3-30-12">(function(){'use strict';function restore(){try{if(typeof tempUp!=='undefined'&&Array.isArray(tempUp)){const bouncing=['Bouncing Bullets',()=> 'Shots bounce to up to 2 nearby enemies at 60% damage per bounce',()=>{const p=game.player;if(!p)return;p.bouncingBullets=true;p.bounceCount=Math.min(4,(Number(p.bounceCount)||0)+2);p.bounceDamage=.60;p.bounceRange=360;}];if(!tempUp.some(x=>x&&x[0]==='Bouncing Bullets'))tempUp.push(bouncing);}if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&window.OUTLAST_UPGRADE_RARITY_POOLS){const pools=window.OUTLAST_UPGRADE_RARITY_POOLS;if(pools.Rare&&!pools.Rare.includes('Bouncing Bullets'))pools.Rare.push('Bouncing Bullets');}if(typeof window.OUTLAST_UPGRADE_RARITY_BY_NAME==='object'&&window.OUTLAST_UPGRADE_RARITY_BY_NAME)window.OUTLAST_UPGRADE_RARITY_BY_NAME['Bouncing Bullets']='Rare';if(typeof window.OUTLAST_UPGRADE_RARITY_POOLS==='object'&&typeof tempUp!=='undefined'&&Array.isArray(tempUp)){const pools=window.OUTLAST_UPGRADE_RARITY_POOLS,byName=window.OUTLAST_UPGRADE_RARITY_BY_NAME||{};let missing=0;for(const rarity of Object.keys(pools))for(const name of pools[rarity]||[]){if(!tempUp.some(x=>x&&x[0]===name))missing++;else byName[name]=rarity;}if(!missing&&typeof window.makeChoices==='function'&&window.__outlastUpgradeRestorationApplied!==true){window.__outlastUpgradeRestorationApplied=true;const authoritative=window.makeChoices;window.makeChoices=function(){const choices=authoritative.apply(this,arguments);if(Array.isArray(choices))for(const u of choices)if(u&&byName[u[0]])u[3]=byName[u[0]];return choices;};}}}catch(_){}}restore();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore,{once:true});setTimeout(restore,0);setTimeout(restore,250);})();</script><script src="outlast-v33013-map-scenes.js?v=3.30.13"></script>
+<script id="outlast-v33014-bounce-luck">
+(function(){
+'use strict';
+const V='3.30.14';
+
+function initializeBounceState(b,p){
+  if(!b || b.enemy || !p || !p.bouncingBullets || b.bounceRemaining!==undefined) return;
+  b.bounceRemaining=Math.min(4,Math.max(0,Math.floor(Number(p.bounceCount)||0)));
+  b.bounceDamage=Math.max(.1,Math.min(1,Number(p.bounceDamage)||.60));
+  b.bounceRange=Math.max(1,Number(p.bounceRange)||360);
+  b.bounceTargets=new Set();
+}
+
+function bounceAfterHit(b,hitEnemy,p){
+  if(!b || !hitEnemy || !p || !p.bouncingBullets || !(b.bounceRemaining>0)) return false;
+  if(!b.bounceTargets)b.bounceTargets=new Set();
+  b.bounceTargets.add(hitEnemy);
+  let target=null,best=Number(b.bounceRange)||360;
+  for(const e of game.enemies){
+    if(!e || e===hitEnemy || e.__dead || e.hp<=0 || b.bounceTargets.has(e)) continue;
+    const d=Math.hypot(e.x-hitEnemy.x,e.y-hitEnemy.y);
+    if(d<best){best=d;target=e;}
+  }
+  if(!target) return false;
+  const a=Math.atan2(target.y-hitEnemy.y,target.x-hitEnemy.x);
+  const speed=Math.hypot(b.vx,b.vy)||720;
+  const offset=Math.max(12,(hitEnemy.r||15)+(b.r||3)+3);
+  b.x=hitEnemy.x+Math.cos(a)*offset;
+  b.y=hitEnemy.y+Math.sin(a)*offset;
+  b.a=a;b.vx=Math.cos(a)*speed;b.vy=Math.sin(a)*speed;
+  b.dmg=Math.max(1,(Number(b.dmg)||1)*(Number(b.bounceDamage)||.60));
+  b.bounceRemaining--;
+  game.effects.push({x:hitEnemy.x,y:hitEnemy.y,t:.22,r:30,color:'#72a8ff'});
+  return true;
+}
+window.OUTLAST_BOUNCE_VERSION=V;
+window.outlastInitializeBounceState=initializeBounceState;
+window.outlastBounceAfterHit=bounceAfterHit;
+try{
+  document.title='OUTLAST v'+V;
+  for(const sel of ['meta[name="outlast-build"]','meta[name="build-version"]']){
+    const el=document.querySelector(sel);if(el)el.content=V;
+  }
+  window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;
+  document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+V);
+}catch(_){}
+})();
+</script><script src="outlast-v33014-bounce-luck.js?v=3.30.14"></script><script id="outlast-v33014-final-marker">
+(function(){
+'use strict';
+try{
+ document.title='OUTLAST v3.30.14';
+ window.OUTLAST_BUILD='3.30.14';
+ window.OUTLAST_VERSION='v3.30.14';
+ document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.14';});
+ if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does Upgrade Luck work?';})){
+   helpArticles.unshift(['How does Upgrade Luck work?','Upgrades & Luck','Upgrade Luck directly increases the chance of higher-rarity upgrade cards. The current value is shown on the level-up screen.']);
+ }
+}catch(_){}
+})();
+</script></body>
 </html>

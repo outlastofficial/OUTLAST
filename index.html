@@ -1882,7 +1882,8 @@ function endRun(victory,recordScore=true,showEnd=true){
    save.leaderboard=Array.isArray(save.leaderboard)?save.leaderboard:[];
    const name=currentUsername.slice(0,18);
    const entry={name,score:Math.floor(game.score),level:game.level,kills:run.kills,mode:save.mode,difficulty:save.difficulty,date:new Date().toLocaleDateString()};
-   const entryKey=leaderboardRecordKey(entry);\n   const existingIndex=save.leaderboard.findIndex(r=>leaderboardRecordKey(r)===entryKey);
+   const entryKey=leaderboardRecordKey(entry);
+   const existingIndex=save.leaderboard.findIndex(r=>leaderboardRecordKey(r)===entryKey);
    let shouldSubmit=false;
    if(existingIndex>=0){
      if(entry.score>Number(save.leaderboard[existingIndex].score||0)){

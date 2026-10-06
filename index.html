@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.7">
-<meta name="build-version" content="3.30.7">
-<title>OUTLAST v3.30.7</title>
+<meta name="outlast-build" content="3.30.8">
+<meta name="build-version" content="3.30.8">
+<title>OUTLAST v3.30.8</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -850,7 +850,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.7 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.8 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -1161,22 +1161,22 @@ const mapDefs={
 Object.defineProperties(mapDefs,{Lab:{value:mapDefs.Laboratory,enumerable:false},'Military Base':{value:mapDefs.MilitaryBase,enumerable:false}});
 
 const mapObstacles={
-  Forest:[['Tree',280,220,90,130],['Tree',620,430,80,120],['Rock',1050,260,120,80],['Log',480,900,190,45],['Rock',1420,720,110,75],['Tree',2140,300,95,135],['Tree',2520,620,85,120],['Rock',2780,1040,120,80]],
-  Desert:[['Rock',260,260,140,80],['Cactus',620,720,55,100],['Rock',980,420,120,75],['Ruins',1450,260,190,65],['Rock',1940,760,130,85],['Cactus',2320,420,55,100],['Ruins',2550,980,180,70],['Rock',2850,1380,120,75]],
-  Snow:[['IceRock',300,240,130,90],['IceBlock',760,520,140,75],['SnowBank',1180,260,200,60],['IceRock',1520,800,110,110],['SnowBank',1860,470,180,60],['IceBlock',2260,760,140,80],['IceRock',2580,300,120,100],['SnowBank',2860,1080,170,60]],
-  Lava:[['Rock',300,240,120,90],['LavaRock',700,620,110,95],['Rock',1040,260,140,90],['LavaRock',1500,860,120,100],['Rock',1920,500,135,95],['LavaRock',2280,820,115,100],['Rock',2640,280,140,90],['LavaRock',2860,1280,120,90]],
-  City:[['Car',260,300,180,75],['Barrier',620,520,210,55],['Car',980,300,180,75],['Blockade',1280,900,230,55],['Car',1840,360,180,75],['Barrier',2160,650,210,55],['Car',2520,320,180,75],['Barrier',2740,980,210,55]],
-  Hospital:[['Bed',260,300,170,60],['Cabinet',560,520,75,145],['Bed',980,300,170,60],['Cabinet',1260,860,75,145],['Bed',1900,300,170,60],['Cabinet',2200,520,75,145],['Bed',2580,300,170,60],['Cabinet',2780,860,75,145]],
-  Laboratory:[['Crate',260,260,130,100],['Tank',600,610,100,135],['Crate',980,260,145,95],['Console',1320,830,180,60],['Crate',1870,300,145,95],['Tank',2200,590,100,135],['Crate',2550,280,145,95],['Console',2760,870,180,60]],
-  Subway:[['Bench',250,360,190,50],['Pillar',620,520,60,170],['Bench',1000,900,190,50],['Pillar',1430,380,60,170],['Bench',1900,360,190,50],['Pillar',2260,760,60,170],['Bench',2580,980,190,50],['Pillar',2860,420,60,170]],
-  Prison:[['CellBlock',240,240,190,85],['Barrier',650,520,190,60],['CellBlock',980,820,190,85],['Barrier',1390,350,190,60],['CellBlock',1890,240,190,85],['Barrier',2200,690,190,60],['CellBlock',2500,870,190,85],['Barrier',2810,350,190,60]],
-  MilitaryBase:[['Sandbags',240,250,190,65],['Vehicle',620,620,170,95],['Crates',980,300,180,75],['Sandbags',1320,860,200,65],['Vehicle',1880,330,170,95],['Crates',2220,720,180,75],['Sandbags',2580,260,190,65],['Vehicle',2860,980,170,95]],
-  RuinedTown:[['Rubble',260,250,170,95],['Wall',640,520,220,60],['Rubble',1020,880,170,95],['Wall',1360,300,220,60],['Rubble',1920,260,170,95],['Wall',2260,660,220,60],['Rubble',2600,900,170,95],['Wall',2860,360,220,60]],
-  Harbor:[['Container',240,250,180,95],['Crane',620,560,200,60],['Container',980,340,180,95],['DockWall',1260,980,220,55],['Container',1880,250,180,95],['Crane',2200,600,200,60],['Container',2550,350,180,95],['DockWall',2820,980,220,55]],
-  Bunker:[['BlastDoor',240,240,170,95],['Console',600,600,130,110],['Barrier',980,320,210,60],['BlastDoor',1350,900,170,95],['Console',1880,300,130,110],['Barrier',2200,650,210,60],['BlastDoor',2580,250,170,95],['Console',2820,900,130,110]],
-  Swamp:[['DeadTree',260,220,130,110],['MudPatch',620,560,210,80],['ReedBed',1000,300,210,65],['Rock',1320,880,150,95],['DeadTree',1900,250,130,110],['MudPatch',2220,620,210,80],['ReedBed',2580,340,210,65],['Rock',2860,900,150,95]],
-  Skyscraper:[['Desk',240,240,170,75],['Column',620,540,65,170],['Generator',980,300,160,95],['Desk',1320,900,170,75],['Column',1880,260,65,170],['Generator',2200,600,160,95],['Desk',2580,340,170,75],['Column',2860,900,65,170]],
-  Wasteland:[['Wreck',260,260,170,90],['Rock',620,620,190,70],['Wreck',980,330,170,90],['Barrier',1320,860,210,55],['Rock',1900,280,190,70],['Wreck',2220,680,170,90],['Barrier',2580,340,210,55],['Rock',2860,1040,160,80]]
+  Forest:[['Tree',220,180,90,130],['Tree',520,420,80,120],['Log',820,220,190,45],['Rock',1120,520,120,85],['Tree',1420,220,95,135],['Boulder',1760,520,150,105],['Tree',2140,260,95,135],['Log',2380,720,190,45],['Tree',2700,360,90,130],['Rock',2920,900,130,90],['FallenTree',1180,1120,210,50],['Rock',560,1180,130,90]],
+  Desert:[['Rock',220,240,150,90],['Cactus',520,760,55,105],['Ruins',820,250,210,75],['Rock',1120,980,140,85],['Arch',1400,220,180,70],['Cactus',1780,560,55,105],['Ruins',2100,260,210,75],['Rock',2440,980,150,90],['Cactus',2700,520,55,105],['Ruins',2920,820,190,70],['DuneRock',760,1200,170,75],['Cactus',1900,1180,55,105]],
+  Snow:[['IceRock',220,220,135,95],['SnowBank',520,610,220,65],['IceBlock',860,240,145,80],['SnowBank',1120,1050,220,65],['IceCave',1450,250,190,80],['IceRock',1800,620,125,115],['SnowBank',2140,260,220,65],['IceBlock',2460,980,150,85],['IceRock',2760,430,130,105],['SnowBank',2960,760,180,65],['IceRock',700,1180,140,100],['IceBlock',2020,1180,150,85]],
+  Lava:[['Rock',220,220,135,95],['LavaRock',520,700,120,105],['ObsidianPillar',820,250,75,190],['Rock',1100,1050,150,100],['LavaRock',1420,250,125,110],['ObsidianPillar',1750,700,75,190],['Rock',2080,260,150,100],['LavaRock',2380,1040,125,110],['ObsidianPillar',2700,260,75,190],['Rock',2980,700,140,100],['LavaRock',700,1180,125,105],['ObsidianPillar',2200,1180,75,170]],
+  City:[['Car',220,260,180,75],['Barrier',500,600,220,55],['Car',820,250,180,75],['Bus',1080,1050,260,85],['Blockade',1450,280,230,55],['Car',1780,700,180,75],['Barrier',2100,260,220,55],['Truck',2440,980,240,85],['Car',2780,380,180,75],['Barrier',2980,720,190,55],['Dumpster',720,1180,160,75],['Blockade',1900,1180,230,55]],
+  Hospital:[['Bed',220,250,170,60],['Cabinet',500,560,75,145],['Bed',820,250,170,60],['Generator',1080,1020,150,100],['Cabinet',1400,300,75,145],['Bed',1740,720,170,60],['Cabinet',2080,250,75,145],['Bed',2400,980,170,60],['Generator',2740,300,150,100],['Cabinet',2980,700,75,145],['Bed',700,1180,170,60],['Cabinet',1900,1180,75,145]],
+  Laboratory:[['Crate',220,240,140,105],['Tank',500,620,105,145],['Console',820,250,190,65],['Crate',1120,1040,145,100],['Tank',1420,260,105,145],['Console',1760,700,190,65],['Crate',2100,240,145,100],['Tank',2420,1000,105,145],['Console',2740,300,190,65],['Crate',2980,720,145,100],['Containment',720,1180,180,85],['Console',1980,1180,190,65]],
+  Subway:[['Bench',220,360,190,50],['Pillar',520,560,65,180],['SignalBox',820,240,130,90],['Pillar',1100,1040,65,180],['Bench',1400,300,190,50],['Pillar',1760,650,65,180],['SignalBox',2100,260,130,90],['Bench',2440,980,190,50],['Pillar',2780,320,65,180],['SignalBox',2980,760,130,90],['Bench',700,1180,190,50],['Pillar',2000,1180,65,180]],
+  Prison:[['CellBlock',220,220,200,90],['Barrier',520,580,200,60],['WatchTower',840,230,90,170],['CellBlock',1080,1020,200,90],['Barrier',1400,300,200,60],['WatchTower',1760,650,90,170],['CellBlock',2080,220,200,90],['Barrier',2420,980,200,60],['WatchTower',2740,300,90,170],['CellBlock',2980,720,190,90],['Barrier',700,1180,200,60],['WatchTower',1980,1180,90,170]],
+  MilitaryBase:[['Sandbags',220,240,200,65],['Vehicle',520,650,180,100],['Crates',840,260,180,75],['Bunker',1120,1030,190,105],['Sandbags',1420,250,200,65],['Vehicle',1760,680,180,100],['Crates',2080,260,180,75],['Bunker',2420,980,190,105],['Sandbags',2740,300,200,65],['Vehicle',2980,700,180,100],['Crates',720,1180,180,75],['Sandbags',1980,1180,200,65]],
+  RuinedTown:[['Rubble',220,230,180,100],['Wall',520,560,240,60],['RuinedHouse',840,220,210,110],['Rubble',1120,1040,180,100],['Wall',1420,280,240,60],['RuinedHouse',1760,650,210,110],['Rubble',2080,230,180,100],['Wall',2420,980,240,60],['RuinedHouse',2740,300,210,110],['Rubble',2980,700,170,100],['Wall',700,1180,240,60],['RuinedHouse',1980,1180,210,110]],
+  Harbor:[['Container',220,230,190,100],['Crane',520,560,210,65],['Boat',820,220,230,90],['DockWall',1120,1030,230,60],['Container',1420,280,190,100],['Crane',1760,650,210,65],['Boat',2080,230,230,90],['DockWall',2420,980,230,60],['Container',2740,300,190,100],['Crane',2980,700,210,65],['Container',700,1180,190,100],['DockWall',1980,1180,230,60]],
+  Bunker:[['BlastDoor',220,220,180,100],['Console',520,620,135,115],['Barrier',820,260,220,60],['BlastDoor',1120,1030,180,100],['Console',1420,280,135,115],['Barrier',1760,680,220,60],['BlastDoor',2080,220,180,100],['Console',2420,980,135,115],['Barrier',2740,300,220,60],['BlastDoor',2980,700,180,100],['Console',700,1180,135,115],['Barrier',1980,1180,220,60]],
+  Swamp:[['DeadTree',220,200,135,115],['MudPatch',520,620,220,85],['ReedBed',840,250,220,70],['BogRock',1120,1040,160,100],['DeadTree',1420,240,135,115],['MudPatch',1760,700,220,85],['ReedBed',2080,260,220,70],['BogRock',2420,980,160,100],['DeadTree',2740,300,135,115],['MudPatch',2980,700,200,85],['ReedBed',700,1180,220,70],['DeadTree',1980,1180,135,115]],
+  Skyscraper:[['Desk',220,220,180,80],['Column',520,560,70,180],['Generator',840,250,170,100],['Desk',1120,1040,180,80],['Column',1420,280,70,180],['Elevator',1760,680,140,190],['Generator',2080,220,170,100],['Desk',2420,980,180,80],['Column',2740,300,70,180],['Elevator',2980,700,140,190],['Desk',700,1180,180,80],['Generator',1980,1180,170,100]],
+  Wasteland:[['Wreck',220,240,180,95],['Rock',520,650,200,75],['Wreck',840,260,180,95],['Barrier',1120,1030,220,55],['Bunker',1420,250,190,100],['Rock',1760,680,200,75],['Wreck',2080,240,180,95],['Barrier',2420,980,220,55],['Wreck',2740,300,180,95],['Rock',2980,700,180,75],['Barrier',700,1180,220,55],['Wreck',1980,1180,180,95]]
 };
 Object.defineProperties(mapObstacles,{Lab:{value:mapObstacles.Laboratory,enumerable:false},'Military Base':{value:mapObstacles.MilitaryBase,enumerable:false}});
 function obstacleRects(map=save.map){return (mapObstacles[map]||mapObstacles.Forest).map(o=>({x:o[1],y:o[2],w:o[3],h:o[4],type:o[0]}));}
@@ -3536,8 +3536,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.30.7';
-const CURRENT_UPDATE_INFO={title:'v3.30.7 — Map Crash Fix',summary:'Fixed a map rendering crash that could stop the game and show the recovery screen.',items:['Restored the missing map detail renderer used by the game map and minimap.','Map layouts and collision objects remain unchanged by this fix.','Start Run and login were left unchanged.']};
+const CURRENT_UPDATE_VERSION='3.30.8';
+const CURRENT_UPDATE_INFO={title:'v3.30.8 — Map Expansion',summary:'Expanded every map with denser, distinct layouts and stronger map-specific landmarks.',items:['Every map now has 12 collision-aware objects instead of 8.','Map layouts use unique formations, landmarks, and traversal patterns.','Minimap and movement collisions use the same map geometry.','Start Run and login were left unchanged.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

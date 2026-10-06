@@ -236,7 +236,7 @@ function drawBetterMinimap(){
 }
 
 function installMinimap(){
-  if(typeof window.drawMinimap!=='function'||window.__outlast330MinimapWrapped)return;
+  if(window.__outlast330MinimapWrapped)return;
   window.__outlast330MinimapWrapped=true;
   window.drawMinimap=drawBetterMinimap;
 }

@@ -2158,6 +2158,7 @@ const tempUp=[
  ['Double Tap',v=>`${Math.round(20*v)}% chance to fire an extra shot`,v=>game.player.doubleTap=true],
  ['Treasure Radar',v=>`3x power-up drop chance`,v=>game.player.treasure=true],
  ['Shockwave',v=>`Every ${Math.max(6,Math.round(12/v))}th kill can blast nearby enemies`,v=>game.player.shockwave=true],
+ ['Upgrade Luck',v=>`+${Math.round(5*v)} Upgrade Luck`,v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
  ['Lucky Charm',v=>`+${Math.round(5*v)} Upgrade Luck`,v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
   ['Fortune',v=>`+${Math.round(10*v)} Loot Luck`,v=>{game.player.lootLuck=(game.player.lootLuck||0)+10*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
   ['Treasure Luck',v=>`+${Math.round(15*v)} Treasure Luck`,v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+15*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
@@ -2306,8 +2307,8 @@ if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game
  if(save.mode!=='1v1 Arena'&&game.bossClock>=game.stats.bossEvery){game.bossClock=0;spawnBoss()}
  // Power-ups no longer spawn randomly in the world; they come from enemy drops/events.
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
- for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.survival){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.survivalWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
-for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.lootLuck||0)*.003))e.slowTimer=1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='PulseCannon'){for(let pi=game.enemies.length-1;pi>=0;pi--){if(pi===j)continue;const q=game.enemies[pi];if(Math.hypot(q.x-b.x,q.y-b.y)<115){damageEnemy(q,p.damage*1.35);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.42,r:115});burst(b.x,b.y,'#d65cff',14,130);}if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>p.pierce)break}}if((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
+ for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;try{window.outlastInitializeBounceState&&window.outlastInitializeBounceState(b,p)}catch(_){}b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.survival){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.survivalWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false;
+for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,3);if(p.stun&&Math.random()<Math.min(.65,.12+(p.lootLuck||0)*.003))e.slowTimer=1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='PulseCannon'){for(let pi=game.enemies.length-1;pi>=0;pi--){if(pi===j)continue;const q=game.enemies[pi];if(Math.hypot(q.x-b.x,q.y-b.y)<115){damageEnemy(q,p.damage*1.35);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.42,r:115});burst(b.x,b.y,'#d65cff',14,130);}if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;let bounced=false;try{bounced=!!(window.outlastBounceAfterHit&&window.outlastBounceAfterHit(b,e,p))}catch(_){}hit=true;if(e.hp<=0)killEnemy(e);if(b.hits>p.pierce&&!bounced)break}}if(!bounced&&((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100))game.bullets.splice(i,1)}
  for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1;let auraActive=p.frost&&d<(p.frostAuraRadius||130);let slow=auraActive?Math.max(.08,1-(p.frostSlow||.50)):1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}if(auraActive){e.frostAuraHitCooldown=Math.max(0,(Number(e.frostAuraHitCooldown)||0)-dt);if(e.frostAuraHitCooldown<=0){const auraDamage=Math.max(0,p.damage*(Number(p.frostAuraDps)||0));if(auraDamage>0){damageEnemy(e,auraDamage);e.frostAuraHitCooldown=.5;if(e.hp<=0){const deadIndex=game.enemies.indexOf(e);if(deadIndex>=0){killEnemy(deadIndex);continue;}}}}}const nearby=game.enemies.length>45?0:game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const moveSpeed=e.kind==='boss'?Math.min(e.speed,140):e.speed;const enx=e.x+ex/d*moveSpeed*slow*squadBoost*dt,eny=e.y+ey/d*moveSpeed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if(e.kind==='boss'){e.summonTimer=(e.summonTimer||6)-dt;if(e.summonTimer<=0){e.summonTimer=e.phase>=3?4.2:(e.phase===2?5:6.5);const count=e.phase>=3?6:(e.phase===2?5:4);for(let si=0;si<count;si++){const ang=Math.random()*Math.PI*2,rad=55+Math.random()*35;spawnEnemy(Math.random()<.35?'runner':(Math.random()<.5?'ranged':'zombie'));const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){m.x=Math.max(24,Math.min(W-24,e.x+Math.cos(ang)*rad));m.y=Math.max(24,Math.min(H-24,e.y+Math.sin(ang)*rad));m.summoned=true;}}burst(e.x,e.y,'#ff8a5b',12,130);toast('⚠ BOSS SUMMONED '+count+' MINIONS!');} e.bossAttackTimer=(e.bossAttackTimer||2.2)-dt;if(e.bossAttackTimer<=0&&game.bullets.length<MAX_BULLETS){const phase=e.phase||1;const shots=phase>=3?3:(phase===2?2:1);const spread=phase>=3?.24:(phase===2?.16:0);const baseAng=Math.atan2(p.y-e.y,p.x-e.x);for(let bi=0;bi<shots;bi++){const off=shots===1?0:(bi-(shots-1)/2)*spread;const aa=baseAng+off;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(aa)*(phase>=3?390:330),vy:Math.sin(aa)*(phase>=3?390:330),r:9,dmg:e.damage*.65});}e.bossAttackTimer=phase>=3?.9:(phase===2?1.25:1.9);burst(e.x,e.y,'#ff6b6b',5,80);} }if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*(p.shield>0?Math.max(.05,.15/p.shieldEfficiency):1)*p.damageTakenMult;p.hp-=actual*dt;p.shield=Math.max(0,p.shield-dt)}}
  // Safety cleanup: never render or process an enemy that has already been killed.
  for(let i=game.enemies.length-1;i>=0;i--){const e=game.enemies[i];if(!e||e.__dead||e.hp<=0){if(e&&!e.__dead)killEnemy(e);else game.enemies.splice(i,1);}}
@@ -3495,6 +3496,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+   ['v3.30.14 — Bouncing Bullets + Upgrade Luck','Rebuilt projectile bouncing so Bouncing Bullets now chains each hit to a nearby enemy, with up to 4 total bounces and 60% damage per bounce. Restored Upgrade Luck as a real level-up card that directly improves higher-rarity upgrade odds. Start Run and login were not changed.'],
    ['v3.33.0 — Omega Vacuum Upgrade','Added the Omega Vacuum permanent upgrade. It automatically collects all coins and XP every 27 seconds at Level 1; each upgrade level cuts 3 seconds from the cycle, down to 15 seconds at Level 5.'],
    ['v3.32.0 — Ribhouse Map','Added the new Ribhouse BBQ map with an original wood-and-grill background, booth/grill/platter scenery, solid collision-aware landmarks, and a Hot Grill hazard. It is inspired by classic baby-back-ribs restaurant vibes without copying branded artwork.'],
    ['v3.31.0 — Seizure Map','Added the new Seizure map with dense obstacle layouts, a sensory-overload hazard, and unique static map geometry. The map uses no seizure-inducing strobe or flashing effects. Start Run, login, and existing maps were not changed.'],
@@ -5355,7 +5357,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 /* OUTLAST v3.14.18 — Upgrade System Expansion */
 (function(){
   const META={
-    'Power Shot':'Damage','Rapid Fire':'Weapon','Vitality':'Survival','Swift Feet':'Survival',
+    'Upgrade Luck':'Luck','Power Shot':'Damage','Rapid Fire':'Weapon','Vitality':'Survival','Swift Feet':'Survival',
     'Magnet':'Economy','Regeneration':'Survival','Piercing':'Weapon','Multi-Shot':'Weapon',
     'Frost Aura':'Ability','Berserker':'Survival','Big Bullets':'Weapon','Lucky Hunter':'Luck',
     'Overcharge':'Ability','Second Wind':'Survival','Heavy Rounds':'Damage','Swift Aim':'Weapon',
@@ -6043,5 +6045,66 @@ restore();
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',restore,{once:true});
 setTimeout(restore,0);setTimeout(restore,250);
 })();
-</script><script src="outlast-v33013-map-scenes.js?v=3.30.13"></script></body>
+</script><script src="outlast-v33013-map-scenes.js?v=3.30.13"></script>
+<script id="outlast-v33014-bounce-luck">
+(function(){
+'use strict';
+const V='3.30.14';
+
+function initializeBounceState(b,p){
+  if(!b || b.enemy || !p || !p.bouncingBullets || b.bounceRemaining!==undefined) return;
+  b.bounceRemaining=Math.min(4,Math.max(0,Math.floor(Number(p.bounceCount)||0)));
+  b.bounceDamage=Math.max(.1,Math.min(1,Number(p.bounceDamage)||.60));
+  b.bounceRange=Math.max(1,Number(p.bounceRange)||360);
+  b.bounceTargets=new Set();
+}
+
+function bounceAfterHit(b,hitEnemy,p){
+  if(!b || !hitEnemy || !p || !p.bouncingBullets || !(b.bounceRemaining>0)) return false;
+  if(!b.bounceTargets)b.bounceTargets=new Set();
+  b.bounceTargets.add(hitEnemy);
+  let target=null,best=Number(b.bounceRange)||360;
+  for(const e of game.enemies){
+    if(!e || e===hitEnemy || e.__dead || e.hp<=0 || b.bounceTargets.has(e)) continue;
+    const d=Math.hypot(e.x-hitEnemy.x,e.y-hitEnemy.y);
+    if(d<best){best=d;target=e;}
+  }
+  if(!target) return false;
+  const a=Math.atan2(target.y-hitEnemy.y,target.x-hitEnemy.x);
+  const speed=Math.hypot(b.vx,b.vy)||720;
+  const offset=Math.max(12,(hitEnemy.r||15)+(b.r||3)+3);
+  b.x=hitEnemy.x+Math.cos(a)*offset;
+  b.y=hitEnemy.y+Math.sin(a)*offset;
+  b.a=a;b.vx=Math.cos(a)*speed;b.vy=Math.sin(a)*speed;
+  b.dmg=Math.max(1,(Number(b.dmg)||1)*(Number(b.bounceDamage)||.60));
+  b.bounceRemaining--;
+  game.effects.push({x:hitEnemy.x,y:hitEnemy.y,t:.22,r:30,color:'#72a8ff'});
+  return true;
+}
+window.OUTLAST_BOUNCE_VERSION=V;
+window.outlastInitializeBounceState=initializeBounceState;
+window.outlastBounceAfterHit=bounceAfterHit;
+try{
+  document.title='OUTLAST v'+V;
+  for(const sel of ['meta[name="outlast-build"]','meta[name="build-version"]']){
+    const el=document.querySelector(sel);if(el)el.content=V;
+  }
+  window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;
+  document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+V);
+}catch(_){}
+})();
+</script><script src="outlast-v33014-bounce-luck.js?v=3.30.14"></script><script id="outlast-v33014-final-marker">
+(function(){
+'use strict';
+try{
+ document.title='OUTLAST v3.30.14';
+ window.OUTLAST_BUILD='3.30.14';
+ window.OUTLAST_VERSION='v3.30.14';
+ document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.14';});
+ if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does Upgrade Luck work?';})){
+   helpArticles.unshift(['How does Upgrade Luck work?','Upgrades & Luck','Upgrade Luck directly increases the chance of higher-rarity upgrade cards. The current value is shown on the level-up screen.']);
+ }
+}catch(_){}
+})();
+</script></body>
 </html>

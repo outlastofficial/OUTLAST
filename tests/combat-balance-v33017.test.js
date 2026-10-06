@@ -1,0 +1,10 @@
+const fs=require('fs'),assert=require('assert'),path=require('path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const patch=fs.readFileSync(path.join(root,'outlast-v33017-combat-balance.js'),'utf8');
+assert.match(html,/outlast-v33017-combat-balance\.js\?v=3\.30\.17/,'combat balance patch missing');
+assert.match(patch,/Mythic.*pierce|pierce.*Mythic/i);
+assert.match(patch,/DroneSwarm.*MineLayer.*ArcBlade.*OmegaBlade.*WastelandBow.*NovaCannon.*RiftBlade/);
+assert.match(patch,/BOSS/);
+assert.match(patch,/OBSTACLE/);
+console.log('v3.30.17 combat/upgrade/minimap regression test passed');

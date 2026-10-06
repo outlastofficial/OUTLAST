@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.30.6">
-<meta name="build-version" content="3.30.6">
-<title>OUTLAST v3.30.6</title>
+<meta name="outlast-build" content="3.30.7">
+<meta name="build-version" content="3.30.7">
+<title>OUTLAST v3.30.7</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -874,7 +874,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v3.30.6 • SURVIVOR HUB</div>
+          <div class="menu-chip">v3.30.7 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -2365,6 +2365,33 @@ for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(
  game.camera.x=Math.max(0,Math.min(W-CW,p.x-CW/2));game.camera.y=Math.max(0,Math.min(H-CH,p.y-CH/2));
 }
 function worldPoint(x,y){return [x-game.camera.x,y-game.camera.y]}
+function drawMapDetails(scale=1,ox=0,oy=0){
+  const md=mapDefs[save?.map]||mapDefs.Forest;
+  if(!md||typeof ctx?.save!=='function')return;
+  ctx.save();
+  ctx.globalAlpha=.10;
+  ctx.strokeStyle=md.accent||'#5c7185';
+  ctx.lineWidth=Math.max(1,2*scale);
+  const inset=18*scale;
+  const rw=Math.max(1,(W-36)*scale),rh=Math.max(1,(H-36)*scale);
+  ctx.strokeRect(ox+inset,oy+inset,rw,rh);
+  ctx.globalAlpha=.07;
+  ctx.lineWidth=Math.max(1,scale);
+  for(let x=120;x<W-60;x+=360){
+    ctx.beginPath();
+    ctx.moveTo(ox+x*scale,oy+30*scale);
+    ctx.lineTo(ox+x*scale,oy+(H-30)*scale);
+    ctx.stroke();
+  }
+  for(let y=140;y<H-60;y+=300){
+    ctx.beginPath();
+    ctx.moveTo(ox+30*scale,oy+y*scale);
+    ctx.lineTo(ox+(W-30)*scale,oy+y*scale);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
 function drawHazards(scale=1,ox=0,oy=0,clipW=W,clipH=H){
   const hz=mapHazards[save.map]||mapHazards.Forest;
   if(game.mapEvent){
@@ -3392,6 +3419,7 @@ document.getElementById('progressionBtn').onclick=renderProgression;
 document.getElementById('questBtn').onclick=renderQuestBoard;
 
 const helpArticles=[
+  ['What changed in v3.30.7?','Updates','Fixed the fatal game-error crash caused by the map rebuild calling a missing map-detail renderer. The renderer is now safe and minimal; Owner Panel, Start Run, and login were not changed.'],
   ['What changed in v3.30.6?','Updates','Added a small pink, sparkly toy in the top-right corner as a non-clickable decorative game element. It does not affect gameplay or controls.'],
   ['What changed in v3.30.3?','Updates','Testing build: every map now has a distinct navigational layout, and the minimap mirrors terrain, solid scenery, players, enemies, loot, and the camera viewport. Start Run remains unchanged.'],
   ['How does the new minimap work?','Maps','The minimap mirrors the current map layout and tracks solid scenery, players, enemies, loot, and the camera viewport. Every map has its own visual layout identity.'],
@@ -3487,6 +3515,7 @@ function renderUpdates(){
 const CHAT_TAG_UPDATE_ENTRY=['v3.27.15 — Owner Chat Tags','Owner accounts now display an 👑 OWNER tag in Global Chat so official owner messages are easy to identify.']; try{ if(Array.isArray(updates)) updates.unshift(CHAT_TAG_UPDATE_ENTRY); }catch(_){ }
 const OWNER_POKE_TAG_UPDATE_ENTRY=['v3.27.16 — Owner Chat Tag Update','Added Poke to the recognized Owner Chat accounts, so Poke messages now display the 👑 OWNER tag.']; try{ if(Array.isArray(updates)) updates.unshift(OWNER_POKE_TAG_UPDATE_ENTRY); }catch(_){ }
 const updates=[
+   ['v3.30.7 — Map Renderer Crash Fix','Restored the missing map-detail renderer with a safe, minimal implementation so map drawing no longer crashes the game loop. Owner Panel, Start Run, and login were not changed.'],
    ['v3.30.6 — Pink Sparkly Toy','Added a small pink, sparkly decorative toy to the top-right of the screen. It is non-clickable and does not affect gameplay or controls.'],
    ['v3.30.3 — Unique Map Layouts + Functional Minimap','Testing build: every map now has a distinct navigational layout and the minimap mirrors terrain, solid objects, players, enemies, loot, and the current camera view. Start Run remains unchanged.'],
    ['v3.30.38 — Tester Start Run Rebuild','Removed the conflicting tester startGame override and moved its startup effects into the single authoritative Start Run initializer.'],

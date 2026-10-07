@@ -3674,6 +3674,7 @@ const updates=[
 }
 
 const V3352_UPDATE_ENTRY=['v3.35.2 — Permanent Progression Expansion','Expanded and rebalanced the permanent upgrade tree with 40 additional permanent upgrades, broader build choices, and more controlled stat scaling.']; try{ if(Array.isArray(updates)) updates.unshift(V3352_UPDATE_ENTRY); }catch(_){ }
+try{if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='Permanent Progression Upgrades';}))helpArticles.unshift(['Permanent Progression Upgrades','Upgrades & Progression','The Permanent Upgrade Tree now contains 40 additional upgrades. Most levels give small, focused bonuses so you can build toward damage, defense, mobility, XP, economy, luck, bosses, or utility without one purchase dominating the entire build.']);}catch(_){ }
 const TUTORIAL_UPDATE_ENTRY=['v3.14.18 — Tutorial Reliability','Rebuilt the New Player Tutorial launch flow so it works from the menu, can always be reopened manually, and its NEXT/SKIP controls are protected from the global button safety layer.'];
 try{ if(Array.isArray(updates)) updates.unshift(TUTORIAL_UPDATE_ENTRY); }catch(_){ }
 const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboard build metadata, hardened leaderboard saving for older saves, and synchronized the in-game update/version metadata across the main game pages.'];
@@ -3681,7 +3682,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='3.35.2';
-const CURRENT_UPDATE_INFO={title:'v3.30.10 — Main Title Reverted',summary:'Restored and locked the full gameplay upgrade ladder, including Bouncing Bullets and all rarity tiers. The title and top-corner UI cleanup remain unchanged.',items:['Removed the animated rainbow title styling.','Main-menu title styling is back to the normal game design.','Start Run, maps, and login were left unchanged.']};
+const CURRENT_UPDATE_INFO={title:'v3.35.2 — Permanent Progression Expansion',summary:'A major permanent-upgrade balance pass adds 40 new long-term upgrades and spreads power more evenly across damage, defense, economy, mobility, luck, XP, and combat utility.',items:['Added 40 new permanent upgrades for many different build paths.','Rebalanced new stat gains so individual levels stay modest and stack predictably.','Added new pierce, multishot, crit, range, pickup, XP, luck, defense, boss, score, and ultimate progression.','Existing Start Run, login, maps, and weapon systems were left intact.']};
 function showUpdatePopup(force=false){
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6164,5 +6165,5 @@ if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]===
 helpArticles.unshift(['Why are my bullets bouncing?','Weapons & Combat','Bouncing Bullets now retarget cleanly after each hit, ignore enemies already hit by that bullet, and stop the current collision pass after a successful bounce.']);
 if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.1');}))
 updates.unshift(['v3.35.1 — Bouncing Bullets Fix','Fixed Bouncing Bullets so each successful bounce retargets a new enemy cleanly, prevents repeat hits on the same target, and no longer processes multiple collisions in one bounce step.']);
-}catch(_){}})();</script></body>
+}catch(_){}})();</script><script id="outlast-v3352-final-marker">(function(){try{window.OUTLAST_BUILD="3.35.2";window.OUTLAST_VERSION="v3.35.2";document.title="OUTLAST v3.35.2";document.querySelectorAll("[data-outlast-version]").forEach(function(e){e.textContent="v3.35.2";});var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content="3.35.2";var b=document.querySelector('meta[name="build-version"]');if(b)b.content="3.35.2";}catch(_){}})();</script></body>
 </html>

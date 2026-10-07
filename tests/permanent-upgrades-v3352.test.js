@@ -1,0 +1,10 @@
+const fs=require('fs'),assert=require('assert');
+const html=fs.readFileSync('index.html','utf8');
+const start=html.indexOf('const permanent='),end=html.indexOf('const achievements=',start);
+assert(start>0&&end>start,'permanent upgrade catalog must exist');
+const section=html.slice(start,end);
+const direct=(section.match(/\['[^']+'/g)||[]).length;
+const expanded=(html.match(/v3352PermanentExpansion/g)||[]).length;
+assert(direct+expanded*40>=70,'permanent tree should expose at least 70 upgrades');
+for(const n of ['Hardening','Piercer','Twin Chambers','XP Circuit','Fortune Engine','Expedition Core'])assert(html.includes("['"+n+"'"),'missing '+n);
+console.log('Permanent progression expansion regression test passed');

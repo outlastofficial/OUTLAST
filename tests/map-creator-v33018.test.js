@@ -1,0 +1,13 @@
+const fs=require('fs'),assert=require('assert'),path=require('path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const creator=fs.readFileSync(path.join(root,'outlast-v33018-map-creator.js'),'utf8');
+assert.match(html,/outlast-v33018-map-creator\.js\?v=3\.30\.18/);
+assert.match(creator,/MAP_CREATOR_COST=100000/);
+assert.match(creator,/customMaps/);
+assert.match(creator,/Map Creator/);
+assert.match(creator,/persist\(/);
+assert.match(creator,/mapObstacles/);
+assert.match(creator,/mapDefs/);
+assert.doesNotMatch(creator,/startGame\s*=|function\s+startGame/);
+console.log('v3.30.18 Map Creator regression test passed');

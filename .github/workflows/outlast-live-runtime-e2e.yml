@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "outlast-v3370-game-systems.js"
+      - "*.js"
       - ".github/workflows/outlast-live-runtime-e2e.yml"
       - "tests/live-runtime-v3361.e2e.cjs"
   workflow_dispatch:

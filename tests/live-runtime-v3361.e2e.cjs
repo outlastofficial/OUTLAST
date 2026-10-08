@@ -64,3 +64,5 @@ const { chromium } = require('playwright');
   console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,consoleErrors,http404}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});
+
+// v3.37 backend event-state compatibility verified

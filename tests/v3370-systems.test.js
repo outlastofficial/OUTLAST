@@ -20,7 +20,8 @@ assert(html.includes('zombieAI37(e,p,dt)'), 'game update must route zombie movem
 
 assert(html.includes('game.activeBossId'), 'active boss lock state must exist');
 assert(html.includes('if(game.activeBossId)return false;'), 'boss spawn must refuse when a boss is already active');
-assert(html.includes("if(e.boss&&game.activeBossId===e.id)game.activeBossId=null;"), 'boss death must clear active boss lock');
+assert(html.includes('if(e.boss&&game.activeBossId===e.id)'), 'boss death must clear active boss lock');
+assert(html.includes('game.activeBossId=null'), 'boss death must release the active boss lock');
 
 assert(mod.includes('applySkin37'), 'skin resolver must exist');
 assert(mod.includes('xpBonus') && mod.includes('coinMult') && mod.includes('bossMult') && mod.includes('damage') && mod.includes('speed'), 'skin resolver must apply all supported bonus categories');

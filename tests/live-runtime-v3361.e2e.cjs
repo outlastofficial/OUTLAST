@@ -4,9 +4,9 @@ const { chromium } = require('playwright');
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport:{width:1280,height:900}});
   await page.setExtraHTTPHeaders({'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'});
-  const consoleErrors=[];
+  const consoleErrors=[];const http404=[];
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
-  page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));
+  page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));page.on('response',r=>{if(r.status()===404)http404.push(r.url())});
 
   await page.addInitScript(()=>{
     localStorage.setItem('outlastUsername','E2EPlayer');
@@ -59,8 +59,8 @@ const { chromium } = require('playwright');
   if(!flags.systems) throw new Error('v3.37 systems module did not initialize.');
   if(!flags.scale) throw new Error('Authoritative rarity scale did not initialize.');
   if(!flags.mandatory) throw new Error('Mandatory update checker did not initialize.');
-  if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | '));
+  if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | ')+' HTTP404='+http404.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,consoleErrors}));
+  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,consoleErrors,http404}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});

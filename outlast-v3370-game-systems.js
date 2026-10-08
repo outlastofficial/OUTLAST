@@ -158,7 +158,7 @@ const shop37=[
  {id:'upgrade37',name:'Upgrade Voucher',tag:'UPGRADE',price:1800,desc:'+1 random permanent upgrade level',grant:s=>{if(typeof permanent==='undefined')return;const a=permanent.filter(u=>(s.upgrades?.[u[0]]||0)<5);if(!a.length)return;const u=a[Math.floor(Math.random()*a.length)];s.upgrades=s.upgrades||{};s.upgrades[u[0]]=(s.upgrades[u[0]]||0)+1}},
  {id:'materials37',name:'Mega Material Box',tag:'CRAFT',price:1000,desc:'+25 materials',grant:s=>s.materials=(s.materials||0)+25}
 ];
-function shopDay37(){return new Date().toISOString().slice(0,10)}
+function shopDay37(){return typeof todayKey==='function'?todayKey():new Date().toLocaleDateString('en-CA')}
 function shopBought37(){const s=S();const d=shopDay37();if(!s)return {};if(s.dailyShop37Day!==d){s.dailyShop37Day=d;s.dailyShop37Purchases={};persist?.()}return s.dailyShop37Purchases||{}}
 function buyShop37(id){
  const s=S(),item=shop37.find(x=>x.id===id);if(!s||!item)return;
@@ -252,8 +252,7 @@ function inventory37(tab){
  const buttons=cats.map(x=>'<button type="button" class="outlast37-tab" data-inventory37="'+x[0]+'">'+x[1]+'</button>').join('');
  const own=o=>Object.keys(o||{}).filter(k=>o[k]).length;
  if(!tab){openSub('🎒 INVENTORY • CLEAN LOADOUT',summary+'<div class="outlast37-inventory-tabs">'+buttons+'</div><div class="outlast37-inventory-grid"><div class="outlast37-inventory-card"><b>CHARACTERS</b><strong>'+own(s.unlockedChars)+'</strong></div><div class="outlast37-inventory-card"><b>WEAPONS</b><strong>'+own(s.unlockedWeapons)+'</strong></div><div class="outlast37-inventory-card"><b>SKINS</b><strong>'+own(s.skins)+'</strong></div><div class="outlast37-inventory-card"><b>PETS</b><strong>'+own(s.pets)+'</strong></div><div class="outlast37-inventory-card"><b>RELICS</b><strong>'+own(s.relics)+'</strong></div><div class="outlast37-inventory-card"><b>CHARMS</b><strong>'+own(s.charms)+'</strong></div></div>');return}
- s.records.inventoryCategoriesOpened=new Set; // marker handled below without depending on serialization
- persist?.();
+ s.records.inventoryCategoriesOpened=(Number(s.records.inventoryCategoriesOpened)||0)+1;persist?.();
  try{renderInventoryTab(tab)}catch(_){openSub('🎒 Inventory',summary+'<div class="outlast37-inventory-tabs">'+buttons+'</div>')}
 }
 function core37(section){

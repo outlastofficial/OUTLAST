@@ -43,6 +43,6 @@ assert(html.includes('outlast_update_ack_v3.36.1'),'update acknowledgement must 
 assert(html.includes("const BUILD='3.36.1'"),'mandatory updater must use the current release version');
 assert(html.includes('RELOAD TO UPDATE'),'a newer served version must offer a cache-busting reload');
 assert(html.includes('OUTLAST UPDATE REQUIRED'),'the update check must gate the page until acknowledged');
-assert(html.includes('outlast-v3358-final-marker'),'release marker must identify v3.36.1');
+assert(html.includes('outlast-v3361-final-marker'),'release marker must identify v3.36.1');
 
 console.log('v3.36.1 rarity, shield, and mandatory-update regression checks passed');

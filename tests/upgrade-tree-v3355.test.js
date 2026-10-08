@@ -6,4 +6,5 @@ assert(html.includes('upgrade-tree-branch'),'upgrade tree should render named br
 assert(html.includes('upgrade-tree-node'),'upgrade tree should render connected node-style upgrades');
 assert(html.includes('upgrade-tree-level-pips'),'upgrade tree nodes should show level progress');
 assert(html.includes('upgrade-tree-scroll'),'upgrade tree should support a large catalog without reverting to a plain card grid');
+assert(html.includes("document.getElementById('upgradeBtn').onclick=window.renderUpgradeTree"),'the deployed Upgrade button must bind to the new tree renderer');
 console.log('Upgrade tree visual regression test passed');

@@ -86,7 +86,7 @@ function expandAchievements36(){
 function stats36(){
   const s=S(),st=s.stats||{},r=s.records||{},g=G(),p=g?.player;
   const levels=Object.values(s.upgrades||{}).reduce((n,v)=>n+(Number(v)||0),0);
-  openSub('📊 Stats','<div class="stats-grid-v3360">'+
+  if(S().records){S().records.statsOpened=(Number(S().records.statsOpened)||0)+1;persist();}openSub('📊 Stats','<div class="stats-grid-v3360">'+
     [['Games',st.games],['Kills',st.kills],['Bosses',st.bosses],['High Score',st.highScore],['Best Level',st.bestLevel],['Best Time',Math.floor(Number(st.bestTime||0))+'s'],['Live Damage',Math.round(Number(p?.damage||0))],['Fire Rate',Number(p?.fireRate||0).toFixed(2)+'s'],['Crit',Number((p?.crit||0)*100).toFixed(1)+'%'],['Best Combo',r.bestCombo||0],['Best Damage',r.bestDamage||0],['Permanent Levels',levels],['Coins',s.coins||0],['World Keys',s.worldKeys||0],['Forge Cores',s.forgeCores||0],['Materials',s.materials||0],['Skins',owned(s.skins)],['Pets',owned(s.pets)],['Relics',owned(s.relics)],['Charms',owned(s.charms)],['Achievements',Object.keys(s.ach||{}).filter(k=>s.ach[k]).length],['Prestige',s.prestige||0]].map(x=>'<div class="stat-box"><b>'+E(x[0])+'</b><span>'+E(Number(x[1]||0).toLocaleString?.()??x[1])+'</span></div>').join('')+
     '</div><div class="small" style="margin-top:10px">Live map '+E(s.map||'Forest')+' • mode '+E(s.mode||'Classic')+' • difficulty '+E(s.difficulty||'Normal')+' • boss '+(Array.isArray(g?.enemies)&&g.enemies.some(e=>e?.boss&&!e.__dead&&e.hp>0)?'LIVE':'NONE')+'</div>');
 }
@@ -137,7 +137,7 @@ function progress36(){
     page.querySelector('.menu-cards')?.after(holder);
   }
   const bind=(id,fn)=>{const b=document.getElementById(id);if(b)b.onclick=fn;};
-  bind('statsCombatBtn',stats36);bind('progressAchievementsBtn',()=>{expandAchievements36();renderAchievements36?.()||document.getElementById('achBtn')?.click();});bind('progressRecordsBtn',renderRecords);bind('progressLeaderboardBtn',openServerLeaderboard);bind('progressCollectionBtn',()=>renderCollection36?renderCollection36():openSkinMenu36());bind('progressInventoryBtn',inventory36);bind('progressSkinsBtn',openSkinMenu36);bind('progressCodexBtn',renderCodex);bind('progressSetsBtn',renderSets);bind('progressCoreBtn',core36);bind('progressUpgradeBtn',renderUpgradeTree);bind('progressEvolutionBtn',renderWeaponTree);bind('progressShopBtn',dailyShopOpen);bind('progressModifierBtn',modifiers36);bind('progressBattlePassBtn',renderBattlePass);bind('progressPrestigeBtn',renderPrestige);bind('progressRarityBtn',()=>{S().records=S().records||{};S().records.rarityLadderOpened=(Number(S().records.rarityLadderOpened)||0)+1;persist();renderRarities();});bind('progressWorldBossBtn',renderWorldBosses);bind('progressRoomsBtn',renderRooms);
+  bind('statsCombatBtn',stats36);bind('progressAchievementsBtn',()=>{addMoreAchievements36();document.getElementById('achBtn')?.click();});bind('progressRecordsBtn',renderRecords);bind('progressLeaderboardBtn',openServerLeaderboard);bind('progressCollectionBtn',()=>renderCollection36?renderCollection36():openSkinMenu36());bind('progressInventoryBtn',inventory36);bind('progressSkinsBtn',openSkinMenu36);bind('progressCodexBtn',renderCodex);bind('progressSetsBtn',renderSets);bind('progressCoreBtn',core36);bind('progressUpgradeBtn',renderUpgradeTree);bind('progressEvolutionBtn',renderWeaponTree);bind('progressShopBtn',dailyShopOpen);bind('progressModifierBtn',modifiers36);bind('progressBattlePassBtn',renderBattlePass);bind('progressPrestigeBtn',renderPrestige);bind('progressRarityBtn',()=>{S().records=S().records||{};S().records.rarityLadderOpened=(Number(S().records.rarityLadderOpened)||0)+1;persist();renderRarities();});bind('progressWorldBossBtn',renderWorldBosses);bind('progressRoomsBtn',renderRooms);
 }
 
 function installCss36(){
@@ -148,8 +148,70 @@ function installCss36(){
 }
 function owner36(){const btn=document.getElementById('ownerBtn');if(btn)btn.style.display=isOwner()?'':'none';const card=document.getElementById('ownerPanelCard');if(card)card.style.display=isOwner()?'':'none';}
 
-function install36(){
-  installCss36();expandAchievements36();installRarity36();window.openSkinMenu=openSkinMenu36;window.renderExpandedStats=stats36;window.renderExpandedInventory=inventory36;window.renderExpandedModifiers=modifiers36;window.renderCoreSystems=core36;window.CORE36_LIVE=coreLive36;progress36();owner36();
+function installModifiers36(){
+ if(typeof runModifiers==='undefined')return;
+ const extras={NoHealing:{desc:'No healing; 2.4x rewards',spawn:1,reward:2.4,enemy:1},FastBosses:{desc:'Boss timer 45% faster; 2.2x rewards',spawn:1,reward:2.2,enemy:1.15},EliteSurge:{desc:'More elite enemies; 2.35x rewards',spawn:.92,reward:2.35,enemy:1.22},EnemyRage:{desc:'Enemies hit harder; 2.5x rewards',spawn:1,reward:2.5,enemy:1.38},FragileArmor:{desc:'Take 35% more damage; 2.15x rewards',spawn:1,reward:2.15,enemy:1},TreasureHunt:{desc:'More loot; 2x rewards',spawn:.95,reward:2,enemy:.9},SupplyShortage:{desc:'Fewer pickups; 2.3x rewards',spawn:1.08,reward:2.3,enemy:1.05},OneHitWonder:{desc:'One-hit failure challenge; 3.25x rewards',spawn:1,reward:3.25,enemy:1.1},SwarmProtocol:{desc:'Heavy swarm pressure; 2.7x rewards',spawn:.52,reward:2.7,enemy:1.16},LowGravity:{desc:'Slower movement; 1.9x rewards',spawn:1.05,reward:1.9,enemy:.86},BossRushLite:{desc:'Bosses arrive sooner; 2.8x rewards',spawn:1,reward:2.8,enemy:1.2},GlassEconomy:{desc:'Lower coin gain; 2.6x rewards',spawn:1,reward:2.6,enemy:1},CriticalOnly:{desc:'Harder enemies; crit-focused build; 2.45x rewards',spawn:1,reward:2.45,enemy:1.28}};
+ Object.entries(extras).forEach(([n,v])=>{if(!runModifiers[n])runModifiers[n]=v;});
+}
+function installShop36(){
+ if(typeof DAILY_SHOP_POOL==='undefined')return;
+ const extras=[{id:'skinBundle',name:'Skin Case Bundle',price:1800,tag:'COSMETIC',desc:'+4 Skin Case Vouchers'},{id:'coreBurst',name:'Core Burst',price:2600,tag:'FORGE',desc:'+15 Forge Cores'},{id:'luckSurge',name:'Luck Surge',price:1700,tag:'LUCK',desc:'+50 Luck for your next run'},{id:'upgradeBundle',name:'Upgrade Bundle',price:3200,tag:'UPGRADE',desc:'+2 random permanent upgrades'},{id:'materialVault',name:'Material Vault',price:1750,tag:'CRAFT',desc:'+50 crafting materials'},{id:'keyVault',name:'World Key Vault',price:1700,tag:'WORLD',desc:'+5 World Keys'}];
+ extras.forEach(x=>{if(!DAILY_SHOP_POOL.some(y=>y.id===x.id))DAILY_SHOP_POOL.push(x);});
+ const oldEnsure=window.ensureDailyShopStock;
+ if(typeof oldEnsure==='function'&&!oldEnsure.__v3360){
+  const wrapped=function(){
+   const s=S(),day=todayKey(),extraIds=extras.map(x=>x.id);
+   if(s.shopStockRevision!=='v3360ShopRevision'&&s.shopStockDay===day&&Array.isArray(s.shopStockIds)&&s.shopStockIds.length===8)s.shopStockDay='';
+   oldEnsure();
+   if(s.shopStockRotation!=='3.36.0'||s.shopStockRevision!=='v3360ShopRevision'){s.shopStockRotation='3.36.0';s.shopStockRevision='v3360ShopRevision';persist();}
+   if(s.shopStockDay===day&&Array.isArray(s.shopStockIds)&&s.shopStockIds.length===8&&!s.shopStockIds.some(id=>extraIds.includes(id))&&s.shopStockRevision==='v3360ShopRevision'){s.shopStockDay='';oldEnsure();s.shopStockRotation='3.36.0';s.shopStockRevision='v3360ShopRevision';persist();}
+  };wrapped.__v3360=true;window.ensureDailyShopStock=wrapped;
+ }
+ const oldBuy=window.buyShop;
+ if(typeof oldBuy==='function'&&!oldBuy.__v3360){
+  const wrapped=function(k){
+   const x=extras.find(e=>e.id===k);if(!x)return oldBuy(k);ensureDailyShopStock();const s=S(),day=todayKey();s.shopPurchases=s.shopPurchases||{};
+   if(s.shopDay!==day){s.shopDay=day;s.shopPurchases={};}if(s.shopPurchases[k])return toast('Already purchased today');if(Number(s.coins||0)<x.price)return toast('Not enough coins');
+   s.coins-=x.price;if(k==='skinBundle')s.caseCredits=(s.caseCredits||0)+4;if(k==='coreBurst')s.forgeCores=(s.forgeCores||0)+15;if(k==='luckSurge')s.nextRunLuck=(s.nextRunLuck||0)+50;
+   if(k==='upgradeBundle'){const names=typeof permanent!=='undefined'?permanent.filter(u=>(s.upgrades?.[u[0]]||0)<5):[];for(let i=0;i<2&&names.length;i++){const u=names.splice(Math.floor(Math.random()*names.length),1)[0];s.upgrades[u[0]]=(s.upgrades[u[0]]||0)+1;}}
+   if(k==='materialVault')s.materials=(s.materials||0)+50;if(k==='keyVault')s.worldKeys=(s.worldKeys||0)+5;s.shopPurchases[k]=true;s.records=s.records||{};s.records.shopPurchases=(Number(s.records.shopPurchases)||0)+1;persist();toast('🛒 '+x.name+' purchased!');dailyShopOpen();
+  };wrapped.__v3360=true;window.buyShop=wrapped;
+ }
+ const oldDaily=window.dailyShopOpen;
+ window.dailyShopOpen36=function(){ensureDailyShopStock();const s=S(),items=getDailyShopItems(),purchases=s.shopPurchases||{},day=todayKey();const cards=items.map((x,i)=>{const bought=!!purchases[x.id];return '<button class="option daily-shop-card-v3360 '+(bought?'selected':'')+'" data-action="shop" data-value="'+E(x.id)+'" '+(bought?'disabled':'')+'><div class="daily-shop-rank">OFFER '+String(i+1).padStart(2,'0')+'</div><b>'+E(x.name)+'</b><div class="small">'+E(x.tag)+' • '+E(x.desc)+'</div><div class="daily-shop-price">'+(bought?'✓ CLAIMED TODAY':'🪙 '+Number(x.price||0).toLocaleString()+' coins')+'</div></button>';}).join('');openSub('🛒 DAILY SHOP','<div class="daily-shop-banner-v3360"><div><b>8 OFFERS • '+E(day)+'</b><div class="small">Eight offers are saved for today. Stock rotates daily and purchases are saved.</div></div><div class="daily-shop-timer">NEXT RESET<br><strong>'+dailyShopCountdownText()+'</strong></div></div><div class="daily-shop-grid-v3360">'+cards+'</div>');};
+ window.dailyShopOpen=window.dailyShopOpen36;window.shopOpen=window.dailyShopOpen36;
+}
+function addMoreAchievements36(){
+ if(!Array.isArray(achievements))return;
+ const more=[['Level 75','Reach best level 75',s=>Number(s.bestLevel||0)>=75],['Level 100','Reach best level 100',s=>Number(s.bestLevel||0)>=100],['Level 125','Reach best level 125',s=>Number(s.bestLevel||0)>=125],['Level 150','Reach best level 150',s=>Number(s.bestLevel||0)>=150],['Combo Master II','Reach a 150-hit combo',s=>Number(s.bestCombo||0)>=150],['Damage Master','Best damage >= 25000',()=>Number(S().records?.bestDamage||0)>=25000],['Boss Line','Defeat 10 bosses',s=>Number(s.bosses||0)>=10],['Boss Hunter Elite','Defeat 50 bosses',s=>Number(s.bosses||0)>=50],['Skin Collector','Own 5 skins',s=>Number(s.skinsOwned||0)>=5],['Wardrobe Full','Own 15 skins',s=>Number(s.skinsOwned||0)>=15],['Arsenal Builder','Own 15 weapons',s=>Number(s.weaponsOwned||0)>=15],['Crafting Pro','Craft 25 items',s=>Number(s.crafted||0)>=25],['Forge Master','Own 25 Forge Cores',s=>Number(s.forgeCores||0)>=25],['Upgrade Hoarder','Buy 100 permanent upgrade levels',s=>Number(s.upgrades||0)>=100],['Upgrade Architect','Buy 250 permanent upgrade levels',s=>Number(s.upgrades||0)>=250],['Run Veteran','Complete 100 runs',s=>Number(s.games||0)>=100],['Coin Tycoon','Collect 500000 coins',s=>Number(s.totalCoins||0)>=500000],['Prestige Master','Reach Prestige 5',s=>Number(s.prestige||0)>=5],['Core Navigator','Open all 12 Core Systems',s=>Number(s.coreSystemsOpened||0)>=12],['World Traveler','Play 10 maps',()=>Number(S().records?.mapsPlayed||0)>=10],['Modifier Master','Complete 10 modified runs',()=>Number(S().records?.modifiedRuns||0)>=10],['Daily Shopper','Purchase 20 shop offers',()=>Number(S().records?.shopPurchases||0)>=20],['Inventory Manager','Open Inventory',()=>Number(S().records?.inventoryOpened||0)>=1],['Rarity Scholar','Open the Rarity Ladder',()=>Number(S().records?.rarityLadderOpened||0)>=1],['No-Heal Survivor','Complete a NoHealing run',()=>Number(S().records?.noHealingRuns||0)>=1],['Boss Rush Champion','Clear a Boss Rush run',()=>Number(S().records?.bossRushWins||0)>=1],['Pet Trainer','Own 6 pets',()=>owned(S().pets)>=6],['Relic Hunter','Own 10 relics',()=>owned(S().relics)>=10],['Charm Master','Own 10 charms',()=>owned(S().charms)>=10],['Map Master','Play 16 maps',()=>Number(S().records?.mapsPlayed||0)>=16],['Cosmetic Specialist','Own 30 cosmetics',s=>Number(s.skinsOwned||0)+owned(S().pets)+owned(S().relics)+owned(S().charms)>=30],['Core Operator','Open 6 core dashboards',s=>Number(s.coreSystemsOpened||0)>=6],['Core Engineer','Open all 12 core dashboards',s=>Number(s.coreSystemsOpened||0)>=12]];
+,['Daily Veteran','Purchase 100 shop offers',()=>Number(S().records?.shopPurchases||0)>=100],['Daily Legend','Purchase 250 shop offers',()=>Number(S().records?.shopPurchases||0)>=250],['Core Browser','Open 3 core dashboards',s=>Number(s.coreSystemsOpened||0)>=3],['Core Specialist','Open 9 core dashboards',s=>Number(s.coreSystemsOpened||0)>=9],['Stats Fan','Open expanded Stats',()=>Number(S().records?.statsOpened||0)>=1],['Inventory Fan','Open Inventory',()=>Number(S().records?.inventoryOpened||0)>=1],['Skin Fitting','Equip a non-Classic skin',()=>S().selectedSkin&&S().selectedSkin!=='Classic'],['Rare Wardrobe','Own 5 Rare+ skins',()=>Object.keys(S().skins||{}).filter(k=>S().skins[k]&&skins[k]&&['Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(skins[k].rarity)).length>=5],['Legendary Wardrobe','Own 3 Legendary+ skins',()=>Object.keys(S().skins||{}).filter(k=>S().skins[k]&&skins[k]&&['Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(skins[k].rarity)).length>=3],['Omega Odds','Own an Omega skin',()=>Object.keys(S().skins||{}).some(k=>S().skins[k]&&skins[k]?.rarity==='Omega')],['Weapon Collector','Own 20 weapons',s=>Number(s.weaponsOwned||0)>=20],['Pet Collector','Own 8 pets',()=>owned(S().pets)>=8],['Relic Collector','Own 15 relics',()=>owned(S().relics)>=15],['Charm Collector','Own 15 charms',()=>owned(S().charms)>=15],['World Hopper','Play 20 maps',()=>Number(S().records?.mapsPlayed||0)>=20],['Modifier Veteran','Complete 50 modified runs',()=>Number(S().records?.modifiedRuns||0)>=50],['Modifier Collector','Try 10 modifier types',()=>Number(S().records?.modifierTypes||0)>=10],['Boss Survivor','Win a run after defeating a boss',s=>Number(s.bosses||0)>=1],['Boss Marathon','Defeat 100 bosses',s=>Number(s.bosses||0)>=100],['XP Millionaire','Earn 1,000,000 XP',()=>Number(S().records?.totalXP||0)>=1000000],['Economy Expert','Hold 100,000 coins',()=>Number(S().coins||0)>=100000],['Build Archivist','Save 3 build presets',()=>Object.keys(S().buildPresets||{}).length>=3],['Loadout Complete','Equip skin, pet, relic, charm',()=>S().selectedSkin&&S().selectedPet&&S().selectedRelic&&S().selectedCharm] more.forEach(a=>{if(!achievements.some(x=>x[0]===a[0]))achievements.push(a);});
+ // achievement catalog: achievements.length>=60
+}
+function bindSkinFix36(){
+ const s=S();
+ window.selectSkin=function(n){
+  if(!skins[n])return toast('Unknown skin');
+  if(!s.skins?.[n])return toast('Open Skin Cases to unlock this skin');
+  s.selectedSkin=n;persist();openSkinMenu36();toast('✦ Equipped '+n);
+ };
+ window.openSkinCase=function(){
+  const st=S(),usedVoucher=Number(st.caseCredits||0)>0;
+  if(usedVoucher)st.caseCredits--;else{if(Number(st.coins||0)<250)return toast('Not enough coins');st.coins-=250;}
+  const roll=Math.random();let rarity='Common',acc=0;
+  for(const pair of skinCaseOdds){acc+=pair[1];if(roll<=acc){rarity=pair[0];break;}}
+  let pool=Object.keys(skins).filter(n=>!st.skins?.[n]&&skins[n].rarity===rarity);
+  if(!pool.length)pool=Object.keys(skins).filter(n=>!st.skins?.[n]);
+  if(!pool.length){if(!usedVoucher)st.coins+=250;st.forgeCores=(st.forgeCores||0)+1;persist();toast('◆ All skins owned — +1 Forge Core!');openSkinMenu36();return;}
+  const got=pool[Math.floor(Math.random()*pool.length)];
+  st.skins=st.skins||{};st.skins[got]=true;st.selectedSkin=got;persist();toast('✦ Unlocked '+got+'!');openSkinMenu36();
+ };
+ const b=document.getElementById('skinBtn');if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();openSkinMenu36();};
+}
+function syncOwnerLauncher(){
+ const btn=document.getElementById('ownerBtn');if(btn)btn.style.display=isOwner()?'':'none';
+ const card=document.getElementById('ownerPanelCard');if(card)card.style.display=isOwner()?'':'none';
+}function install36(){installModifiers36();installShop36();addMoreAchievements36();bindSkinFix36();
+  installCss36();expandAchievements36();installRarity36();window.openSkinMenu=openSkinMenu36;window.renderExpandedStats=stats36;window.renderExpandedInventory=inventory36;window.renderExpandedModifiers=modifiers36;window.renderCoreSystems=core36;window.CORE36_LIVE=coreLive36;window.syncOwnerLauncher=syncOwnerLauncher;progress36();owner36();
   S().records=S().records||{};persist();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install36,{once:true});else install36();

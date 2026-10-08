@@ -1,0 +1,33 @@
+name: OUTLAST local runtime smoke test
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "*.js"
+      - "tests/live-runtime-v3361.e2e.cjs"
+      - ".github/workflows/outlast-local-runtime-e2e.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  local-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Start local static server
+        run: |
+          python3 -m http.server 4173 >/tmp/outlast-http.log 2>&1 &
+          echo $! >/tmp/outlast-http.pid
+      - name: Run local Start Run smoke test
+        env:
+          OUTLAST_RUNTIME_TEST_URL: http://127.0.0.1:4173/index.html
+        run: node tests/live-runtime-v3361.e2e.cjs

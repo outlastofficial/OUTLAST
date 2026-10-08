@@ -994,7 +994,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <div class="menu-card"><h3>Discord Rewards</h3><button class="menu-btn green" id="discordRewardsBtn">🎁 Invite Rewards</button><div class="small">Link Discord and earn rewards for verified server invites.</div></div>
             <div class="menu-card"><h3>Discord</h3><a class="menu-btn green" id="discordBtn" href="https://discord.gg/bCMdZfggQ" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none;text-align:center;box-sizing:border-box">💬 Join the OUTLAST Discord</a></div>
             <div class="menu-card"><h3>Admin</h3><button class="menu-btn gold" id="adminBtn">Open Admin Panel</button></div>
-            <div class="menu-card" id="ownerPanelCard"><h3>Owner Panel</h3><button class="menu-btn gold" id="ownerBtn">👑 Owner Panel</button></div>
+            <div class="menu-card" id="ownerPanelCard" style="display:none"><h3>Owner Panel</h3><button class="menu-btn gold" id="ownerBtn" style="display:none">👑 Owner Panel</button></div>
           </div>
         </section>
       </main>
@@ -3069,7 +3069,7 @@ window.buyAllAffordable=()=>{
 };
 function openSkinMenu(){
  const owned=Object.keys(skins).filter(n=>save.skins[n]);
- const byRarity={Common:[],Rare:[],Epic:[],Legendary:[],Mythic:[]};
+ const byRarity={Common:[],Uncommon:[],Rare:[],Epic:[],Legendary:[],Mythic:[],Divine:[],Celestial:[],Transcendent:[],Eternal:[],Omega:[],Special:[]};
  for(const n of owned)byRarity[skins[n].rarity].push(n);
  let ownedHtml=Object.keys(skins).map(n=>{const v=skins[n],ok=!!save.skins[n];return `<button class="option ${save.selectedSkin===n?'selected':''}" data-action="skin" data-value="${n}"><b>${n}</b><div class="small">${v.rarity} • ${v.bonus}</div><div class="small">${ok?'Owned':'Case only'}</div></button>`}).join('');
  openSub('✦ Skin Cases',`<div class="option"><b>◆ Skin Case</b><div class="small">Costs 250 coins or 1 Case Voucher • Random skin</div><button class="gold" data-action="case">OPEN CASE — 250 ● / 1 Voucher</button></div><h3>Skins</h3><div class="grid">${ownedHtml}</div>`);
@@ -5308,7 +5308,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
           '<div class="owner-card"><h3>🌐 Server</h3><div class="owner-ok">'+esc(h.status||'unknown')+'</div><div class="owner-muted">Server v'+esc(h.version||'unknown')+'</div></div>'+
           '<div class="owner-card"><h3>🟢 Connected Players</h3><div style="font-size:26px;font-weight:900">'+Number(h.players||0)+'</div></div>'+
           '<div class="owner-card"><h3>🌎 Global Event</h3><div>'+esc(ev)+'</div></div></div>'+
-          '<div class="owner-card" style="margin-top:10px"><b>Owner panel status</b><div class="owner-muted" style="margin-top:6px">All protected actions require the server owner password on every request.</div></div>');
+          '<div class="owner-card" style="margin-top:10px"><b>Owner panel status</b><div class="owner-muted" style="margin-top:6px">All protected actions require the recognized Owner account on every request.</div></div>');
       }else if(tab==='players'){
         const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[];
         const rows=ps.map(p=>'<div class="owner-table-row"><b>'+esc(p.username)+'</b><span class="'+(p.online?'owner-ok':'owner-muted')+'">'+(p.online?'🟢 Online':'⚪ Offline')+'</span><span class="owner-muted">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent activity')+'</span></div>').join('');

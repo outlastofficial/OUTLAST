@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.35.0">
-<meta name="build-version" content="3.35.0">
-<title>OUTLAST v3.35.0</title>
+<meta name="outlast-build" content="3.35.8">
+<meta name="build-version" content="3.35.8">
+<title>OUTLAST v3.35.8</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1903,11 +1903,11 @@ function triggerMapEvent(){
   const x=70+Math.random()*(W-140),y=80+Math.random()*(H-160);
   if(save.mode==='1v1 Arena'){
     const r=70;game.effects.push({x,y,t:1,r,color:hz.color,fill:true,hazard:true});
-    if(game.player&&Math.hypot(game.player.x-x,game.player.y-y)<r)game.player.hp=Math.max(0,game.player.hp-hz.damage);
+    if(game.player&&Math.hypot(game.player.x-x,game.player.y-y)<r)outlastTakePlayerDamage(game.player,hz.damage,'map hazard');
     if(game.player2&&Math.hypot(game.player2.x-x,game.player2.y-y)<r)game.player2.hp=Math.max(0,game.player2.hp-hz.damage);
   }else if(game.player){
     const r=78;game.effects.push({x,y,t:1,r,color:hz.color,fill:true,hazard:true});
-    if(Math.hypot(game.player.x-x,game.player.y-y)<r){game.player.hp=Math.max(0,game.player.hp-hz.damage);if(hz.slow)game.player.tempSpeed=-game.player.speed*hz.slow;}
+    if(Math.hypot(game.player.x-x,game.player.y-y)<r){outlastTakePlayerDamage(game.player,hz.damage,'map hazard');if(hz.slow)game.player.tempSpeed=-game.player.speed*hz.slow;}
   }
   toast('⚠ '+hz.name+'!');
 }
@@ -2199,11 +2199,11 @@ function killEnemy(target){
 function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=makeChoices();syncOutlastChatUI?.()}
 const upgradeRarities={
  Common:{mult:1,label:'COMMON',weight:52,glow:'#9aa5ad'},
- Uncommon:{mult:1.5,label:'UNCOMMON',weight:25,glow:'#71d68a'},
- Rare:{mult:2,label:'RARE',weight:13,glow:'#72a8ff'},
- Epic:{mult:2.75,label:'EPIC',weight:6.5,glow:'#d28cff'},
- Legendary:{mult:3.75,label:'LEGENDARY',weight:2.5,glow:'#ffd84d'},
- Mythic:{mult:5.5,label:'MYTHIC',weight:.5,glow:'#ff6bd6'}
+ Uncommon:{mult:1.15,label:'UNCOMMON',weight:25,glow:'#71d68a'},
+ Rare:{mult:1.35,label:'RARE',weight:13,glow:'#72a8ff'},
+ Epic:{mult:1.6,label:'EPIC',weight:6.5,glow:'#d28cff'},
+ Legendary:{mult:1.9,label:'LEGENDARY',weight:2.5,glow:'#ffd84d'},
+ Mythic:{mult:2.25,label:'MYTHIC',weight:.5,glow:'#ff6bd6'}
 };
 const tempUp=[
  ['Power Shot',v=>`+${Math.round(6*v)} damage`,v=>game.player.damage+=6*v],
@@ -2279,7 +2279,16 @@ function outlastOmegaShieldBlock(amount){
   p.omegaShieldRechargeTimer=5;
   ring(p.x,p.y,'#8fe8ff',34,.28);
   burst(p.x,p.y,'#8fe8ff',7,70);
+  toast('🛡️ SHIELD BLOCKED HIT');
   return true;
+}
+function outlastTakePlayerDamage(player,amount,reason,minHp=0){
+  if(!player||!Number.isFinite(amount)||amount<=0)return false;
+  if(player.godMode||player.god)return false;
+  if(player===game?.player&&outlastOmegaShieldBlock(amount))return true;
+  const mult=Math.max(0,Number(player.damageTakenMult)||1);
+  player.hp=Math.max(minHp,(Number(player.hp)||0)-amount*mult);
+  return false;
 }
 function upg(name){return save.upgrades[name]||0}
 function syncGameAdminUI(){
@@ -2324,7 +2333,7 @@ function update(dt){
   p2.shotTimer-=dt;if(p2.shotTimer<=0){shootSurvival(2);p2.shotTimer=p2.fireRate;}
   game.survival.time-=dt;game.survival.arenaHazardTimer-=dt;
   if(game.survival.arenaHazardTimer<=0){triggerMapEvent();game.survival.arenaHazardTimer=8;}
-  if(Math.hypot(p.x-p2.x,p.y-p2.y)<p.r+p2.r){p.hp=Math.max(0,p.hp-p2.damage*.8*dt);p2.hp=Math.max(0,p2.hp-p.damage*.35*dt);}
+  if(Math.hypot(p.x-p2.x,p.y-p2.y)<p.r+p2.r){outlastTakePlayerDamage(p,p2.damage*.8*dt,'player contact');p2.hp=Math.max(0,p2.hp-p.damage*.35*dt);}
   if(p.hp<=0||p2.hp<=0){survivalRoundWinner(p.hp>0?1:2);return;}
   if(game.survival.time<=0){const hp1=p.hp/p.max,hp2=p2.hp/p2.max;survivalRoundWinner(hp1>hp2?1:2);return;}
  }
@@ -2413,7 +2422,7 @@ for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if((!b.bounceT
  for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*.11*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}let ex=p.x-e.x,ey=p.y-e.y,d=Math.hypot(ex,ey)||1;let auraActive=p.frost&&d<(p.frostAuraRadius||130);let slow=auraActive?Math.max(.08,1-(p.frostSlow||.50)):1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=.45}if(auraActive){e.frostAuraHitCooldown=Math.max(0,(Number(e.frostAuraHitCooldown)||0)-dt);if(e.frostAuraHitCooldown<=0){const auraDamage=Math.max(0,p.damage*(Number(p.frostAuraDps)||0));if(auraDamage>0){damageEnemy(e,auraDamage);e.frostAuraHitCooldown=.5;if(e.hp<=0){const deadIndex=game.enemies.indexOf(e);if(deadIndex>=0){killEnemy(deadIndex);continue;}}}}}const nearby=game.enemies.length>45?0:game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const moveSpeed=e.kind==='boss'?Math.min(e.speed,140):e.speed;const enx=e.x+ex/d*moveSpeed*slow*squadBoost*dt,eny=e.y+ey/d*moveSpeed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if(e.kind==='boss'){e.summonTimer=(e.summonTimer||6)-dt;if(e.summonTimer<=0){e.summonTimer=e.phase>=3?4.2:(e.phase===2?5:6.5);const count=e.phase>=3?6:(e.phase===2?5:4);for(let si=0;si<count;si++){const ang=Math.random()*Math.PI*2,rad=55+Math.random()*35;spawnEnemy(Math.random()<.35?'runner':(Math.random()<.5?'ranged':'zombie'));const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){m.x=Math.max(24,Math.min(W-24,e.x+Math.cos(ang)*rad));m.y=Math.max(24,Math.min(H-24,e.y+Math.sin(ang)*rad));m.summoned=true;}}burst(e.x,e.y,'#ff8a5b',12,130);toast('⚠ BOSS SUMMONED '+count+' MINIONS!');} e.bossAttackTimer=(e.bossAttackTimer||2.2)-dt;if(e.bossAttackTimer<=0&&game.bullets.length<MAX_BULLETS){const phase=e.phase||1;const shots=phase>=3?3:(phase===2?2:1);const spread=phase>=3?.24:(phase===2?.16:0);const baseAng=Math.atan2(p.y-e.y,p.x-e.x);for(let bi=0;bi<shots;bi++){const off=shots===1?0:(bi-(shots-1)/2)*spread;const aa=baseAng+off;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(aa)*(phase>=3?390:330),vy:Math.sin(aa)*(phase>=3?390:330),r:9,dmg:e.damage*.65});}e.bossAttackTimer=phase>=3?.9:(phase===2?1.25:1.9);burst(e.x,e.y,'#ff6b6b',5,80);} }if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*(p.shield>0?Math.max(.05,.15/p.shieldEfficiency):1)*p.damageTakenMult;if(!p.godMode&&!outlastOmegaShieldBlock(actual)){p.hp-=actual*dt;p.shield=Math.max(0,p.shield-dt)}}}
  // Safety cleanup: never render or process an enemy that has already been killed.
  for(let i=game.enemies.length-1;i>=0;i--){const e=game.enemies[i];if(!e||e.__dead||e.hp<=0){if(e&&!e.__dead)killEnemy(e);else game.enemies.splice(i,1);}}
- for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(!b.enemy)continue; b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue}if(Math.hypot(b.x-p.x,b.y-p.y)<b.r+18){if(!p.godMode&&!outlastOmegaShieldBlock(b.dmg))p.hp-=b.dmg;game.bullets.splice(i,1);continue}if(b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
+ for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(!b.enemy)continue; b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue}if(Math.hypot(b.x-p.x,b.y-p.y)<b.r+18){outlastTakePlayerDamage(p,b.dmg,'enemy projectile');game.bullets.splice(i,1);continue}if(b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
  for(let i=game.gems.length-1;i>=0;i--){const g=game.gems[i],d=Math.hypot(g.x-p.x,g.y-p.y);if(d<70||d<p.magnet+(p.tempMagnet||0)){let mult=p.lucky&&Math.random()<Math.min(.6,.25+(p.lootLuck||0)*.003)?2:1;game.xp+=g.value*mult*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;game.gems.splice(i,1);if(game.xp>=game.xpNeed){levelUp();break}}}
  for(let i=game.coins.length-1;i>=0;i--){const q=game.coins[i];if(Math.hypot(q.x-p.x,q.y-p.y)<p.magnet){run.coins+=q.value*(game.event==='COIN RUSH'?2:1);game.score+=q.value*25*game.stats.scoreMult;game.coins.splice(i,1)}}
  for(let i=game.shrines.length-1;i>=0;i--){
@@ -2734,12 +2743,19 @@ const p=game.player;if(p){
      ctx.font='27px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(petEmoji,petX,petY);ctx.textAlign='left';ctx.textBaseline='alphabetic';
    }
    if(p.frost){const ar=Math.max(70,Number(p.frostAuraRadius)||130);ctx.save();ctx.globalAlpha=.13+.04*Math.sin(game.time*4);ctx.fillStyle='#8fe8ff';ctx.strokeStyle='#74dfff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,ar,0,Math.PI*2);ctx.fill();ctx.globalAlpha=.5;ctx.setLineDash([8,7]);ctx.beginPath();ctx.arc(p.x,p.y,ar,(-game.time*.7)%(Math.PI*2),(-game.time*.7)%(Math.PI*2)+Math.PI*1.55);ctx.stroke();ctx.restore();}   drawPlayerAvatar(p,'#5e9fff',false);
+   const shieldMax=Math.max(0,Number(p.omegaShieldMaxHits||0)),shieldHits=Math.max(0,Math.min(shieldMax,Number(p.omegaShieldHits||0)));
+   if(shieldMax>0){
+     const shieldPct=shieldHits/shieldMax;
+     ctx.save();ctx.globalAlpha=.18+.20*shieldPct;ctx.strokeStyle='#8fe8ff';ctx.lineWidth=3+2*shieldPct;
+     ctx.beginPath();ctx.arc(p.x,p.y,29+4*shieldPct,0,Math.PI*2);ctx.stroke();
+     ctx.globalAlpha=1;ctx.fillStyle='#9feeff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('🛡️ '+shieldHits+'/'+shieldMax,p.x,p.y+38);ctx.textAlign='left';ctx.restore();
+   }
    if(save.mode==='1v1 Arena'&&game.player2){ drawPlayerAvatar(game.player2,'#ff5f69',true); }
    if(save.selectedWeapon==='OrbitBlades'){for(let k=0;k<3;k++){let a=game.time*2+k*Math.PI*2/3;ctx.fillStyle='#a9d0ff';ctx.fillRect(p.x+Math.cos(a)*45-5,p.y+Math.sin(a)*45-5,10,10)}}}
  ctx.restore();
  if(game.player?.blackout){ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(0,0,CW,CH);}
  if(game.running){
-   ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(10,10,285,126);ctx.fillRect(CW-300,10,290,92);
+   ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(10,10,285,126);ctx.fillRect(CW-300,10,290,122);
    ctx.fillStyle='#fff';ctx.font='bold 14px Arial';
    ctx.fillText('LV '+game.level+' • HP '+Math.floor(game.player.hp)+'/'+Math.floor(game.player.max),20,30);
    ctx.fillStyle='#55d8ff';ctx.fillText('XP '+Math.floor(game.xp)+'/'+game.xpNeed,20,52);
@@ -2755,6 +2771,7 @@ const p=game.player;if(p){
    ctx.font='12px Arial';ctx.fillText('Skill '+(game.player.skillCooldown>0?Math.ceil(game.player.skillCooldown)+'s':'READY')+' • Ult '+Math.floor(game.player.ult)+'%',CW-288,52);
    if(game.worldEvent)ctx.fillText('World '+game.worldEvent+' • '+Math.ceil(game.worldEventTimer)+'s',CW-288,74);
    if(game.objective)ctx.fillText('Obj '+game.objective+(worldObjectives[game.objective]?' '+Math.floor(game.objectiveProgress||0)+'/'+worldObjectives[game.objective].target:''),CW-288,92);
+   if(Number(game.player?.omegaShieldMaxHits||0)>0)ctx.fillText('Shield '+Math.floor(game.player.omegaShieldHits||0)+'/'+Math.floor(game.player.omegaShieldMaxHits||0)+' • recharge '+Math.ceil(Math.max(0,Number(game.player.omegaShieldRechargeTimer)||0))+'s',CW-288,112);
    if(save.mode==='1v1 Arena'&&game.player2){ctx.fillStyle='#ff7c86';ctx.fillText('P2 HP '+Math.floor(game.player2.hp)+'/'+Math.floor(game.player2.max),20,126);ctx.fillStyle='#b8c6d6';ctx.fillText('P2 IJKL • auto',CW-288,92);ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.fillText('P2',CW-38,30);}
    const exit=document.getElementById('exitGameBtn');if(exit)exit.style.display='block';
  }
@@ -2804,7 +2821,7 @@ const p=game.player;if(p){
   ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0)+' • '+((window.OUTLAST_UPGRADE_LIBRARY_COUNT||298))+' upgrade choices',CW/2,140);
   game.upgradeChoices.forEach((u,i)=>{
     const x=45+i*350,y=180,w=325,h=285,cx=x+w/2,cy=y+h/2;
-    const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r;
+    const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r,rarityScale=Number(upgradeRarities[u[3]]?.mult||1);
     const cardRolling=rank>=4&&rollProgress<1;
     const eased=1-Math.pow(1-Math.min(1,rollProgress),3);
     const spin=cardRolling?(1-eased)*Math.PI*(2.4+rank*.35)+i*.18:0;
@@ -2845,7 +2862,8 @@ const p=game.player;if(p){
       for(const word of words){const test=(line+' '+word).trim();if(line&&ctx.measureText(test).width>275){lines.push(line);line=word}else line=test}if(line)lines.push(line);
       ctx.fillStyle='#cbd7e2';lines.slice(0,3).forEach((txt,j)=>ctx.fillText(txt,cx,y+160+j*23));
     }
-    ctx.fillStyle=glow;ctx.font='bold 13px Arial';ctx.fillText(rank===5?'MYTHIC POWER • EXTREMELY RARE':rank===4?'LEGENDARY POWER • VERY RARE':rank===3?'EPIC POWER • POWER SURGE':rank===2?'RARE POWER • ENHANCED':rank===1?'UNCOMMON POWER • BOOSTED':'COMMON POWER • BASE',cx,y+244);
+    ctx.fillStyle=glow;ctx.font='bold 13px Arial';ctx.fillText(rank===10?'OMEGA POWER • EXTREMELY RARE':rank===9?'ETERNAL POWER • EXTREMELY RARE':rank===8?'TRANSCENDENT POWER • VERY RARE':rank===7?'CELESTIAL POWER • VERY RARE':rank===6?'DIVINE POWER • RARE':rank===5?'MYTHIC POWER • EXTREMELY RARE':rank===4?'LEGENDARY POWER • VERY RARE':rank===3?'EPIC POWER • POWER SURGE':rank===2?'RARE POWER • ENHANCED':rank===1?'UNCOMMON POWER • BOOSTED':'COMMON POWER • BASE',cx,y+244);
+   ctx.globalAlpha=.9;ctx.font='bold 11px Arial';ctx.fillText('RARITY SCALE ×'+rarityScale.toFixed(2)+' • EFFECT SCALED TO RARITY',cx,y+258);
     ctx.globalAlpha=.8;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+52,y+258);ctx.lineTo(x+w-52,y+258);ctx.stroke();
     ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='11px Arial';ctx.fillText(cardRolling?'ROLLING… WAIT':'SELECT TO CLAIM',cx,y+274);
     ctx.restore();
@@ -4200,7 +4218,7 @@ update=function(dt){
   if(game.eventClock<=0){runRandomEvent();game.eventClock=45;}
   specialEnemyTick(dt);
   if(game.player.god){game.player.hp=game.player.max;game.player.shield=999;}
-  if(save.map==='Subway'&&Math.floor(game.time)%18===0&&Math.abs(game.time-Math.round(game.time))<dt){game.player.hp=Math.max(1,game.player.hp-8);toast('⚡ Subway hazard!');}
+  if(save.map==='Subway'&&Math.floor(game.time)%18===0&&Math.abs(game.time-Math.round(game.time))<dt){outlastTakePlayerDamage(game.player,8,'subway hazard',1);toast('⚡ Subway hazard!');}
   game.player.blackout=0;
   /* Extraction unlocks at level 25. */
   if(game.level>=25&&!game.player.extraction){game.player.extraction={x:80+Math.random()*(W-160),y:80+Math.random()*(H-160),charge:0};toast('🚨 EXTRACTION UNLOCKED — Reach the extraction point!');}

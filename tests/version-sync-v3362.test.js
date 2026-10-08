@@ -9,5 +9,8 @@ assert(!core.includes("window.OUTLAST_BUILD=VERSION"),'12-core engine must not o
 assert(!core.includes("window.OUTLAST_VERSION='v'+VERSION"),'12-core engine must not overwrite the global version');
 assert(!core.includes("document.title='OUTLAST v'+VERSION"),'12-core engine must not overwrite the page title');
 assert(index.includes("chip36.textContent='v3.36.2 • SURVIVOR HUB'"),'Progress chip must show the current build marker');
+assert(!index.includes('id="outlast-v326-restored-systems"'),'legacy v3.27 delayed build writer must be removed');
+assert(!index.includes("document.title='OUTLAST '+VERSION"),'legacy restored systems must not overwrite the current build marker');
+assert(!index.includes('setTimeout(refresh,1500)'),'legacy restored systems must not run delayed version rewrites');
 assert(!index.includes("document.title='OUTLAST v3.36.1';window.OUTLAST_BUILD='3.36.1';window.OUTLAST_VERSION='v3.36.1'"),'index must not contain the stale v3.36.1 final override');
 console.log('v3.36.2 version synchronization regression test passed');

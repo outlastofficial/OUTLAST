@@ -2207,7 +2207,7 @@ function killEnemy(target){
     game.effects.push({x:e.x,y:e.y,t:.3,r:150});
   }
   if(game.player.vampire)game.player.hp=Math.min(game.player.max,game.player.hp+game.player.vampire);
-  if(e.boss&&game.activeBossId===e.id){game.activeBossId=null;game.bossDefeatedCount=(game.bossDefeatedCount||0)+1;game.bossClock=0;game.bossCount=(game.bossCount||0)+1;save.records=save.records||{};save.records.bossGateClears=(Number(save.records.bossGateClears)||0)+1;toast('♛ BOSS DEFEATED — NEXT BOSS UNLOCKED');}
+  if(e.boss&&game.activeBossId===e.id){game.activeBossId=null;game.bossDefeatedCount=(game.bossDefeatedCount||0)+1;game.bossClock=0;save.records=save.records||{};save.records.bossGateClears=(Number(save.records.bossGateClears)||0)+1;toast('♛ BOSS DEFEATED — NEXT BOSS UNLOCKED');}
   game.enemies.splice(i,1);
 }
 function levelUp(){if(game.xp<game.xpNeed)return;game.xp-=game.xpNeed;game.level++;game.xpNeed=Math.floor(game.xpNeed*((game.level<=5)?1.28:1.35));ring(game.player.x,game.player.y,'#59d8ff',100,.8);ring(game.player.x,game.player.y,'#fff',55,.35);burst(game.player.x,game.player.y,'#59d8ff',40,210);game.shake=.35;toast('★ LEVEL '+game.level+'!');game.paused=true;game.upgradeOpen=true;game.upgradeChoices=(typeof window.makeChoices==='function'?window.makeChoices():makeChoices());syncOutlastChatUI?.()}

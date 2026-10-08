@@ -6559,19 +6559,19 @@ function ensureBossBar(){
 function syncBossBar(){
  const bar=ensureBossBar();
  try{
-   const enemies=Array.isArray(window.game?.enemies)?window.game.enemies:[];
+   const liveGame=(typeof game!=='undefined'?game:null); const enemies=Array.isArray(liveGame?.enemies)?liveGame.enemies:[];
    let boss=null;
    for(let i=enemies.length-1;i>=0;i--){const e=enemies[i];if(e&&e.boss&&!e.__dead&&Number(e.hp)>0&&Number(e.max)>0){boss=e;break;}}
-   if(!window.game?.running||!boss){bar.style.display='none';return;}
+   if(!liveGame?.running||!boss){bar.style.display='none';return;}
    const max=Math.max(1,Number(boss.max)||1),hp=Math.max(0,Math.min(max,Number(boss.hp)||0)),pct=Math.max(0,Math.min(100,hp/max*100));
-   const raid=window.game?.raidBoss?String(window.game.raidBoss):'';
+   const raid=liveGame?.raidBoss?String(liveGame.raidBoss):'';
    const name=raid||'BOSS';
    const phase=Math.max(1,Math.min(3,Number(boss.phase)||1));
    bar.querySelector('.obb-name').textContent=(boss.bossEmoji?boss.bossEmoji+' ':'')+name;
    bar.querySelector('.obb-phase').textContent='PHASE '+phase;
    bar.querySelector('.obb-fill').style.width=pct.toFixed(2)+'%';
    bar.querySelector('.obb-hp').textContent=Math.ceil(hp).toLocaleString()+' / '+Math.ceil(max).toLocaleString()+' HP';
-   bar.querySelector('.obb-extra').textContent='BOSS '+(Number(window.game.bossCount)||1);
+   bar.querySelector('.obb-extra').textContent='BOSS '+(Number(liveGame.bossCount)||1);
    bar.style.display='block';
  }catch(_){bar.style.display='none';}
 }

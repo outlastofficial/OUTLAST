@@ -2347,6 +2347,11 @@ function outlastTakePlayerDamage(player,amount,reason,minHp=0){
   if(!player||!Number.isFinite(amount)||amount<=0)return false;
   if(player.godMode||player.god)return false;
   if(player===game?.player&&outlastOmegaShieldBlock(amount))return true;
+  if(player===game?.player&&Number(player.shield||0)>0){
+    ring(player.x,player.y,'#9feeff',38,.22);
+    toast('🛡️ SHIELD ABSORBED HIT');
+    return true;
+  }
   const mult=Math.max(0,Number(player.damageTakenMult)||1);
   player.hp=Math.max(minHp,(Number(player.hp)||0)-amount*mult);
   return false;

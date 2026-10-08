@@ -6,7 +6,7 @@ const { chromium } = require('playwright');
   await page.setExtraHTTPHeaders({'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'});
   const consoleErrors=[];
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
-  page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message));
+  page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));
 
   await page.addInitScript(()=>{
     localStorage.setItem('outlastUsername','E2EPlayer');

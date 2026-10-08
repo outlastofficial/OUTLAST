@@ -372,6 +372,7 @@ function installRuntimeFlags37(){
  const s=S();if(s){s.records=s.records||{};s.records.legendaryPlusOwned=Object.keys(s.skins||{}).filter(k=>s.skins[k]&&skins[k]&&['Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(skins[k].rarity)).length;persist?.();}
 }
 function install37(){
+ if(window.__OUTLAST37_INSTALLED)return;window.__OUTLAST37_INSTALLED=true;
  installModifiers37();installAchievements37();installCss37();installEventDelegates37();progress37();syncOwnerLauncher37();runtimeSkinAudit37();installRuntimeFlags37();window.makeChoices=authoritativeUpgradeChoice37;
  window.dailyShopOpen=dailyShop37;window.shopOpen=dailyShop37;window.renderExpandedStats=stats37;window.renderExpandedInventory=inventory37;window.renderExpandedModifiers=modifiers37;
  window.renderCoreSystems=core37;window.syncOwnerLauncher=syncOwnerLauncher37;window.OUTLAST_37_READY=true;

@@ -1,0 +1,9 @@
+const fs=require('fs'),assert=require('assert');
+const html=fs.readFileSync('index.html','utf8');
+assert(html.includes('function renderUpgradeTree()'),'upgrade tree renderer must exist');
+assert(html.includes('upgrade-tree-root'),'upgrade tree should have a dedicated root node');
+assert(html.includes('upgrade-tree-branch'),'upgrade tree should render named branches');
+assert(html.includes('upgrade-tree-node'),'upgrade tree should render connected node-style upgrades');
+assert(html.includes('upgrade-tree-level-pips'),'upgrade tree nodes should show level progress');
+assert(html.includes('upgrade-tree-scroll'),'upgrade tree should support a large catalog without reverting to a plain card grid');
+console.log('Upgrade tree visual regression test passed');

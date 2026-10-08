@@ -30,12 +30,12 @@ async function checkMandatoryUpdate(){
 }
 
 /* authoritative in-run rarity balance */
-const RARITIES={Common:{mult:1,weight:48,label:'COMMON'},Uncommon:{mult:1.25,weight:26,label:'UNCOMMON'},Rare:{mult:1.55,weight:14,label:'RARE'},Epic:{mult:1.9,weight:7,label:'EPIC'},Legendary:{mult:2.35,weight:3.5,label:'LEGENDARY'},Mythic:{mult:3,weight:1,label:'MYTHIC'}};
+const RARITIES={Common:{mult:1,weight:48,label:'COMMON'},Uncommon:{mult:1.15,weight:26,label:'UNCOMMON'},Rare:{mult:1.35,weight:14,label:'RARE'},Epic:{mult:1.6,weight:7,label:'EPIC'},Legendary:{mult:1.9,weight:3.5,label:'LEGENDARY'},Mythic:{mult:2.25,weight:1,label:'MYTHIC'},Divine:{mult:2.7,weight:.45,label:'DIVINE'},Celestial:{mult:3.2,weight:.25,label:'CELESTIAL'},Transcendent:{mult:3.8,weight:.12,label:'TRANSCENDENT'},Eternal:{mult:4.6,weight:.05,label:'ETERNAL'},Omega:{mult:5.5,weight:.02,label:'OMEGA'}};
 window.OUTLAST_INRUN_RARITIES=RARITIES;
 try{Object.keys(RARITIES).forEach(k=>{if(typeof upgradeRarities==='object'&&upgradeRarities[k])Object.assign(upgradeRarities[k],RARITIES[k])})}catch(_){}
 function balancedRarity(){
  const luck=Math.max(0,Number(game?.player?.upgradeLuck||0)),b=Math.min(.9,luck/120);
- const w={Common:48*(1-b*.5),Uncommon:26*(1-b*.18),Rare:14*(1+b*.45),Epic:7*(1+b*.85),Legendary:3.5*(1+b*1.75),Mythic:1*(1+b*3)};
+ const w={Common:48*(1-b*.5),Uncommon:26*(1-b*.18),Rare:14*(1+b*.45),Epic:7*(1+b*.85),Legendary:3.5*(1+b*1.75),Mythic:1*(1+b*2.5),Divine:.45*(1+b*3.5),Celestial:.25*(1+b*4),Transcendent:.12*(1+b*4.5),Eternal:.05*(1+b*5),Omega:.02*(1+b*6)};
  let n=Math.random()*Object.values(w).reduce((a,x)=>a+x,0);for(const k of Object.keys(w)){n-=w[k];if(n<=0)return k}return'Common';
 }
 window.rollUpgradeRarity=balancedRarity;
@@ -60,7 +60,7 @@ function enhance(n,m){
  else if(n==='Stun Rounds'){p.stun=true;p.stunChance=Math.min(.9,.12+.1*(m-1));p.stunDuration=1.5+.35*(m-1)}
  else if(n==='Double Tap'||n==='Lucky Barrage'){p.doubleTap=true;p.doubleTapChance=Math.min(.9,.2*m)}
  else if(n==='Treasure Radar'){p.treasure=true;p.treasureMult=3*m}
- else if(n==='Shockwave'){p.shockwave=true;p.shockwaveInterval=Math.max(3,Math.round(12/m))}
+ else if(n==='Shockwave'){p.shockwave=true;p.shockwaveInterval=Math.max(3,Math.round(12/m));p.shockwaveEvery=p.shockwaveInterval}
 }
 try{
  if(typeof makeChoices==='function'&&!window.__v3360MakeChoicesPatched){
@@ -115,6 +115,7 @@ function openCore(k){
 function installCore(){
  const page=document.querySelector('.menu-page[data-page-content="progress"]'),cards=page?.querySelector('.menu-cards');if(!cards||cards.querySelector('[data-v3360-core]'))return;
  document.getElementById('extrasBtn')?.closest('.menu-card')?.setAttribute('hidden','hidden');
+ const header=document.createElement('div');header.className='menu-card';header.dataset.v3360Core='1';header.innerHTML='<h3>✦ 12 Core Systems</h3><button type="button" class="menu-btn" disabled>12 SYSTEMS ONLINE</button><div class="small">Combat, enemies, bosses, world, events, progression, cosmetics, objectives, economy, modes, support, and content generation are now exposed here.</div>';cards.prepend(header);
  CORE.forEach(x=>{const d=document.createElement('div');d.className='menu-card';d.dataset.v3360Core='1';d.innerHTML='<h3>'+x[1]+'</h3><button type="button" class="menu-btn" id="v3360-'+x[0]+'">OPEN</button><div class="small">'+x[2]+'</div>';cards.appendChild(d);d.querySelector('button').onclick=()=>openCore(x[0])});
 }
 setTimeout(installCore,0);setTimeout(installCore,600);
@@ -155,6 +156,7 @@ try{
  };
 }catch(_){}
 
+try{if(Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]).includes('v3.36.0')))updates.unshift(['v3.36.0 — System & Balance Fixes','Fixed rarity scaling, shield damage routing, boss sequencing, skin equip behavior, owner-panel visibility, and expanded the player-facing 12 Core Systems, Achievements, Stats, Daily Shop, Inventory, and Run Modifiers.']);if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='What changed in v3.36.0?'))helpArticles.unshift(['What changed in v3.36.0?','Updates & Systems','v3.36.0 makes upgrade rarities materially scale their effects, repairs shield absorption, requires the previous boss to be defeated, fixes higher-rarity skin menu errors, exposes all 12 Core Systems in Progress, and expands the main progression tools.']);}catch(_){}
 /* clean inventory overview */
 function inventoryPlus(){repairSkin();const cnt=(o)=>Object.values(o||{}).filter(Boolean).length;openSub('🎒 Inventory+','<div class="inventory-summary-v3360"><div class="option"><b>Equipped</b><div class="small">Character: '+esc(save.selectedChar)+'</div><div class="small">Weapon: '+esc(save.selectedWeapon)+'</div><div class="small">Skin: '+esc(save.selectedSkin)+'</div><div class="small">Pet: '+esc(save.selectedPet)+'</div><div class="small">Relic: '+esc(save.selectedRelic)+'</div><div class="small">Charm: '+esc(save.selectedCharm)+'</div></div><div class="option"><b>Collection Counts</b><div class="small">Characters: '+cnt(save.unlockedChars)+'</div><div class="small">Weapons: '+cnt(save.unlockedWeapons)+'</div><div class="small">Skins: '+cnt(save.skins)+'</div><div class="small">Pets: '+cnt(save.pets)+'</div><div class="small">Relics: '+cnt(save.relics)+'</div><div class="small">Charms: '+cnt(save.charms)+'</div></div></div><div class="grid"><button class="option" id="v3360InvSkin">🎨 Skins</button><button class="option" id="v3360InvWeapon">⚔ Weapons</button><button class="option" id="v3360InvPet">🐾 Pets</button><button class="option" id="v3360InvRelic">🧿 Relics</button><button class="option" id="v3360InvCharm">🪬 Charms</button><button class="option" id="v3360InvShop">🛒 Daily Shop</button></div>');document.getElementById('v3360InvSkin').onclick=fixedSkinMenu;document.getElementById('v3360InvWeapon').onclick=()=>renderInventoryTab('weapon');document.getElementById('v3360InvPet').onclick=()=>renderInventoryTab('pet');document.getElementById('v3360InvRelic').onclick=()=>renderInventoryTab('relic');document.getElementById('v3360InvCharm').onclick=()=>renderInventoryTab('charm');document.getElementById('v3360InvShop').onclick=dailyShopOpen}
 try{renderInventory=inventoryPlus;document.getElementById('inventoryBtn').onclick=inventoryPlus}catch(_){}
@@ -164,6 +166,7 @@ function modifierPlus(){const chosen=new Set(save.builderMods||[]),rows=Object.e
 try{modifierOpen=modifierPlus;document.getElementById('modifierBtn').onclick=modifierPlus}catch(_){}
 
 /* UI + metadata */
+const v3360Capture=(e)=>{const b=e.target?.closest?.('#achBtn,#statsBtn,#inventoryBtn,#modifierBtn,#shopBtn,#skinBtn');if(!b)return;e.preventDefault();e.stopImmediatePropagation();if(b.id==='achBtn')enhancedAchievements();else if(b.id==='statsBtn')enhancedStats();else if(b.id==='inventoryBtn')inventoryPlus();else if(b.id==='modifierBtn')modifierPlus();else if(b.id==='shopBtn')dailyShopOpen();else if(b.id==='skinBtn')fixedSkinMenu();};document.addEventListener('click',v3360Capture,true);
 const css=document.createElement('style');css.id='outlast-v3360-ui';css.textContent='.stat-grid-v3360,.inventory-summary-v3360{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.menu-page[data-page-content="progress"] .menu-cards{grid-template-columns:repeat(4,minmax(0,1fr))!important;overflow:auto!important;max-height:calc(100vh - 210px)!important}@media(max-width:900px){.stat-grid-v3360,.inventory-summary-v3360{grid-template-columns:1fr 1fr}.menu-page[data-page-content="progress"] .menu-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}}@media(max-width:560px){.stat-grid-v3360,.inventory-summary-v3360{grid-template-columns:1fr}.menu-page[data-page-content="progress"] .menu-cards{grid-template-columns:1fr!important}}#ownerPanelCard{display:none}';document.head.appendChild(css);
 try{document.querySelector('meta[name="outlast-build"]').content=VERSION;document.querySelector('meta[name="build-version"]').content=VERSION}catch(_){}
 window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;document.title='OUTLAST v'+VERSION;

@@ -14,6 +14,9 @@ assert(!index.includes("document.title='OUTLAST '+VERSION"),'legacy restored sys
 assert(!index.includes('setTimeout(refresh,1500)'),'legacy restored systems must not run delayed version rewrites');
 assert(!index.includes("document.title='OUTLAST v3.36.1';window.OUTLAST_BUILD='3.36.1';window.OUTLAST_VERSION='v3.36.1'"),'index must not contain the stale v3.36.1 final override');
 assert(!index.includes("document.getElementById('extrasBtn').onclick=renderExtras"),'extras button binding must be null-safe');
+const startIndex=index.indexOf('function startGame(');
+const declIndex=index.indexOf("let fatalGameError='',fatalErrorShown=false;");
+assert(startIndex>0 && declIndex>startIndex,'fatalGameError must not be declared after startGame; Start Run uses it before the loop begins');
 assert(!index.includes("document.getElementById('progressionBtn').onclick=renderProgression"),'progression button binding must be null-safe');
 assert(!index.includes("document.getElementById('questBtn').onclick=renderQuestBoard"),'quest button binding must be null-safe');
 console.log('v3.36.2 version synchronization regression test passed');

@@ -35,3 +35,4 @@ jobs:
           node tests/map-layout-v33016.test.js
           node tests/map-scenes-v33013.test.js
           node tests/map-creator-v33018.test.js
+          node tests/v3370-systems.test.js

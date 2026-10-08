@@ -31,9 +31,9 @@ assert(html.includes('function outlastTakePlayerDamage('),'all normal player dam
 assert(html.includes('outlastOmegaShieldBlock(amount)'),'the shared damage boundary must consume Omega Shield charges before HP damage');
 assert(html.includes("Number(player.shield||0)>0"),'temporary shield must absorb incoming hits');
 assert(html.includes("Number(p.shield||0)>0)p.shield=Math.max(0,Number(p.shield)-dt)"),'temporary shield must expire instead of becoming permanent');
-assert(html.includes('outlastTakePlayerDamage(hz.damage'),'map hazards must respect Omega Shield');
-assert(html.includes('outlastTakePlayerDamage(b.dmg'),'enemy projectiles must respect Omega Shield');
-assert(html.includes('outlastTakePlayerDamage(p2.damage*.8*dt'),'player-contact damage must respect Omega Shield');
+assert(html.includes('outlastTakePlayerDamage(game.player,hz.damage'),'map hazards must respect Omega Shield');
+assert(html.includes('outlastTakePlayerDamage(p,b.dmg'),'enemy projectiles must respect Omega Shield');
+assert(html.includes('outlastTakePlayerDamage(p,p2.damage*.8*dt'),'player-contact damage must respect Omega Shield');
 
 assert(html.includes('id="outlast-mandatory-update-check"'),'mandatory update check must exist');
 assert(html.includes('outlast_update_ack_3.35.8'),'update acknowledgement must be versioned');

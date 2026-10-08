@@ -4057,6 +4057,7 @@ function dash(){if(!game.running||game.paused||game.upgradeOpen||!game.player)re
 let last=performance.now(), fatalGameError='',fatalErrorShown=false;
 function drawFatal(){syncMobileControls();ctx.fillStyle='#10141a';ctx.fillRect(0,0,CW,CH);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='42px Arial';ctx.fillText('RECOVERED FROM GAME ERROR',CW/2,235);ctx.font='20px Arial';ctx.fillStyle='#b8c6d6';ctx.fillText('The run was safely stopped.',CW/2,275);ctx.fillText('Return to the menu to keep playing.',CW/2,310);ctx.textAlign='left';showGameOverActions(false);const title=document.getElementById('gameOverTitle'),stats=document.getElementById('gameOverStats');if(title)title.textContent='Game error recovered';if(stats)stats.innerHTML='<div class=\"game-over-stat\">The game was stopped safely so it could recover.</div>';}
 function loop(t){const dt=Math.min(.05,Math.max(0,(t-last)/1000));last=t;try{if(game.running&&!fatalErrorShown&&!game.__outlastTypingActive)update(dt);draw();}catch(err){fatalGameError=err&&err.message?err.message:String(err);window.__OUTLAST_TESTER_LAST_GAME_ERROR=fatalGameError;fatalErrorShown=true;game.running=false;game.paused=false;game.over=true;syncMobileControls();hideGameOverActions();try{document.getElementById('menu').style.display='flex';document.getElementById('subPanel').style.display='none';updateMenuSummary();}catch(_){}if(window.matchMedia?.('(max-width:760px)').matches)toast('⚠️ Game recovered from an error');drawFatal();}requestAnimationFrame(loop)}
+}
 showUpdatePopup();
 requestAnimationFrame(loop);
 </script>

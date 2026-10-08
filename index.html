@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.36.0">
-<meta name="build-version" content="3.36.0">
-<title>OUTLAST v3.36.0</title>
+<meta name="outlast-build" content="3.36.1">
+<meta name="build-version" content="3.36.1">
+<title>OUTLAST v3.36.1</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -6379,7 +6379,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
-const BUILD='3.36.0',ACK='outlast_update_ack_v3.36.0',POP='outlastMandatoryUpdate';
+const BUILD='3.36.1',ACK='outlast_update_ack_v3.36.1',POP='outlastMandatoryUpdate';
 function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
 function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
 function show(newer,remote){
@@ -6398,6 +6398,7 @@ async function check(){
    const response=await fetch('./index.html?update-check='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
    if(response.ok){const txt=await response.text();const m=txt.match(/name=["']build-version["']\\s+content=["']([^"']+)["']/i);if(m)remote=m[1]||BUILD}
  }catch(_){}
+ try{const serverUrl=location.hostname.includes('outlast-test')?'https://outlast-test-server.onrender.com':'https://outlast-server.onrender.com';const sr=await fetch(serverUrl+'/api/version?clientVersion='+encodeURIComponent(BUILD)+'&t='+Date.now(),{cache:'no-store'});if(sr.ok){const sd=await sr.json();remote=sd.requiredClientVersion||sd.serverVersion||remote}}catch(_){}
  if(cmp(remote,BUILD)>0){show(true,remote);return}
  let acknowledged=false;try{acknowledged=localStorage.getItem(ACK)==='1'}catch(_){}
  if(!acknowledged)setTimeout(function(){show(false,remote)},350);

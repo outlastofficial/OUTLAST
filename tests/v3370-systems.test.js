@@ -12,7 +12,7 @@ assert(html.includes('game.upgradeChoices=(typeof window.makeChoices===\'functio
 assert(mod.includes('function authoritativeUpgradeChoice37'), 'authoritative upgrade choice resolver must exist');
 assert(mod.includes('window.OUTLAST_UPGRADE_RARITY_SCALING37'), 'authoritative rarity scale must be published');
 assert(mod.includes('Common:1') && mod.includes('Mythic:2.25') && mod.includes('Omega:5.5'), 'rarity scaling must match the approved ladder');
-assert(mod.includes('XP Boost') && mod.includes('return Math.round(base*scale)'), 'fixed XP Boost values must be rarity-scaled');
+assert(mod.includes("if(name==='XP Boost')") && mod.includes('Math.round(8*mult)'), 'fixed XP Boost values must be rarity-scaled');
 
 assert(mod.includes('function zombieAI37'), 'zombie AI controller must exist');
 assert(mod.includes('Flanker') && mod.includes('Ambusher') && mod.includes('Sniper') && mod.includes('Rammer'), 'zombie AI must include multiple behaviors');

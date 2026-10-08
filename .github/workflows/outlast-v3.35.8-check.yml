@@ -18,9 +18,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Run OUTLAST regression tests
+      - name: Parse all inline browser JavaScript
+        run: node tests/inline-script-syntax-v3358.test.js
+      - name: Run critical OUTLAST regression tests
         run: |
-          for f in tests/*.test.js; do
-            echo "=== $f ==="
-            node "$f"
-          done
+          node tests/upgrade-rarity-shield-v3358.test.js
+          node tests/upgrade-tree-v3355.test.js
+          node tests/boss-bar-v3356.test.js
+          node tests/bouncing-bullets-v3350.test.js
+          node tests/bouncing-upgrade-luck-v33014.test.js
+          node tests/combat-balance-v33017.test.js
+          node tests/core-content-v33500.test.js

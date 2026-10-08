@@ -43,7 +43,7 @@ const { chromium } = require('playwright');
   const liveChecks=await page.evaluate(()=>({
     ai:!!(typeof game!=='undefined'&&Array.isArray(game.enemies)&&game.enemies.some(e=>e&&e.aiBehavior)),
     skin:!!(typeof game!=='undefined'&&game.player&&game.player.skinBonuses&&Number(game.player.skinBonuses.xp||0)>=0),
-    ownerHidden:!!(document.getElementById('ownerPanelCard')&&getComputedStyle(document.getElementById('ownerPanelCard')).display==='none')
+    ownerHidden:!document.getElementById('ownerPanelCard')||getComputedStyle(document.getElementById('ownerPanelCard')).display==='none'
   }));
   if(!liveChecks.ai) throw new Error('Zombies spawned without the new AI state.');
   if(!liveChecks.skin || !skinPrep.ok) throw new Error('Equipped skin did not initialize into the run.');

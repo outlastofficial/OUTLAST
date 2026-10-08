@@ -5,6 +5,7 @@ on:
     paths:
       - "index.html"
       - "outlast-v33015-upgrade-library.js"
+      - "outlast-v3360-focused-systems.js"
       - "tests/**"
       - ".github/workflows/outlast-v3.35.8-check.yml"
   workflow_dispatch:
@@ -18,8 +19,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Parse all inline browser JavaScript
-        run: node tests/inline-script-syntax-v3358.test.js
+      - name: Parse affected JavaScript modules
+        run: |
+          node --check outlast-v33015-upgrade-library.js
+          node --check outlast-v3360-focused-systems.js
       - name: Run critical OUTLAST regression tests
         run: |
           node tests/upgrade-rarity-shield-v3358.test.js
@@ -29,3 +32,6 @@ jobs:
           node tests/bouncing-upgrade-luck-v33014.test.js
           node tests/combat-balance-v33017.test.js
           node tests/core-content-v33500.test.js
+          node tests/map-layout-v33016.test.js
+          node tests/map-scenes-v33013.test.js
+          node tests/map-creator-v33018.test.js

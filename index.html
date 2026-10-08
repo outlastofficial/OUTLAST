@@ -3139,7 +3139,7 @@ function ensureDailyShopStock(){
     ids.push(pool.splice(index,1)[0].id);
   }
   save.shopStockDay=day;
-  save.shopStockRotation='3.14.4';
+  save.shopStockRotation='3.36.0';
   save.shopStockIds=ids;
   if(save.shopDay!==day){save.shopDay=day;save.shopPurchases={};}
   persist();
@@ -3169,7 +3169,7 @@ function dailyShopOpen(){
       '<b>'+x.name+'</b><div class="small">'+x.desc+'</div>'+
       '<div class="daily-shop-price">'+(bought?'✓ CLAIMED TODAY':'🪙 '+x.price.toLocaleString()+' coins')+'</div></button>';
   }).join('');
-  openSub('🛒 DAILY SHOP','<div class="daily-shop-wrap"><div class="daily-shop-banner"><div><b>NEW STOCK • '+day+'</b><div class="small">Six offers are saved for today. The next day creates a new stock selection, not just a reordered list.</div></div><div class="daily-shop-timer">NEXT RESET<br><strong id="dailyShopCountdown">'+dailyShopCountdownText()+'</strong></div></div><div class="daily-shop-grid">'+cards+'</div><div class="small daily-shop-footer">Each offer can be purchased once per day.</div></div>');
+  openSub('🛒 DAILY SHOP','<div class="daily-shop-wrap"><div class="daily-shop-banner"><div><b>NEW STOCK • '+day+'</b><div class="small">Eight offers are saved for today. The next day creates a new stock selection, not just a reordered list.</div></div><div class="daily-shop-timer">NEXT RESET<br><strong id="dailyShopCountdown">'+dailyShopCountdownText()+'</strong></div></div><div class="daily-shop-grid">'+cards+'</div><div class="small daily-shop-footer">Each offer can be purchased once per day.</div></div>');
   if(window.dailyShopTimer)clearInterval(window.dailyShopTimer);
   window.dailyShopTimer=setInterval(()=>{const el=document.getElementById('dailyShopCountdown');if(el)el.textContent=dailyShopCountdownText();else{clearInterval(window.dailyShopTimer);window.dailyShopTimer=null;}},1000);
 }
@@ -5246,203 +5246,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
  #outlastOwnerRemake .owner-modal{width:100%;height:100dvh;border-radius:0}.owner-table-row{grid-template-columns:1fr!important;gap:4px!important}
 }
 </style>
-<script id="outlast-owner-remake-v31412">
-(function(){
-  'use strict';
-  const API='https://outlast-server.onrender.com';
-  const OWNER_NAMES=new Set(['bestgamer','landon','poke']);
-  let unlocked=false,password='',tab='overview',busy=false;
 
-  function isOwnerName(){
-    const n=String(currentUsername||'').trim().toLowerCase();
-    return OWNER_NAMES.has(n);
-  }
-  function esc(v){
-    return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-  function root(){
-    let el=document.getElementById('outlastOwnerRemake');
-    if(el)return el;
-    el=document.createElement('div');el.id='outlastOwnerRemake';
-    el.innerHTML='<div class="owner-modal" role="dialog" aria-modal="true" aria-label="Owner Control Center">'+
-      '<div class="owner-head"><div><h2>👑 Owner Control Center</h2><div class="outlast-owner-build">OUTLAST v3.27.1</div></div><button type="button" class="outlast-owner-close" data-owner-remake="close">✕ Close</button></div>'+
-      '<div class="owner-body"><aside class="outlast-owner-nav" id="outlastOwnerNav"></aside><main class="owner-content" id="outlastOwnerContent"></main></div></div>';
-    document.body.appendChild(el);
-    el.addEventListener('click',handleClick,true);
-    el.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){e.preventDefault();closePanel();}if(e.key==='Enter'&&document.getElementById('ownerRemakePassword')===document.activeElement)login();},true);
-    el.addEventListener('click',e=>{if(e.target===el)closePanel();},false);
-    return el;
-  }
-  function show(){root().style.display='flex';document.body.style.overflow='hidden';}
-  function closePanel(){const el=document.getElementById('outlastOwnerRemake');if(el)el.style.display='none';document.body.style.overflow='';}
-  function loginView(){
-    const el=root();show();
-    const nav=document.getElementById('outlastOwnerNav'),content=document.getElementById('outlastOwnerContent');
-    nav.innerHTML='';
-    content.innerHTML='<div class="owner-login owner-card">'+
-      '<div class="owner-brand">👑 OWNER ACCESS</div><div class="owner-muted">Server-verified access for the Owner Control Center.</div>'+
-      '<div style="height:14px"></div><label class="owner-muted">Owner password</label><input id="ownerRemakePassword" type="password" autocomplete="off" placeholder="Enter password" style="margin-top:6px">'+
-      '<div id="ownerRemakeError" class="owner-bad" style="min-height:20px;margin-top:8px"></div>'+
-      '<div class="owner-actions"><button type="button" class="gold" data-owner-remake="login">🔓 Unlock Owner Panel</button><button type="button" data-owner-remake="close">Cancel</button></div></div>';
-    setTimeout(()=>document.getElementById('ownerRemakePassword')?.focus(),30);
-  }
-  async function api(path,method='GET',body){
-    let url=API+path;const opt={method,cache:'no-store',headers:{}};
-    if(method==='GET'){
-      const q=new URLSearchParams({ownerUsername:String(currentUsername||''),password});
-      url+=(url.includes('?')?'&':'?')+q.toString();
-    }else{opt.headers['Content-Type']='application/json';opt.body=JSON.stringify({...body,ownerUsername:String(currentUsername||''),password});}
-    const r=await fetch(url,opt);const d=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));
-    if(!r.ok||d.ok===false)throw new Error(d.error||('Server request failed ('+r.status+')'));
-    return d;
-  }
-  async function login(){
-    if(busy)return;const input=document.getElementById('ownerRemakePassword'),err=document.getElementById('ownerRemakeError'),pw=String(input?.value||'');
-    if(!pw){if(err)err.textContent='Enter the owner password.';return;}
-    busy=true;
-    try{
-      const r=await fetch(API+'/api/owner/verify',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify({ownerUsername:String(currentUsername||''),password:pw})});
-      const d=await r.json().catch(()=>({ok:false,error:'Invalid server response'}));
-      if(!r.ok||d.ok!==true)throw new Error(d.error||'Owner verification failed.');
-      password=pw;unlocked=true;tab='overview';toast?.('👑 Owner Panel unlocked');render();
-    }catch(e){if(err)err.textContent=e.message||'Owner verification failed.';if(input){input.value='';input.focus();}}
-    finally{busy=false;}
-  }
-  function nav(){
-    const n=document.getElementById('outlastOwnerNav');if(!n)return;
-    const tabs=[['overview','⌂ Overview'],['players','👥 Players'],['bugs','🐛 Bug Reports'],['events','🌎 Events'],['abuse','⚡ Admin Abuse'],['rewards','🎁 Rewards'],['raffle','🎟️ Raffle'],['announce','📣 Announce']];
-    n.innerHTML=tabs.map(x=>'<button type="button" class="owner-nav-btn '+(tab===x[0]?'active':'')+'" data-owner-remake="tab" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+
-      '<button type="button" class="owner-nav-btn" data-owner-remake="refresh">↻ Refresh</button>';
-  }
-  function content(html){const c=document.getElementById('outlastOwnerContent');if(c)c.innerHTML=html;}
-  async function render(){
-    if(!unlocked||!isOwnerName()){closePanel();return;}
-    show();nav();content('<div class="owner-card">Loading owner controls…</div>');
-    try{
-      if(tab==='overview'){
-        const h=await api('/api/health');
-        const ev=h.globalEvent?.active?String(h.globalEvent.label||'Active event')+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
-        content('<div class="owner-grid">'+
-          '<div class="owner-card"><h3>👑 Owner</h3><div>'+esc(currentUsername)+'</div><div class="owner-muted">Verified server-side</div></div>'+
-          '<div class="owner-card"><h3>🌐 Server</h3><div class="owner-ok">'+esc(h.status||'unknown')+'</div><div class="owner-muted">Server v'+esc(h.version||'unknown')+'</div></div>'+
-          '<div class="owner-card"><h3>🟢 Connected Players</h3><div style="font-size:26px;font-weight:900">'+Number(h.players||0)+'</div></div>'+
-          '<div class="owner-card"><h3>🌎 Global Event</h3><div>'+esc(ev)+'</div></div></div>'+
-          '<div class="owner-card" style="margin-top:10px"><b>Owner panel status</b><div class="owner-muted" style="margin-top:6px">All protected actions require the server owner password on every request.</div></div>');
-      }else if(tab==='players'){
-        const d=await api('/api/owner/players'),ps=Array.isArray(d.players)?d.players:[];
-        const rows=ps.map(p=>'<div class="owner-table-row"><b>'+esc(p.username)+'</b><span class="'+(p.online?'owner-ok':'owner-muted')+'">'+(p.online?'🟢 Online':'⚪ Offline')+'</span><span class="owner-muted">'+(p.lastSeen?new Date(Number(p.lastSeen)).toLocaleString():'No recent activity')+'</span></div>').join('');
-        content('<div class="owner-card"><h3>👥 Players</h3><div class="owner-muted">Live online players plus players known by the server.</div><div style="margin-top:10px">'+(rows||'<div class="owner-muted">No players recorded.</div>')+'</div></div>');
-      }else if(tab==='bugs'){
-        let d;
-        try{
-          d=await api('/api/feedback');
-        }catch(_){
-          d=await api('/api/owner/feedback');
-        }
-        const reports=Array.isArray(d.reports)?d.reports:(Array.isArray(d.feedback)?d.feedback:[]);
-        const bugs=reports.filter(x=>String(x.type||'bug').toLowerCase()==='bug').sort((a,b)=>(Number(b.date||b.createdAt)||0)-(Number(a.date||a.createdAt)||0));
-        const rows=bugs.map(x=>{
-          const status=String(x.status||'Pending');
-          return '<div class="owner-card" style="margin-top:10px"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><h3 style="margin:0">🐛 '+esc(x.title||'Untitled bug')+'</h3><span class="owner-muted">'+esc(status)+'</span></div><div class="owner-muted" style="margin-top:6px">Player: '+esc(x.user||x.username||'Unknown')+' • '+(x.date?esc(new Date(Number(x.date)).toLocaleString()):'No date')+' • Build '+esc(x.version||'unknown')+'</div><div style="margin-top:10px;white-space:pre-wrap">'+esc(x.body||'No description')+'</div></div>';
-        }).join('');
-        content('<div class="owner-card"><h3>🐛 Bug Reports</h3><div class="owner-muted">Server-submitted player bug reports. Only the verified Owner Panel can load this list.</div><div style="margin-top:10px">'+(rows||'<div class="owner-muted">No bug reports found.</div>')+'</div><button type="button" class="option" data-owner-remake="tab" data-value="bugs" style="margin-top:10px">↻ Refresh Bug Reports</button></div>');
-      }else if(tab==='events'){
-        const d=await api('/api/owner/global-event');const current=d.active?String(d.label||'Active'):'None';
-        content('<div class="owner-card"><h3>🌎 Global Event Controller</h3><div class="owner-muted">Current: '+esc(current)+'</div><div style="height:12px"></div><label class="owner-muted">Event</label><select id="ownerRemakeEvent" style="margin-top:6px">'+['october','double_coins','double_xp','chaos','blackout','boss_rush'].map(x=>'<option value="'+x+'">'+x.replace(/_/g,' ')+'</option>').join('')+'</select><div style="height:8px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeEventMinutes" type="number" min="1" max="1440" value="30" style="margin-top:6px"><div class="owner-actions"><button type="button" class="gold" data-owner-remake="startEvent">▶ Start Event</button><button type="button" class="danger" data-owner-remake="stopEvent">■ Stop Event</button></div></div>');
-      }else if(tab==='abuse'){
-        const actions=[['boss','👹 Boss Spawn'],['blackout','🌑 Blackout'],['speed','💨 Enemy Speed Surge'],['chaos','⚡ Chaos'],['powerup','✨ Power-Up Rain'],['waves','🧟 Rapid Waves'],['stop','■ Stop Abuse']];
-        content('<div class="owner-card"><h3>⚡ Admin Abuse Controls</h3><div class="owner-muted">Temporary server-wide effects. Duration applies to effects that support it.</div><div style="height:10px"></div><label class="owner-muted">Duration (minutes)</label><input id="ownerRemakeAbuseMinutes" type="number" min="1" max="60" value="5" style="margin-top:6px"><div class="owner-grid" style="margin-top:10px">'+actions.map(x=>'<button type="button" class="'+(x[0]==='stop'?'danger':'option')+'" data-owner-remake="abuse" data-value="'+x[0]+'">'+x[1]+'</button>').join('')+'</div></div>');
-      }else if(tab==='raffle'){
-        const d=await api('/api/owner/players'),ps=(Array.isArray(d.players)?d.players:[]).filter(p=>p&&p.online&&String(p.username||'').trim());
-        content('<div class="owner-card"><h3>🎟️ Active Player Raffle</h3><div class="owner-muted">Only players active when the draw starts enter. The wheel cycles through every active name, slows down, and lands on one randomly selected winner.</div><div id="ownerRaffleStatus" style="margin-top:14px;text-align:center;font-size:18px;font-weight:800;min-height:28px">'+(ps.length?esc(ps.length+' active player'+(ps.length===1?'':'s')):'No active players')+'</div><div id="ownerRaffleWheel" style="margin:14px auto;padding:22px 12px;max-width:560px;text-align:center;border:2px solid #3b5368;border-radius:16px;background:#0b131b;font-size:30px;font-weight:900;min-height:42px;display:flex;align-items:center;justify-content:center">READY</div><div class="owner-actions" style="justify-content:center"><button type="button" class="gold" data-owner-remake="raffleDraw" '+(ps.length?'':'disabled')+'>🎟️ SPIN ACTIVE PLAYERS</button><button type="button" class="option" data-owner-remake="refresh">↻ Refresh Players</button></div><div id="ownerRaffleWinner" class="owner-ok" style="margin-top:14px;text-align:center;min-height:24px"></div></div>');
-      }else if(tab==='rewards'){
-        content('<div class="owner-grid"><div class="owner-card"><h3>🎁 Gift Coins</h3><div class="owner-muted">Queues coins server-side for a player to claim.</div><input id="ownerRemakeGiftUser" maxlength="18" placeholder="Player username" style="margin-top:10px"><input id="ownerRemakeGiftAmount" type="number" min="1" max="10000000" value="1000" style="margin-top:8px"><button type="button" class="gold" data-owner-remake="gift" style="margin-top:8px">● Gift Coins</button></div><div class="owner-card"><h3>🎁 Reward All</h3><div class="owner-muted">Queues the same reward for all known players.</div><input id="ownerRemakeAllAmount" type="number" min="1" max="100000" value="100" style="margin-top:10px"><button type="button" class="green" data-owner-remake="rewardAll" style="margin-top:8px">🎁 Reward All Players</button></div></div>');
-      }else{
-        content('<div class="owner-card"><h3>📣 Announcement</h3><div class="owner-muted">Broadcast a message to connected OUTLAST players.</div><textarea id="ownerRemakeAnnouncement" maxlength="240" placeholder="Announcement message" style="margin-top:10px;min-height:130px"></textarea><button type="button" class="gold" data-owner-remake="announce" style="margin-top:8px">📣 Send Announcement</button></div>');
-      }
-    }catch(e){
-      content('<div class="owner-card"><h3 class="owner-bad">⚠️ Owner request failed</h3><div class="owner-muted" style="margin-top:8px">'+esc(e.message||'Request failed')+'</div><button type="button" data-owner-remake="refresh" style="margin-top:10px">Retry</button></div>');
-    }
-  }
-  async function action(name,value){
-    if(busy)return;busy=true;
-    try{
-      if(name==='tab'){tab=value;await render();return;}
-      if(name==='refresh'){await render();return;}
-      if(name==='lock'){closePanel();return;}
-      if(name==='close'){closePanel();return;}
-      if(name==='login'){await login();return;}
-      if(!unlocked||!isOwnerName()){closePanel();return;}
-      if(name==='startEvent'){const type=document.getElementById('ownerRemakeEvent')?.value||'october',minutes=Math.floor(Number(document.getElementById('ownerRemakeEventMinutes')?.value)||30),d=await api('/api/owner/global-event','POST',{action:'start',eventType:type,durationMinutes:minutes});toast?.('🌎 '+(d.event?.label||'Event started'));await render();return;}
-      if(name==='stopEvent'){await api('/api/owner/global-event','POST',{action:'stop'});toast?.('■ Global event stopped');await render();return;}
-      if(name==='abuse'){const minutes=Math.floor(Number(document.getElementById('ownerRemakeAbuseMinutes')?.value)||5),d=await api('/api/owner/admin-abuse','POST',{action:value,durationMinutes:minutes});toast?.((d.label||'Admin abuse updated'));await render();return;}
-      if(name==='gift'){const target=String(document.getElementById('ownerRemakeGiftUser')?.value||'').trim(),amount=Math.floor(Number(document.getElementById('ownerRemakeGiftAmount')?.value)||0),d=await api('/api/owner/gift-coins','POST',{targetUsername:target,amount});toast?.('● '+d.amount+' coins queued for '+d.username);await render();return;}
-      if(name==='raffleDraw'){
-        if(window.__outlastOwnerRaffleSpinning)return;
-        window.__outlastOwnerRaffleSpinning=true;
-        const wheel=document.getElementById('ownerRaffleWheel'),status=document.getElementById('ownerRaffleStatus'),winnerEl=document.getElementById('ownerRaffleWinner'),button=document.querySelector('[data-owner-remake="raffleDraw"]');
-        try{
-          const d=await api('/api/owner/players');
-          const active=(Array.isArray(d.players)?d.players:[]).filter(p=>p&&p.online&&String(p.username||'').trim()).map(p=>String(p.username).trim());
-          if(!active.length){if(wheel)wheel.textContent='NO ACTIVE PLAYERS';if(status)status.textContent='No active players to draw from.';return;}
-          if(button)button.disabled=true;
-          if(winnerEl)winnerEl.textContent='';
-          if(status)status.textContent=active.length+' active player'+(active.length===1?'':'s')+' entered';
-          const winnerIndex=Math.floor(Math.random()*active.length);
-          const totalSteps=Math.max(40,active.length*8),duration=5200,start=performance.now();
-          let lastIndex=-1;
-          await new Promise(resolve=>{
-            function frame(now){
-              const t=Math.min(1,(now-start)/duration),eased=1-Math.pow(1-t,4);
-              const step=Math.min(totalSteps-1,Math.floor(eased*totalSteps)),idx=step%active.length;
-              if(idx!==lastIndex){if(wheel)wheel.textContent=active[idx];lastIndex=idx;}
-              if(t<1){requestAnimationFrame(frame);return;}
-              const winner=active[winnerIndex];
-              if(wheel)wheel.textContent='🏆 '+winner;
-              if(winnerEl)winnerEl.textContent='🎉 Raffle winner: '+winner;
-              resolve();
-            }
-            requestAnimationFrame(frame);
-          });
-          toast?.('🎟️ Raffle winner: '+active[winnerIndex]);
-        }finally{
-          window.__outlastOwnerRaffleSpinning=false;
-          if(button)button.disabled=false;
-        }
-        return;
-      }
-      if(name==='rewardAll'){const amount=Math.floor(Number(document.getElementById('ownerRemakeAllAmount')?.value)||0),d=await api('/api/owner/global-reward','POST',{amount});toast?.('🎁 '+d.amount+' coins queued for '+d.players+' players');await render();return;}
-      if(name==='announce'){const message=String(document.getElementById('ownerRemakeAnnouncement')?.value||'').trim();await api('/api/owner/announcement','POST',{message});toast?.('📣 Announcement sent');await render();return;}
-    }catch(e){toast?.('⚠️ '+(e.message||'Owner action failed'));await render();}
-    finally{busy=false;}
-  }
-  function handleClick(e){
-    const b=e.target?.closest?.('[data-owner-remake]');if(!b||!document.getElementById('outlastOwnerRemake')?.contains(b))return;
-    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-    action(b.dataset.ownerRemake,b.dataset.value);
-  }
-  function open(){
-    /* The button is intentionally visible to everyone; access is enforced by server verification. */
-    if(unlocked){render();return;}
-    loginView();
-  }
-  function bindOwnerButton(){
-    const b=document.getElementById('ownerBtn');if(!b)return;
-    b.style.display='';
-    b.dataset.ownerRemakeBound='1';
-  }
-  document.addEventListener('pointerup',e=>{
-    const b=e.target?.closest?.('#ownerBtn');if(!b)return;
-    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open();
-  },true);
-  document.addEventListener('click',e=>{
-    const b=e.target?.closest?.('#ownerBtn');if(!b)return;
-    e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();open();
-  },true);
-  window.openOwnerPanel=open;
-  setTimeout(bindOwnerButton,0);setTimeout(bindOwnerButton,250);setTimeout(bindOwnerButton,1000);
-})();
-</script>
 <style id="outlast-v315-tutorial-css">
 #newPlayerTutorial{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,10,.78);backdrop-filter:blur(4px);z-index:140}
 #newPlayerTutorial .npt-card{width:min(620px,92vw);background:linear-gradient(145deg,#172535,#0c141c);border:1px solid #41627e;border-radius:22px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.62);position:relative}
@@ -6433,5 +6237,6 @@ const chip36=document.querySelector('#menu .menu-chip');if(chip36)chip36.textCon
 document.title='OUTLAST v3.36.0';window.OUTLAST_BUILD='3.36.0';window.OUTLAST_VERSION='v3.36.0';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.36.0';});
 if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.36.0')}))updates.unshift(['v3.36.0 — Systems Rebuild','Made rarity effects match displayed tier, repaired both shield systems, enforced one live boss at a time, removed the Owner Panel password prompt, applied all skin bonuses, exposed the 12 Core Systems, and expanded Progress, Achievements, Stats, Inventory, Daily Shop, and Run Modifiers.']);
 if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('How do the 12 Core Systems work?')}))helpArticles.unshift(['How do the 12 Core Systems work?','Core Systems','Open Progress → 12 Core Systems to browse the active Combat, Enemies, Bosses, World, Events, Progression, Cosmetics, Objectives, Economy, Modes, Support, and Content Generation systems.']);
-})();</script></body>
+})();</script><script src="outlast-v3360-focused-systems.js?v=3.36.0"></script>
+</body>
 </html>

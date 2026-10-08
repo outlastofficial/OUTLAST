@@ -1,7 +1,7 @@
 /* OUTLAST v3.36.0 — system bug pass */
 (function(){
 'use strict';
-const VERSION='3.36.0',SERVER='https://outlast-server.onrender.com';
+const VERSION='3.36.0',SERVER=(location.hostname.includes('outlast-test')?'https://outlast-test-server.onrender.com':'https://outlast-test-server.onrender.com');
 const OWNER_NAMES=new Set(['bestgamer','landon','phone landon','poke','billybimbo']);
 const esc=v=>String(v??'').replace(/[&<>"]/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
 const sv=v=>String(v||'0').replace(/^v/i,'').split('.').slice(0,3).map(x=>parseInt(x,10)||0);

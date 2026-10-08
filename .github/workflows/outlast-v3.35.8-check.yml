@@ -1,0 +1,26 @@
+name: OUTLAST v3.35.8 regression checks
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "index.html"
+      - "outlast-v33015-upgrade-library.js"
+      - "tests/**"
+      - ".github/workflows/outlast-v3.35.8-check.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run OUTLAST regression tests
+        run: |
+          for f in tests/*.test.js; do
+            echo "=== $f ==="
+            node "$f"
+          done

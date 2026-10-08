@@ -23,7 +23,10 @@ const { chromium } = require('playwright');
   await page.waitForTimeout(1800);
 
   const state=await page.evaluate(()=>window.__OUTLAST_RUNTIME_STATE||null);
-  if(!state) throw new Error('Runtime heartbeat was not published; game loop did not expose a live state.');
+  if(!state){
+    const diag=await page.evaluate(()=>({title:document.title,ready:document.readyState,build:document.querySelector('meta[name="build-version"]')?.content||null,gameDisplay:getComputedStyle(document.getElementById('game')).display,menuDisplay:getComputedStyle(document.getElementById('menu')).display,buttonVisible:!!document.querySelector('#startBtn'),globalBuild:window.OUTLAST_BUILD||null,error:window.__OUTLAST_RUNTIME_STATE?.error||null}));
+    throw new Error('Runtime heartbeat was not published; game loop did not expose a live state. DIAG='+JSON.stringify(diag)+' CONSOLE='+consoleErrors.join(' | '));
+  }
   if(state.fatal) throw new Error('Game loop fatal error after Start Run: '+(state.error||'unknown'));
   if(!state.running) throw new Error('Start Run did not leave the game running.');
   if(!state.player) throw new Error('Start Run left the game without a player.');

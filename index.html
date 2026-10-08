@@ -3556,9 +3556,9 @@ function startWorldRaid(name){
 function renderWorld(){openSub('◎ World Events',`<div class="grid">${Object.entries(worldEvents).map(([n,v])=>`<div class="option"><b>${n}</b><div class="small">${v}</div></div>`).join('')}</div><p class="note">World events can appear during longer runs. Triggered events add bonus score and rewards.</p>`)}
 function renderRecords(){const r=save.records||{};openSub('🥇 Records',`<div class="feature-list"><div class="option"><b>Best Combo</b><div>${r.bestCombo||0}</div></div><div class="option"><b>Best Damage Hit</b><div>${r.bestDamage||0}</div></div><div class="option"><b>Best Run Time</b><div>${Math.floor(r.bestRunTime||0)}s</div></div><div class="option"><b>Total Chests</b><div>${r.totalChests||0}</div></div><div class="option"><b>Total Crafted</b><div>${r.totalCrafted||0}</div></div><div class="option"><b>Total Dashes</b><div>${r.totalDodges||0}</div></div></div>`)}
 
-document.getElementById('extrasBtn').onclick=renderExtras;
-document.getElementById('progressionBtn').onclick=renderProgression;
-document.getElementById('questBtn').onclick=renderQuestBoard;
+document.getElementById('extrasBtn')?.addEventListener('click',renderExtras);
+document.getElementById('progressionBtn')?.addEventListener('click',renderProgression);
+document.getElementById('questBtn')?.addEventListener('click',renderQuestBoard);
 
 const helpArticles=[
   ['What do the minimap symbols mean?','Maps','Blue arrow = player, red dot = enemy, gold star = boss, orange diamond = elite, cyan diamond = XP, yellow dollar = coin, colored square = power-up, purple diamond = shrine, gray block = object.'],

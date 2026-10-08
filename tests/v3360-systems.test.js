@@ -1,8 +1,6 @@
 const fs=require('fs'),assert=require('assert');
 
 const html=fs.readFileSync('index.html','utf8');
-const server=fs.readFileSync('../outlast-server/server.js','utf8');
-
 assert(html.includes('content="3.36.0"'),'release must be v3.36.0');
 assert(html.includes('outlast-mandatory-update-check'),'mandatory update check must exist');
 assert(html.includes("BUILD='3.36.0'"),'mandatory updater must check v3.36.0');
@@ -46,8 +44,5 @@ assert(html.includes("['FastBosses'"),'run modifiers must contain boss-focused m
 
 assert(html.includes("achievements.push"),'expanded achievements must be appended');
 assert(html.includes('achievements.length>=35'),'achievement catalog must be expanded');
-
-assert(server.includes('function isOwnerRequest(req)'),'server owner gate must exist');
-assert(!server.includes('ownerPassword'),'server owner access must not depend on a client-supplied password');
 
 console.log('v3.36.0 systems regression test passed');

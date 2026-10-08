@@ -24,7 +24,7 @@ assert(html.includes('if(e.boss&&game.activeBossId===e.id)'), 'boss death must c
 assert(html.includes('game.activeBossId=null'), 'boss death must release the active boss lock');
 
 assert(mod.includes('applySkin37'), 'skin resolver must exist');
-assert(mod.includes('xpBonus') && mod.includes('coinMult') && mod.includes('bossMult') && mod.includes('damage') && mod.includes('speed'), 'skin resolver must apply all supported bonus categories');
+assert(mod.includes("xp:Number(skin.xp||0)") && mod.includes("coins:Number(skin.coins||0)") && mod.includes("boss:Number(skin.boss||0)") && mod.includes("damage:Number(skin.damage||0)") && mod.includes("speed:Number(skin.speed||0)"), 'skin resolver must capture all supported bonus categories');
 
 for(const id of ['progressStats37','progressAchievements37','progressStatsDetails37','progressShop37','progressInventory37','progressModifiers37','progressCore37','progressSkins37','progressCodex37','progressBattlePass37','progressPrestige37','progressRarity37','progressWorldBoss37']){
   assert(mod.includes(id),id+' must be a dedicated Progress button');

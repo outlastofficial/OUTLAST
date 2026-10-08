@@ -12,34 +12,40 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastUsername','E2EPlayer');
     localStorage.setItem('outlastDeviceMode','pc');
     localStorage.setItem('outlastJoystickMode','off');
-    localStorage.setItem('outlast_update_ack_v3.36.2','1');
-    localStorage.setItem('outlastSeenUpdateVersion','3.35.2');
+    localStorage.setItem('outlast_update_ack_v3.37.0','1');
+    localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
   });
 
-  const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/runtime-smoke.html')+'?e2e='+Date.now();
+  const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
-  if(!servedTitle.includes('v3.36.2')) console.log('Version marker diagnostic: '+servedTitle);
+  if(!servedTitle.includes('v3.37.0')) console.log('Version marker diagnostic: '+servedTitle);
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
-
   await page.locator('#startBtn').click();
-  await page.waitForTimeout(1800);
+  await page.waitForTimeout(2500);
 
   const state=await page.evaluate(()=>window.__OUTLAST_RUNTIME_STATE||null);
-  if(!state){
-    const diag=await page.evaluate(()=>({title:document.title,ready:document.readyState,build:document.querySelector('meta[name="build-version"]')?.content||null,gameDisplay:getComputedStyle(document.getElementById('game')).display,menuDisplay:getComputedStyle(document.getElementById('menu')).display,buttonVisible:!!document.querySelector('#startBtn'),globalBuild:window.OUTLAST_BUILD||null,error:window.__OUTLAST_RUNTIME_STATE?.error||null}));
-    throw new Error('Runtime heartbeat was not published; game loop did not expose a live state. DIAG='+JSON.stringify(diag)+' CONSOLE='+consoleErrors.join(' | '));
-  }
+  if(!state) throw new Error('Runtime heartbeat was not published; game loop is not running.');
   if(state.fatal) throw new Error('Game loop fatal error after Start Run: '+(state.error||'unknown'));
   if(!state.running) throw new Error('Start Run did not leave the game running.');
   if(!state.player) throw new Error('Start Run left the game without a player.');
-  if(!(Number(state.time)>0.3)) throw new Error('Gameplay time did not advance after Start Run.');
-  if(!(Number(state.heartbeat)>5)) throw new Error('Game loop heartbeat did not advance.');
-  const coreVersion=await page.evaluate(()=>window.OUTLAST_CORE_CONTENT_VERSION||null);
-  if(!coreVersion) throw new Error('12-core engine version was not published; core content failed to initialize.');
+  if(!(Number(state.time)>0.8)) throw new Error('Gameplay time did not advance after Start Run.');
+  if(!(Number(state.heartbeat)>10)) throw new Error('Game loop heartbeat did not advance.');
+  if(!(Number(state.enemies)>=1)) throw new Error('Gameplay loop is alive but no zombie spawned.');
+  const flags=await page.evaluate(()=>({
+    core:window.OUTLAST_CORE_CONTENT_VERSION||null,
+    coreMode:window.OUTLAST_CORE_CONTENT_MODE||null,
+    systems:window.OUTLAST_37_READY||false,
+    scale:!!window.OUTLAST_UPGRADE_RARITY_SCALING37,
+    mandatory:!!window.OUTLAST_MANDATORY_UPDATE_CHECK
+  }));
+  if(!flags.core) throw new Error('12-core engine version was not published.');
+  if(!flags.systems) throw new Error('v3.37 systems module did not initialize.');
+  if(!flags.scale) throw new Error('Authoritative rarity scale did not initialize.');
+  if(!flags.mandatory) throw new Error('Mandatory update checker did not initialize.');
   if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,consoleErrors}));
+  console.log(JSON.stringify({ok:true,state,flags,consoleErrors}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});

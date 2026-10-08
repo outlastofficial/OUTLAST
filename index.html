@@ -2759,7 +2759,6 @@ const p=game.player;if(p){
      ctx.save();ctx.globalAlpha=.24;ctx.strokeStyle='#9feeff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(p.x,p.y,36+Math.min(8,Number(p.shield)),0,Math.PI*2);ctx.stroke();
      ctx.globalAlpha=.95;ctx.fillStyle='#d8fbff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('🛡️ '+Number(p.shield).toFixed(1)+'s',p.x,p.y+50);ctx.textAlign='left';ctx.restore();
    }
-   }
    if(save.mode==='1v1 Arena'&&game.player2){ drawPlayerAvatar(game.player2,'#ff5f69',true); }
    if(save.selectedWeapon==='OrbitBlades'){for(let k=0;k<3;k++){let a=game.time*2+k*Math.PI*2/3;ctx.fillStyle='#a9d0ff';ctx.fillRect(p.x+Math.cos(a)*45-5,p.y+Math.sin(a)*45-5,10,10)}}}
  ctx.restore();

@@ -1,0 +1,13 @@
+const fs=require('fs'),assert=require('assert');
+const html=fs.readFileSync('index.html','utf8');
+const patch=fs.readFileSync('outlast-v3360-system-fixes.js','utf8');
+assert(html.includes('outlast-v3360-system-fixes.js'));
+assert(patch.includes('/api/version')&&patch.includes('outlast-v3360-mandatory-update'));
+assert(patch.includes("Common:{mult:1")&&patch.includes("Mythic:{mult:2.25")&&patch.includes("Omega:{mult:5.5"));
+assert(html.includes("outlastTakePlayerDamage(p,actual*dt,'enemy contact')"));
+assert(html.includes('!window.outlastHasLiveBoss?.()'));
+assert(!html.includes('id="ownerRemakePassword"'));
+assert(patch.includes("OWNER_NAMES=new Set(['bestgamer','landon','phone landon','poke','billybimbo'])"));
+assert(html.includes('12 Core Systems')||patch.includes('const CORE=['));
+assert(patch.includes('function enhancedStats()')&&patch.includes('const EXTRA_SHOP=[')&&patch.includes('function inventoryPlus()')&&patch.includes('function modifierPlus()'));
+console.log('OUTLAST tester v3.36 regression checks passed');

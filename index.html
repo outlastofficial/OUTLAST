@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.36.0">
-<meta name="build-version" content="3.36.0">
+<meta name="outlast-build" content="3.36.1">
+<meta name="build-version" content="3.36.1">
 <title>OUTLAST v3.36.0</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
@@ -2215,34 +2215,35 @@ const upgradeRarities={
  Legendary:{mult:1.9,label:'LEGENDARY',weight:2.5,glow:'#ffd84d'},
  Mythic:{mult:2.25,label:'MYTHIC',weight:.5,glow:'#ff6bd6'}
 };
+function fmtPct(base,mult){return Number((Number(base)*Number(mult)).toFixed(1)).toString()}
 const tempUp=[
  ['Power Shot',v=>`+${Math.round(6*v)} damage`,v=>game.player.damage+=6*v],
- ['Rapid Fire',v=>`${Math.round(10*v)}% faster attacks`,v=>game.player.fireRate=Math.max(.2,(game.player.fireRate||.45)*(1-.10*v))],
+ ['Rapid Fire',v=>`${fmtPct(10,v)}% faster attacks`,v=>game.player.fireRate=Math.max(.2,(game.player.fireRate||.45)*(1-.10*v))],
  ['Vitality',v=>`+${Math.round(25*v)} max HP`,v=>{game.player.max+=25*v;game.player.hp=Math.min(game.player.max,game.player.hp+25*v)}],
- ['Swift Feet',v=>`+${Math.round(12*v)}% speed`,v=>game.player.speed=Math.min(game.player.speedCap,game.player.speed*(1+.12*v))],
+ ['Swift Feet',v=>`+${fmtPct(12,v)}% speed`,v=>game.player.speed=Math.min(game.player.speedCap,game.player.speed*(1+.12*v))],
  ['Magnet',v=>`+${Math.round(45*v)} pickup radius`,v=>game.player.magnet+=45*v],
  ['Regeneration',v=>`+${(1*v).toFixed(1)} HP/s`,v=>game.player.regen+=1*v],
  ['Piercing',v=>`+${Math.max(1,Math.round(v))} pierce`,v=>game.player.pierce+=Math.max(1,Math.round(v))],
  ['Multi-Shot',v=>`+${Math.max(2,Math.round(2*v))} projectiles`,v=>game.player.multiShot=(game.player.multiShot||0)+Math.max(2,Math.round(2*v))],
  ['Frost Aura',v=>`+${Math.round(18*v)} aura radius, stronger slow, and chill damage`,v=>{game.player.frost=true;game.player.frostAuraRadius=(game.player.frostAuraRadius||130)+18*v;game.player.frostSlow=Math.min(.88,(game.player.frostSlow||.50)+.08*v);game.player.frostAuraDps=(game.player.frostAuraDps||.12)+.10*v}],
- ['Berserker',v=>`+${Math.round(50*v)}% damage below 50% HP`,v=>game.player.berserk=true],
- ['Big Bullets',v=>`${Math.round(35*v)}% larger shots`,v=>game.player.bulletSize=(game.player.bulletSize||1)*(1+.35*v)],  ['Projectile Speed',v=>`+${Math.round(18*v)}% projectile speed`,v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.18*v)],
+ ['Berserker',v=>`+${fmtPct(50,v)}% damage below 50% HP`,v=>game.player.berserk=true],
+ ['Big Bullets',v=>`${fmtPct(35,v)}% larger shots`,v=>game.player.bulletSize=(game.player.bulletSize||1)*(1+.35*v)],  ['Projectile Speed',v=>`+${fmtPct(18,v)}% projectile speed`,v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.18*v)],
  ['Lucky Hunter',v=>`${Math.round(25+10*(v-1))}% chance for double XP`,v=>game.player.lucky=true],
- ['Overcharge',v=>`+${Math.round(20*v)}% ultimate damage`,v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.20*v)],
+ ['Overcharge',v=>`+${fmtPct(20,v)}% ultimate damage`,v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.20*v)],
  ['Second Wind',v=>`+${Math.round(2*v)} HP/s`,v=>game.player.regen+=2*v],
  ['Heavy Rounds',v=>`+${Math.round(12*v)} damage, slower fire`,v=>{game.player.damage+=12*v;game.player.fireRate=Math.min(1.2,(game.player.fireRate||.45)*(1+.08*v))}],
  ['Swift Aim',v=>`+${Math.round(50*v)} range`,v=>game.player.range+=50*v],
- ['Crit Chance',v=>`+${Math.round(8*v)}% crit chance`,v=>game.player.crit+=.08*v],
- ['Chain Reaction',v=>`+${Math.round(15*v)}% chain effect`,v=>game.player.chain=(game.player.chain||1)*(1+.15*v)],
- ['Lucky Coins',v=>`+${Math.round(20*v)}% coins`,v=>game.player.coinMult*=1+.20*v],
- ['Adrenaline',v=>`+${Math.round(20*v)}% speed below 50% HP`,v=>game.player.adrenaline=true],
+ ['Crit Chance',v=>`+${fmtPct(8,v)}% crit chance`,v=>game.player.crit+=.08*v],
+ ['Chain Reaction',v=>`+${fmtPct(15,v)}% chain effect`,v=>game.player.chain=(game.player.chain||1)*(1+.15*v)],
+ ['Lucky Coins',v=>`+${fmtPct(20,v)}% coins`,v=>game.player.coinMult*=1+.20*v],
+ ['Adrenaline',v=>`+${fmtPct(20,v)}% speed below 50% HP`,v=>game.player.adrenaline=true],
  ['Shield Core',v=>`Gain ${Math.round(3*v)}s shield`,v=>outlastGrantTempShield(3*v)],
- ['Rapid Recovery',v=>`+${Math.round(15*v)}% pickup healing`,v=>game.player.healMult=(game.player.healMult||1)*(1+.15*v)],
+ ['Rapid Recovery',v=>`+${fmtPct(15,v)}% pickup healing`,v=>game.player.healMult=(game.player.healMult||1)*(1+.15*v)],
  ['Poison Rounds',v=>`Shots apply stronger poison`,v=>game.player.poison=true],
  ['Stun Rounds',v=>`Shots have a better stun effect`,v=>game.player.stun=true],
  ['Lifesteal',v=>`+${(0.2*v).toFixed(1)} HP per kill effect`,v=>game.player.vampire=(game.player.vampire||0)+.2*v],
- ['Armor Pierce',v=>`+${Math.round(15*v)}% enemy defense ignored`,v=>game.player.armorPierce=(game.player.armorPierce||0)+.15*v],
- ['Double Tap',v=>`${Math.round(20*v)}% chance to fire an extra shot`,v=>game.player.doubleTap=true],
+ ['Armor Pierce',v=>`+${fmtPct(15,v)}% enemy defense ignored`,v=>game.player.armorPierce=(game.player.armorPierce||0)+.15*v],
+ ['Double Tap',v=>`${fmtPct(20,v)}% chance to fire an extra shot`,v=>game.player.doubleTap=true],
  ['Treasure Radar',v=>`3x power-up drop chance`,v=>game.player.treasure=true],
  ['Shockwave',v=>`Every ${Math.max(6,Math.round(12/v))}th kill can blast nearby enemies`,v=>game.player.shockwave=true],
  ['Upgrade Luck',v=>`+${Math.round(5*v)} Upgrade Luck`,v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
@@ -2252,9 +2253,9 @@ const tempUp=[
   ['Scavenger Luck',v=>`+${Math.round(8*v)} Loot Luck`,v=>{game.player.lootLuck=(game.player.lootLuck||0)+8*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}]
 
   ,['Vampiric Surge',v=>'+'+(0.35*v).toFixed(1)+' HP per kill',v=>game.player.vampire=(game.player.vampire||0)+.35*v]
-  ,['Overheat',v=>'+'+Math.round(28*v)+'% attack speed +'+Math.round(2*v)+'% damage',v=>{game.player.fireRate=Math.max(.16,(game.player.fireRate||.45)*(1-.28*v));game.player.damage*=1+.02*v}]
+  ,['Overheat',v=>'+'+fmtPct(28,v)+'% attack speed +'+fmtPct(2,v)+'% damage',v=>{game.player.fireRate=Math.max(.16,(game.player.fireRate||.45)*(1-.28*v));game.player.damage*=1+.02*v}]
   ,['Fortified Core',v=>'+'+Math.round(40*v)+' max HP',v=>{game.player.max+=40*v;game.player.hp=Math.min(game.player.max,game.player.hp+40*v)}]
-  ,['Deadeye',v=>'+'+Math.round(12*v)+'% crit chance',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.12*v)}]
+  ,['Deadeye',v=>'+'+fmtPct(12,v)+'% crit chance',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.12*v)}]
   ,['Rift Pierce',v=>'+'+Math.max(1,Math.round(2*v))+' projectile pierce',v=>game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(2*v))]
   ,['Cryo Core',v=>'Stronger enemy slowing aura',v=>{game.player.frost=true;game.player.slowPower=(game.player.slowPower||1)+.25*v}]
   ,['Ammo Surge',v=>'+'+Math.max(2,Math.round(2*v))+' extra projectiles',v=>game.player.multiShot=(game.player.multiShot||0)+Math.max(2,Math.round(2*v))]
@@ -2262,7 +2263,7 @@ const tempUp=[
   ,['Heavy Impact',v=>'+'+Math.round(18*v)+' damage and larger shots',v=>{game.player.damage+=18*v;game.player.bulletSize=(game.player.bulletSize||1)*(1+.12*v)}]
   ,['Emergency Shield',v=>'Gain '+Math.round(5*v)+' seconds of shield',v=>outlastGrantTempShield(5*v)]
   ,['Second Heart',v=>'+'+Math.round(55*v)+' max HP and healing',v=>{game.player.max+=55*v;game.player.hp=Math.min(game.player.max,game.player.hp+55*v);game.player.healMult=(game.player.healMult||1)+.15*v}]
-  ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+Math.round(12*v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
+  ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+fmtPct(12,v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
 function rollUpgradeRarity(){const luck=Math.max(0,Number(game.player?.upgradeLuck||0));const bonus=Math.min(.8,luck/100);const weights={Common:52*(1-bonus*.65),Uncommon:25*(1-bonus*.5),Rare:13*(1+bonus*.8),Epic:6.5*(1+bonus*1.25),Legendary:2.5*(1+bonus*2.4),Mythic:.5*(1+bonus*4)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name];if(r<=0)return name}return 'Common'}
 function makeChoices(){const a=[...tempUp],out=[];while(out.length<3){const i=Math.floor(Math.random()*a.length);if(out.some(u=>u[0]===a[i][0]))continue;const [name,desc,apply]=a.splice(i,1)[0],rarity=game.level===3&&out.length===0?'Legendary':rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;out.push([name,desc(mult),()=>apply(mult),rarity])}return out}
@@ -2893,6 +2894,7 @@ const p=game.player;if(p){
     }
     ctx.fillStyle=glow;ctx.font='bold 13px Arial';ctx.fillText(rank===10?'OMEGA POWER • EXTREMELY RARE':rank===9?'ETERNAL POWER • EXTREMELY RARE':rank===8?'TRANSCENDENT POWER • VERY RARE':rank===7?'CELESTIAL POWER • VERY RARE':rank===6?'DIVINE POWER • RARE':rank===5?'MYTHIC POWER • EXTREMELY RARE':rank===4?'LEGENDARY POWER • VERY RARE':rank===3?'EPIC POWER • POWER SURGE':rank===2?'RARE POWER • ENHANCED':rank===1?'UNCOMMON POWER • BOOSTED':'COMMON POWER • BASE',cx,y+244);
    ctx.globalAlpha=.9;ctx.font='bold 11px Arial';ctx.fillText('RARITY SCALE ×'+rarityScale.toFixed(2)+' • EFFECT SCALED TO RARITY',cx,y+258);
+   ctx.globalAlpha=.82;ctx.font='10px Arial';ctx.fillText('EXACT BOOST • SCALE ×'+rarityScale.toFixed(2),cx,y+270);
     ctx.globalAlpha=.8;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+52,y+258);ctx.lineTo(x+w-52,y+258);ctx.stroke();
     ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='11px Arial';ctx.fillText(cardRolling?'ROLLING… WAIT':'SELECT TO CLAIM',cx,y+274);
     ctx.restore();
@@ -4140,9 +4142,9 @@ Object.assign(runModifiers,{
 
 /* ---------- Better XP choices ---------- */
 tempUp.push(
- ['XP Boost',v=>`+${Math.round(10*v)}% XP`,v=>game.player.xpBonus*=1+.10*v],
- ['XP Burst',v=>`+${Math.round(20*v)}% XP and +${Math.round(4*v)} magnet`,v=>{game.player.xpBonus*=1+.20*v;game.player.magnet+=4*v}],
- ['XP Hunter',v=>`+${Math.round(30*v)}% XP`,v=>game.player.xpBonus*=1+.30*v]
+ ['XP Boost',v=>`+${fmtPct(10,v)}% XP`,v=>game.player.xpBonus*=1+.10*v],
+ ['XP Burst',v=>`+${fmtPct(20,v)}% XP and +${Math.round(4*v)} magnet`,v=>{game.player.xpBonus*=1+.20*v;game.player.magnet+=4*v}],
+ ['XP Hunter',v=>`+${fmtPct(30,v)}% XP`,v=>game.player.xpBonus*=1+.30*v]
 );
 
 /* ---------- Build synergies ---------- */
@@ -5056,24 +5058,24 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
   'use strict';
   /* OUTLAST v3.14.8 — Upgrade Choice Expansion */
   const extraUpgrades=[
-    ['Bloodrush',v=>'+ '+Math.round(18*v)+'% damage while below 50% HP',v=>{game.player.bloodrush=true;game.player.berserk=true}],
-    ['Quick Reload',v=>'+'+Math.round(14*v)+'% faster attacks',v=>{game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.14*v))}],
-    ['Ricochet',v=>'+'+Math.max(1,Math.round(v))+' pierce and '+Math.round(8*v)+'% projectile size',v=>{game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(v));game.player.bulletSize=(game.player.bulletSize||1)*(1+.08*v)}],
-    ['Executioner',v=>'+'+Math.round(16*v)+'% damage to elites',v=>{game.player.executioner=(game.player.executioner||0)+.16*v}],
-    ['Bossbreaker',v=>'+'+Math.round(22*v)+'% damage to bosses',v=>{game.player.bossDamageBonus=(game.player.bossDamageBonus||0)+.22*v}],
+    ['Bloodrush',v=>'+ '+fmtPct(18,v)+'% damage while below 50% HP',v=>{game.player.bloodrush=true;game.player.berserk=true}],
+    ['Quick Reload',v=>'+'+fmtPct(14,v)+'% faster attacks',v=>{game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.14*v))}],
+    ['Ricochet',v=>'+'+Math.max(1,Math.round(v))+' pierce and '+fmtPct(8,v)+'% projectile size',v=>{game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(v));game.player.bulletSize=(game.player.bulletSize||1)*(1+.08*v)}],
+    ['Executioner',v=>'+'+fmtPct(16,v)+'% damage to elites',v=>{game.player.executioner=(game.player.executioner||0)+.16*v}],
+    ['Bossbreaker',v=>'+'+fmtPct(22,v)+'% damage to bosses',v=>{game.player.bossDamageBonus=(game.player.bossDamageBonus||0)+.22*v}],
     ['Cryo Burst',v=>`+${Math.round(24*v)} aura radius, stronger slow, and chill damage`,v=>{game.player.frost=true;game.player.frostAuraRadius=(game.player.frostAuraRadius||130)+24*v;game.player.frostSlow=Math.min(.92,(game.player.frostSlow||.50)+.12*v);game.player.frostAuraDps=(game.player.frostAuraDps||.12)+.18*v}],
-    ['Shock Circuit',v=>'Chain effects +'+Math.round(22*v)+'%',v=>{game.player.chain=(game.player.chain||1)*(1+.22*v)}],
-    ['Vampire Core',v=>'+'+(0.3*v).toFixed(1)+' HP per kill and +'+Math.round(8*v)+'% max HP',v=>{game.player.vampire=(game.player.vampire||0)+.3*v;game.player.max+=8*v;game.player.hp=Math.min(game.player.max,game.player.hp+8*v)}],
-    ['Fortress',v=>'+'+Math.round(50*v)+' max HP and +'+Math.round(8*v)+'% armor',v=>{game.player.max+=50*v;game.player.hp=Math.min(game.player.max,game.player.hp+50*v);game.player.armor=Math.max(.1,(game.player.armor||1)-.08*v)}],
-    ['Adrenal Core',v=>'+'+Math.round(15*v)+'% speed and '+Math.round(10*v)+'% attack speed',v=>{game.player.speed=Math.min(game.player.speedCap,game.player.speed*(1+.15*v));game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.10*v))}],
-    ['Salvager',v=>'+'+Math.round(18*v)+'% coins and +'+Math.round(12*v)+' pickup range',v=>{game.player.coinMult*=1+.18*v;game.player.magnet+=12*v}],
-    ['XP Reactor',v=>'+'+Math.round(18*v)+'% XP and +'+Math.round(5*v)+' Upgrade Luck',v=>{game.player.xpBonus*=1+.18*v;game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
-    ['Lucky Barrage',v=>'+ '+Math.round(12*v)+'% extra-shot chance',v=>{game.player.doubleTap=true;game.player.extraShotLuck=(game.player.extraShotLuck||0)+.12*v}],
+    ['Shock Circuit',v=>'Chain effects +'+fmtPct(22,v)+'%',v=>{game.player.chain=(game.player.chain||1)*(1+.22*v)}],
+    ['Vampire Core',v=>'+'+(0.3*v).toFixed(1)+' HP per kill and +'+fmtPct(8,v)+'% max HP',v=>{game.player.vampire=(game.player.vampire||0)+.3*v;game.player.max+=8*v;game.player.hp=Math.min(game.player.max,game.player.hp+8*v)}],
+    ['Fortress',v=>'+'+Math.round(50*v)+' max HP and +'+fmtPct(8,v)+'% armor',v=>{game.player.max+=50*v;game.player.hp=Math.min(game.player.max,game.player.hp+50*v);game.player.armor=Math.max(.1,(game.player.armor||1)-.08*v)}],
+    ['Adrenal Core',v=>'+'+fmtPct(15,v)+'% speed and '+fmtPct(10,v)+'% attack speed',v=>{game.player.speed=Math.min(game.player.speedCap,game.player.speed*(1+.15*v));game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.10*v))}],
+    ['Salvager',v=>'+'+fmtPct(18,v)+'% coins and +'+Math.round(12*v)+' pickup range',v=>{game.player.coinMult*=1+.18*v;game.player.magnet+=12*v}],
+    ['XP Reactor',v=>'+'+fmtPct(18,v)+'% XP and +'+Math.round(5*v)+' Upgrade Luck',v=>{game.player.xpBonus*=1+.18*v;game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
+    ['Lucky Barrage',v=>'+ '+fmtPct(12,v)+'% extra-shot chance',v=>{game.player.doubleTap=true;game.player.extraShotLuck=(game.player.extraShotLuck||0)+.12*v}],
     ['Shield Nova',v=>'Gain '+Math.round(4*v)+'s shield and a defensive pulse',v=>{outlastGrantTempShield(4*v);game.player.shieldNova=true}],
-    ['Overclock',v=>'+'+Math.round(24*v)+'% attack speed, +'+Math.round(6*v)+'% damage',v=>{game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.24*v));game.player.damage*=1+.06*v}],
-    ['Deadly Precision',v=>'+'+Math.round(10*v)+'% crit chance and +'+Math.round(12*v)+'% crit damage',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.10*v);game.player.critMult=(game.player.critMult||1.8)+.12*v}],
+    ['Overclock',v=>'+'+fmtPct(24,v)+'% attack speed, +'+fmtPct(6,v)+'% damage',v=>{game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.24*v));game.player.damage*=1+.06*v}],
+    ['Deadly Precision',v=>'+'+fmtPct(10,v)+'% crit chance and +'+fmtPct(12,v)+'% crit damage',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.10*v);game.player.critMult=(game.player.critMult||1.8)+.12*v}],
     ['Treasure Engine',v=>'+'+Math.round(20*v)+' Treasure Luck and 2x drop chance',v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+20*v;game.player.treasure=true;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
-    ['Last Stand',v=>'+'+Math.round(35*v)+'% damage below 25% HP',v=>{game.player.lastStand=true;game.player.lastStandBonus=(game.player.lastStandBonus||0)+.35*v}],
+    ['Last Stand',v=>'+'+fmtPct(35,v)+'% damage below 25% HP',v=>{game.player.lastStand=true;game.player.lastStandBonus=(game.player.lastStandBonus||0)+.35*v}],
     ['Combat Medic',v=>'+'+(1.2*v).toFixed(1)+' HP/s and stronger healing',v=>{game.player.regen+=(1.2*v);game.player.healMult=(game.player.healMult||1)+.12*v}]
   ];
   if(typeof tempUp!=='undefined'&&Array.isArray(tempUp)){
@@ -5195,24 +5197,24 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
 <script id="outlast-v31411-upgrades">
 (function(){
   const extras=[
-    ['Bloodrush',v=>'+'+Math.round(18*v)+'% damage below 50% HP',v=>{game.player.berserk=true}],
-    ['Quick Reload',v=>'+'+Math.round(14*v)+'% faster attacks',v=>{game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.14*v))}],
-    ['Ricochet',v=>'+'+Math.max(1,Math.round(v))+' pierce and '+Math.round(8*v)+'% larger shots',v=>{game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(v));game.player.bulletSize=(game.player.bulletSize||1)*(1+.08*v)}],
-    ['Executioner',v=>'+'+Math.round(16*v)+'% elite damage',v=>game.player.executioner=(game.player.executioner||0)+.16*v],
-    ['Bossbreaker',v=>'+'+Math.round(22*v)+'% boss damage',v=>game.player.bossDamageBonus=(game.player.bossDamageBonus||0)+.22*v],
+    ['Bloodrush',v=>'+'+fmtPct(18,v)+'% damage below 50% HP',v=>{game.player.berserk=true}],
+    ['Quick Reload',v=>'+'+fmtPct(14,v)+'% faster attacks',v=>{game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.14*v))}],
+    ['Ricochet',v=>'+'+Math.max(1,Math.round(v))+' pierce and '+fmtPct(8,v)+'% larger shots',v=>{game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(v));game.player.bulletSize=(game.player.bulletSize||1)*(1+.08*v)}],
+    ['Executioner',v=>'+'+fmtPct(16,v)+'% elite damage',v=>game.player.executioner=(game.player.executioner||0)+.16*v],
+    ['Bossbreaker',v=>'+'+fmtPct(22,v)+'% boss damage',v=>game.player.bossDamageBonus=(game.player.bossDamageBonus||0)+.22*v],
     ['Cryo Burst',v=>'Frost aura + stronger slow',v=>{game.player.frost=true;game.player.slowPower=(game.player.slowPower||1)+.35*v}],
-    ['Shock Circuit',v=>'+'+Math.round(22*v)+'% chain effect',v=>game.player.chain=(game.player.chain||1)*(1+.22*v)],
-    ['Vampire Core',v=>'+'+(0.3*v).toFixed(1)+' HP per kill and +'+Math.round(8*v)+'% max HP',v=>{game.player.vampire=(game.player.vampire||0)+.3*v;game.player.max+=8*v;game.player.hp=Math.min(game.player.max,game.player.hp+8*v)}],
+    ['Shock Circuit',v=>'+'+fmtPct(22,v)+'% chain effect',v=>game.player.chain=(game.player.chain||1)*(1+.22*v)],
+    ['Vampire Core',v=>'+'+(0.3*v).toFixed(1)+' HP per kill and +'+fmtPct(8,v)+'% max HP',v=>{game.player.vampire=(game.player.vampire||0)+.3*v;game.player.max+=8*v;game.player.hp=Math.min(game.player.max,game.player.hp+8*v)}],
     ['Fortress',v=>'+'+Math.round(50*v)+' max HP and stronger armor',v=>{game.player.max+=50*v;game.player.hp=Math.min(game.player.max,game.player.hp+50*v);game.player.armor=Math.max(.1,(game.player.armor||1)-.08*v)}],
-    ['Adrenal Core',v=>'+'+Math.round(15*v)+'% speed and '+Math.round(10*v)+'% attack speed',v=>{game.player.speed=Math.min(game.player.speedCap,game.player.speed*(1+.15*v));game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.10*v))}],
-    ['Salvager',v=>'+'+Math.round(18*v)+'% coins and '+Math.round(12*v)+' pickup range',v=>{game.player.coinMult*=1+.18*v;game.player.magnet+=12*v}],
-    ['XP Reactor',v=>'+'+Math.round(18*v)+'% XP and +'+Math.round(5*v)+' Upgrade Luck',v=>{game.player.xpBonus*=1+.18*v;game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v}],
-    ['Lucky Barrage',v=>'+'+Math.round(12*v)+'% extra-shot chance',v=>{game.player.doubleTap=true;game.player.doubleTapBonus=(game.player.doubleTapBonus||0)+.12*v}],
+    ['Adrenal Core',v=>'+'+fmtPct(15,v)+'% speed and '+fmtPct(10,v)+'% attack speed',v=>{game.player.speed=Math.min(game.player.speedCap,game.player.speed*(1+.15*v));game.player.fireRate=Math.max(.14,(game.player.fireRate||.45)*(1-.10*v))}],
+    ['Salvager',v=>'+'+fmtPct(18,v)+'% coins and '+Math.round(12*v)+' pickup range',v=>{game.player.coinMult*=1+.18*v;game.player.magnet+=12*v}],
+    ['XP Reactor',v=>'+'+fmtPct(18,v)+'% XP and +'+Math.round(5*v)+' Upgrade Luck',v=>{game.player.xpBonus*=1+.18*v;game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v}],
+    ['Lucky Barrage',v=>'+'+fmtPct(12,v)+'% extra-shot chance',v=>{game.player.doubleTap=true;game.player.doubleTapBonus=(game.player.doubleTapBonus||0)+.12*v}],
     ['Shield Nova',v=>'Gain '+Math.round(4*v)+'s shield and pulse',v=>{game.player.shieldEfficiency=Math.max(game.player.shieldEfficiency||1,1+.18*v);outlastGrantTempShield(4*v);game.effects.push({x:game.player.x,y:game.player.y,t:.45,r:145,color:'#72a8ff',fill:false});}],
-    ['Overclock',v=>'+'+Math.round(24*v)+'% attack speed and '+Math.round(6*v)+'% damage',v=>{game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.24*v));game.player.damage*=1+.06*v}],
-    ['Deadly Precision',v=>'+'+Math.round(10*v)+'% crit chance and '+Math.round(12*v)+'% crit damage',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.10*v);game.player.critMult=(game.player.critMult||1.8)+.12*v}],
+    ['Overclock',v=>'+'+fmtPct(24,v)+'% attack speed and '+fmtPct(6,v)+'% damage',v=>{game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.24*v));game.player.damage*=1+.06*v}],
+    ['Deadly Precision',v=>'+'+fmtPct(10,v)+'% crit chance and '+fmtPct(12,v)+'% crit damage',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.10*v);game.player.critMult=(game.player.critMult||1.8)+.12*v}],
     ['Treasure Engine',v=>'+'+Math.round(20*v)+' Treasure Luck and better drops',v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+20*v;game.player.treasure=true}],
-    ['Last Stand',v=>'+'+Math.round(35*v)+'% damage below 25% HP',v=>{game.player.lastStand=true;game.player.lastStandBonus=(game.player.lastStandBonus||0)+.35*v}],
+    ['Last Stand',v=>'+'+fmtPct(35,v)+'% damage below 25% HP',v=>{game.player.lastStand=true;game.player.lastStandBonus=(game.player.lastStandBonus||0)+.35*v}],
     ['Combat Medic',v=>'+'+(1.2*v).toFixed(1)+' HP/s and stronger healing',v=>{game.player.regen+=(1.2*v);game.player.healMult=(game.player.healMult||1)+.12*v}]
   ];
   if(typeof tempUp!=='undefined'&&Array.isArray(tempUp)){for(const u of extras)if(!tempUp.some(x=>x[0]===u[0]))tempUp.push(u);}
@@ -5335,17 +5337,17 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     'Treasure Hunter':'Economy','Weapon Mastery':'Weapon'
   };
   const NEW=[
-    ['Final Swarm',v=>`+${Math.max(3,Math.round(3*v))} projectiles • +${Math.round(12*v)}% damage`,v=>{
+    ['Final Swarm',v=>`+${Math.max(3,Math.round(3*v))} projectiles • +${fmtPct(12,v)}% damage`,v=>{
       game.player.multiShot=(game.player.multiShot||0)+Math.max(3,Math.round(3*v));
       game.player.damage*=1+.12*v; game.player.finalSwarm=(game.player.finalSwarm||0)+1;
     }],
-    ['Glass Reactor',v=>`+${Math.round(25*v)}% damage • +${Math.round(15*v)}% attack speed • -${Math.round(8*v)}% max HP`,v=>{
+    ['Glass Reactor',v=>`+${fmtPct(25,v)}% damage • +${fmtPct(15,v)}% attack speed • -${fmtPct(8,v)}% max HP`,v=>{
       game.player.damage*=1+.25*v;
       game.player.fireRate=Math.max(.16,(game.player.fireRate||.45)*(1-.15*v));
       game.player.max=Math.max(1,game.player.max*(1-.08*v));game.player.hp=Math.min(game.player.hp,game.player.max);
       game.player.glassReactor=(game.player.glassReactor||0)+1;
     }],
-    ['Overdrive',v=>`+${Math.round(35*v)}% ultimate damage • +${Math.round(10*v)}% attack speed`,v=>{
+    ['Overdrive',v=>`+${fmtPct(35,v)}% ultimate damage • +${fmtPct(10,v)}% attack speed`,v=>{
       game.player.ultDamage=(game.player.ultDamage||1)*(1+.35*v);
       game.player.fireRate=Math.max(.16,(game.player.fireRate||.45)*(1-.10*v));
       game.player.overdrive=(game.player.overdrive||0)+1;
@@ -5354,12 +5356,12 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
       game.player.max+=65*v;game.player.hp=Math.min(game.player.max,game.player.hp+65*v);
       game.player.guardianCore=(game.player.guardianCore||0)+1;
     }],
-    ['Treasure Hunter',v=>`+${Math.round(30*v)}% coins • +${Math.round(20*v)} Treasure Luck`,v=>{
+    ['Treasure Hunter',v=>`+${fmtPct(30,v)}% coins • +${Math.round(20*v)} Treasure Luck`,v=>{
       game.player.coinMult*=1+.30*v;
       game.player.treasureLuck=(game.player.treasureLuck||0)+20*v;
       game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);
     }],
-    ['Weapon Mastery',v=>`+${Math.round(30*v)}% weapon damage • +${Math.max(1,Math.round(v))} pierce`,v=>{
+    ['Weapon Mastery',v=>`+${fmtPct(30,v)}% weapon damage • +${Math.max(1,Math.round(v))} pierce`,v=>{
       game.player.damage*=1+.30*v;game.player.pierce=(game.player.pierce||0)+Math.max(1,Math.round(v));
       game.player.weaponMastery=(game.player.weaponMastery||0)+1;
     }]
@@ -6184,7 +6186,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
-const BUILD='3.36.0',ACK='outlast_update_ack_v3.36.0',POP='outlastMandatoryUpdate';
+const BUILD='3.36.1',ACK='outlast_update_ack_v3.36.1',POP='outlastMandatoryUpdate';
 function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
 function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
 function show(newer,remote){
@@ -6209,12 +6211,12 @@ async function check(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check,{once:true});else check();
 window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,ackKey:ACK,check:check};
-})();</script><script id="outlast-v3358-final-marker">(function(){try{
-window.OUTLAST_BUILD='3.35.8';window.OUTLAST_VERSION='v3.35.8';document.title='OUTLAST v3.35.8';
+})();</script><script id="outlast-v3361-final-marker">(function(){try{
+window.OUTLAST_BUILD='3.36.1';window.OUTLAST_VERSION='v3.36.1';document.title='OUTLAST v3.36.1';
 document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.35.8';});
 var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content='3.35.8';
 var b=document.querySelector('meta[name="build-version"]');if(b)b.content='3.35.8';
-if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.8')}))updates.unshift(['v3.35.8 — Rarity + Shield Reliability','Normalized rarity power, fixed cards applying a different multiplier than their displayed rarity, made Omega Shield block all normal incoming damage paths, and added visible shield charge/recharge feedback.']);
+if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.8')}))updates.unshift(['v3.36.1 — Accurate Rarity + Shield Reliability','Normalized rarity power, fixed cards applying a different multiplier than their displayed rarity, made Omega Shield block all normal incoming damage paths, and added visible shield charge/recharge feedback.']);
 if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the mandatory update check work?'}))helpArticles.unshift(['How does the mandatory update check work?','Updates & Reliability','Every new OUTLAST build performs a no-cache version check. The current release requires an acknowledgement before play, while a detected newer server build requires a reload.']);
 }catch(_){}})();</script><script id="outlast-v3360-systems">(function(){
 'use strict';
@@ -6235,7 +6237,7 @@ const B=function(id,fn){const b=document.getElementById(id);if(b)b.onclick=funct
 B('statsBtn',renderExpandedStats);B('achBtn',renderAchievements36);B('inventoryBtn',renderExpandedInventory);B('modifierBtn',renderExpandedModifiers);B('shopBtn',dailyShopOpen);B('coreBtn',renderCoreSystems);B('weaponTreeBtn',renderWeaponTree);B('codexBtn',renderCodex);B('battlePassBtn',renderBattlePass);B('prestigeBtn',renderPrestige);B('raritiesBtn',renderRarities);B('worldBossBtn',renderWorldBosses);B('setsBtn',renderSets);B('roomsBtn',renderRooms);
 const sc=document.getElementById('subContent');if(sc)sc.addEventListener('click',function(e){const b=e.target.closest?.('button[data-action="coreSection"]');if(b){e.preventDefault();e.stopPropagation();renderCoreSection(b.dataset.value);}});
 const chip36=document.querySelector('#menu .menu-chip');if(chip36)chip36.textContent='v3.36.0 • SURVIVOR HUB';
-document.title='OUTLAST v3.36.0';window.OUTLAST_BUILD='3.36.0';window.OUTLAST_VERSION='v3.36.0';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.36.0';});
+document.title='OUTLAST v3.36.1';window.OUTLAST_BUILD='3.36.1';window.OUTLAST_VERSION='v3.36.1';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.36.0';});
 if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.36.0')}))updates.unshift(['v3.36.0 — Systems Rebuild','Made rarity effects match displayed tier, repaired both shield systems, enforced one live boss at a time, removed the Owner Panel password prompt, applied all skin bonuses, exposed the 12 Core Systems, and expanded Progress, Achievements, Stats, Inventory, Daily Shop, and Run Modifiers.']);
 if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('How do the 12 Core Systems work?')}))helpArticles.unshift(['How do the 12 Core Systems work?','Core Systems','Open Progress → 12 Core Systems to browse the active Combat, Enemies, Bosses, World, Events, Progression, Cosmetics, Objectives, Economy, Modes, Support, and Content Generation systems.']);
 })();</script><script src="outlast-v3360-focused-systems.js?v=3.36.0"></script>

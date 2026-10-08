@@ -29,6 +29,8 @@ assert(!lib.includes('const entry=[d.name,d.desc,d.apply(d.mult)];'),'upgrade li
 
 assert(html.includes('function outlastTakePlayerDamage('),'all normal player damage should pass through one damage boundary');
 assert(html.includes('outlastOmegaShieldBlock(amount)'),'the shared damage boundary must consume Omega Shield charges before HP damage');
+assert(html.includes("Number(player.shield||0)>0"),'temporary shield must absorb incoming hits');
+assert(html.includes("Number(p.shield||0)>0)p.shield=Math.max(0,Number(p.shield)-dt)"),'temporary shield must expire instead of becoming permanent');
 assert(html.includes('outlastTakePlayerDamage(game.player,hz.damage'),'map hazards must respect Omega Shield');
 assert(html.includes('outlastTakePlayerDamage(p,b.dmg'),'enemy projectiles must respect Omega Shield');
 assert(html.includes('outlastTakePlayerDamage(p,p2.damage*.8*dt'),'player-contact damage must respect Omega Shield');

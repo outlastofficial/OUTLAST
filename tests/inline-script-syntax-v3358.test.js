@@ -1,9 +1,9 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 
 function inlineScripts(html){
-  const out=[];const re=/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi;let m;
+  const out=[];const re=/<script\b([^>]*)>([\s\S]*?)<\/script>/gi;let m;
   while((m=re.exec(html))){
-    if(/\\bsrc\\s*=/.test(m[1]))continue;
+    if(/\bsrc\s*=/.test(m[1]))continue;
     const code=m[2].trim();
     if(code)out.push({attrs:m[1],code});
   }

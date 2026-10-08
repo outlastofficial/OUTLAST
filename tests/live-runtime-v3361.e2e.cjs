@@ -16,7 +16,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastSeenUpdateVersion','3.35.2');
   });
 
-  const url='https://outlast-game.onrender.com/runtime-smoke.html?e2e='+Date.now();
+  const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/runtime-smoke.html')+'?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
   if(!servedTitle.includes('v3.36.2')) throw new Error('Live page title is not v3.36.2: '+servedTitle);

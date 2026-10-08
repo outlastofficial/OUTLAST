@@ -740,7 +740,52 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 @keyframes outlastToySpark{0%,100%{opacity:.35;transform:scale(.8) rotate(0deg)}50%{opacity:1;transform:scale(1.18) rotate(12deg)}}
 @media(max-width:760px){#outlastPinkToy{top:8px!important;right:8px!important;transform:scale(.88)!important;transform-origin:top right!important}}
 </style>
-<style id="outlast-ui-cleanup-v3-30-11">#menu .menu-topbar .title,#menu .menu-topbar .title[style]{color:#fff!important;background:none!important;background-image:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;-webkit-text-fill-color:#fff!important;text-shadow:0 0 28px rgba(70,170,255,.18)!important;animation:none!important}#gameAdminToggle{display:none!important}</style></head>
+<style id="outlast-ui-cleanup-v3-30-11">#menu .menu-topbar .title,#menu .menu-topbar .title[style]{color:#fff!important;background:none!important;background-image:none!important;-webkit-background-clip:initial!important;background-clip:initial!important;-webkit-text-fill-color:#fff!important;text-shadow:0 0 28px rgba(70,170,255,.18)!important;animation:none!important}#gameAdminToggle{display:none!important}</style><style id="outlast-upgrade-tree-v3355">
+#subPanel .upgrade-tree-scroll{max-height:74vh;overflow:auto;padding:6px 8px 24px 6px}
+#subPanel .upgrade-tree-shell{min-width:0}
+#subPanel .upgrade-tree-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
+#subPanel .upgrade-tree-search{flex:1 1 260px;min-width:180px;background:#0b131b;border:1px solid #31495d;border-radius:12px;padding:11px 13px;color:#fff;font:700 14px Arial;outline:none}
+#subPanel .upgrade-tree-search:focus{border-color:#67c5ff;box-shadow:0 0 0 2px rgba(103,197,255,.12)}
+#subPanel .upgrade-tree-root{position:relative;margin:4px auto 34px;width:min(520px,96%);background:linear-gradient(145deg,#17354c,#0d1822);border:2px solid #63b9ef;border-radius:20px;padding:18px;text-align:center;box-shadow:0 16px 42px rgba(0,0,0,.28)}
+#subPanel .upgrade-tree-root:after{content:"";position:absolute;left:50%;bottom:-36px;width:2px;height:36px;background:linear-gradient(#63b9ef,#31516a)}
+#subPanel .upgrade-tree-root .root-kicker{font-size:10px;letter-spacing:.18em;color:#7fcfff;font-weight:900}
+#subPanel .upgrade-tree-root .root-title{font-size:24px;font-weight:900;margin:4px 0}
+#subPanel .upgrade-tree-root .root-stats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:9px}
+#subPanel .upgrade-tree-root .root-stat{padding:6px 9px;border-radius:999px;background:#0a121a;border:1px solid #2d475c;color:#a9bdcb;font-size:11px;font-weight:800}
+#subPanel .upgrade-tree-branches{position:relative;display:grid;grid-template-columns:repeat(3,minmax(260px,1fr));gap:28px 18px;padding:0 4px}
+#subPanel .upgrade-tree-branches:before{content:"";position:absolute;top:-18px;left:16.67%;right:16.67%;height:2px;background:#31516a}
+#subPanel .upgrade-tree-branch{position:relative;padding-top:16px}
+#subPanel .upgrade-tree-branch:before{content:"";position:absolute;left:50%;top:-18px;width:2px;height:18px;background:#31516a}
+#subPanel .upgrade-tree-hub{position:relative;background:linear-gradient(145deg,#17242f,#0d151d);border:1px solid #3c596c;border-radius:16px;padding:12px 13px;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.22)}
+#subPanel .upgrade-tree-hub:after{content:"";position:absolute;left:50%;bottom:-18px;width:2px;height:18px;background:#31516a}
+#subPanel .upgrade-tree-hub .hub-icon{font-size:18px}
+#subPanel .upgrade-tree-hub .hub-title{font-weight:900;font-size:14px;margin-top:2px}
+#subPanel .upgrade-tree-hub .hub-meta{font-size:10px;color:#7f97a8;margin-top:4px}
+#subPanel .upgrade-tree-node-list{position:relative;margin:18px 0 0 18px;padding-left:18px}
+#subPanel .upgrade-tree-node-list:before{content:"";position:absolute;left:2px;top:0;bottom:15px;width:2px;background:linear-gradient(#31516a,#203340)}
+#subPanel .upgrade-tree-node{position:relative;width:100%;margin:0 0 10px;text-align:left;background:linear-gradient(145deg,#111c25,#0c131a);border:1px solid #2d4354;border-radius:14px;padding:11px 12px;box-sizing:border-box;box-shadow:none;transition:transform .12s,border-color .12s,box-shadow .12s;box-shadow:none;color:#eef7ff}
+#subPanel .upgrade-tree-node:before{content:"";position:absolute;left:-18px;top:50%;width:18px;height:2px;background:#31516a}
+#subPanel .upgrade-tree-node:hover{transform:translateX(2px);border-color:#527b96;box-shadow:0 10px 25px rgba(0,0,0,.2)}
+#subPanel .upgrade-tree-node.owned{border-color:#3d8c70;background:linear-gradient(145deg,#10231f,#0c1715)}
+#subPanel .upgrade-tree-node.affordable{border-color:#aa8b42}
+#subPanel .upgrade-tree-node.maxed{border-color:#6d5fb0;background:linear-gradient(145deg,#1b1631,#11101e)}
+#subPanel .upgrade-tree-node .node-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+#subPanel .upgrade-tree-node .node-name{font-weight:900;font-size:13px}
+#subPanel .upgrade-tree-node .node-status{font-size:9px;font-weight:900;letter-spacing:.07em;padding:4px 6px;border-radius:999px;border:1px solid #334b5d;color:#91a8b8;background:#0a1118;white-space:nowrap}
+#subPanel .upgrade-tree-node.owned .node-status{border-color:#3d8c70;color:#83e0b2}
+#subPanel .upgrade-tree-node.affordable .node-status{border-color:#aa8b42;color:#f1d98c}
+#subPanel .upgrade-tree-node.maxed .node-status{border-color:#6d5fb0;color:#c6bcff}
+#subPanel .upgrade-tree-node .node-desc{font-size:10px;color:#9db0bd;margin-top:4px;line-height:1.35}
+#subPanel .upgrade-tree-node .node-bottom{display:flex;justify-content:space-between;gap:8px;align-items:flex-end;margin-top:8px}
+#subPanel .upgrade-tree-level-pips{display:flex;gap:3px}
+#subPanel .upgrade-tree-level-pips span{width:13px;height:5px;border-radius:999px;background:#263541;border:1px solid #364a59}
+#subPanel .upgrade-tree-level-pips span.on{background:#63c4ff;border-color:#63c4ff;box-shadow:0 0 7px rgba(99,196,255,.25)}
+#subPanel .upgrade-tree-node .node-cost{font-size:10px;color:#90a6b5;font-weight:800}
+#subPanel .upgrade-tree-empty{display:none;margin:8px 0 0;padding:12px;border:1px dashed #365064;border-radius:12px;color:#8ea5b5;text-align:center;font-size:12px}
+#subPanel .upgrade-tree-branch.filtered-empty{display:none}
+@media(max-width:1050px){#subPanel .upgrade-tree-branches{grid-template-columns:repeat(2,minmax(260px,1fr))}#subPanel .upgrade-tree-branches:before{left:25%;right:25%}}
+@media(max-width:680px){#subPanel .upgrade-tree-scroll{max-height:76vh;padding-right:2px}#subPanel .upgrade-tree-branches{grid-template-columns:1fr;gap:24px;padding:0 1px}#subPanel .upgrade-tree-branches:before{left:50%;right:auto;width:2px;height:18px;top:-18px}#subPanel .upgrade-tree-branch:before{display:none}#subPanel .upgrade-tree-root{width:100%}#subPanel .upgrade-tree-node{padding:10px}}
+</style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
 <div id="outlastPinkToy" aria-hidden="true">
@@ -6174,5 +6219,68 @@ if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]===
 helpArticles.unshift(['Why are my bullets bouncing?','Weapons & Combat','Bouncing Bullets now retarget cleanly after each hit, ignore enemies already hit by that bullet, and stop the current collision pass after a successful bounce.']);
 if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.1');}))
 updates.unshift(['v3.35.1 — Bouncing Bullets Fix','Fixed Bouncing Bullets so each successful bounce retargets a new enemy cleanly, prevents repeat hits on the same target, and no longer processes multiple collisions in one bounce step.']);
-}catch(_){}})();</script><script id="outlast-v3352-final-marker">(function(){try{window.OUTLAST_BUILD="3.35.2";window.OUTLAST_VERSION="v3.35.2";document.title="OUTLAST v3.35.2";document.querySelectorAll("[data-outlast-version]").forEach(function(e){e.textContent="v3.35.2";});var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content="3.35.2";var b=document.querySelector('meta[name="build-version"]');if(b)b.content="3.35.2";}catch(_){}})();</script><script id="outlast-v3354-final-marker">(function(){try{window.OUTLAST_BUILD="3.35.4";window.OUTLAST_VERSION="v3.35.4";document.title="OUTLAST v3.35.4";document.querySelectorAll("[data-outlast-version]").forEach(function(e){e.textContent="v3.35.4";});var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content="3.35.4";var b=document.querySelector('meta[name="build-version"]');if(b)b.content="3.35.4";}catch(_){}})();</script><script id="outlast-v3354-update-metadata">(function(){try{if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes("v3.35.4")}))updates.unshift(["v3.35.4 — Permanent Upgrade Mega Expansion","Added 120 more permanent upgrade choices on top of v3.35.3, bringing the permanent tree to a much larger pool across XP, coins, pickup range, movement, recovery, and score paths."]);if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==="How does the permanent upgrade expansion work?";}))helpArticles.unshift(["How does the permanent upgrade expansion work?","Upgrades & Progression","The permanent upgrade tree now has 180 additional choices across multiple progression paths. Every choice is capped at Level 5 and uses modest values so long-term builds stay flexible."]);}catch(_){}})();</script></body>
+}catch(_){}})();</script><script id="outlast-v3352-final-marker">(function(){try{window.OUTLAST_BUILD="3.35.2";window.OUTLAST_VERSION="v3.35.2";document.title="OUTLAST v3.35.2";document.querySelectorAll("[data-outlast-version]").forEach(function(e){e.textContent="v3.35.2";});var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content="3.35.2";var b=document.querySelector('meta[name="build-version"]');if(b)b.content="3.35.2";}catch(_){}})();</script><script id="outlast-v3354-final-marker">(function(){try{window.OUTLAST_BUILD="3.35.4";window.OUTLAST_VERSION="v3.35.4";document.title="OUTLAST v3.35.4";document.querySelectorAll("[data-outlast-version]").forEach(function(e){e.textContent="v3.35.4";});var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content="3.35.4";var b=document.querySelector('meta[name="build-version"]');if(b)b.content="3.35.4";}catch(_){}})();</script><script id="outlast-v3354-update-metadata">(function(){try{if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes("v3.35.4")}))updates.unshift(["v3.35.4 — Permanent Upgrade Mega Expansion","Added 120 more permanent upgrade choices on top of v3.35.3, bringing the permanent tree to a much larger pool across XP, coins, pickup range, movement, recovery, and score paths."]);if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==="How does the permanent upgrade expansion work?";}))helpArticles.unshift(["How does the permanent upgrade expansion work?","Upgrades & Progression","The permanent upgrade tree now has 180 additional choices across multiple progression paths. Every choice is capped at Level 5 and uses modest values so long-term builds stay flexible."]);}catch(_){}})();</script><script id="outlast-upgrade-tree-v3355">
+(function(){
+'use strict';
+const VERSION='3.35.5';
+const branchDefs=[
+ {key:'survival',title:'SURVIVAL',icon:'❤',test:(n,d,c)=>/hp|health|armor|shield|damage taken|hardening|endurance|guard|thick armor/i.test(n+' '+d+' '+c)},
+ {key:'combat',title:'COMBAT',icon:'⚔',test:(n,d)=>/damage|projectile|attack speed|fire|ballistic|heavy rounds|impact|hunter|weapon|ammo|pierce|multishot/i.test(n+' '+d)},
+ {key:'mobility',title:'MOBILITY',icon:'➤',test:(n,d,c)=>c==='Speed'||/speed|movement|runner|stride|mobility|fleet|agile/i.test(n+' '+d)},
+ {key:'range',title:'RANGE',icon:'⌁',test:(n,d,c)=>c==='Range'||/range|reach|lens|sight|optic|distance/i.test(n+' '+d)},
+ {key:'collection',title:'COLLECTION',icon:'🧲',test:(n,d,c)=>c==='Magnet'||/magnet|pickup|vacuum|collector|grabber|attractor|loot radius/i.test(n+' '+d)},
+ {key:'recovery',title:'RECOVERY',icon:'✚',test:(n,d,c)=>c==='Regen'||/regen|recovery|healing|vital|restorative|renewal|field medicine/i.test(n+' '+d)},
+ {key:'critical',title:'CRITICAL',icon:'✦',test:(n,d)=>/crit|critical|precision|weak point|deadeye|keen focus|sharp eye/i.test(n+' '+d)},
+ {key:'economy',title:'ECONOMY',icon:'●',test:(n,d,c)=>c==='Coins'||/coin|economy|treasure|profit|reward|fortune|prospector|vault/i.test(n+' '+d)},
+ {key:'boss',title:'BOSS',icon:'♛',test:(n,d,c)=>c==='Boss'||/boss|champion|titan|apex|threat/i.test(n+' '+d)},
+ {key:'ultimate',title:'ULTIMATE',icon:'◉',test:(n,d,c)=>c==='Ultimate'||/ultimate|arcane|energy|charge|overdrive|power reserve/i.test(n+' '+d)},
+ {key:'progression',title:'PROGRESSION',icon:'★',test:(n,d,c)=>c==='XP'||c==='Score'||/xp|experience|learning|study|research|mastery|score|combo|ranking|record/i.test(n+' '+d)},
+ {key:'utility',title:'UTILITY',icon:'◆',test:()=>true}
+];
+function classify(u){
+ const n=String(u?.[0]||''),d=String(u?.[1]||''),c=String(u?.[3]||'');
+ return branchDefs.find(b=>b.test(n,d,c))||branchDefs[branchDefs.length-1];
+}
+function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function render(){
+ if(typeof permanent==='undefined'||typeof save==='undefined'||typeof openSub!=='function')return;
+ const groups={};for(const b of branchDefs)groups[b.key]=[];
+ for(const u of permanent)groups[classify(u).key].push(u);
+ let totalLevels=0;for(const u of permanent)totalLevels+=Number(save.upgrades?.[u[0]]||0);
+ const branches=branchDefs.map(b=>{
+  const list=groups[b.key];
+  const nodes=list.map(u=>{
+   const n=u[0],d=u[1],base=Number(u[2])||0,lv=Number(save.upgrades?.[n]||0);
+   const price=(n==='Omega Vacuum'||n==='Omega Shield')?base:base*(lv+1);
+   const max=lv>=5,aff=!max&&Number(save.coins||0)>=price,owned=lv>0;
+   const status=max?'MAXED':owned?'OWNED':aff?'AVAILABLE':'LOCKED';
+   const pips=Array.from({length:5},(_,i)=>'<span class="'+(i<lv?'on':'')+'"></span>').join('');
+   return '<button type="button" class="upgrade-tree-node '+(owned?'owned ':'')+(aff?'affordable ':'')+(max?'maxed':'')+'" data-action="upgrade" data-value="'+esc(n)+'" data-base="'+base+'"><span class="node-top"><span class="node-name">'+esc(n)+'</span><span class="node-status">'+status+'</span></span><span class="node-desc">'+esc(d)+'</span><span class="node-bottom"><span class="upgrade-tree-level-pips">'+pips+'</span><span class="node-cost">'+(max?'MAX':'🪙 '+price.toLocaleString())+'</span></span></button>';
+  }).join('');
+  return '<section class="upgrade-tree-branch" data-upgrade-branch="'+b.key+'"><div class="upgrade-tree-hub"><div class="hub-icon">'+b.icon+'</div><div class="hub-title">'+b.title+'</div><div class="hub-meta">'+list.length+' choices • 5 levels each</div></div><div class="upgrade-tree-node-list">'+nodes+'</div></section>';
+ }).join('');
+ const affordable=permanent.filter(u=>{const lv=Number(save.upgrades?.[u[0]]||0),base=Number(u[2])||0,price=(u[0]==='Omega Vacuum'||u[0]==='Omega Shield')?base:base*(lv+1);return lv<5&&Number(save.coins||0)>=price}).length;
+ openSub('⛭ Permanent Upgrade Tree',
+ '<div class="upgrade-tree-scroll"><div class="upgrade-tree-shell"><div class="upgrade-tree-toolbar"><input id="upgradeTreeSearch" class="upgrade-tree-search" type="search" placeholder="Search upgrades or branches..." autocomplete="off"><button class="gold" data-action="buyAffordable">● BUY ALL AFFORDABLE ('+affordable+')</button></div><div class="upgrade-tree-root"><div class="root-kicker">PERMANENT PROGRESSION</div><div class="root-title">OUTLAST UPGRADE TREE</div><div class="root-stats"><span class="root-stat">'+permanent.length+' choices</span><span class="root-stat">'+totalLevels+' total levels bought</span><span class="root-stat">'+Number(save.coins||0).toLocaleString()+' coins</span><span class="root-stat">'+branchDefs.length+' branches</span></div></div><div class="upgrade-tree-branches">'+branches+'</div><div id="upgradeTreeEmpty" class="upgrade-tree-empty">No upgrade nodes match that search.</div></div></div>');
+ const input=document.getElementById('upgradeTreeSearch');
+ const empty=document.getElementById('upgradeTreeEmpty');
+ input?.addEventListener('input',function(){
+  const q=String(this.value||'').trim().toLowerCase();let shown=0;
+  document.querySelectorAll('[data-upgrade-branch]').forEach(br=>{
+   let branchShown=0;
+   br.querySelectorAll('.upgrade-tree-node').forEach(node=>{const match=!q||(node.textContent||'').toLowerCase().includes(q)||(br.querySelector('.hub-title')?.textContent||'').toLowerCase().includes(q);node.style.display=match?'block':'none';if(match)branchShown++;});
+   br.style.display=branchShown?'block':'none';shown+=branchShown;
+  });
+  if(empty)empty.style.display=shown?'none':'block';
+ });
+}
+window.renderUpgradeTree=render;
+try{
+ document.title='OUTLAST v'+VERSION;window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;
+ document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v'+VERSION);
+ const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
+ const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
+}catch(_){}
+})();
+</script></body>
 </html>

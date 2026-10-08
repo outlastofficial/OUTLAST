@@ -123,8 +123,11 @@ function core36(){
   const keys=['Combat','Enemies','Bosses','World','Events','Progression','Cosmetics','Objectives','Economy / Rewards','Game Modes','Support Systems','Content Generation'];
   const map={Combat:'combat',Enemies:'enemies',Bosses:'bosses',World:'world',Events:'events',Progression:'progression',Cosmetics:'cosmetics',Objectives:'objectives', 'Economy / Rewards':'economy', 'Game Modes':'modes', 'Support Systems':'support', 'Content Generation':'generation'};
   openSub('🧩 12 Core Systems','<div class="option"><b>12 CORE SYSTEMS — LIVE</b><div class="small">Every tile has a live game-state snapshot plus the generated catalog behind it.</div></div><div class="grid core-grid-v3360">'+keys.map(k=>'<button class="option core-card-v3360" data-core36="'+E(k)+'"><b>🧩 '+E(k)+'</b><div class="small">'+E(coreLive36(k))+'</div><div class="small">'+(k==='Content Generation'?Number(a.combinationSpace||0).toLocaleString()+' combinations':Number(a[map[k]]||0).toLocaleString()+' entries')+' • OPEN</div></button>').join('')+'</div>');
-  if(S().records)S().records.coreSystemsOpened=(Number(S().records.coreSystemsOpened)||0)+1;persist();
-  document.querySelectorAll('[data-core36]').forEach(b=>b.addEventListener('click',()=>{const k=map[b.dataset.core36];const d=window.OUTLAST_CORE_CONTENT?.data?.[k];openSub('🧩 '+b.dataset.core36,'<div class="option"><b>LIVE</b><div class="small">'+E(coreLive36(b.dataset.core36))+'</div></div><div class="grid">'+(Array.isArray(d)?d.slice(0,60).map(x=>'<div class="option"><b>'+E(x.name||'Entry')+'</b><div class="small">'+E([x.tier,x.biome,x.behavior,x.reward,x.projectile,x.attack].filter(Boolean).join(' • '))+'</div></div>').join(''):'<div class="option"><b>ACTIVE</b></div>')+'</div>')}));
+  document.querySelectorAll('[data-core36]').forEach(b=>b.addEventListener('click',()=>{
+    const k=map[b.dataset.core36],d=window.OUTLAST_CORE_CONTENT?.data?.[k];
+    const s=S();s.records=s.records||{};s.records.coreSystemsSeen=s.records.coreSystemsSeen||{};s.records.coreSystemsSeen[k]=true;s.records.coreSystemsOpened=Object.keys(s.records.coreSystemsSeen).length;persist();
+    openSub('🧩 '+b.dataset.core36,'<div class="option"><b>LIVE</b><div class="small">'+E(coreLive36(b.dataset.core36))+'</div></div><div class="grid">'+(Array.isArray(d)?d.slice(0,60).map(x=>'<div class="option"><b>'+E(x.name||'Entry')+'</b><div class="small">'+E([x.tier,x.biome,x.behavior,x.reward,x.projectile,x.attack].filter(Boolean).join(' • '))+'</div></div>').join(''):'<div class="option"><b>ACTIVE</b></div>')+'</div>');
+  }));
 }
 
 function progress36(){

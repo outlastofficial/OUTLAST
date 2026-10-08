@@ -172,7 +172,7 @@ function dailyShop37(){
  openSub('🛒 DAILY SHOP • 12 OFFERS','<div class="outlast37-shop-head"><div><b>Daily stock is saved to your account.</b><small>One purchase per offer each day • resets at midnight.</small></div><div class="outlast37-shop-day">'+E(shopDay37())+'</div></div><div class="outlast37-shop-grid">'+cards+'</div>');
 }
 
-const extraAchievements37=[
+const achievement37Extra=[
  ['Zombie Tactician','Complete a Zombie Tactics run',()=>!!S()?.records?.zombieTacticsRuns],
  ['AI Survivor','Survive a run against tactical AI',()=>Number(S()?.records?.aiKills||0)>=25],
  ['Apex Hunter','Defeat 10 bosses across runs',s=>Number(s.bosses||0)>=10],
@@ -207,9 +207,10 @@ const extraAchievements37=[
  ['Endgame Architect','Own an Eternal or Omega cosmetic',()=>Number(S()?.records?.legendaryPlusOwned||0)>=1],
  ['Everything Equipped','Equip skin, pet, relic, charm, weapon, and character',()=>!!(S()?.selectedSkin&&S()?.selectedPet&&S()?.selectedRelic&&S()?.selectedCharm&&S()?.selectedWeapon&&S()?.selectedChar)]
 ];
+const extraAchievements37=achievement37Extra;
 function installAchievements37(){
  if(typeof achievements==='undefined'||!Array.isArray(achievements))return;
- for(const a of extraAchievements37)if(!achievements.some(x=>x&&x[0]===a[0]))achievements.push(a);
+ for(const a of achievement37Extra)if(!achievements.some(x=>x&&x[0]===a[0]))achievements.push(a);
 }
 function achievements37(){
  installAchievements37();const s=S();if(!s)return;
@@ -312,7 +313,7 @@ function progress37(){
  if(!deck){
    deck=document.createElement('div');deck.id='progressDeck37';deck.className='outlast37-progress-deck';
    const groups=[
-    ['📊 TRACKING',['progressStats37','📊 Stats','stats'],['progressAchievements37','🏆 Achievements','achievements'],['progressRecords37','🥇 Records','records'],['progressLeaderboard37','📈 Leaderboards','leaderboard']],
+    ['📊 TRACKING',['progressStats37','📊 Stats','stats'],['progressStatsDetails37','📈 Live Stats','statsLive'],['progressAchievements37','🏆 Achievements','achievements'],['progressRecords37','🥇 Records','records'],['progressLeaderboard37','📈 Leaderboards','leaderboard']],
     ['✦ COLLECTION',['progressInventory37','🎒 Inventory','inventory'],['progressSkins37','✦ Skins','skins'],['progressCodex37','☠ Zombie Codex','codex'],['progressSets37','🧿 Build Sets','sets']],
     ['🧩 SYSTEMS',['progressCore37','🧩 12 Core Systems','core'],['progressUpgrade37','⛭ Upgrade Tree','upgrade'],['progressShop37','🛒 Daily Shop','shop'],['progressModifiers37','🎲 Run Modifiers','modifiers'],['progressEvolution37','⚔ Weapon Evolutions','evolution']],
     ['♛ ENDGAME',['progressBattlePass37','🏆 Battle Pass','battle'],['progressPrestige37','★ Prestige','prestige'],['progressRarity37','✦ Rarity Ladder','rarity'],['progressWorldBoss37','♛ World Bosses','worldboss'],['progressRooms37','▣ Secret Rooms','rooms']]
@@ -321,7 +322,7 @@ function progress37(){
    page.querySelector('.menu-cards')?.replaceWith(deck);
  }
  const bind=(id,fn)=>{const b=document.getElementById(id);if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();fn();}};
- bind('progressStats37',stats37);bind('progressAchievements37',achievements37);bind('progressRecords37',()=>renderRecords());bind('progressLeaderboard37',()=>openServerLeaderboard());
+ bind('progressStats37',stats37);bind('progressStatsDetails37',stats37);bind('progressAchievements37',achievements37);bind('progressRecords37',()=>renderRecords());bind('progressLeaderboard37',()=>openServerLeaderboard());
  bind('progressInventory37',()=>inventory37());bind('progressSkins37',skin37);bind('progressCodex37',()=>renderCodex());bind('progressSets37',()=>renderSets());
  bind('progressCore37',()=>core37());bind('progressUpgrade37',()=>renderUpgradeTree());bind('progressShop37',dailyShop37);bind('progressModifiers37',modifiers37);bind('progressEvolution37',()=>renderWeaponTree());
  bind('progressBattlePass37',()=>renderBattlePass());bind('progressPrestige37',()=>renderPrestige());bind('progressRarity37',()=>renderRarities());bind('progressWorldBoss37',()=>renderWorldBosses());bind('progressRooms37',()=>renderRooms());

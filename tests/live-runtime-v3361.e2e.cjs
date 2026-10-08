@@ -17,6 +17,9 @@ const { chromium } = require('playwright');
 
   const url='https://outlast-game.onrender.com/?e2e=20261008-1600-runtime';
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+  const servedTitle=await page.title();
+  if(!servedTitle.includes('v3.36.2')) throw new Error('Live page title is not v3.36.2: '+servedTitle);
+
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
 
   await page.locator('#startBtn').click();

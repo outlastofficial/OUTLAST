@@ -2286,6 +2286,11 @@ function outlastTakePlayerDamage(player,amount,reason,minHp=0){
   if(!player||!Number.isFinite(amount)||amount<=0)return false;
   if(player.godMode||player.god)return false;
   if(player===game?.player&&outlastOmegaShieldBlock(amount))return true;
+  if(player===game?.player&&Number(player.shield||0)>0){
+    ring(player.x,player.y,'#9feeff',38,.22);
+    toast('🛡️ SHIELD ABSORBED HIT');
+    return true;
+  }
   const mult=Math.max(0,Number(player.damageTakenMult)||1);
   player.hp=Math.max(minHp,(Number(player.hp)||0)-amount*mult);
   return false;
@@ -2363,7 +2368,7 @@ function update(dt){
  const eventBoost=activeEvent&&game.event==='XP FRENZY'?1.5:1;
  const worldMult=game.worldEvent==='PowerSurge'?1.35:1;
  game.score+=dt*2*game.stats.scoreMult*worldMult*(game.comboTimer>0?1+Math.min(20,game.combo)*.03:1);
- outlastOmegaShieldTick(dt);game.bossClock+=dt;if(p.infiniteUlt)p.ult=100;p.hp=Math.min(p.max,p.hp+p.regen*dt);
+ outlastOmegaShieldTick(dt);if(!p.infiniteShield&&Number(p.shield||0)>0)p.shield=Math.max(0,Number(p.shield)-dt);game.bossClock+=dt;if(p.infiniteUlt)p.ult=100;p.hp=Math.min(p.max,p.hp+p.regen*dt);
  if(game.comboTimer>0){game.comboTimer-=dt;if(game.comboTimer<=0)game.combo=0}
  if(game.eventTimer>0){game.eventTimer-=dt;if(game.eventTimer<=0)game.event=''}
  if(game.time>0&&Math.floor(game.time)%30===0&&Math.abs(game.time-Math.round(game.time))<dt&&save.challengeMode==='Chaos'){game.event=['XP FRENZY','COIN RUSH','BLOOD MOON'][Math.floor(Math.random()*3)];game.eventTimer=15;toast('🎲 CHAOS EVENT: '+game.event+'!')}
@@ -2750,12 +2755,17 @@ const p=game.player;if(p){
      ctx.beginPath();ctx.arc(p.x,p.y,29+4*shieldPct,0,Math.PI*2);ctx.stroke();
      ctx.globalAlpha=1;ctx.fillStyle='#9feeff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('🛡️ '+shieldHits+'/'+shieldMax,p.x,p.y+38);ctx.textAlign='left';ctx.restore();
    }
+   if(Number(p.shield||0)>0){
+     ctx.save();ctx.globalAlpha=.24;ctx.strokeStyle='#9feeff';ctx.lineWidth=4;ctx.beginPath();ctx.arc(p.x,p.y,36+Math.min(8,Number(p.shield)),0,Math.PI*2);ctx.stroke();
+     ctx.globalAlpha=.95;ctx.fillStyle='#d8fbff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.fillText('🛡️ '+Number(p.shield).toFixed(1)+'s',p.x,p.y+50);ctx.textAlign='left';ctx.restore();
+   }
+   }
    if(save.mode==='1v1 Arena'&&game.player2){ drawPlayerAvatar(game.player2,'#ff5f69',true); }
    if(save.selectedWeapon==='OrbitBlades'){for(let k=0;k<3;k++){let a=game.time*2+k*Math.PI*2/3;ctx.fillStyle='#a9d0ff';ctx.fillRect(p.x+Math.cos(a)*45-5,p.y+Math.sin(a)*45-5,10,10)}}}
  ctx.restore();
  if(game.player?.blackout){ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(0,0,CW,CH);}
  if(game.running){
-   ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(10,10,285,126);ctx.fillRect(CW-300,10,290,122);
+   ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(10,10,285,126);ctx.fillRect(CW-300,10,290,142);
    ctx.fillStyle='#fff';ctx.font='bold 14px Arial';
    ctx.fillText('LV '+game.level+' • HP '+Math.floor(game.player.hp)+'/'+Math.floor(game.player.max),20,30);
    ctx.fillStyle='#55d8ff';ctx.fillText('XP '+Math.floor(game.xp)+'/'+game.xpNeed,20,52);
@@ -2771,7 +2781,8 @@ const p=game.player;if(p){
    ctx.font='12px Arial';ctx.fillText('Skill '+(game.player.skillCooldown>0?Math.ceil(game.player.skillCooldown)+'s':'READY')+' • Ult '+Math.floor(game.player.ult)+'%',CW-288,52);
    if(game.worldEvent)ctx.fillText('World '+game.worldEvent+' • '+Math.ceil(game.worldEventTimer)+'s',CW-288,74);
    if(game.objective)ctx.fillText('Obj '+game.objective+(worldObjectives[game.objective]?' '+Math.floor(game.objectiveProgress||0)+'/'+worldObjectives[game.objective].target:''),CW-288,92);
-   if(Number(game.player?.omegaShieldMaxHits||0)>0)ctx.fillText('Shield '+Math.floor(game.player.omegaShieldHits||0)+'/'+Math.floor(game.player.omegaShieldMaxHits||0)+' • recharge '+Math.ceil(Math.max(0,Number(game.player.omegaShieldRechargeTimer)||0))+'s',CW-288,112);
+   if(Number(game.player?.omegaShieldMaxHits||0)>0)ctx.fillText('Omega Shield '+Math.floor(game.player.omegaShieldHits||0)+'/'+Math.floor(game.player.omegaShieldMaxHits||0)+' • recharge '+Math.ceil(Math.max(0,Number(game.player.omegaShieldRechargeTimer)||0))+'s',CW-288,112);
+   if(Number(game.player?.shield||0)>0)ctx.fillText('Temp Shield '+Number(game.player.shield).toFixed(1)+'s',CW-288,132);
    if(save.mode==='1v1 Arena'&&game.player2){ctx.fillStyle='#ff7c86';ctx.fillText('P2 HP '+Math.floor(game.player2.hp)+'/'+Math.floor(game.player2.max),20,126);ctx.fillStyle='#b8c6d6';ctx.fillText('P2 IJKL • auto',CW-288,92);ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.fillText('P2',CW-38,30);}
    const exit=document.getElementById('exitGameBtn');if(exit)exit.style.display='block';
  }

@@ -1,4 +1,4 @@
-name: OUTLAST live runtime smoke test
+name: OUTLAST v3.37 live runtime smoke test
 on:
   push:
     branches: [main]

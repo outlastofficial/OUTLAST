@@ -589,17 +589,29 @@ function patchBoss37(){
   }
 }
 
+function installCss37(){
+ if(document.getElementById('outlast-v3370-css'))return;
+ const st=document.createElement('style');st.id='outlast-v3370-css';
+ st.textContent='.progress-v3370-grid{display:grid;gap:14px}.progress-v3370-group{background:#101923;border:1px solid #294052;border-radius:18px;padding:13px}.progress-v3370-group h3{margin:0 0 9px;font-size:12px;letter-spacing:.12em;color:#8fb5cf}.progress-v3370-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.progress-v3370-btn{margin:0!important;min-height:52px}.stats37-tabs,.inventory37-tabs,.modifier37-filter{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}.stats37-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.inventory37-list,.modifier37-grid,.collection37-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.inventory37-wallet{margin:10px 0;padding:12px;border:1px solid #2d4154;border-radius:12px;background:#111d27}.core37-dashboard{grid-template-columns:repeat(3,minmax(0,1fr))}.daily-shop-grid-v3370{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.daily-shop37-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid #2d4154;border-radius:14px;background:#101d28}.daily-shop-price{font-weight:900;margin-top:8px}.modifier37-grid{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:760px){.progress-v3370-buttons,.stats37-grid,.inventory37-list,.modifier37-grid,.collection37-grid,.core37-dashboard,.daily-shop-grid-v3370{grid-template-columns:1fr 1fr}}@media(max-width:480px){.progress-v3370-buttons,.stats37-grid,.inventory37-list,.modifier37-grid,.collection37-grid,.core37-dashboard,.daily-shop-grid-v3370{grid-template-columns:1fr}}';
+ document.head.appendChild(st);
+}
 function wire37(){
  syncVersion37();
  installAuthoritativeUpgrades37();
  improveSkins37();
+ if(typeof outlastGrantTempShield==='function'){
+   const p=G37()?.player;
+   if(p){p.skinColor=skins?.[S37().selectedSkin||'Classic']?.color||p.skinColor||'#5e9fff';p.shieldEfficiency=Math.max(1,Number(p.shieldEfficiency)||1);}
+ }
  progress37();
  renderAchievements37;
  window.stats37=stats37;window.inventory37=inventory37;window.modifier37=modifier37;window.collection37=collection37;window.renderAchievements37=renderAchievements37;window.core37=core37;
+ window.outlastZombieAI=outlastZombieAI;window.zombieProfile37=zombieProfile37;window.CORE37_LIVE=coreLive37;
+ installCss37();
  hideOwnerImmediately37();setInterval(ownerVisible37,1000);
  setInterval(bossGate37,250);
  patchBoss37();
- if(Array.isArray(achievements))renderAchievements37();
+ if(Array.isArray(achievements)){addMoreAchievements36?.();renderAchievements37();}
  const btn=document.getElementById('startBtn');if(btn)btn.setAttribute('data-outlast-start-guard','v3.37.0');
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire37,{once:true});else wire37();

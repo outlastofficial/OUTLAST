@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="build-version" content="3.37.0">
+<meta name="outlast-build" content="3.37.0">
+<title>OUTLAST v3.37.0 Runtime Smoke</title>
+<style>html,body{margin:0;background:#090e13;color:#fff;font-family:Arial,sans-serif}main{display:grid;place-items:center;min-height:100vh;text-align:center}small{color:#8ca1af}</style>
+</head>
+<body>
+<main><div><h1>OUTLAST Runtime Smoke</h1><p>Loading the live game page…</p><small>This page intentionally redirects to the real production game so smoke tests exercise the same code players use.</small></div></main>
+<script>
+const target='./index.html?runtime-smoke=1&cacheBust='+Date.now();
+location.replace(target);
+</script>
+</body>
+</html>

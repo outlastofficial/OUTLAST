@@ -1,0 +1,32 @@
+name: OUTLAST v3.37.0 game regression
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "index.html"
+      - "outlast-v3360-focused-systems.js"
+      - "outlast-v33015-upgrade-library.js"
+      - "tests/v3370-game-systems.test.js"
+      - ".github/workflows/outlast-v3370-game-check.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Parse all inline browser JavaScript
+        run: node tests/inline-script-syntax-v3358.test.js
+      - name: Run v3.37 systems regression
+        run: node tests/v3370-game-systems.test.js
+      - name: Run critical regressions
+        run: |
+          node tests/upgrade-tree-v3355.test.js
+          node tests/boss-bar-v3356.test.js
+          node tests/bouncing-bullets-v3350.test.js
+          node tests/combat-balance-v33017.test.js
+          node tests/map-layout-v33016.test.js

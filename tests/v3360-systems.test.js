@@ -45,4 +45,19 @@ assert(html.includes("['FastBosses'"),'run modifiers must contain boss-focused m
 assert(html.includes("achievements.push"),'expanded achievements must be appended');
 assert(html.includes('achievements.length>=35'),'achievement catalog must be expanded');
 
+
+assert(html.includes("window.OUTLAST_UPGRADE_RARITY_BY_NAME"),'upgrade rarity authority map must exist');
+assert(html.includes("const mapped=window.OUTLAST_UPGRADE_RARITY_BY_NAME?.[name]"),'upgrade choices must derive rarity from the authoritative card map');
+assert(html.includes("const actualRarity=window.OUTLAST_UPGRADE_RARITY_BY_NAME?.[name]||rarity"),'upgrade effect rarity must match displayed rarity');
+assert(html.includes("byRarity[skins[n].rarity]||="),'skin rarity buckets must initialize before push');
+assert(html.includes("function syncOwnerLauncher()"),'owner launcher visibility must be synchronized');
+assert(html.includes("ownerBtn');if(btn)btn.style.display=isOwner()"),'owner launcher must be hidden from non-owners');
+assert(html.includes("save.shopStockRotation='3.36.0'"),'daily shop rotation must persist the current release');
+assert(html.includes('Eight offers are saved for today'),'daily shop must advertise all 8 daily offers');
+assert(html.includes('progressInventoryBtn'),'Progress must include Inventory as a direct button');
+assert(html.includes('progressShopBtn'),'Progress must include Daily Shop as a direct button');
+assert(html.includes('progressModifierBtn'),'Progress must include Run Modifiers as a direct button');
+assert(html.includes('statsCombatBtn'),'Progress must include expanded Stats sections');
+assert(html.includes('CORE36_LIVE'),'core dashboard must expose live system data');
+assert(html.includes('achievements.length>=60'),'achievement catalog must reach at least 60 goals');
 console.log('v3.36.0 systems regression test passed');

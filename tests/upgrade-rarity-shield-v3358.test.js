@@ -27,6 +27,8 @@ for(const [rarity,mult] of Object.entries(rarityScales)){
 assert(lib.includes('const entry=[d.name,d.desc,d.apply];'),'upgrade library must store the effect factory, not a pre-scaled effect');
 assert(!lib.includes('const entry=[d.name,d.desc,d.apply(d.mult)];'),'upgrade library must not pre-apply its source rarity multiplier');
 
+assert(html.includes('function fmtPct(base,mult)'),'rarity percentage boosts must be displayed with exact scaled values');
+assert(html.includes('out.push([name,desc(mult),()=>apply(mult),rarity]')||html.includes('out.push([name,desc(mult),()=>apply(mult),actualRarity'),'upgrade choices must apply the same rarity multiplier they display');
 assert(html.includes('function outlastTakePlayerDamage('),'all normal player damage should pass through one damage boundary');
 assert(html.includes('outlastOmegaShieldBlock(amount)'),'the shared damage boundary must consume Omega Shield charges before HP damage');
 assert(html.includes("Number(player.shield||0)>0"),'temporary shield must absorb incoming hits');
@@ -37,9 +39,10 @@ assert(html.includes('outlastTakePlayerDamage(p,b.dmg'),'enemy projectiles must 
 assert(html.includes('outlastTakePlayerDamage(p,p2.damage*.8*dt'),'player-contact damage must respect Omega Shield');
 
 assert(html.includes('id="outlast-mandatory-update-check"'),'mandatory update check must exist');
-assert(html.includes('outlast_update_ack_v3.35.8'),'update acknowledgement must be versioned');
+assert(html.includes('outlast_update_ack_v3.36.1'),'update acknowledgement must be versioned');
+assert(html.includes("const BUILD='3.36.1'"),'mandatory updater must use the current release version');
 assert(html.includes('RELOAD TO UPDATE'),'a newer served version must offer a cache-busting reload');
 assert(html.includes('OUTLAST UPDATE REQUIRED'),'the update check must gate the page until acknowledged');
-assert(html.includes('outlast-v3358-final-marker'),'release marker must identify v3.35.8');
+assert(html.includes('outlast-v3358-final-marker'),'release marker must identify v3.36.1');
 
-console.log('v3.35.8 rarity, shield, and mandatory-update regression checks passed');
+console.log('v3.36.1 rarity, shield, and mandatory-update regression checks passed');

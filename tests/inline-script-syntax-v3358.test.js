@@ -23,4 +23,7 @@ function check(file){
   return scripts.length;
 }
 const scripts=check('index.html');
+const focused=fs.readFileSync('outlast-v3360-focused-systems.js','utf8');
+new vm.Script(focused,{filename:'outlast-v3360-focused-systems.js'});
+console.log('Focused v3.36.0 systems JavaScript syntax passed');
 console.log('Inline JavaScript syntax regression test passed:',scripts,'scripts parsed');

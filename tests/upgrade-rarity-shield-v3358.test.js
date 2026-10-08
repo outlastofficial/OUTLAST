@@ -39,7 +39,7 @@ assert(html.includes('outlastTakePlayerDamage(p,p2.damage*.8*dt'),'player-contac
 assert(html.includes('id="outlast-mandatory-update-check"'),'mandatory update check must exist');
 assert(html.includes('outlast_update_ack_v3.35.8'),'update acknowledgement must be versioned');
 assert(html.includes('RELOAD TO UPDATE'),'a newer served version must offer a cache-busting reload');
-assert(html.includes('UPDATE REQUIRED'),'the update check must gate the page until acknowledged');
+assert(html.includes('OUTLAST UPDATE REQUIRED'),'the update check must gate the page until acknowledged');
 assert(html.includes('outlast-v3358-final-marker'),'release marker must identify v3.35.8');
 
 console.log('v3.35.8 rarity, shield, and mandatory-update regression checks passed');

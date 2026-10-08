@@ -1,4 +1,4 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const code=fs.readFileSync('outlast-v33500-core-content-engine.js','utf8');
-const ctx={window:{},document:{readyState:'complete',title:'',querySelectorAll:()=>[],getElementById:()=>null},helpArticles:[],updates:[],setTimeout:fn=>fn()};ctx.window=ctx;vm.createContext(ctx);vm.runInContext(code,ctx);
+const ctx={window:{},document:{readyState:'complete',title:'',querySelectorAll:()=>[],getElementById:()=>null,createElement:()=>({setAttribute(){},appendChild(){},style:{},classList:{add(){},remove(){}}})},helpArticles:[],updates:[],setTimeout:fn=>fn()};ctx.window=ctx;vm.createContext(ctx);vm.runInContext(code,ctx);
 const a=ctx.OUTLAST_CORE_CONTENT.audit();assert.equal(a.version,'3.35.0');for(const k of ['combat','enemies','bosses','world','events','progression','cosmetics','objectives','economy','modes'])assert(a[k]>0,k);assert(a.combat>=100&&a.enemies>=100&&a.bosses>=50&&a.combinationSpace>=1000000);assert(ctx.helpArticles.some(x=>String(x[0]).includes('12 Core Systems')));assert(ctx.updates.some(x=>String(x[0]).includes('12 Core Systems')));console.log('12-core engine test passed',a);

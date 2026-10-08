@@ -3,6 +3,7 @@ const { chromium } = require('playwright');
 (async()=>{
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport:{width:1280,height:900}});
+  await page.setExtraHTTPHeaders({'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'});
   const consoleErrors=[];
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
   page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message));
@@ -15,7 +16,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastSeenUpdateVersion','3.35.2');
   });
 
-  const url='https://outlast-game.onrender.com/?e2e=20261008-1600-runtime';
+  const url='https://outlast-game.onrender.com/?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
   if(!servedTitle.includes('v3.36.2')) throw new Error('Live page title is not v3.36.2: '+servedTitle);

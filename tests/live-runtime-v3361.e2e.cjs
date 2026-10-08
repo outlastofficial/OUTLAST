@@ -22,6 +22,13 @@ const { chromium } = require('playwright');
   if(!servedTitle.includes('v3.37.0')) console.log('Version marker diagnostic: '+servedTitle);
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
+  const skinPrep=await page.evaluate(()=>{
+    if(typeof skins==='undefined'||typeof save==='undefined') return {ok:false};
+    const name=Object.keys(skins).find(n=>n!=='Classic');
+    if(!name) return {ok:false,reason:'no non-Classic skin definition'};
+    save.skins=save.skins||{};save.skins[name]=true;save.selectedSkin=name;persist();
+    return {ok:true,name};
+  });
   await page.locator('#startBtn').click();
   await page.waitForTimeout(2500);
 
@@ -33,6 +40,14 @@ const { chromium } = require('playwright');
   if(!(Number(state.time)>0.8)) throw new Error('Gameplay time did not advance after Start Run.');
   if(!(Number(state.heartbeat)>10)) throw new Error('Game loop heartbeat did not advance.');
   if(!(Number(state.enemies)>=1)) throw new Error('Gameplay loop is alive but no zombie spawned.');
+  const liveChecks=await page.evaluate(()=>({
+    ai:!!(typeof game!=='undefined'&&Array.isArray(game.enemies)&&game.enemies.some(e=>e&&e.aiBehavior)),
+    skin:!!(typeof game!=='undefined'&&game.player&&game.player.skinBonuses&&Number(game.player.skinBonuses.xp||0)>=0),
+    ownerHidden:!!(document.getElementById('ownerPanelCard')&&getComputedStyle(document.getElementById('ownerPanelCard')).display==='none')
+  }));
+  if(!liveChecks.ai) throw new Error('Zombies spawned without the new AI state.');
+  if(!liveChecks.skin || !skinPrep.ok) throw new Error('Equipped skin did not initialize into the run.');
+  if(!liveChecks.ownerHidden) throw new Error('Non-owner player can see the Owner Panel.');
   const flags=await page.evaluate(()=>({
     core:window.OUTLAST_CORE_CONTENT_VERSION||null,
     coreMode:window.OUTLAST_CORE_CONTENT_MODE||null,
@@ -46,6 +61,6 @@ const { chromium } = require('playwright');
   if(!flags.mandatory) throw new Error('Mandatory update checker did not initialize.');
   if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,flags,consoleErrors}));
+  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,consoleErrors}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});

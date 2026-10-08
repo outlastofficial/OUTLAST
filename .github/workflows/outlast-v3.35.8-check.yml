@@ -1,4 +1,4 @@
-name: OUTLAST v3.35.8 regression checks
+name: OUTLAST v3.36.1 regression checks
 on:
   push:
     branches: ["**"]

@@ -36,6 +36,8 @@ const { chromium } = require('playwright');
   if(!state.player) throw new Error('Start Run left the game without a player.');
   if(!(Number(state.time)>0.3)) throw new Error('Gameplay time did not advance after Start Run.');
   if(!(Number(state.heartbeat)>5)) throw new Error('Game loop heartbeat did not advance.');
+  const coreVersion=await page.evaluate(()=>window.OUTLAST_CORE_CONTENT_VERSION||null);
+  if(!coreVersion) throw new Error('12-core engine version was not published; core content failed to initialize.');
   if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | '));
 
   console.log(JSON.stringify({ok:true,state,consoleErrors}));

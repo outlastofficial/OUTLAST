@@ -9,8 +9,8 @@ assert(end>start,'player projectile loop boundary must exist');
 const loop=html.slice(start,end);
 
 assert(
-  loop.includes('b.bounceTargets&&b.bounceTargets.has(e)') ||
-  loop.includes('b.bounceTargets && b.bounceTargets.has(e)'),
+  loop.includes('!b.bounceTargets||!b.bounceTargets.has(e)') ||
+  loop.includes('!b.bounceTargets || !b.bounceTargets.has(e)'),
   'bouncing bullets must ignore enemies already hit by this bullet'
 );
 assert(

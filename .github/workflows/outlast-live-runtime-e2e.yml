@@ -1,0 +1,28 @@
+name: OUTLAST v3.37 TESTER live runtime smoke test
+on:
+  push:
+    branches: [testing]
+    paths:
+      - "index.html"
+      - "outlast-v3370-game-systems.js"
+      - "*.js"
+      - ".github/workflows/outlast-live-runtime-e2e.yml"
+      - "tests/live-runtime-v3361.e2e.cjs"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Run live Start Run smoke test
+        run: node tests/live-runtime-v3361.e2e.cjs

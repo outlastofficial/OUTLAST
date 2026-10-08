@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastUsername','E2EPlayer');
     localStorage.setItem('outlastDeviceMode','pc');
     localStorage.setItem('outlastJoystickMode','off');
-    localStorage.setItem('outlast_update_ack_v3.36.1','1');
+    localStorage.setItem('outlast_update_ack_v3.36.2','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.35.2');
   });
 

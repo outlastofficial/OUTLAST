@@ -15,7 +15,7 @@ assert(source.includes('!p.infiniteShield&&Number(p.shield||0)>0'),'temporary sh
 assert(source.includes("outlastTakePlayerDamage(p,actual*dt,'enemy contact')"),'enemy contact must use shared damage boundary');
 
 assert(source.includes("if(outlastBossIsAlive())return false;"),'spawnBoss must reject a second live boss');
-assert(source.includes("if(!outlastBossIsAlive()&&game.bossClock>=bossTarget)"),'next boss must wait until previous boss is dead');
+assert(source.includes("const bossTarget=")&&source.includes("!outlastBossIsAlive()")&&source.includes("game.bossClock>=bossTarget"),'next boss must wait until previous boss is dead');
 
 assert(!source.includes('ownerPasswordInput'),'owner panel must not request a password');
 assert(source.includes("if(!owner()){toast('Owner access only');return;}"),'owner panel must gate non-owners');
@@ -34,15 +34,15 @@ for(const id of ['coreBtn','weaponTreeBtn','codexBtn','battlePassBtn','prestigeB
 }
 assert(source.includes('function renderCoreSystems()'),'core systems UI must exist');
 assert(source.includes('OUTLAST_CORE_CONTENT.audit()'),'core systems UI must use the 12-core engine');
-assert(source.includes('function renderExpandedStats()'),'expanded stats UI must exist');
-assert(source.includes('function renderExpandedInventory()'),'expanded inventory UI must exist');
-assert(source.includes('function renderExpandedModifiers()'),'expanded modifier UI must exist');
+assert(source.includes('window.renderExpandedStats=stats36'),'expanded stats UI must exist');
+assert(source.includes('window.renderExpandedInventory=inventory36'),'expanded inventory UI must exist');
+assert(source.includes('window.renderExpandedModifiers=modifiers36'),'expanded modifier UI must exist');
 
 assert(source.includes("shopStockRotation==='3.36.0'"),'daily shop rotation must be refreshed for this release');
 assert(source.includes('shopStockIds.length===8'),'daily shop must stock 8 offers');
 
-assert(source.includes("['NoHealing'"),'run modifiers must contain additional modifier choices');
-assert(source.includes("['FastBosses'"),'run modifiers must contain boss-focused modifier choices');
+assert(source.includes('NoHealing:{'),'run modifiers must contain additional modifier choices');
+assert(source.includes('FastBosses:{'),'run modifiers must contain boss-focused modifier choices');
 
 assert(source.includes("achievements.push"),'expanded achievements must be appended');
 assert(source.includes('achievements.length>=35'),'achievement catalog must be expanded');

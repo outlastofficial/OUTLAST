@@ -7,7 +7,7 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const scene = fs.readFileSync(path.join(root, 'outlast-v33013-map-scenes.js'), 'utf8');
 
 assert.match(html, /outlast-v33013-map-scenes\.js\?v=3\.30\.13/);
-assert.match(scene, /OUTLAST_MAP_SCENE_VERSION=['"]3\.30\.13['"]/);
+assert.match(scene, /OUTLAST_MAP_SCENE_VERSION=VERSION/);
 assert.match(scene, /OUTLAST_MAP_SCENE_THEMES/);
 assert.match(scene, /Hospital:\s*\{[^}]*bg:'#101821'/s);
 

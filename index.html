@@ -2226,7 +2226,7 @@ const tempUp=[
  ['Chain Reaction',v=>`+${Math.round(15*v)}% chain effect`,v=>game.player.chain=(game.player.chain||1)*(1+.15*v)],
  ['Lucky Coins',v=>`+${Math.round(20*v)}% coins`,v=>game.player.coinMult*=1+.20*v],
  ['Adrenaline',v=>`+${Math.round(20*v)}% speed below 50% HP`,v=>game.player.adrenaline=true],
- ['Shield Core',v=>`Gain ${Math.round(3*v)}s shield`,v=>game.player.shield=3*v],
+ ['Shield Core',v=>`Gain ${Math.round(3*v)}s shield`,v=>outlastGrantTempShield(3*v)],
  ['Rapid Recovery',v=>`+${Math.round(15*v)}% pickup healing`,v=>game.player.healMult=(game.player.healMult||1)*(1+.15*v)],
  ['Poison Rounds',v=>`Shots apply stronger poison`,v=>game.player.poison=true],
  ['Stun Rounds',v=>`Shots have a better stun effect`,v=>game.player.stun=true],
@@ -2250,7 +2250,7 @@ const tempUp=[
   ,['Ammo Surge',v=>'+'+Math.max(2,Math.round(2*v))+' extra projectiles',v=>game.player.multiShot=(game.player.multiShot||0)+Math.max(2,Math.round(2*v))]
   ,['Coin Magnetism',v=>'+'+Math.round(30*v)+' pickup range and coins',v=>{game.player.magnet+=30*v;game.player.coinMult*=1+.12*v}]
   ,['Heavy Impact',v=>'+'+Math.round(18*v)+' damage and larger shots',v=>{game.player.damage+=18*v;game.player.bulletSize=(game.player.bulletSize||1)*(1+.12*v)}]
-  ,['Emergency Shield',v=>'Gain '+Math.round(5*v)+' seconds of shield',v=>game.player.shield=Math.max(game.player.shield||0,5*v)]
+  ,['Emergency Shield',v=>'Gain '+Math.round(5*v)+' seconds of shield',v=>outlastGrantTempShield(5*v)]
   ,['Second Heart',v=>'+'+Math.round(55*v)+' max HP and healing',v=>{game.player.max+=55*v;game.player.hp=Math.min(game.player.max,game.player.hp+55*v);game.player.healMult=(game.player.healMult||1)+.15*v}]
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+Math.round(12*v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
@@ -2294,6 +2294,14 @@ function outlastTakePlayerDamage(player,amount,reason,minHp=0){
   const mult=Math.max(0,Number(player.damageTakenMult)||1);
   player.hp=Math.max(minHp,(Number(player.hp)||0)-amount*mult);
   return false;
+}
+function outlastGrantTempShield(seconds){
+  const p=game&&game.player;
+  if(!p||!Number.isFinite(Number(seconds))||Number(seconds)<=0)return 0;
+  const eff=Math.max(1,Number(p.shieldEfficiency)||1);
+  const duration=Math.max(0,Number(seconds))*eff;
+  p.shield=Math.max(Number(p.shield)||0,duration);
+  return p.shield;
 }
 function upg(name){return save.upgrades[name]||0}
 function syncGameAdminUI(){
@@ -2443,7 +2451,7 @@ for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if((!b.bounceT
   }
   if(p.shrineTimer>0){p.shrineTimer-=dt;if(p.shrineTimer<=0){p.tempDamage=0;p.tempSpeed=0;p.tempMagnet=0}}
   if(p.xpBonusTimer>0)p.xpBonusTimer-=dt;
-  for(let i=game.powerups.length-1;i>=0;i--){const q=game.powerups[i];if(Math.hypot(q.x-p.x,q.y-p.y)<35){if(q.type==='heal')p.hp=Math.min(p.max,p.hp+35*(p.healMult||1));if(q.type==='speed')p.speed=Math.min(p.speedCap||p.speed*1.2,p.speed*1.18);if(q.type==='damage')p.damage+=4;if(q.type==='shield')p.shield=4.5;if(q.type==='xpVacuum'){let vacuumXP=0;for(const g of game.gems)vacuumXP+=Number(g.value)||0;game.gems=[];game.xp+=vacuumXP*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;if(vacuumXP>0)toast('★ XP VACUUM — ALL XP COLLECTED!');if(game.xp>=game.xpNeed)levelUp();}game.powerups.splice(i,1)}}
+  for(let i=game.powerups.length-1;i>=0;i--){const q=game.powerups[i];if(Math.hypot(q.x-p.x,q.y-p.y)<35){if(q.type==='heal')p.hp=Math.min(p.max,p.hp+35*(p.healMult||1));if(q.type==='speed')p.speed=Math.min(p.speedCap||p.speed*1.2,p.speed*1.18);if(q.type==='damage')p.damage+=4;if(q.type==='shield')outlastGrantTempShield(4.5);if(q.type==='xpVacuum'){let vacuumXP=0;for(const g of game.gems)vacuumXP+=Number(g.value)||0;game.gems=[];game.xp+=vacuumXP*(game.event==='XP FRENZY'?1.5:1)*(p.xpBonusTimer>0?1.5:1)*p.xpBonus;if(vacuumXP>0)toast('★ XP VACUUM — ALL XP COLLECTED!');if(game.xp>=game.xpNeed)levelUp();}game.powerups.splice(i,1)}}
  for(let i=game.particles.length-1;i>=0;i--){const a=game.particles[i];a.t-=dt;a.x+=a.vx*dt;a.y+=a.vy*dt;a.vx*=.96;a.vy*=.96;if(a.t<=0)game.particles.splice(i,1);}for(let i=game.effects.length-1;i>=0;i--){game.effects[i].t-=dt;if(game.effects[i].t<=0)game.effects.splice(i,1);}for(const e of game.enemies){if(e.hitFlash>0)e.hitFlash-=dt;}if(game.shake>0)game.shake-=dt;
  if(game.enemies.length>MAX_ENEMIES)game.enemies.length=MAX_ENEMIES;
  if(game.bullets.length>MAX_BULLETS)game.bullets.splice(0,game.bullets.length-MAX_BULLETS);
@@ -3914,7 +3922,7 @@ function useActiveSkill(){
   if(!def || p.skillCooldown>0)return;
   if(s==='Nova'){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.hypot(e.x-p.x,e.y-p.y)<220){damageEnemy(e,p.damage*4);if(e.hp<=0)killEnemy(e)}}game.effects.push({x:p.x,y:p.y,t:.8,r:220});}
   if(s==='Blink'){let dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),dy=(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);if(!dx&&!dy)dy=-1;const l=Math.hypot(dx,dy)||1;p.x=Math.max(30,Math.min(W-30,p.x+dx/l*450));p.y=Math.max(30,Math.min(H-30,p.y+dy/l*450));}
-  if(s==='Fortify')p.shield=8;
+  if(s==='Fortify')outlastGrantTempShield(8);
   if(s==='TimeStop')for(const e of game.enemies)e.slowTimer=5;
   if(s==='Meteor'){for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if(Math.random()<.7){damageEnemy(e,p.damage*6);if(e.hp<=0)killEnemy(e)}}}
   p.skillCooldown=def.cool;toast('◉ '+s+' activated!');
@@ -5052,7 +5060,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     ['Salvager',v=>'+'+Math.round(18*v)+'% coins and +'+Math.round(12*v)+' pickup range',v=>{game.player.coinMult*=1+.18*v;game.player.magnet+=12*v}],
     ['XP Reactor',v=>'+'+Math.round(18*v)+'% XP and +'+Math.round(5*v)+' Upgrade Luck',v=>{game.player.xpBonus*=1+.18*v;game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
     ['Lucky Barrage',v=>'+ '+Math.round(12*v)+'% extra-shot chance',v=>{game.player.doubleTap=true;game.player.extraShotLuck=(game.player.extraShotLuck||0)+.12*v}],
-    ['Shield Nova',v=>'Gain '+Math.round(4*v)+'s shield and a defensive pulse',v=>{game.player.shield=Math.max(game.player.shield||0,4*v);game.player.shieldNova=true}],
+    ['Shield Nova',v=>'Gain '+Math.round(4*v)+'s shield and a defensive pulse',v=>{outlastGrantTempShield(4*v);game.player.shieldNova=true}],
     ['Overclock',v=>'+'+Math.round(24*v)+'% attack speed, +'+Math.round(6*v)+'% damage',v=>{game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.24*v));game.player.damage*=1+.06*v}],
     ['Deadly Precision',v=>'+'+Math.round(10*v)+'% crit chance and +'+Math.round(12*v)+'% crit damage',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.10*v);game.player.critMult=(game.player.critMult||1.8)+.12*v}],
     ['Treasure Engine',v=>'+'+Math.round(20*v)+' Treasure Luck and 2x drop chance',v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+20*v;game.player.treasure=true;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0)}],
@@ -5191,7 +5199,7 @@ Fixed skin menu reopening, progress saving, Daily Shop coin pricing, tiny-enemy 
     ['Salvager',v=>'+'+Math.round(18*v)+'% coins and '+Math.round(12*v)+' pickup range',v=>{game.player.coinMult*=1+.18*v;game.player.magnet+=12*v}],
     ['XP Reactor',v=>'+'+Math.round(18*v)+'% XP and +'+Math.round(5*v)+' Upgrade Luck',v=>{game.player.xpBonus*=1+.18*v;game.player.upgradeLuck=(game.player.upgradeLuck||0)+5*v}],
     ['Lucky Barrage',v=>'+'+Math.round(12*v)+'% extra-shot chance',v=>{game.player.doubleTap=true;game.player.doubleTapBonus=(game.player.doubleTapBonus||0)+.12*v}],
-    ['Shield Nova',v=>'Gain '+Math.round(4*v)+'s shield and pulse',v=>{game.player.shield=Math.max(game.player.shield||0,4*v);game.player.shieldEfficiency=Math.max(game.player.shieldEfficiency||1,1+.18*v);game.effects.push({x:game.player.x,y:game.player.y,t:.45,r:145,color:'#72a8ff',fill:false});}],
+    ['Shield Nova',v=>'Gain '+Math.round(4*v)+'s shield and pulse',v=>{game.player.shieldEfficiency=Math.max(game.player.shieldEfficiency||1,1+.18*v);outlastGrantTempShield(4*v);game.effects.push({x:game.player.x,y:game.player.y,t:.45,r:145,color:'#72a8ff',fill:false});}],
     ['Overclock',v=>'+'+Math.round(24*v)+'% attack speed and '+Math.round(6*v)+'% damage',v=>{game.player.fireRate=Math.max(.12,(game.player.fireRate||.45)*(1-.24*v));game.player.damage*=1+.06*v}],
     ['Deadly Precision',v=>'+'+Math.round(10*v)+'% crit chance and '+Math.round(12*v)+'% crit damage',v=>{game.player.crit=Math.min(.95,(game.player.crit||0)+.10*v);game.player.critMult=(game.player.critMult||1.8)+.12*v}],
     ['Treasure Engine',v=>'+'+Math.round(20*v)+' Treasure Luck and better drops',v=>{game.player.treasureLuck=(game.player.treasureLuck||0)+20*v;game.player.treasure=true}],

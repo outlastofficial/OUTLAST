@@ -785,6 +785,16 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 #subPanel .upgrade-tree-branch.filtered-empty{display:none}
 @media(max-width:1050px){#subPanel .upgrade-tree-branches{grid-template-columns:repeat(2,minmax(260px,1fr))}#subPanel .upgrade-tree-branches:before{left:25%;right:25%}}
 @media(max-width:680px){#subPanel .upgrade-tree-scroll{max-height:76vh;padding-right:2px}#subPanel .upgrade-tree-branches{grid-template-columns:1fr;gap:24px;padding:0 1px}#subPanel .upgrade-tree-branches:before{left:50%;right:auto;width:2px;height:18px;top:-18px}#subPanel .upgrade-tree-branch:before{display:none}#subPanel .upgrade-tree-root{width:100%}#subPanel .upgrade-tree-node{padding:10px}}
+</style><style id="outlast-boss-bar-v3356">
+#outlastBossBar{position:fixed;left:50%;top:18px;transform:translateX(-50%);width:min(680px,76vw);z-index:99995;display:none;pointer-events:none;font-family:Arial,sans-serif}
+#outlastBossBar .obb-card{background:rgba(8,12,18,.94);border:2px solid #8f333d;border-radius:14px;padding:8px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+#outlastBossBar .obb-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+#outlastBossBar .obb-name{font-weight:900;font-size:14px;letter-spacing:.04em;color:#fff}
+#outlastBossBar .obb-phase{font-size:10px;font-weight:900;color:#ffacb3;white-space:nowrap}
+#outlastBossBar .obb-track{height:16px;background:#260f13;border:1px solid #61242b;border-radius:999px;overflow:hidden;box-shadow:inset 0 2px 5px rgba(0,0,0,.35)}
+#outlastBossBar .obb-fill{height:100%;width:100%;background:linear-gradient(90deg,#ff4e5e,#ff8a55);transition:width .12s linear}
+#outlastBossBar .obb-bottom{display:flex;justify-content:space-between;gap:10px;margin-top:5px;color:#c1cbd4;font-size:10px;font-weight:800}
+@media(max-width:700px){#outlastBossBar{top:8px;width:calc(100vw - 24px)}#outlastBossBar .obb-card{padding:7px 9px}#outlastBossBar .obb-name{font-size:12px}#outlastBossBar .obb-track{height:13px}}
 </style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
@@ -6282,5 +6292,46 @@ try{
  const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
 }catch(_){}
 })();
-</script><script id="outlast-v3355-tree-metadata">(function(){try{if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes("v3.35.5")}))updates.unshift(["v3.35.5 — Upgrade Tree UI","Rebuilt the Permanent Upgrade Tree as a connected tech-tree style interface with branch hubs, upgrade nodes, level pips, purchase states, search, and a scrollable large-catalog layout."]);if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==="How does the new Upgrade Tree look?";}))helpArticles.unshift(["How does the new Upgrade Tree look?","Upgrades & Progression","The Permanent Upgrade Tree now uses a connected tech-tree layout. The root branches into named paths, each node shows its five upgrade levels and current price, and the search box can filter the large catalog."]);}catch(_){}})();</script></body>
+</script><script id="outlast-v3355-tree-metadata">(function(){try{if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes("v3.35.5")}))updates.unshift(["v3.35.5 — Upgrade Tree UI","Rebuilt the Permanent Upgrade Tree as a connected tech-tree style interface with branch hubs, upgrade nodes, level pips, purchase states, search, and a scrollable large-catalog layout."]);if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==="How does the new Upgrade Tree look?";}))helpArticles.unshift(["How does the new Upgrade Tree look?","Upgrades & Progression","The Permanent Upgrade Tree now uses a connected tech-tree layout. The root branches into named paths, each node shows its five upgrade levels and current price, and the search box can filter the large catalog."]);}catch(_){}})();</script><script id="outlast-boss-bar-v3356">
+(function(){
+'use strict';
+const VERSION='3.35.6';
+function esc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function ensureBossBar(){
+ let bar=document.getElementById('outlastBossBar');
+ if(bar)return bar;
+ bar=document.createElement('div');bar.id='outlastBossBar';
+ bar.innerHTML='<div class="obb-card"><div class="obb-top"><span class="obb-name"></span><span class="obb-phase"></span></div><div class="obb-track"><div class="obb-fill"></div></div><div class="obb-bottom"><span class="obb-hp"></span><span class="obb-extra"></span></div></div>';
+ document.body.appendChild(bar);return bar;
+}
+function syncBossBar(){
+ const bar=ensureBossBar();
+ try{
+   const enemies=Array.isArray(window.game?.enemies)?window.game.enemies:[];
+   let boss=null;
+   for(let i=enemies.length-1;i>=0;i--){const e=enemies[i];if(e&&e.boss&&!e.__dead&&Number(e.hp)>0&&Number(e.max)>0){boss=e;break;}}
+   if(!window.game?.running||!boss){bar.style.display='none';return;}
+   const max=Math.max(1,Number(boss.max)||1),hp=Math.max(0,Math.min(max,Number(boss.hp)||0)),pct=Math.max(0,Math.min(100,hp/max*100));
+   const raid=window.game?.raidBoss?String(window.game.raidBoss):'';
+   const name=raid||'BOSS';
+   const phase=Math.max(1,Math.min(3,Number(boss.phase)||1));
+   bar.querySelector('.obb-name').textContent=(boss.bossEmoji?boss.bossEmoji+' ':'')+name;
+   bar.querySelector('.obb-phase').textContent='PHASE '+phase;
+   bar.querySelector('.obb-fill').style.width=pct.toFixed(2)+'%';
+   bar.querySelector('.obb-hp').textContent=Math.ceil(hp).toLocaleString()+' / '+Math.ceil(max).toLocaleString()+' HP';
+   bar.querySelector('.obb-extra').textContent='BOSS '+(Number(window.game.bossCount)||1);
+   bar.style.display='block';
+ }catch(_){bar.style.display='none';}
+}
+window.syncBossBar=syncBossBar;
+try{
+ window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;document.title='OUTLAST v'+VERSION;
+ document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v'+VERSION);
+ const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
+ const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
+}catch(_){}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureBossBar,{once:true});else ensureBossBar();
+setInterval(syncBossBar,100);
+})();
+</script><script id="outlast-v3356-metadata">(function(){try{if(Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script></body>
 </html>

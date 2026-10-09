@@ -68,7 +68,14 @@ function installPopup(){
  return root;
 }
 function show(force=false){const root=installPopup();if(!root)return false;if(!force&&seen())return false;root.style.display='flex';setTimeout(()=>root.querySelector('#outlastV3350UpdateGotIt')?.focus(),0);return true;}
-function autoShow(){if(seen())return;show(false);}
+function currentBuildIsNewer(){
+ const current=String(window.OUTLAST_BUILD||document.querySelector('meta[name="outlast-build"]')?.content||'0');
+ const parse=v=>String(v||'0').replace(/^v/i,'').split('.').map(n=>{const x=parseInt(n,10);return Number.isFinite(x)?x:0}).concat([0,0,0]).slice(0,3);
+ const a=parse(current),b=parse(VERSION);
+ for(let i=0;i<3;i++){if(a[i]!==b[i])return a[i]>b[i];}
+ return false;
+}
+function autoShow(){if(seen())return false;if(currentBuildIsNewer()){markSeen();return false;}return show(false);}
 window.OUTLAST_UPDATE_POPUP={version:VERSION,storageKey:KEY,install:installPopup,show,autoShow};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(autoShow,700),{once:true});else setTimeout(autoShow,700);
 })();

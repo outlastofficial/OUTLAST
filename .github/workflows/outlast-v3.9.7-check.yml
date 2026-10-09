@@ -1,10 +1,8 @@
-name: OUTLAST v3.9.7 checks
+name: OUTLAST legacy owner-control module checks
 on:
   push:
     branches: [main]
     paths:
-      - 'game.html'
-      - 'index.html'
       - 'outlast-v3.9.7.js'
       - '.github/workflows/outlast-v3.9.7-check.yml'
   workflow_dispatch:
@@ -18,20 +16,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Check Nightfall countdown JavaScript
+      - name: Check legacy owner-control JavaScript
         run: node --check outlast-v3.9.7.js
-      - name: Check both game entry files
+      - name: Check preserved legacy feature source
         run: |
-          test -s game.html
+          test -s outlast-v3.9.7.js
+          grep -q 'OWNER_USERNAMES' outlast-v3.9.7.js
+          grep -q 'claimPendingCoins' outlast-v3.9.7.js
           test -s index.html
-          grep -q '<title>OUTLAST v3.9.7</title>' game.html
-          grep -q '<title>OUTLAST v3.9.7</title>' index.html
-          grep -q 'name="outlast-build" content="3.9.7"' game.html
-          grep -q 'name="outlast-build" content="3.9.7"' index.html
-          grep -q 'outlast-v3.9.7.js' game.html
-          grep -q 'outlast-v3.9.7.js' index.html
-      - name: Check Nightfall date
-        run: |
-          grep -q 'TARGET_YEAR = 2026' outlast-v3.9.7.js
-          grep -q 'TARGET_MONTH = 9' outlast-v3.9.7.js
-          grep -q 'TARGET_DAY = 1' outlast-v3.9.7.js
+          echo "Legacy owner-control module syntax and feature markers passed."

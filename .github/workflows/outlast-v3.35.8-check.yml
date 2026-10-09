@@ -20,5 +20,9 @@ jobs:
           node-version: 22
       - name: Parse all inline browser JavaScript
         run: node tests/inline-script-syntax-v3358.test.js
+      - name: Run v3.37.8 expansion and combat behavior checks
+        run: node tests/outlast-v3378-expansion.test.js
+      - name: Run upgrade rarity integrity checks
+        run: node tests/upgrade-rarity-integrity-v3373.test.js
       - name: Run current v3.37 critical regressions
         run: node tests/v3370-systems.test.js

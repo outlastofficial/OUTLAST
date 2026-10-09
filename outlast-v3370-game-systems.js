@@ -35,6 +35,7 @@ function scaledInteger37(base,mult){
  return amount;
 }
 function upgradeBase37(name,desc,apply,rarity){
+ const mult=SCALE[rarity]||1,pct=(base,m)=>Number((Number(base)*Number(m)).toFixed(1)).toString(),player=()=>G()?.player;
  // Align overlapping legacy cards to the same baseline as the tier-family library.
  const nv=b=>Number((Number(b)*mult).toFixed(2)).toString(),np=b=>pct(b,mult),ni=b=>scaledInteger37(b,mult),p=()=>G()?.player;
  const add=(k,v)=>{const q=p();if(q)q[k]=(Number(q[k])||0)+v;},ratio=(k,b)=>{const q=p();if(q)q[k]=(Number(q[k])||1)*(1+b*mult/100);};
@@ -94,7 +95,6 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Last Stand')return {desc:'+'+np(10)+'% damage below 25% HP',apply:()=>{const q=p();if(q){q.lastStand=true;q.lastStandBonus=(Number(q.lastStandBonus)||0)+.1*mult;}}};
  if(name==='Treasure Engine')return {desc:'+'+nv(2)+' Treasure Luck and '+nv(3)+'x drop chance',apply:()=>{const q=p();if(q){q.treasureLuck=(Number(q.treasureLuck)||0)+2*mult;q.treasure=true;q.treasureDropMultiplier=3*mult;luck();}}};
  if(name==='Deadly Precision')return {desc:'+'+np(1)+'% crit chance and +'+np(2)+'% crit damage',apply:()=>{const q=p();if(q){q.crit=Math.min(.99,(Number(q.crit)||0)+.01*mult);q.critMult=(Number(q.critMult)||1.8)+.02*mult;}}};
- const mult=SCALE[rarity]||1,pct=(base,m)=>Number((Number(base)*Number(m)).toFixed(1)).toString(),player=()=>G()?.player;
  if(name==='XP Boost')return {desc:'+'+Math.round(8*mult)+'% XP',apply:function(){const p=player();if(p)p.xpBonus*=1+.08*mult;}};
  if(name==='XP Burst')return {desc:'+'+Math.round(12*mult)+'% XP and +'+Math.round(20*mult)+' pickup radius',apply:function(){const p=player();if(p){p.xpBonus*=1+.12*mult;p.magnet+=20*mult;}}};
  if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledInteger37(name==='Piercing'?1:2,mult);return {desc:'+'+amount+(name==='Piercing'?' pierce':' projectile pierce'),apply:function(){const p=player();if(p)p.pierce=(Number(p.pierce)||0)+amount;}};}

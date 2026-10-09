@@ -1,8 +1,8 @@
-/* OUTLAST v3.37.5 — 220 new functional upgrade cards with authoritative rarity scaling */
+/* OUTLAST v3.37.15 — 220 functional upgrade cards with approved rarity scaling */
 (function(){
 'use strict';
 function fmtPct(base,mult){return Number((Number(base)*Number(mult)).toFixed(1)).toString()}
-const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8});
+const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:2.7,Celestial:3.2,Transcendent:3.8,Eternal:4.6,Omega:5.5});
 const TIER_ORDER=Object.keys(TIER_SCALE);
 function tierInteger(base,mult){
   let index=TIER_ORDER.findIndex(r=>Math.abs(TIER_SCALE[r]-Number(mult))<1e-6);
@@ -12,7 +12,7 @@ function tierInteger(base,mult){
   return amount;
 }
 window.OUTLAST_UPGRADE_TIER_INTEGER=tierInteger;
-const V='3.37.5';
+const V='3.37.15';
 const LIBRARY=[
   {name:"Common Might 01",rarity:"Common",mult:1,desc:v=>`+${fmtPct(3,v)} damage`,apply:v=>game.player.damage+=3*v},
   {name:"Common Haste 02",rarity:"Common",mult:1,desc:v=>`+${fmtPct(2.2,v)}% attack speed`,apply:v=>game.player.fireRate=Math.max(.045,(game.player.fireRate||.45)*(1-.022*v))},
@@ -244,11 +244,11 @@ function install(){
     if(window.OUTLAST_UPGRADE_RARITY_BY_NAME)window.OUTLAST_UPGRADE_RARITY_BY_NAME[d.name]=d.rarity;
   }
   if(typeof upgradeRarities!=='undefined'){
-    upgradeRarities.Divine={mult:4,label:'DIVINE',weight:.9,glow:'#ffffff'};
-    upgradeRarities.Celestial={mult:5,label:'CELESTIAL',weight:.55,glow:'#7ce7ff'};
-    upgradeRarities.Transcendent={mult:6,label:'TRANSCENDENT',weight:.25,glow:'#ff9cf2'};
-    upgradeRarities.Eternal={mult:7,label:'ETERNAL',weight:.12,glow:'#b8a7ff'};
-    upgradeRarities.Omega={mult:8,label:'OMEGA',weight:.05,glow:'#ff6b6b'};
+    upgradeRarities.Divine={mult:2.7,label:'DIVINE',weight:.9,glow:'#ffffff'};
+    upgradeRarities.Celestial={mult:3.2,label:'CELESTIAL',weight:.55,glow:'#7ce7ff'};
+    upgradeRarities.Transcendent={mult:3.8,label:'TRANSCENDENT',weight:.25,glow:'#ff9cf2'};
+    upgradeRarities.Eternal={mult:4.6,label:'ETERNAL',weight:.12,glow:'#b8a7ff'};
+    upgradeRarities.Omega={mult:5.5,label:'OMEGA',weight:.05,glow:'#ff6b6b'};
   }
   const pools=window.OUTLAST_UPGRADE_RARITY_POOLS||{};
   window.OUTLAST_UPGRADE_LIBRARY_COUNT=[...new Set(Object.values(pools).flat().filter(Boolean))].length;

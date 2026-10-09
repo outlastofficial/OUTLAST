@@ -8,11 +8,11 @@ assert(html.includes("style:'saul'"),'Saul must have a unique character visual s
 assert(html.includes("style==='saul'"),'game and preview renderers must include Saul-specific art');
 assert(html.includes("Number(v.cost).toLocaleString()"),'character prices should display with readable comma separators');
 assert(html.includes("if(save.coins>=v.cost){save.coins-=v.cost;save.unlockedChars[n]=true}"),'purchasing a character must charge the exact configured cost and unlock it');
-assert(html.includes("const BUILD='3.37.2',ACK='outlast_update_ack_v3.37.2'"),'the mandatory update gate must be bumped to v3.37.2');
+assert(html.includes("const BUILD='3.37.3',ACK='outlast_update_ack_v3.37.3'"),'the mandatory update gate must be bumped to v3.37.3');
 assert(html.includes("v3.37.2 — Better Saul Goodman"),'the in-game update log must announce the character');
 assert(html.includes('How do I unlock Better Saul Goodman?'),'the How-To area must document the purchase');
-assert(html.includes('v3.37.2 • SURVIVOR HUB'),'the visible version marker must be current');
-assert(systems.includes("const VERSION='3.37.2';"),'the runtime systems script must report v3.37.2');
+assert(html.includes('v3.37.3 • SURVIVOR HUB'),'the visible version marker must be current');
+assert(systems.includes("const VERSION='3.37.3';"),'the runtime systems script must report v3.37.3');
 assert(systems.includes('Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8'),'the previous high-rarity balance must be preserved');
-assert(library.includes("const V='3.37.2';"),'the upgrade library version must be current');
-console.log('Better Saul Goodman v3.37.2 regression tests passed');
+assert(library.includes("const V='3.37.3';"),'the upgrade library version must be current');
+console.log('OUTLAST v3.37.3 + Better Saul Goodman regression tests passed');

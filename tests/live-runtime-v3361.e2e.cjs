@@ -13,16 +13,32 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','pc');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
+    localStorage.setItem('outlast_update_ack_v3.37.8','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
   });
 
   const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
-  if(!servedTitle.includes('v3.37.0')) console.log('Version marker diagnostic: '+servedTitle);
+  if(!servedTitle.includes('v3.37.8')) console.log('Version marker diagnostic: '+servedTitle);
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(250); // Let the late systems module finish installing before auditing the menu.
+  const featureRegistry=await page.evaluate(()=>({
+    thorns:typeof tempUp!=='undefined'&&Array.isArray(tempUp)&&tempUp.some(u=>u&&u[0]==='Thorns'),
+    cards:Number(window.OUTLAST_UPGRADE_LIBRARY_COUNT||0),
+    mapReady:!!window.OUTLAST_MAP_SELECTION_READY,
+    ultimateReady:!!window.OUTLAST_ULTIMATE_READY,
+    audit:typeof window.OUTLAST_EXPANSION_AUDIT==='function'?window.OUTLAST_EXPANSION_AUDIT():null
+  }));
+  if(!featureRegistry.thorns||featureRegistry.cards<400||!featureRegistry.mapReady||!featureRegistry.ultimateReady){
+    throw new Error('v3.37.8 features were not registered: '+JSON.stringify(featureRegistry));
+  }
+  await page.evaluate(()=>window.openMapSelector());
+  await page.locator('button[data-outlast3377-map="Ribhouse"]').waitFor({state:'visible',timeout:8000});
+  await page.locator('button[data-outlast3377-map="Ribhouse"]').click();
+  const selectedMap=await page.evaluate(()=>save.map);
+  if(selectedMap!=='Ribhouse')throw new Error('New map selection did not persist: '+selectedMap);
   const skinPrep=await page.evaluate(()=>{
     if(typeof skins==='undefined'||typeof save==='undefined') return {ok:false};
     const name=Object.keys(skins).find(n=>n!=='Classic');
@@ -59,6 +75,18 @@ const { chromium } = require('playwright');
   const afterMove=await page.evaluate(()=>({x:game.player.x,y:game.player.y,time:game.time}));
   const displacement=Math.hypot(afterMove.x-beforeMove.x,afterMove.y-beforeMove.y);
   if(!(displacement>10))throw new Error('WASD did not move the player after Start Run: '+JSON.stringify({beforeMove,afterMove,layoutAudit}));
+  const ultimatePrep=await page.evaluate(()=>{
+    const p=game.player,probe={__outlastUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
+    game.enemies=[probe];p.ult=100;return {hp:probe.hp,charge:p.ult};
+  });
+  await page.keyboard.press('r');await page.waitForTimeout(200);
+  const ultimateResult=await page.evaluate(()=>{
+    const probe=game.enemies.find(e=>e&&e.__outlastUltimateProbe);
+    return {hp:probe?probe.hp:null,charge:Number(game.player.ult)||0,toast:document.getElementById('toast')?.textContent||''};
+  });
+  if(!(Number(ultimateResult.hp)<ultimatePrep.hp)||!(ultimateResult.charge<100)||!ultimateResult.toast.includes('ULTIMATE RELEASED')){
+    throw new Error('Ultimate did not fire and damage enemies: '+JSON.stringify({ultimatePrep,ultimateResult}));
+  }
   const firePrep=await page.evaluate(()=>{
     const p=game.player,old=game.enemies[0]||{};
     const probe={...old,__outlastE2EProbe:true,x:p.x+85,y:p.y,hp:1000000,max:1000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
@@ -77,6 +105,16 @@ const { chromium } = require('playwright');
   if(!liveChecks.ai) throw new Error('Zombies spawned without the new AI state.');
   if(!liveChecks.skin || !skinPrep.ok) throw new Error('Equipped skin did not initialize into the run.');
   if(!liveChecks.ownerHidden) throw new Error('Non-owner player can see the Owner Panel.');
+  const bossCheck=await page.evaluate(()=>{
+    const spawned=typeof spawnBoss==='function'&&spawnBoss();
+    const boss=game.enemies.find(e=>e&&e.boss&&!e.__dead&&Number(e.hp)>0);
+    if(typeof window.syncBossBar==='function')window.syncBossBar();
+    return {spawned:!!spawned,found:!!boss,distance:boss?Math.hypot(boss.x-game.player.x,boss.y-game.player.y):null,
+      barDisplay:document.getElementById('outlastBossBar')?.style.display||'',count:Number(game.bossCount)||0};
+  });
+  if(!bossCheck.spawned||!bossCheck.found||!(bossCheck.distance<=380)){
+    throw new Error('Boss did not spawn inside visible combat range: '+JSON.stringify(bossCheck));
+  }
   const flags=await page.evaluate(()=>({
     core:window.OUTLAST_CORE_CONTENT_VERSION||null,
     coreData:!!window.OUTLAST_CORE_CONTENT,

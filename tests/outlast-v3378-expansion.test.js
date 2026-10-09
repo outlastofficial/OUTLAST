@@ -14,6 +14,7 @@ assert(html.includes('const bossTarget=(Number(game.bossCount)||0)===0?15:30;'),
 assert(html.includes('game.bossSpawnFailures'),'failed boss spawns retry rather than silently stalling');
 assert(html.includes('const baseAng=Math.random()*Math.PI*2;'),'new bosses spawn near the player instead of at the far map edge');
 assert(html.includes('const cardRolling=rank>=1&&rollProgress<1;'),'Uncommon and better choices animate');
+assert(html.includes('ctx.scale(reelSquash,1);ctx.translate(-cx,-cy);'),'animated upgrade cards rotate around their own center');
 for(const effect of ['rank===1','rank===2','rank===3','rank===4','rank===5','rank===6','rank===7','rank===8','rank===9','rank===10'])assert(html.includes(effect),'missing rarity-specific animation '+effect);
 assert(expansion.includes('name:\'Thorns\''),'Thorns upgrade family exists');
 assert(expansion.includes('window.OUTLAST_UPGRADE_LIBRARY_COUNT=unique.length'),'upgrade count is recomputed after adding the new cards');

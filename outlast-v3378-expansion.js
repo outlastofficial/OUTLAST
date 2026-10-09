@@ -1,7 +1,7 @@
 /* OUTLAST v3.37.8 — Thorns, Expanded Arenas, 133 Upgrade Cards, Boss Reliability + Ultimate Fix */
 (function(){
 'use strict';
-const VERSION='3.37.10';
+const VERSION='3.37.11';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8};
 const fmt=n=>String(Number(Number(n).toFixed(1)));
@@ -155,6 +155,7 @@ function installVersionAndHelp(){
   updates.unshift(['v3.37.8 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes','Added the Thorns counterattack upgrade and 132 additional rarity-scaled cards; expanded every built-in arena to 4000 × 3000 with more map-specific cover; aligned boss timers, retried failed spawns, and moved bosses into the visible fight; rebuilt rarity-specific upgrade reveal animations; repaired ultimate charge feedback and its full-charge area attack; removed the stray bottom release-note block and moved Chat away from the bottom edge.']);
   if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]).includes('v3.37.9'))){updates.unshift(['v3.37.9 — Map Picker Overlay Fix','Fixed the map picker visibility and closing behavior, restored the Map Creator launcher, and expanded regression checks for map selection, Thorns, ultimate firing and boss visibility.']);}
   if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]).includes('v3.37.10'))){updates.unshift(['v3.37.10 — Restore Map Picker Route After Load','Fixed the delayed Map Creator initializer overwriting Choose Map, explicitly restored the modern picker after load, and exposed a stable Map Creator opener.']);}
+  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]).includes('v3.37.11'))){updates.unshift(['v3.37.11 — Separate Map Picker and Creator Routes','Separated the normal Choose Map action from the Map Creator route to prevent late module initialization from hijacking map selection.']);}
  }
  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){
   const entries=[
@@ -163,6 +164,7 @@ function installVersionAndHelp(){
    ['How were the maps expanded?','Maps','Every built-in arena now measures 4000 × 3000 instead of 3200 × 2400, with additional map-themed obstacles distributed into the new right-side and lower areas. The player start remains near its previous safe location.'],
    ['How do I use the fixed map picker?','Maps','Choose Map now opens above the menu in a dedicated overlay. Select a tile to save the map and close the picker. The × button, Escape key, or clicking outside the card also close it. OPEN MAP CREATOR opens the existing unlock/editor screen.'],
    ['Why does Choose Map work after page load?','Maps','OUTLAST now restores the modern Choose Map route after all delayed menu modules initialize. Map Creator has its own opener so it cannot replace the normal map selector.'],
+   ['How is Map Creator opened separately?','Maps','Choose Map uses OUTLAST_OPEN_MAP_PICKER_3377, while the existing Map Creator uses its own exported opener. Selecting a map closes the picker and persists the choice without replacing either route.'],
    ['What animations do upgrade rarities use?','Upgrades & Rarities','Uncommon and higher upgrade choices reveal with rarity-specific motion: Uncommon bounce, Rare pulse, Epic rise, Legendary roll, Mythic orbit, Divine halo, Celestial stars, Transcendent glitch, Eternal time dial, and Omega burst. The reveal finishes before you can select an animated card.'],
    ['How many level-up choices are available?','Upgrades & Rarities','The existing 298-card pool is expanded by 133 additional choices, including 12 rarity-scaled upgrade families across all 11 rarity tiers. Upgrade family benefits scale upward with rarity.']
   ];

@@ -1,7 +1,7 @@
 /* OUTLAST v3.37.8 — Thorns, Expanded Arenas, 133 Upgrade Cards, Boss Reliability + Ultimate Fix */
 (function(){
 'use strict';
-const VERSION='3.37.8';
+const VERSION='3.37.9';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8};
 const fmt=n=>String(Number(Number(n).toFixed(1)));
@@ -153,12 +153,14 @@ function installVersionAndHelp(){
  document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(String(el.textContent||'')))el.textContent='v'+VERSION+' • SURVIVOR HUB';});
  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]).includes('v3.37.8'))){
   updates.unshift(['v3.37.8 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes','Added the Thorns counterattack upgrade and 132 additional rarity-scaled cards; expanded every built-in arena to 4000 × 3000 with more map-specific cover; aligned boss timers, retried failed spawns, and moved bosses into the visible fight; rebuilt rarity-specific upgrade reveal animations; repaired ultimate charge feedback and its full-charge area attack; removed the stray bottom release-note block and moved Chat away from the bottom edge.']);
+  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]).includes('v3.37.9'))){updates.unshift(['v3.37.9 — Map Picker Overlay Fix','Fixed the map picker visibility and closing behavior, restored the Map Creator launcher, and expanded regression checks for map selection, Thorns, ultimate firing and boss visibility.']);}
  }
  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){
   const entries=[
    ['How does Thorns work?','Upgrades & Combat','Thorns is a level-up upgrade. When your player actually loses HP, it deals a counterattack to nearby enemies based on your damage. Higher-rarity Thorns cards deal a larger counterattack, and the effect has a short cooldown so contact damage cannot trigger it every frame.'],
    ['How do I use my ultimate?','Controls & Combat','Defeat enemies to charge the ultimate. Normal kills now add 3% charge, while boss kills add 30% (before your Ultimate Charge bonuses). When the HUD reaches 100%, press R on PC or tap ULT on mobile. A toast confirms when the ultimate fires; if it is not ready, the HUD percentage is reported instead.'],
    ['How were the maps expanded?','Maps','Every built-in arena now measures 4000 × 3000 instead of 3200 × 2400, with additional map-themed obstacles distributed into the new right-side and lower areas. The player start remains near its previous safe location.'],
+   ['How do I use the fixed map picker?','Maps','Choose Map now opens above the menu in a dedicated overlay. Select a tile to save the map and close the picker. The × button, Escape key, or clicking outside the card also close it. OPEN MAP CREATOR opens the existing unlock/editor screen.'],
    ['What animations do upgrade rarities use?','Upgrades & Rarities','Uncommon and higher upgrade choices reveal with rarity-specific motion: Uncommon bounce, Rare pulse, Epic rise, Legendary roll, Mythic orbit, Divine halo, Celestial stars, Transcendent glitch, Eternal time dial, and Omega burst. The reveal finishes before you can select an animated card.'],
    ['How many level-up choices are available?','Upgrades & Rarities','The existing 298-card pool is expanded by 133 additional choices, including 12 rarity-scaled upgrade families across all 11 rarity tiers. Upgrade family benefits scale upward with rarity.']
   ];

@@ -36,7 +36,7 @@ window.OUTLAST_CORE_CONTENT.get=function(kind,id){const a=this.data[kind];return
 window.OUTLAST_CORE_CONTENT.regenerate=function(nextSeed){window.OUTLAST_CONTENT_SEED=String(nextSeed||'OUTLAST');window.OUTLAST_CORE_CONTENT={version:VERSION,seed:window.OUTLAST_CONTENT_SEED,data:build(window.OUTLAST_CONTENT_SEED)};return window.OUTLAST_CORE_CONTENT;};
 window.OUTLAST_CORE_CONTENT.audit=function(){const d=this.data;return {version:this.version,combat:d.combat.length,enemies:d.enemies.length,bosses:d.bosses.length,world:d.world.length,events:d.events.length,progression:d.progression.length,cosmetics:d.cosmetics.length,objectives:d.objectives.length,economy:d.economy.rewards.length,modes:d.modes.length,combinationSpace:d.generation.combinations};};
 try{
-document.title='OUTLAST v'+VERSION;window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;
+window.OUTLAST_CORE_CONTENT_VERSION=VERSION;
 document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v'+VERSION);
 if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='What are the 12 Core Systems?'))helpArticles.unshift(['What are the 12 Core Systems?','Core Systems','OUTLAST uses 12 shared systems: Combat, Enemies, Bosses, World, Events, Progression, Cosmetics, Objectives, Economy / Rewards, Game Modes, Support Systems, and Content Generation.']);
 if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('12 Core Systems')))updates.unshift(['v3.35.0 — 12 Core Systems','Activated the 12-core content architecture across combat, enemies, bosses, world, events, progression, cosmetics, objectives, economy, modes, support, and procedural content generation.']);
@@ -68,7 +68,14 @@ function installPopup(){
  return root;
 }
 function show(force=false){const root=installPopup();if(!root)return false;if(!force&&seen())return false;root.style.display='flex';setTimeout(()=>root.querySelector('#outlastV3350UpdateGotIt')?.focus(),0);return true;}
-function autoShow(){if(seen())return;show(false);}
+function currentBuildIsNewer(){
+ const current=String(window.OUTLAST_BUILD||document.querySelector('meta[name="outlast-build"]')?.content||'0');
+ const parse=v=>String(v||'0').replace(/^v/i,'').split('.').map(n=>{const x=parseInt(n,10);return Number.isFinite(x)?x:0}).concat([0,0,0]).slice(0,3);
+ const a=parse(current),b=parse(VERSION);
+ for(let i=0;i<3;i++){if(a[i]!==b[i])return a[i]>b[i];}
+ return false;
+}
+function autoShow(){if(seen())return false;if(currentBuildIsNewer()){markSeen();return false;}return show(false);}
 window.OUTLAST_UPDATE_POPUP={version:VERSION,storageKey:KEY,install:installPopup,show,autoShow};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(autoShow,700),{once:true});else setTimeout(autoShow,700);
 })();

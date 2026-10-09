@@ -1,4 +1,4 @@
-name: OUTLAST legacy v3.3 compatibility check
+name: OUTLAST legacy v3.3/v3.4 syntax compatibility
 on:
   workflow_dispatch:
   push:
@@ -6,8 +6,7 @@ on:
     paths:
       - 'outlast-v3.3.js'
       - 'outlast-v3.4.js'
-      - 'game.html'
-      - 'index.html'
+      - '.github/workflows/outlast-v3.3.yml'
 permissions:
   contents: read
 jobs:
@@ -15,10 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check legacy layer without modifying files
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax-check preserved legacy modules
         run: |
-          test -f outlast-v3.3.js
-          test -f outlast-v3.4.js
-          grep -q 'outlast-v3.3.js' game.html
-          grep -q 'outlast-v3.4.js' game.html
-          echo "Legacy compatibility files present. No auto-rewrite performed."
+          node --check outlast-v3.3.js
+          node --check outlast-v3.4.js
+      - name: Verify legacy source files remain available
+        run: |
+          test -s outlast-v3.3.js
+          test -s outlast-v3.4.js
+          echo "Legacy v3.3/v3.4 sources remain present and syntactically valid; the current game entry point is not forced to use obsolete loaders."

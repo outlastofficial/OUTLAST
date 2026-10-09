@@ -13,7 +13,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','pc');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
-    localStorage.setItem('outlast_update_ack_v3.37.13','1');
+    localStorage.setItem('outlast_update_ack_v3.37.14','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
@@ -21,7 +21,7 @@ const { chromium } = require('playwright');
   const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
-  if(!servedTitle.includes('v3.37.13')) console.log('Version marker diagnostic: '+servedTitle);
+  if(!servedTitle.includes('v3.37.14')) console.log('Version marker diagnostic: '+servedTitle);
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(850); // Let delayed modules and the old-popup timer finish before auditing.
@@ -35,7 +35,7 @@ const { chromium } = require('playwright');
     audit:typeof window.OUTLAST_EXPANSION_AUDIT==='function'?window.OUTLAST_EXPANSION_AUDIT():null
   }));
   if(!featureRegistry.thorns||featureRegistry.cards<400||!featureRegistry.mapReady||!featureRegistry.ultimateReady){
-    throw new Error('v3.37.13 features were not registered: '+JSON.stringify(featureRegistry));
+    throw new Error('v3.37.14 features were not registered: '+JSON.stringify(featureRegistry));
   }
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
@@ -160,9 +160,9 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastUsername','E2EMobile');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
-    localStorage.setItem('outlast_update_ack_v3.37.13','1');
+    localStorage.setItem('outlast_update_ack_v3.37.14','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
-    localStorage.setItem('outlastSeenUpdateVersion','3.37.13');
+    localStorage.setItem('outlastSeenUpdateVersion','3.37.14');
   });
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();
   await mobilePage.goto(mobileUrl,{waitUntil:'domcontentloaded',timeout:30000});
@@ -174,7 +174,7 @@ const { chromium } = require('playwright');
       controlsVisible:!!controls&&getComputedStyle(controls).display!=='none'&&controls.getBoundingClientRect().width>0,
       eventOverlay:!!document.querySelector('.oeb-overlay')};
   });
-  if(!mobileMenuCheck.chatExists||!(mobileMenuCheck.chatTop>=0&&mobileMenuCheck.chatTop<150)||mobileMenuCheck.eventOverlay||mobileMenuCheck.controlsVisible){
+  if(!mobileMenuCheck.chatExists||!(mobileMenuCheck.chatTop>=0&&mobileMenuCheck.chatTop<175)||mobileMenuCheck.eventOverlay||mobileMenuCheck.controlsVisible){
     throw new Error('Mobile menu layout/control visibility regression: '+JSON.stringify(mobileMenuCheck));
   }
   await mobilePage.locator('#gecToggle').tap();

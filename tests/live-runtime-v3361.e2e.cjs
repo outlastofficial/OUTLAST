@@ -34,10 +34,11 @@ const { chromium } = require('playwright');
   await page.waitForTimeout(2500);
 
   const layoutAudit=await page.evaluate(()=>{
-    const buttons=[...document.querySelectorAll('#menu .menu-page button')].map(b=>({id:b.id,text:(b.innerText||b.textContent||'').replace(/\\s+/g,' ').trim(),page:b.closest('.menu-page')?.dataset.pageContent||''}));
-    const count=re=>buttons.filter(b=>re.test(b.text)).length;
+    const buttons=[...document.querySelectorAll('#menu .menu-page button')].map(b=>({id:b.id,text:(b.innerText||b.textContent||'').replace(/\s+/g,' ').trim(),page:b.closest('.menu-page')?.dataset.pageContent||''}));
+    const count=needle=>buttons.filter(b=>b.text.toLowerCase().includes(needle)).length;
+    const shopCount=buttons.filter(b=>{const t=b.text.toLowerCase();return t.includes('daily shop')||t.includes('open shop')}).length;
     const duplicateIds=[...document.querySelectorAll('#menu button[id]')].map(b=>b.id).filter((id,i,a)=>id&&a.indexOf(id)!==i);
-    return {counts:{inventory:count(/\\binventory\\b/i),skins:count(/\\bskins?\\b/i),shop:count(/daily shop|open shop/i),modifiers:count(/run modifiers/i),oldCollectionHub:count(/new content\\s*\\/\\s*collection/i)},duplicateButtonIds:[...new Set(duplicateIds)],progressDeck:!!document.getElementById('progressDeck37')};
+    return {counts:{inventory:count('inventory'),skins:count('skin'),shop:shopCount,modifiers:count('run modifiers'),oldCollectionHub:count('new content / collection')},duplicateButtonIds:[...new Set(duplicateIds)],progressDeck:!!document.getElementById('progressDeck37')};
   });
   for(const [action,count] of Object.entries(layoutAudit.counts)){
     const expected=action==='oldCollectionHub'?0:1;

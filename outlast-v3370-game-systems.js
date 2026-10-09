@@ -1,7 +1,7 @@
-/* OUTLAST v3.37.4 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
+/* OUTLAST v3.37.5 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
 (function(){
 'use strict';
-const VERSION='3.37.4';
+const VERSION='3.37.5';
 const SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8});
 const TIER_ORDER=Object.keys(SCALE);
 const E=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
@@ -35,6 +35,65 @@ function scaledInteger37(base,mult){
  return amount;
 }
 function upgradeBase37(name,desc,apply,rarity){
+ // Align overlapping legacy cards to the same baseline as the tier-family library.
+ const nv=b=>Number((Number(b)*mult).toFixed(2)).toString(),np=b=>pct(b,mult),ni=b=>scaledInteger37(b,mult),p=()=>G()?.player;
+ const add=(k,v)=>{const q=p();if(q)q[k]=(Number(q[k])||0)+v;},ratio=(k,b)=>{const q=p();if(q)q[k]=(Number(q[k])||1)*(1+b*mult/100);};
+ const faster=b=>{const q=p();if(q)q.fireRate=Math.max(.045,(Number(q.fireRate)||.45)*(1-b*mult/100));},heal=h=>{const q=p();if(q){q.max=(Number(q.max)||0)+h;q.hp=Math.min(q.max,(Number(q.hp)||0)+h);}};
+ const shield=s=>{if(typeof outlastGrantTempShield==='function')return outlastGrantTempShield(s);const q=p();if(q)q.shield=Math.max(Number(q.shield)||0,s);};
+ const luck=()=>{const q=p();if(q)q.luck=(Number(q.upgradeLuck)||0)+(Number(q.lootLuck)||0)+(Number(q.treasureLuck)||0);};
+ if(name==='Power Shot')return {desc:'+'+nv(3)+' damage',apply:()=>add('damage',3*mult)};
+ if(name==='Rapid Fire'||name==='Quick Reload')return {desc:'+'+np(2.2)+'% faster attacks',apply:()=>faster(2.2)};
+ if(name==='Vitality'||name==='Fortified Core')return {desc:'+'+ni(15)+' max HP',apply:()=>heal(ni(15))};
+ if(name==='Second Heart')return {desc:'+'+ni(15)+' max HP and +'+np(5)+'% healing',apply:()=>{heal(ni(15));ratio('healMult',5);}};
+ if(name==='Swift Feet')return {desc:'+'+np(2)+'% move speed',apply:()=>{const q=p();if(q)q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+2*mult/100));}};
+ if(name==='Magnet')return {desc:'+'+ni(12)+' pickup radius',apply:()=>add('magnet',ni(12))};
+ if(name==='Regeneration'||name==='Second Wind')return {desc:'+'+nv(.3)+' HP/s',apply:()=>add('regen',.3*mult)};
+ if(name==='Piercing'||name==='Rift Pierce')return {desc:'+'+ni(name==='Piercing'?1:2)+' pierce',apply:()=>add('pierce',ni(name==='Piercing'?1:2))};
+ if(name==='Multi-Shot'||name==='Ammo Surge')return {desc:'+'+ni(1)+' projectiles',apply:()=>add('multiShot',ni(1))};
+ if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(3)+'% XP',apply:()=>ratio('xpBonus',3)};
+ if(name==='XP Burst')return {desc:'+'+np(3)+'% XP and +'+ni(12)+' pickup radius',apply:()=>{ratio('xpBonus',3);add('magnet',ni(12));}};
+ if(name==='Overcharge')return {desc:'+'+np(4)+'% ultimate damage',apply:()=>ratio('ultDamage',4)};
+ if(name==='Heavy Rounds')return {desc:'+'+nv(3)+' damage and +'+np(2.2)+'% slower fire',apply:()=>{add('damage',3*mult);const q=p();if(q)q.fireRate=Math.min(1.2,(Number(q.fireRate)||.45)*(1+2.2*mult/100));}};
+ if(name==='Swift Aim')return {desc:'+'+ni(12)+' range',apply:()=>add('range',ni(12))};
+ if(name==='Crit Chance'||name==='Deadeye')return {desc:'+'+np(1)+'% crit chance',apply:()=>{const q=p();if(q)q.crit=Math.min(.99,(Number(q.crit)||0)+.01*mult);}};
+ if(name==='Chain Reaction'||name==='Shock Circuit')return {desc:'+'+np(3)+'% chain effect',apply:()=>{const q=p();if(q)q.chain=(Number(q.chain)||1)*(1+.03*mult);}};
+ if(name==='Lucky Coins')return {desc:'+'+np(3)+'% coins',apply:()=>ratio('coinMult',3)};
+ if(name==='Adrenaline')return {desc:'+'+np(2)+'% speed below 50% HP',apply:()=>{const q=p();if(q){q.adrenaline=true;q.adrenalineSpeedBonus=(Number(q.adrenalineSpeedBonus)||0)+.02*mult;}}};
+ if(name==='Shield Core'||name==='Emergency Shield')return {desc:'Gain '+nv(.65)+'s shield',apply:()=>shield(.65*mult)};
+ if(name==='Rapid Recovery')return {desc:'+'+np(5)+'% pickup healing',apply:()=>ratio('healMult',5)};
+ if(name==='Berserker'||name==='Bloodrush')return {desc:'+'+np(10)+'% damage below 50% HP',apply:()=>{const q=p();if(q){q.berserk=true;if(name==='Bloodrush')q.bloodrush=true;q.berserkDamageBonus=(Number(q.berserkDamageBonus)||0)+.1*mult;}}};
+ if(name==='Lucky Hunter')return {desc:np(10)+'% chance for double XP',apply:()=>{const q=p();if(q){q.lucky=true;q.luckyXpChance=.1*mult;}}};
+ if(name==='Poison Rounds')return {desc:'Poison deals '+np(11)+'% weapon damage per second for '+nv(3)+'s',apply:()=>{const q=p();if(q){q.poison=true;q.poisonDpsMultiplier=.11*mult;q.poisonDuration=3*mult;}}};
+ if(name==='Stun Rounds')return {desc:'+'+np(12)+'% chance to stun for '+nv(1.5)+'s',apply:()=>{const q=p();if(q){q.stun=true;q.stunChance=Math.min(.95,.12*mult);q.stunDuration=1.5*mult;}}};
+ if(name==='Double Tap')return {desc:'+'+np(12)+'% chance to fire an extra shot',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=Math.min(.95,.12*mult);}}};
+ if(name==='Lucky Barrage')return {desc:'+'+np(8)+'% extra-shot chance',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=Math.min(.95,(Number(q.doubleTapChance)||0)+.08*mult);q.doubleTapBonus=(Number(q.doubleTapBonus)||0)+.08*mult;}}};
+ if(name==='Treasure Radar')return {desc:nv(3)+'x power-up drop chance',apply:()=>{const q=p();if(q){q.treasure=true;q.treasureDropMultiplier=3*mult;}}};
+ if(name==='Shockwave'){const rank=Math.max(0,TIER_ORDER.indexOf(rarity)),every=Math.max(2,12-rank),radius=150*Math.sqrt(mult),dmg=.8*mult;return {desc:'Every '+every+' kills, blast '+Math.round(radius)+' radius for '+np(80)+'% damage',apply:()=>{const q=p();if(q){q.shockwave=true;q.shockwaveEvery=every;q.shockwaveRadius=radius;q.shockwaveDamageMultiplier=dmg;}}};}
+ if(name==='Frost Aura'||name==='Cryo Burst')return {desc:'+'+ni(18)+' aura radius, +'+np(8)+'% slow strength',apply:()=>{const q=p();if(q){q.frost=true;q.frostAuraRadius=(Number(q.frostAuraRadius)||130)+ni(18);q.frostSlow=(Number(q.frostSlow)||.5)+.08*mult;q.frostAuraDps=(Number(q.frostAuraDps)||.12)+.1*mult;}}};
+ if(name==='Cryo Core')return {desc:'+'+np(8)+'% enemy-slowing aura strength',apply:()=>{const q=p();if(q){q.frost=true;q.slowPower=(Number(q.slowPower)||1)+.08*mult;}}};
+ if(name==='Armor Pierce')return {desc:'+'+np(2)+'% enemy defense ignored',apply:()=>add('armorPierce',.02*mult)};
+ if(name==='Upgrade Luck'||name==='Lucky Charm')return {desc:'+'+nv(2)+' Upgrade Luck',apply:()=>{add('upgradeLuck',2*mult);luck();}};
+ if(name==='Fortune'||name==='Scavenger Luck')return {desc:'+'+nv(2)+' Loot Luck',apply:()=>{add('lootLuck',2*mult);luck();}};
+ if(name==='Treasure Luck')return {desc:'+'+nv(2)+' Treasure Luck',apply:()=>{add('treasureLuck',2*mult);luck();}};
+ if(name==='Overheat')return {desc:'+'+np(2.2)+'% attack speed and +'+nv(3)+' damage',apply:()=>{faster(2.2);add('damage',3*mult);}};
+ if(name==='Coin Magnetism')return {desc:'+'+ni(12)+' pickup range and +'+np(3)+'% coins',apply:()=>{add('magnet',ni(12));ratio('coinMult',3);}};
+ if(name==='Heavy Impact')return {desc:'+'+nv(3)+' damage and +'+np(5)+'% larger shots',apply:()=>{add('damage',3*mult);ratio('bulletSize',5);}};
+ if(name==='Fortune Engine')return {desc:'+'+nv(2)+' Upgrade Luck and +'+np(3)+'% coins',apply:()=>{add('upgradeLuck',2*mult);ratio('coinMult',3);luck();}};
+ if(name==='Combat Medic')return {desc:'+'+nv(.3)+' HP/s and +'+np(5)+'% healing',apply:()=>{add('regen',.3*mult);ratio('healMult',5);}};
+ if(name==='Fortress')return {desc:'+'+ni(15)+' max HP and +'+np(2)+'% armor',apply:()=>{heal(ni(15));const q=p();if(q)q.armor=Math.max(.1,(Number(q.armor)||1)-.02*mult);}};
+ if(name==='Adrenal Core')return {desc:'+'+np(2)+'% speed and +'+np(2.2)+'% attack speed',apply:()=>{const q=p();if(q)q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+2*mult/100));faster(2.2);}};
+ if(name==='Salvager')return {desc:'+'+np(3)+'% coins and +'+ni(12)+' pickup range',apply:()=>{ratio('coinMult',3);add('magnet',ni(12));}};
+ if(name==='XP Reactor')return {desc:'+'+np(3)+'% XP and +'+nv(2)+' Upgrade Luck',apply:()=>{ratio('xpBonus',3);add('upgradeLuck',2*mult);luck();}};
+ if(name==='Ricochet')return {desc:'+'+ni(1)+' pierce and +'+np(3)+'% projectile size',apply:()=>{add('pierce',ni(1));ratio('bulletSize',3);}};
+ if(name==='Executioner')return {desc:'+'+np(3)+'% damage to elites',apply:()=>add('executioner',.03*mult)};
+ if(name==='Bossbreaker')return {desc:'+'+np(3)+'% damage to bosses',apply:()=>add('bossDamageBonus',.03*mult)};
+ if(name==='Lifesteal'||name==='Vampiric Surge')return {desc:'+'+nv(.2)+' HP per kill',apply:()=>add('vampire',.2*mult)};
+ if(name==='Vampire Core')return {desc:'+'+nv(.2)+' HP per kill and +'+ni(15)+' max HP',apply:()=>{add('vampire',.2*mult);heal(ni(15));}};
+ if(name==='Shield Nova')return {desc:'Gain '+nv(.65)+'s shield and +'+np(8)+'% shield efficiency',apply:()=>{shield(.65*mult);const q=p(),g=G();if(q)q.shieldEfficiency=(Number(q.shieldEfficiency)||1)*(1+.08*mult);if(g&&Array.isArray(g.effects)&&q)g.effects.push({x:q.x,y:q.y,t:.45,r:145*Math.sqrt(mult),color:'#72a8ff',fill:false});}};
+ if(name==='Overclock')return {desc:'+'+np(2.2)+'% attack speed and +'+nv(3)+' damage',apply:()=>{faster(2.2);add('damage',3*mult);}};
+ if(name==='Last Stand')return {desc:'+'+np(10)+'% damage below 25% HP',apply:()=>{const q=p();if(q){q.lastStand=true;q.lastStandBonus=(Number(q.lastStandBonus)||0)+.1*mult;}}};
+ if(name==='Treasure Engine')return {desc:'+'+nv(2)+' Treasure Luck and '+nv(3)+'x drop chance',apply:()=>{const q=p();if(q){q.treasureLuck=(Number(q.treasureLuck)||0)+2*mult;q.treasure=true;q.treasureDropMultiplier=3*mult;luck();}}};
+ if(name==='Deadly Precision')return {desc:'+'+np(1)+'% crit chance and +'+np(2)+'% crit damage',apply:()=>{const q=p();if(q){q.crit=Math.min(.99,(Number(q.crit)||0)+.01*mult);q.critMult=(Number(q.critMult)||1.8)+.02*mult;}}};
  const mult=SCALE[rarity]||1,pct=(base,m)=>Number((Number(base)*Number(m)).toFixed(1)).toString(),player=()=>G()?.player;
  if(name==='XP Boost')return {desc:'+'+Math.round(8*mult)+'% XP',apply:function(){const p=player();if(p)p.xpBonus*=1+.08*mult;}};
  if(name==='XP Burst')return {desc:'+'+Math.round(12*mult)+'% XP and +'+Math.round(20*mult)+' pickup radius',apply:function(){const p=player();if(p){p.xpBonus*=1+.12*mult;p.magnet+=20*mult;}}};
@@ -342,18 +401,18 @@ function progress37(){
  if(!deck){
    deck=document.createElement('div');deck.id='progressDeck37';deck.className='outlast37-progress-deck';
    const groups=[
-    ['📊 TRACKING',['progressStats37','📊 Stats','stats'],['progressStatsDetails37','📈 Live Stats','statsLive'],['progressAchievements37','🏆 Achievements','achievements'],['progressRecords37','🥇 Records','records'],['progressLeaderboard37','📈 Leaderboards','leaderboard']],
-    ['✦ COLLECTION',['progressInventory37','🎒 Inventory','inventory'],['progressSkins37','✦ Skins','skins'],['progressCodex37','☠ Zombie Codex','codex'],['progressSets37','🧿 Build Sets','sets']],
-    ['🧩 SYSTEMS',['progressCore37','🧩 12 Core Systems','core'],['progressUpgrade37','⛭ Upgrade Tree','upgrade'],['progressShop37','🛒 Daily Shop','shop'],['progressModifiers37','🎲 Run Modifiers','modifiers'],['progressEvolution37','⚔ Weapon Evolutions','evolution']],
+    ['📊 TRACKING',['progressStats37','📊 Stats','stats'],['progressStatsDetails37','📈 Live Stats','statsLive'],['progressAchievements37','🏆 Achievements','achievements'],['progressRecords37','🥇 Records','records'],['progressLeaderboard37','📈 Leaderboards','leaderboard'],['progressMissions37','🎯 Missions','missions'],['progressQuest37','📜 Quest Board','quests']],
+    ['✦ COLLECTION',['progressInventory37','🎒 Inventory','inventory'],['progressSkins37','✦ Skins','skins'],['progressCodex37','☠ Zombie Codex','codex'],['progressSets37','🧿 Build Sets','sets'],['progressTitles37','🏷 Titles','titles']],
+    ['🧩 SYSTEMS',['progressUpgrade37','⛭ Upgrade Tree','upgrade'],['progressShop37','🛒 Daily Shop','shop'],['progressModifiers37','🎲 Run Modifiers','modifiers'],['progressEvolution37','⚔ Weapon Evolutions','evolution']],
     ['♛ ENDGAME',['progressBattlePass37','🏆 Battle Pass','battle'],['progressPrestige37','★ Prestige','prestige'],['progressRarity37','✦ Rarity Ladder','rarity'],['progressWorldBoss37','♛ World Bosses','worldboss'],['progressRooms37','▣ Secret Rooms','rooms']]
    ];
    deck.innerHTML=groups.map(g=>'<section class="outlast37-progress-group"><h3>'+g[0]+'</h3><div class="outlast37-progress-grid">'+g.slice(1).map(x=>'<button type="button" class="menu-btn" id="'+x[0]+'">'+x[1]+'</button>').join('')+'</div></section>').join('');
    page.querySelector('.menu-cards')?.replaceWith(deck);
  }
  const bind=(id,fn)=>{const b=document.getElementById(id);if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();fn();}};
- bind('progressStats37',stats37);bind('progressStatsDetails37',stats37);bind('progressAchievements37',achievements37);bind('progressRecords37',()=>renderRecords());bind('progressLeaderboard37',()=>openServerLeaderboard());
- bind('progressInventory37',()=>inventory37());bind('progressSkins37',skin37);bind('progressCodex37',()=>renderCodex());bind('progressSets37',()=>renderSets());
- bind('progressCore37',()=>core37());bind('progressUpgrade37',()=>renderUpgradeTree());bind('progressShop37',dailyShop37);bind('progressModifiers37',modifiers37);bind('progressEvolution37',()=>renderWeaponTree());
+ bind('progressStats37',stats37);bind('progressStatsDetails37',stats37);bind('progressAchievements37',achievements37);bind('progressRecords37',()=>renderRecords());bind('progressLeaderboard37',()=>openServerLeaderboard());bind('progressMissions37',()=>openMissions());bind('progressQuest37',()=>renderQuestBoard());
+ bind('progressInventory37',()=>inventory37());bind('progressSkins37',skin37);bind('progressCodex37',()=>renderCodex());bind('progressSets37',()=>renderSets());bind('progressTitles37',()=>titleOpen());
+ bind('progressUpgrade37',()=>renderUpgradeTree());bind('progressShop37',dailyShop37);bind('progressModifiers37',modifiers37);bind('progressEvolution37',()=>renderWeaponTree());
  bind('progressBattlePass37',()=>renderBattlePass());bind('progressPrestige37',()=>renderPrestige());bind('progressRarity37',()=>renderRarities());bind('progressWorldBoss37',()=>renderWorldBosses());bind('progressRooms37',()=>renderRooms());
 }
 function modifiers37(){
@@ -393,17 +452,54 @@ function installEventDelegates37(){
 }
 function installRuntimeFlags37(){
  window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;window.OUTLAST_CORE_CONTENT_MODE='LIVE';window.OUTLAST_UI_SYSTEM_VERSION=VERSION;
- const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v3.37.4 • SURVIVOR HUB';
- document.title='OUTLAST v3.37.4';
- document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.4');
+ const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v3.37.5 • SURVIVOR HUB';
+ document.title='OUTLAST v3.37.5';
+ document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.5');
  const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
  const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
  const s=S();if(s){s.records=s.records||{};s.records.legendaryPlusOwned=Object.keys(s.skins||{}).filter(k=>s.skins[k]&&skins[k]&&['Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(skins[k].rarity)).length;persist?.();}
 }
+function corePlacementData37(kind){
+ const root=window.OUTLAST_CORE_CONTENT,data=root&&root.data;if(!data)return null;
+ let items=data[kind];if(kind==='economy')items=data.economy&&data.economy.rewards;
+ if(kind==='support')items=Object.entries(data.support||{}).map(([name,active])=>({name,active}));
+ if(kind==='generation')items=[{name:'Themes',count:(data.generation.themes||[]).length,detail:(data.generation.themes||[]).join(' • ')},{name:'Combat roles',count:(data.generation.roles||[]).length,detail:(data.generation.roles||[]).join(' • ')},{name:'Modifiers',count:(data.generation.modifiers||[]).length,detail:(data.generation.modifiers||[]).join(' • ')},{name:'Biomes',count:(data.generation.biomes||[]).length,detail:(data.generation.biomes||[]).join(' • ')},{name:'Enemy behaviors',count:(data.generation.behaviors||[]).length,detail:(data.generation.behaviors||[]).join(' • ')},{name:'Rarity tiers',count:(data.generation.tiers||[]).length,detail:(data.generation.tiers||[]).join(' • ')},{name:'Reward types',count:(data.generation.rewards||[]).length,detail:(data.generation.rewards||[]).join(' • ')},{name:'Combination space',count:Number(data.generation.combinations||0),detail:'Themes, roles, modifiers, biomes, tiers, behaviors and rewards'}];
+ return Array.isArray(items)?{version:root.version,items}:null;
+}
+function corePlacementDetails37(kind,item){
+ const f=n=>Number(n||0).toLocaleString();
+ if(kind==='combat')return [item.tier,item.projectile,item.attack,'DMG '+f(item.damage),'PIERCE '+f(item.pierce),'BOUNCE '+f(item.bounce)].filter(Boolean).join(' • ');
+ if(kind==='enemies')return [item.tier,item.behavior,'HP '+f(item.hp),'SPEED '+Number(item.speed||0).toFixed(2),'DMG '+f(item.damage),item.biome].filter(Boolean).join(' • ');
+ if(kind==='bosses')return [item.tier,(item.phases||1)+' phases',(item.attacks||[]).join('/'),'HP '+f(item.hp),'Summons '+f(item.summons),item.biome].filter(Boolean).join(' • ');
+ if(kind==='world')return [item.biome,item.hazard,(item.zones||0)+' zones',(item.objects||0)+' objects',item.theme].filter(Boolean).join(' • ');
+ if(kind==='events')return [item.theme,item.modifier,f(item.duration)+'s',item.biome].filter(Boolean).join(' • ');
+ if(kind==='progression')return [item.tier,item.stat,'Cost '+f(item.cost),item.theme].filter(Boolean).join(' • ');
+ if(kind==='cosmetics')return [item.tier,item.theme,item.role,item.modifier,item.biome].filter(Boolean).join(' • ');
+ if(kind==='objectives')return [item.tier,item.biome,'Target '+f(item.target),'Reward '+item.reward,item.modifier].filter(Boolean).join(' • ');
+ if(kind==='economy')return [item.tier,item.reward,'Amount '+f(item.amount),item.theme].filter(Boolean).join(' • ');
+ if(kind==='modes')return ['Difficulty ×'+Number(item.difficulty||1).toFixed(2),'Rewards ×'+Number(item.reward||1).toFixed(2),item.name].filter(Boolean).join(' • ');
+ if(kind==='support')return [item.active?'ACTIVE':'CHECK',item.name].join(' • ');
+ if(kind==='generation')return [f(item.count)+' entries',item.detail].join(' • ');
+ return [item.tier,item.theme,item.role,item.reward].filter(Boolean).join(' • ');
+}
+function corePlacementTitle37(kind){return ({combat:'⚔ Weapon Blueprints',enemies:'☠ Zombie Behaviors',bosses:'♛ Boss Variants',world:'🌎 World & Map Profiles',events:'⚡ Event Modifiers',progression:'↗ Progression Templates',cosmetics:'✦ Cosmetic Profiles',objectives:'🎯 Objective Templates',economy:'🪙 Reward Table',modes:'🎲 Mode Profiles',support:'🛠 Player Support Systems',generation:'🧬 Content Generation'})[kind]||'Game System Details';}
+function appendCorePlacement37(kind){
+ const pane=document.getElementById('subContent'),data=corePlacementData37(kind);if(!pane||!data)return;
+ pane.querySelector('#outlastCorePlacement37')?.remove();
+ const el=document.createElement('section');el.id='outlastCorePlacement37';el.style.cssText='margin-top:14px;padding:13px;border:1px solid #315069;border-radius:15px;background:linear-gradient(145deg,rgba(17,32,44,.98),rgba(8,15,22,.98));color:#fff';
+ const total=data.items.length,rows=data.items.slice(0,8).map(x=>'<div class="outlast37-core-item" style="margin:7px 0"><b>'+E(x.name||'Support')+'</b><small>'+E(corePlacementDetails37(kind,x))+'</small></div>').join('');
+ el.innerHTML='<div class="outlast37-summary"><b>'+E(corePlacementTitle37(kind))+'</b><small>'+total+' profiles in this system registry. Showing '+Math.min(8,total)+'.</small></div><div>'+rows+'</div>';pane.appendChild(el);
+}
+function installCorePlacement37(){
+ document.getElementById('coreBtn')?.closest('.menu-card')?.remove();document.getElementById('progressCore37')?.closest('.menu-card')?.remove();
+ const route={mapBtn:'world',world2Btn:'world',worldBtn:'events',modeBtn:'modes',runBuilderBtn:'modes',challengeModeBtn:'modes',weaponBtn:'combat',weaponTreeBtn:'combat',codexBtn:'enemies',progressCodex37:'enemies',worldBossBtn:'bosses',progressWorldBoss37:'bosses',upgradeBtn:'progression',skillBtn:'progression',progressionBtn:'progression',progressUpgrade37:'progression',progressPrestige37:'progression',progressRarity37:'progression',progressBattlePass37:'progression',charBtn:'cosmetics',skinBtn:'cosmetics',petBtn:'cosmetics',relicBtn:'cosmetics',charmBtn:'cosmetics',titleBtn:'cosmetics',progressSkins37:'cosmetics',progressSets37:'cosmetics',progressTitles37:'cosmetics',challengeBtn:'objectives',dailyChallengeBtn:'objectives',missionBtn:'objectives',questBtn:'objectives',progressMissions37:'objectives',progressQuest37:'objectives',progressAchievements37:'objectives',progressRecords37:'objectives',inventoryBtn:'economy',forgeBtn:'economy',craftBtn:'economy',shopBtn:'economy',progressInventory37:'economy',progressShop37:'economy',modifierBtn:'events',progressModifiers37:'events',helpBtn:'support',settingsNewBtn:'support',updatesBtn:'support',newPlayerTutorialBtn:'support',discordRewardsBtn:'support',archiveBtn:'generation',roomsBtn:'generation'};
+ window.addEventListener('click',e=>{const b=e.target&&e.target.closest?e.target.closest('button'):null;if(!b)return;const kind=route[b.id];if(kind)setTimeout(()=>appendCorePlacement37(kind),80);},true);
+}
+
 function install37(){
  if(window.__OUTLAST37_INSTALLED)return;window.__OUTLAST37_INSTALLED=true;
  try{if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='How do higher rarity upgrades scale?'))helpArticles.unshift(['How do higher rarity upgrades scale?','Upgrades & Luck','Each rarity scales both the displayed bonus and the effect actually applied. Whole-number stats step up at each rarity instead of tying due to rounding. Chance-based bonuses and status effects also become stronger at higher rarities.']);}catch(_){}
- installModifiers37();installAchievements37();installCss37();installEventDelegates37();progress37();syncOwnerLauncher37();runtimeSkinAudit37();installRuntimeFlags37();window.makeChoices=authoritativeUpgradeChoice37;
+ installModifiers37();installAchievements37();installCss37();installEventDelegates37();progress37();installCorePlacement37();syncOwnerLauncher37();runtimeSkinAudit37();installRuntimeFlags37();window.makeChoices=authoritativeUpgradeChoice37;
  window.dailyShopOpen=dailyShop37;window.shopOpen=dailyShop37;window.renderExpandedStats=stats37;window.renderExpandedInventory=inventory37;window.renderExpandedModifiers=modifiers37;
  window.renderCoreSystems=core37;window.syncOwnerLauncher=syncOwnerLauncher37;window.OUTLAST_37_READY=true;
  const style=document.getElementById('outlast-v3370-css');if(style)document.documentElement.dataset.outlast3370='ready';

@@ -5,7 +5,7 @@ const mod=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'
 const library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
-assert(html.includes('outlast-v3370-game-systems.js?v=3.37.6'),'v3.37.0 systems module must be loaded by the game');
+assert.match(html,/outlast-v3370-game-systems\.js\?v=3\.37\.\d+/,'current v3.37 systems module is loaded with a cache-busting version');
 assert(html.includes('v3.37.0'),'game version marker must be 3.37.0');
 assert(html.includes("const BUILD='3.37.15'"),'mandatory update check must target 3.37.0');
 assert(html.includes("outlast_update_ack_v3.37.15"),'mandatory update acknowledgement must be versioned');

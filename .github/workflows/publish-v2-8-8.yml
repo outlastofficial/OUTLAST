@@ -25,13 +25,13 @@ jobs:
 
           index = Path("index.html").read_text(encoding="utf-8")
           legacy = Path("game.html").read_text(encoding="utf-8")
-          title = re.search(r"<title>OUTLAST v([0-9]+\\.[0-9]+\\.[0-9]+)</title>", index)
-          build = re.search(r'name="outlast-build" content="([0-9]+\\.[0-9]+\\.[0-9]+)"', index)
+          title = re.search(r"<title>OUTLAST v([0-9]+\.[0-9]+\.[0-9]+)</title>", index)
+          build = re.search(r'name="outlast-build" content="([0-9]+\.[0-9]+\.[0-9]+)"', index)
           assert title, "index.html: missing OUTLAST version title"
           assert build, "index.html: missing build-version metadata"
           assert title.group(1) == build.group(1), "index title and build metadata disagree"
           assert len(index) > 100000, "index.html: current game entry unexpectedly small"
-          assert re.search(r"<title>OUTLAST v[0-9]+\\.[0-9]+\\.[0-9]+</title>", legacy), "game.html: missing compatibility title"
+          assert re.search(r"<title>OUTLAST v[0-9]+\.[0-9]+\.[0-9]+</title>", legacy), "game.html: missing compatibility title"
           assert "location.replace('./index.html' + location.search + location.hash)" in legacy, "game.html must redirect legacy links to the current game"
           assert '<a href="./index.html">OUTLAST</a>' in legacy, "game.html must keep the no-JavaScript fallback link"
           print(f"OUTLAST entry points verified. Current build: v{title.group(1)}")

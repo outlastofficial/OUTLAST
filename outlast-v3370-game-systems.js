@@ -54,7 +54,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(3)+'% XP',apply:()=>ratio('xpBonus',3)};
  if(name==='XP Burst')return {desc:'+'+np(3)+'% XP and +'+ni(12)+' pickup radius',apply:()=>{ratio('xpBonus',3);add('magnet',ni(12));}};
  if(name==='Overcharge')return {desc:'+'+np(4)+'% ultimate damage',apply:()=>ratio('ultDamage',4)};
- if(name==='Heavy Rounds')return {desc:'+'+nv(3)+' damage and +'+np(2.2)+'% slower fire',apply:()=>{add('damage',3*mult);const q=p();if(q)q.fireRate=Math.min(1.2,(Number(q.fireRate)||.45)*(1+2.2*mult/100));}};
+ if(name==='Heavy Rounds'){const slow=2.2/mult;return {desc:'+'+nv(3)+' damage, with '+Number(slow.toFixed(2))+'% slower fire',apply:()=>{add('damage',3*mult);const q=p();if(q)q.fireRate=Math.min(1.2,(Number(q.fireRate)||.45)*(1+slow/100));}};}
  if(name==='Swift Aim')return {desc:'+'+ni(12)+' range',apply:()=>add('range',ni(12))};
  if(name==='Crit Chance'||name==='Deadeye')return {desc:'+'+np(1)+'% crit chance',apply:()=>{const q=p();if(q)q.crit=Math.min(.99,(Number(q.crit)||0)+.01*mult);}};
  if(name==='Chain Reaction'||name==='Shock Circuit')return {desc:'+'+np(3)+'% chain effect',apply:()=>{const q=p();if(q)q.chain=(Number(q.chain)||1)*(1+.03*mult);}};

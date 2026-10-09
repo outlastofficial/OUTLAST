@@ -10,7 +10,7 @@ assert(!html.includes('if(u&&byName[u[0]])u[3]=byName[u[0]];'),'the old label-on
 assert(html.includes('How do upgrade rarity labels stay accurate?'),'How-To must explain rarity integrity');
 assert(systems.includes("const VERSION='3.37.3';"),'runtime system version must be current');
 assert(systems.includes('Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8'),'high-rarity multipliers must remain unchanged');
-assert(library.includes("const V='3.37.3';'),'upgrade library must be current');
+assert(library.includes("const V='3.37.3';"),'upgrade library must be current');
 assert(!library.includes('apply:v=>()=>'),'new library effects must not be accidentally double-wrapped');
 const names=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const mults=[1,1.15,1.35,1.6,1.9,2.25,4,5,6,7,8];

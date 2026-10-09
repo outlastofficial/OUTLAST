@@ -38,11 +38,11 @@ const { chromium } = require('playwright');
     const count=needle=>buttons.filter(b=>b.text.toLowerCase().includes(needle)).length;
     const shopCount=buttons.filter(b=>{const t=b.text.toLowerCase();return t.includes('daily shop')||t.includes('open shop')}).length;
     const duplicateIds=[...document.querySelectorAll('#menu button[id]')].map(b=>b.id).filter((id,i,a)=>id&&a.indexOf(id)!==i);
-    return {counts:{inventory:count('inventory'),skins:count('skin'),shop:shopCount,modifiers:count('run modifiers'),oldCollectionHub:count('new content / collection')},duplicateButtonIds:[...new Set(duplicateIds)],progressDeck:!!document.getElementById('progressDeck37')};
+    return {counts:{inventory:count('inventory'),skins:count('skin'),shop:shopCount,modifiers:count('run modifiers'),oldCollectionHub:count('new content / collection')},duplicateButtonIds:[...new Set(duplicateIds)],progressDeck:!!document.getElementById('progressDeck37'),progressPage:!!document.querySelector('[data-page-content="progress"]'),legacyCards:!!document.querySelector('[data-page-content="progress"] .menu-cards'),progress36:!!document.getElementById('progressSystems36'),systemsReady:!!window.OUTLAST_37_READY,build:window.OUTLAST_BUILD||null,installError:window.__OUTLAST37_INSTALL_ERROR||null,loadedSystemScripts:[...document.scripts].map(s=>s.src).filter(s=>s.includes('v3360')||s.includes('v3370'))};
   });
   for(const [action,count] of Object.entries(layoutAudit.counts)){
     const expected=action==='oldCollectionHub'?0:1;
-    if(count!==expected)throw new Error('Duplicate or missing '+action+' entry point(s): '+JSON.stringify(layoutAudit));
+    if(count!==expected)throw new Error('Duplicate or missing '+action+' entry point(s): '+JSON.stringify({layoutAudit,consoleErrors}));
   }
   if(layoutAudit.duplicateButtonIds.length)throw new Error('Duplicate button IDs remain in the menu: '+JSON.stringify(layoutAudit));
 

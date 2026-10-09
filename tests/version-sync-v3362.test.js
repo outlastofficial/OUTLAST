@@ -1,0 +1,23 @@
+const fs=require('fs'),assert=require('assert');
+const index=fs.readFileSync('index.html','utf8');
+const core=fs.readFileSync('outlast-v33500-core-content-engine.js','utf8');
+
+assert(index.includes('<meta name="outlast-build" content="3.37.13">')&&index.includes('<meta name="build-version" content="3.37.13">'),'current release metadata must match v3.37.13');
+assert(index.includes("window.OUTLAST_BUILD='3.37.13';window.OUTLAST_VERSION='v3.37.13';document.title='OUTLAST v3.37.13';"),'the final script must publish the current global version');
+assert(core.includes("window.OUTLAST_CORE_CONTENT"),'12-core engine must still install its content container');
+assert(core.includes("window.OUTLAST_CORE_CONTENT_VERSION=VERSION"),'12-core engine should expose its own version without changing global build state');
+assert(!core.includes("window.OUTLAST_BUILD=VERSION"),'12-core engine must not overwrite the global game build');
+assert(!core.includes("window.OUTLAST_VERSION='v'+VERSION"),'12-core engine must not overwrite the global version');
+assert(!core.includes("document.title='OUTLAST v'+VERSION"),'12-core engine must not overwrite the page title');
+assert(index.includes("document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.13';});"),'visible version chips must use the current build marker');
+assert(!index.includes('id="outlast-v326-restored-systems"'),'legacy v3.27 delayed build writer must be removed');
+assert(!index.includes("document.title='OUTLAST '+VERSION"),'legacy restored systems must not overwrite the current build marker');
+assert(!index.includes('setTimeout(refresh,1500)'),'legacy restored systems must not run delayed version rewrites');
+assert(!index.includes("document.title='OUTLAST v3.36.1';window.OUTLAST_BUILD='3.36.1';window.OUTLAST_VERSION='v3.36.1'"),'index must not contain the stale v3.36.1 final override');
+assert(!index.includes("document.getElementById('extrasBtn').onclick=renderExtras"),'extras button binding must be null-safe');
+const startIndex=index.indexOf('function startGame(');
+const declIndex=index.indexOf("let fatalGameError='',fatalErrorShown=false;");
+assert(startIndex>0 && declIndex>=0 && declIndex<startIndex,'fatalGameError must be declared before startGame; Start Run uses it before the loop begins');
+assert(!index.includes("document.getElementById('progressionBtn').onclick=renderProgression"),'progression button binding must be null-safe');
+assert(!index.includes("document.getElementById('questBtn').onclick=renderQuestBoard"),'quest button binding must be null-safe');
+console.log('v3.37.13 version synchronization regression test passed');

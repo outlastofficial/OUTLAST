@@ -148,9 +148,66 @@ const { chromium } = require('playwright');
   if(!flags.systems) throw new Error('v3.37 systems module did not initialize.');
   if(!flags.scale) throw new Error('Authoritative rarity scale did not initialize.');
   if(!flags.mandatory) throw new Error('Mandatory update checker did not initialize.');
+
+  // Mobile smoke test: verify menu/chat layout, map selection, gameplay controls, and touch ultimate.
+  const mobilePage=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  await mobilePage.setExtraHTTPHeaders({'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'});
+  const mobileErrors=[],mobile404=[];
+  mobilePage.on('console',m=>{if(m.type()==='error')mobileErrors.push(m.text())});
+  mobilePage.on('pageerror',e=>mobileErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));
+  mobilePage.on('response',r=>{if(r.status()===404)mobile404.push(r.url())});
+  await mobilePage.addInitScript(()=>{
+    localStorage.setItem('outlastUsername','E2EMobile');
+    localStorage.setItem('outlastDeviceMode','mobile');
+    localStorage.setItem('outlastJoystickMode','on');
+    localStorage.setItem('outlast_update_ack_v3.37.13','1');
+    localStorage.setItem('outlast_update_ack_v3.37.0','1');
+    localStorage.setItem('outlastSeenUpdateVersion','3.37.13');
+  });
+  const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();
+  await mobilePage.goto(mobileUrl,{waitUntil:'domcontentloaded',timeout:30000});
+  await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
+  await mobilePage.waitForTimeout(400);
+  const mobileMenuCheck=await mobilePage.evaluate(()=>{
+    const b=document.getElementById('gecToggle'),r=b&&b.getBoundingClientRect(),controls=document.getElementById('mobileControls');
+    return {build:window.OUTLAST_BUILD||null,chatExists:!!b,chatTop:r?r.top:null,chatBottom:r?r.bottom:null,
+      controlsVisible:!!controls&&getComputedStyle(controls).display!=='none'&&controls.getBoundingClientRect().width>0,
+      eventOverlay:!!document.querySelector('.oeb-overlay')};
+  });
+  if(!mobileMenuCheck.chatExists||!(mobileMenuCheck.chatTop>=0&&mobileMenuCheck.chatTop<150)||mobileMenuCheck.eventOverlay||mobileMenuCheck.controlsVisible){
+    throw new Error('Mobile menu layout/control visibility regression: '+JSON.stringify(mobileMenuCheck));
+  }
+  await mobilePage.locator('#gecToggle').tap();
+  if(!await mobilePage.locator('#outlastEverywhereChat .gec-panel').isVisible())throw new Error('Mobile Chat button did not open its panel.');
+  await mobilePage.locator('#gecClose').tap();
+  if(await mobilePage.locator('#outlastEverywhereChat .gec-panel').isVisible())throw new Error('Mobile Chat close control did not close the panel.');
+  await mobilePage.locator('#mapBtn').tap();
+  await mobilePage.locator('button[data-outlast3377-map="Ribhouse"]').waitFor({state:'visible',timeout:8000});
+  await mobilePage.locator('button[data-outlast3377-map="Ribhouse"]').tap();
+  const mobileMapSelected=await mobilePage.evaluate(()=>save.map);
+  if(mobileMapSelected!=='Ribhouse')throw new Error('Mobile map selection failed: '+mobileMapSelected);
+  await mobilePage.locator('#startBtn').tap();
+  await mobilePage.waitForTimeout(2200);
+  if(!await mobilePage.locator('#mobileControls').isVisible())throw new Error('Mobile movement/actions did not appear during gameplay.');
+  const mobileUlt=mobilePage.locator('[data-mobile-action="ult"]');
+  if(!await mobileUlt.isVisible())throw new Error('Mobile ULT button is not visible during gameplay.');
+  const mobileUltimatePrep=await mobilePage.evaluate(()=>{
+    const p=game.player,probe={__outlastMobileUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
+    game.enemies=[probe];p.ult=100;return {hp:probe.hp,charge:p.ult};
+  });
+  await mobileUlt.tap();await mobilePage.waitForTimeout(200);
+  const mobileUltimateResult=await mobilePage.evaluate(()=>{
+    const e=game.enemies.find(e=>e&&e.__outlastMobileUltimateProbe);
+    return {hp:e?e.hp:null,charge:Number(game.player.ult)||0,toast:document.getElementById('toast')?.textContent||''};
+  });
+  if(!(Number(mobileUltimateResult.hp)<mobileUltimatePrep.hp)||!(mobileUltimateResult.charge<100)||!mobileUltimateResult.toast.includes('ULTIMATE RELEASED')){
+    throw new Error('Mobile ULT tap failed to fire: '+JSON.stringify({mobileUltimatePrep,mobileUltimateResult}));
+  }
+  if(mobileErrors.length||mobile404.length)throw new Error('Mobile browser errors: '+mobileErrors.join(' | ')+' HTTP404='+mobile404.join(' | '));
+  await mobilePage.close();
   if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | ')+' HTTP404='+http404.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,consoleErrors,http404}));
+  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,mobileMenuCheck,mobileMapSelected,mobileUltimatePrep,mobileUltimateResult,consoleErrors,http404,mobileErrors,mobile404}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});
 

@@ -1,0 +1,17 @@
+const fs=require('fs'),assert=require('assert'),path=require('path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const maps=fs.readFileSync(path.join(root,'outlast-v33018-map-creator.js'),'utf8');
+const fix=fs.readFileSync(path.join(root,'outlast-v3376-interaction-fixes.js'),'utf8');
+assert(html.includes('<meta name="outlast-build" content="3.37.6">'),'version metadata');
+assert(html.includes("const BUILD='3.37.6',ACK='outlast_update_ack_v3.37.6'"),'mandatory update version');
+assert(html.includes('outlast-v3376-interaction-fixes.js?v=3.37.6'),'interaction fix loaded after the game scripts');
+assert(!html.includes('<section class="next-update-poll"'),'poll markup removed');
+assert(!html.includes("toast('⚠️ Reaper appeared nearby!')"),'Reaper toast removed');
+assert(!html.includes("if(boss&&typeof killEnemy==='function')killEnemy(boss);"),'stale boss cleanup passes an index, not the object');
+assert(html.includes("bossRemaining<=0?'BOSS INCOMING'")&&html.includes("'BOSS ACTIVE'"),'HUD mirrors actual boss state');
+assert(maps.includes("Object.keys(mapDefs||{}).filter(x=>x.indexOf(PREFIX)!==0&&!!mapDefs[x])"),'map picker includes all registered maps, not a stale list');
+assert(fix.includes('data-mc-map')&&fix.includes('data-mc-custom'),'map picker clicks are directly handled');
+assert(fix.includes('data-outlast-core-section')&&fix.includes('data-outlast-core-action'),'12 Core category and feature controls are interactive');
+assert(fix.includes("['outlastChatToggle','outlastChat','menuChatBtn','exitGameBtn']"),'requested clutter is removed');
+console.log('OUTLAST v3.37.6 interaction regression checks passed');

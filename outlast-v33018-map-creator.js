@@ -222,6 +222,7 @@ function wrapMapRenderer(){
  drawMapDetails=window.drawMapDetails;
 }
 
+window.OUTLAST_OPEN_MAP_CREATOR_33018=openMapSelector;
 window.OUTLAST_REGISTER_CUSTOM_MAPS=registerAll;
 window.OUTLAST_MAP_CREATOR_AUDIT=function(){ensure();registerAll();return {cost:MAP_CREATOR_COST,maxSlots:MAX_CUSTOM_MAPS,unlocked:!!save.mapCreatorUnlocked,customMaps:save.customMaps.length,playable:save.customMaps.every(cm=>mapDefs[key(cm.id)]&&Array.isArray(mapObstacles[key(cm.id)]))};};
 

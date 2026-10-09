@@ -1,7 +1,7 @@
 /* OUTLAST v3.37.7 — Rebuilt Map Picker + Boss Spawn Retry */
 (function(){
 'use strict';
-const VERSION='3.37.9';
+const VERSION='3.37.10';
 const PREFIX='CustomMap:';
 const BUILTIN_MAPS=['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
 const MAP_DESCRIPTIONS={
@@ -70,8 +70,11 @@ function openMapPicker(){
  try{if(typeof closeSub==='function')closeSub()}catch(_){}
 }
 function openLegacyCreator(){
- try{if(typeof previousPicker==='function'){previousPicker.call(window);return;}}
- catch(err){window.OUTLAST_MAP_CREATOR_OPEN_ERROR=String(err)}
+ try{
+  const creator=window.OUTLAST_OPEN_MAP_CREATOR_33018;
+  if(typeof creator==='function'){creator.call(window);return;}
+  if(typeof previousPicker==='function'&&previousPicker!==openMapPicker){previousPicker.call(window);return;}
+ }catch(err){window.OUTLAST_MAP_CREATOR_OPEN_ERROR=String(err)}
  showToast('Map Creator is still loading. Close this panel and reopen Choose Map.');
 }
 function addStyles(){
@@ -84,8 +87,9 @@ function installReleaseText(){
  try{
   if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.37.7')))updates.unshift(['v3.37.7 — Rebuilt Map Picker + Boss Spawn Retries','Rebuilt Choose Map with a dedicated click route for every built-in map and saved custom map. Seizure and Ribhouse are selectable, current selection is confirmed and saved, and the boss scheduler retries failed spawns with a first boss at about 15 seconds and later bosses about 30 seconds after each defeat.']);
   if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.37.9')))updates.unshift(['v3.37.9 — Map Picker Overlay Fix','Fixed Choose Map visibility, made selection close the overlay, added Escape/click-outside close, and routed OPEN MAP CREATOR to its unlock/editor screen.']);
+  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v3.37.10')))updates.unshift(['v3.37.10 — Restore Map Picker Route After Load','Fixed a load-order bug where the delayed Map Creator setup replaced the newer Choose Map action. Choose Map now reasserts its route after initialization, and Map Creator has a dedicated global opener.']);
   if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How do I select any new map?')))helpArticles.unshift(['How do I select any new map?','Maps','Open Play → Choose Map. Pick any built-in map, including Seizure and Ribhouse, or select one of your saved custom maps. The tile will show SELECTED, a confirmation toast appears, and the choice is saved for the next run. To create or edit custom maps, use OPEN MAP CREATOR.']);
-  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the v3.37.9 Map Picker work?')))helpArticles.unshift(['How does the v3.37.9 Map Picker work?','Maps','Choose Map now opens in a dedicated overlay. Tap any map tile to save and close the picker, use × or Escape to close it, or choose OPEN MAP CREATOR to reach the 100,000-coin unlock and custom-map editor.']);
+  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('How does the v3.37.10 Map Picker work?')))helpArticles.unshift(['How does the v3.37.10 Map Picker work?','Maps','Choose Map now opens in a dedicated overlay. Tap any map tile to save and close the picker, use × or Escape to close it, or choose OPEN MAP CREATOR to reach the 100,000-coin unlock and custom-map editor.']);
   if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>Array.isArray(x)&&String(x[0]).includes('When do bosses spawn now?')))helpArticles.unshift(['When do bosses spawn now?','Bosses & Runs','The first scheduled boss should appear after about 15 seconds. Each later boss appears about 30 seconds after the previous boss is defeated. Only one boss can be active at a time. If a scheduled spawn fails, the game retries about once per second instead of leaving the boss timer stuck at zero.']);
  }catch(_){}
 }
@@ -97,27 +101,35 @@ function setVersion(){
  const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
 }
 function install(){
- if(installed)return;installed=true;
- previousPicker=window.openMapSelector;
- try{addStyles()}catch(err){window.OUTLAST_MAP_PICKER_STYLE_ERROR=String(err)}
- setVersion();installReleaseText();
- window.openMapSelector=openMapPicker;window.selectMap=selectMap;
+ if(!installed){
+  installed=true;
+  try{addStyles()}catch(err){window.OUTLAST_MAP_PICKER_STYLE_ERROR=String(err)}
+  setVersion();installReleaseText();
+  document.addEventListener('click',function(e){
+   const target=e.target;
+   if(target&&target.id==='outlast3377MapPickerModal'){e.preventDefault();closeMapPickerModal();return;}
+   const close=target.closest?.('button[data-outlast3377-map-close]');
+   if(close){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();closeMapPickerModal();return;}
+   const choice=target.closest?.('button[data-outlast3377-map]');
+   if(choice){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();selectMap(choice.getAttribute('data-outlast3377-map'));return;}
+   const create=target.closest?.('button[data-outlast3377-create-map]');
+   if(create){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();closeMapPickerModal();openLegacyCreator();}
+  },true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.getElementById('outlast3377MapPickerModal')){e.preventDefault();closeMapPickerModal();}},true);
+  window.OUTLAST_MAP_SELECTION_AUDIT=function(){const s=currentSave(),defs=definitions();return {version:VERSION,ready:true,currentMap:s?String(s.map||'Forest'):'NO_SAVE',builtInMapCount:allBuiltinMaps().length,savedCustomMapCount:Array.isArray(s?.customMaps)?s.customMaps.length:0,registeredMapCount:Object.keys(defs).filter(k=>k.indexOf(PREFIX)!==0).length};};
+  window.OUTLAST_MAP_PICKER_AUDIT=function(){const modal=document.getElementById('outlast3377MapPickerModal');return {open:!!modal,visible:!!modal&&modal.style.display!=='none',ribhouse:!!modal?.querySelector('button[data-outlast3377-map="Ribhouse"]'),buttonCount:modal?.querySelectorAll('button[data-outlast3377-map]').length||0,zIndex:modal?.style.zIndex||''};};
+ }
+ const creator=window.OUTLAST_OPEN_MAP_CREATOR_33018;
+ if(typeof creator==='function')previousPicker=creator;
+ else if(!previousPicker&&typeof window.openMapSelector==='function'&&window.openMapSelector!==openMapPicker)previousPicker=window.openMapSelector;
+ // Reassert after deferred modules finish initialization; otherwise the legacy Map Creator overwrites this route.
+ window.openMapSelector=openMapPicker;
+ window.selectMap=selectMap;
  const mapBtn=document.getElementById('mapBtn');if(mapBtn)mapBtn.onclick=openMapPicker;
- document.addEventListener('click',function(e){
-  const target=e.target;
-  if(target&&target.id==='outlast3377MapPickerModal'){e.preventDefault();closeMapPickerModal();return;}
-  const close=target.closest?.('button[data-outlast3377-map-close]');
-  if(close){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();closeMapPickerModal();return;}
-  const choice=target.closest?.('button[data-outlast3377-map]');
-  if(choice){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();selectMap(choice.getAttribute('data-outlast3377-map'));return;}
-  const create=target.closest?.('button[data-outlast3377-create-map]');
-  if(create){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();closeMapPickerModal();openLegacyCreator();}
- },true);
- document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.getElementById('outlast3377MapPickerModal')){e.preventDefault();closeMapPickerModal();}},true);
  window.OUTLAST_MAP_SELECTION_READY=true;
- window.OUTLAST_MAP_SELECTION_AUDIT=function(){const s=currentSave(),defs=definitions();return {version:VERSION,ready:true,currentMap:s?String(s.map||'Forest'):'NO_SAVE',builtInMapCount:allBuiltinMaps().length,savedCustomMapCount:Array.isArray(s?.customMaps)?s.customMaps.length:0,registeredMapCount:Object.keys(defs).filter(k=>k.indexOf(PREFIX)!==0).length};};
- window.OUTLAST_MAP_PICKER_AUDIT=function(){const modal=document.getElementById('outlast3377MapPickerModal');return {open:!!modal,visible:!!modal&&modal.style.display!=='none',ribhouse:!!modal?.querySelector('button[data-outlast3377-map="Ribhouse"]'),buttonCount:modal?.querySelectorAll('button[data-outlast3377-map]').length||0,zIndex:modal?.style.zIndex||''};};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+window.addEventListener('load',install,{once:true});
 setTimeout(install,0);
+setTimeout(install,75);
 })();

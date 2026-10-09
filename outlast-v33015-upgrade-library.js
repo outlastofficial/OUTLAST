@@ -1,8 +1,8 @@
-/* OUTLAST v3.37.1 — 220 new functional upgrade cards with authoritative rarity scaling */
+/* OUTLAST v3.37.2 — 220 new functional upgrade cards with authoritative rarity scaling */
 (function(){
 'use strict';
 function fmtPct(base,mult){return Number((Number(base)*Number(mult)).toFixed(1)).toString()}
-const V='3.37.1';
+const V='3.37.2';
 const LIBRARY=[
   {name:"Common Might 01",rarity:"Common",mult:1,desc:v=>`+${Math.round(3*v)} damage`,apply:v=>()=>game.player.damage+=3*v},
   {name:"Common Haste 02",rarity:"Common",mult:1,desc:v=>`+${fmtPct(2.2,v)}% attack speed`,apply:v=>()=>game.player.fireRate=Math.max(.045,(game.player.fireRate||.45)*(1-.022*v))},
@@ -263,9 +263,9 @@ function installRoll(){
 function hook(){
   install();installRoll();
   try{
-    document.title='OUTLAST v3.37.1';
-    window.OUTLAST_BUILD='3.37.1';window.OUTLAST_VERSION='v3.37.1';
-    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.1');
+    document.title='OUTLAST v3.37.2';
+    window.OUTLAST_BUILD='3.37.2';window.OUTLAST_VERSION='v3.37.2';
+    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.2');
     if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='How many upgrade choices are there?')){
       helpArticles.unshift(['How many upgrade choices are there?','Upgrades & Luck','OUTLAST now has more than 200 distinct level-up upgrade cards across every rarity tier.']);
     }

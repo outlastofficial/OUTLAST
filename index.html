@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.37.0">
+<meta name="outlast-build" content="3.37.1">
 <meta name="outlast-environment" content="TESTER">
-<meta name="build-version" content="3.37.0">
-<title>OUTLAST v3.37.0</title>
+<meta name="build-version" content="3.37.1">
+<title>OUTLAST v3.37.1</title>
 <style id="event-expansion-compact-ui">
 #outlastEventBuild{position:fixed!important;right:12px!important;bottom:14px!important;left:auto!important;top:auto!important;width:auto!important;z-index:99980!important;font-family:inherit!important;pointer-events:none}
 #outlastEventBuild .oeb-card{display:flex!important;align-items:center!important;gap:7px!important;background:rgba(8,18,29,.9)!important;border:1px solid rgba(49,91,115,.8)!important;border-radius:999px!important;padding:5px 6px 5px 9px!important;box-shadow:0 5px 18px rgba(0,0,0,.22)!important;backdrop-filter:blur(6px)!important;max-width:210px!important;pointer-events:auto!important}
@@ -1414,11 +1414,11 @@ const rarityTiers={
  Epic:{label:'Epic',color:'#d28cff',power:1.6},
  Legendary:{label:'Legendary',color:'#ffd84d',power:1.9},
  Mythic:{label:'Mythic',color:'#ff65e8',power:2.25},
- Divine:{label:'Divine',color:'#ffffff',power:2.7},
- Celestial:{label:'Celestial',color:'#7ce7ff',power:3.2},
- Transcendent:{label:'Transcendent',color:'#ff9cf2',power:3.8},
- Eternal:{label:'Eternal',color:'#b8a7ff',power:4.6},
- Omega:{label:'Omega',color:'#ff6b6b',power:5.5}
+ Divine:{label:'Divine',color:'#ffffff',power:4},
+ Celestial:{label:'Celestial',color:'#7ce7ff',power:5},
+ Transcendent:{label:'Transcendent',color:'#ff9cf2',power:6},
+ Eternal:{label:'Eternal',color:'#b8a7ff',power:7},
+ Omega:{label:'Omega',color:'#ff6b6b',power:8}
 };
 function rarityLabel(r){return rarityTiers[r]?rarityTiers[r].label:r}
 const skins={
@@ -6091,7 +6091,7 @@ try{
  }
 }catch(_){}
 })();
-</script><script src="outlast-v33015-upgrade-library.js?v=3.30.15"></script><script id="outlast-v33015-final">(function(){try{document.title='OUTLAST v3.30.15';window.OUTLAST_BUILD='3.30.15';window.OUTLAST_VERSION='v3.30.15';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.15'});}catch(_){}})();</script><script src="outlast-v33016-map-layout.js?v=3.30.16"></script><script src="outlast-v33017-combat-balance.js?v=3.30.17"></script><script id="outlast-v33017-final">(function(){try{document.title='OUTLAST v3.30.17';window.OUTLAST_BUILD='3.30.17';window.OUTLAST_VERSION='v3.30.17';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.17'});}catch(_){}})();</script><script src="outlast-v33018-map-creator.js?v=3.30.18"></script><script id="outlast-v33018-final">(function(){try{document.title='OUTLAST v3.30.18';window.OUTLAST_BUILD='3.30.18';window.OUTLAST_VERSION='v3.30.18';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.18'});}catch(_){}})();</script><script src="outlast-v33500-core-content-engine.js?v=3.35.0"></script>\n<script id="outlast-v3351-bounce-fix">(function(){try{
+</script><script src="outlast-v33015-upgrade-library.js?v=3.37.1"></script><script id="outlast-v33015-final">(function(){try{document.title='OUTLAST v3.30.15';window.OUTLAST_BUILD='3.30.15';window.OUTLAST_VERSION='v3.30.15';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.15'});}catch(_){}})();</script><script src="outlast-v33016-map-layout.js?v=3.30.16"></script><script src="outlast-v33017-combat-balance.js?v=3.30.17"></script><script id="outlast-v33017-final">(function(){try{document.title='OUTLAST v3.30.17';window.OUTLAST_BUILD='3.30.17';window.OUTLAST_VERSION='v3.30.17';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.17'});}catch(_){}})();</script><script src="outlast-v33018-map-creator.js?v=3.30.18"></script><script id="outlast-v33018-final">(function(){try{document.title='OUTLAST v3.30.18';window.OUTLAST_BUILD='3.30.18';window.OUTLAST_VERSION='v3.30.18';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.30.18'});}catch(_){}})();</script><script src="outlast-v33500-core-content-engine.js?v=3.35.0"></script>\n<script id="outlast-v3351-bounce-fix">(function(){try{
 document.title='OUTLAST v3.35.1';
 window.OUTLAST_BUILD='3.35.1';window.OUTLAST_VERSION='v3.35.1';
 document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.35.1';});
@@ -6207,7 +6207,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
-const BUILD='3.37.0',ACK='outlast_update_ack_v3.37.0',POP='outlastMandatoryUpdate';
+const BUILD='3.37.1',ACK='outlast_update_ack_v3.37.1',POP='outlastMandatoryUpdate';
 function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
 function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
 function show(newer,remote){
@@ -6232,11 +6232,11 @@ async function check(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check,{once:true});else check();
 window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,ackKey:ACK,check:check};
-})();</script><script id="outlast-v3361-final-marker">(function(){try{
-window.OUTLAST_BUILD='3.37.0';window.OUTLAST_VERSION='v3.37.0';document.title='OUTLAST v3.37.0';
-document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.0';});
-var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content='3.37.0';
-var b=document.querySelector('meta[name="build-version"]');if(b)b.content='3.37.0';
+})();</script><script id="outlast-v3371-final-marker">(function(){try{
+window.OUTLAST_BUILD='3.37.1';window.OUTLAST_VERSION='v3.37.1';document.title='OUTLAST v3.37.1';
+document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.1';});
+var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content='3.37.1';
+var b=document.querySelector('meta[name="build-version"]');if(b)b.content='3.37.1';
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.8')}))updates.unshift(['v3.36.1 — Accurate Rarity + Shield Reliability','Normalized rarity power, fixed cards applying a different multiplier than their displayed rarity, made Omega Shield block all normal incoming damage paths, and added visible shield charge/recharge feedback.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the mandatory update check work?'}))helpArticles.unshift(['How does the mandatory update check work?','Updates & Reliability','Every new OUTLAST build performs a no-cache version check. The current release requires an acknowledgement before play, while a detected newer server build requires a reload.']);
 }catch(_){}})();</script><script id="outlast-v3360-systems">(function(){
@@ -6257,10 +6257,12 @@ if(Array.isArray(achievements)){const extra=[['Case Opener','Own 3 skins',functi
 const B=function(id,fn){const b=document.getElementById(id);if(b)b.onclick=function(e){e.preventDefault();e.stopPropagation();fn();};};
 B('statsBtn',renderExpandedStats);B('achBtn',renderAchievements36);B('inventoryBtn',renderExpandedInventory);B('modifierBtn',renderExpandedModifiers);B('shopBtn',dailyShopOpen);B('coreBtn',renderCoreSystems);B('weaponTreeBtn',renderWeaponTree);B('codexBtn',renderCodex);B('battlePassBtn',renderBattlePass);B('prestigeBtn',renderPrestige);B('raritiesBtn',renderRarities);B('worldBossBtn',renderWorldBosses);B('setsBtn',renderSets);B('roomsBtn',renderRooms);
 const sc=document.getElementById('subContent');if(sc)sc.addEventListener('click',function(e){const b=e.target.closest?.('button[data-action="coreSection"]');if(b){e.preventDefault();e.stopPropagation();renderCoreSection(b.dataset.value);}});
-const chip36=document.querySelector('#menu .menu-chip');if(chip36)chip36.textContent='v3.37.0 • SURVIVOR HUB';
-document.title='OUTLAST v3.37.0';window.OUTLAST_BUILD='3.37.0';window.OUTLAST_VERSION='v3.37.0';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.0';});
+const chip37=document.querySelector('#menu .menu-chip');if(chip37)chip37.textContent='v3.37.1 • SURVIVOR HUB';
+document.title='OUTLAST v3.37.1';window.OUTLAST_BUILD='3.37.1';window.OUTLAST_VERSION='v3.37.1';document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.1';});
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.37.1')}))updates.unshift(['v3.37.1 — High-Rarity Upgrade Power Rebalance','Raised upgrade multipliers above Mythic to Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, and Omega 8×. Existing lower-tier multipliers and rarity drop weights are unchanged.']);
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.37.0')}))updates.unshift(['v3.37.0 — Runtime Loop Reliability','Made rarity effects match displayed tier, repaired both shield systems, enforced one live boss at a time, removed the Owner Panel password prompt, applied all skin bonuses, exposed the 12 Core Systems, and expanded Progress, Achievements, Stats, Inventory, Daily Shop, and Run Modifiers.']);
+if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('How are high-rarity upgrade multipliers calculated?')}))helpArticles.unshift(['How are high-rarity upgrade multipliers calculated?','Upgrades & Rarities','Common through Mythic keep their established multipliers. Divine is 4×, Celestial 5×, Transcendent 6×, Eternal 7×, and Omega 8×. Upgrade cards display and apply the same rarity multiplier.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('How do the 12 Core Systems work?')}))helpArticles.unshift(['How do the 12 Core Systems work?','Core Systems','Open Progress → 12 Core Systems to browse the active Combat, Enemies, Bosses, World, Events, Progression, Cosmetics, Objectives, Economy, Modes, Support, and Content Generation systems.']);
-})();</script><script src="outlast-v3360-focused-systems.js?v=3.36.0"></script><script src="outlast-v3370-game-systems.js?v=3.37.0"></script>
+})();</script><script src="outlast-v3360-focused-systems.js?v=3.36.0"></script><script src="outlast-v3370-game-systems.js?v=3.37.1"></script>
 </body>
 </html>

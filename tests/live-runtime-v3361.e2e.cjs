@@ -4,23 +4,23 @@ const { chromium } = require('playwright');
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport:{width:1280,height:900}});
   await page.setExtraHTTPHeaders({'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'});
-  const consoleErrors=[];
+  const consoleErrors=[];const http404=[];
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
-  page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));
+  page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));page.on('response',r=>{if(r.status()===404)http404.push(r.url())});
 
   await page.addInitScript(()=>{
     localStorage.setItem('outlastUsername','E2EPlayer');
     localStorage.setItem('outlastDeviceMode','pc');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
-    localStorage.setItem('outlast_update_ack_v3.37.8','1');
+    localStorage.setItem('outlast_update_ack_v3.37.9','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
   });
 
-  const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-test.onrender.com/index.html')+'?e2e='+Date.now();
+  const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
-  if(!servedTitle.includes('v3.37.8')) console.log('Version marker diagnostic: '+servedTitle);
+  if(!servedTitle.includes('v3.37.9')) console.log('Version marker diagnostic: '+servedTitle);
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(250); // Let the late systems module finish installing before auditing the menu.
@@ -32,13 +32,21 @@ const { chromium } = require('playwright');
     audit:typeof window.OUTLAST_EXPANSION_AUDIT==='function'?window.OUTLAST_EXPANSION_AUDIT():null
   }));
   if(!featureRegistry.thorns||featureRegistry.cards<400||!featureRegistry.mapReady||!featureRegistry.ultimateReady){
-    throw new Error('v3.37.8 features were not registered: '+JSON.stringify(featureRegistry));
+    throw new Error('v3.37.9 features were not registered: '+JSON.stringify(featureRegistry));
   }
   await page.evaluate(()=>window.openMapSelector());
-  await page.locator('button[data-outlast3377-map="Ribhouse"]').waitFor({state:'visible',timeout:8000});
+  await page.waitForTimeout(80);
+  const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
+  if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<18)throw new Error('New map picker did not render visibly: '+JSON.stringify(pickerAudit));
   await page.locator('button[data-outlast3377-map="Ribhouse"]').click();
   const selectedMap=await page.evaluate(()=>save.map);
   if(selectedMap!=='Ribhouse')throw new Error('New map selection did not persist: '+selectedMap);
+  await page.evaluate(()=>window.openMapSelector());
+  await page.locator('button[data-outlast3377-create-map]').click();
+  await page.locator('#mcUnlock').waitFor({state:'visible',timeout:8000});
+  const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
+  if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
+  await page.locator('#closeSub').click();
   const skinPrep=await page.evaluate(()=>{
     if(typeof skins==='undefined'||typeof save==='undefined') return {ok:false};
     const name=Object.keys(skins).find(n=>n!=='Classic');
@@ -75,6 +83,15 @@ const { chromium } = require('playwright');
   const afterMove=await page.evaluate(()=>({x:game.player.x,y:game.player.y,time:game.time}));
   const displacement=Math.hypot(afterMove.x-beforeMove.x,afterMove.y-beforeMove.y);
   if(!(displacement>10))throw new Error('WASD did not move the player after Start Run: '+JSON.stringify({beforeMove,afterMove,layoutAudit}));
+  const thornsPrep=await page.evaluate(()=>{
+    const p=game.player;p.thorns=.5;p.thornsRadius=180;p.__outlastThornsReadyAt=0;p.shield=0;p.omegaShieldMaxHits=0;p.omegaShieldHits=0;p.god=false;p.godMode=false;
+    const probe={__outlastThornsProbe:true,x:p.x+28,y:p.y,hp:1000000,max:1000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
+    game.enemies=[probe];const enemyHp=probe.hp,playerHp=p.hp;outlastTakePlayerDamage(p,1,'thorns runtime test');
+    return {enemyHp,playerHp,remainingEnemyHp:probe.hp,remainingPlayerHp:p.hp};
+  });
+  if(!(thornsPrep.remainingPlayerHp<thornsPrep.playerHp)||!(thornsPrep.remainingEnemyHp<thornsPrep.enemyHp)){
+    throw new Error('Thorns upgrade did not retaliate on hit: '+JSON.stringify(thornsPrep));
+  }
   const ultimatePrep=await page.evaluate(()=>{
     const p=game.player,probe={__outlastUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
     game.enemies=[probe];p.ult=100;return {hp:probe.hp,charge:p.ult};
@@ -128,9 +145,9 @@ const { chromium } = require('playwright');
   if(!flags.systems) throw new Error('v3.37 systems module did not initialize.');
   if(!flags.scale) throw new Error('Authoritative rarity scale did not initialize.');
   if(!flags.mandatory) throw new Error('Mandatory update checker did not initialize.');
-  if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | '));
+  if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | ')+' HTTP404='+http404.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,consoleErrors}));
+  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,consoleErrors,http404}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});
 

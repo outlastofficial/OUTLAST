@@ -7,8 +7,8 @@ new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on mal
 
 assert(html.includes('outlast-v3370-game-systems.js?v=3.37.6'),'v3.37.0 systems module must be loaded by the game');
 assert(html.includes('v3.37.0'),'game version marker must be 3.37.0');
-assert(html.includes("const BUILD='3.37.13'"),'mandatory update check must target 3.37.0');
-assert(html.includes("outlast_update_ack_v3.37.13"),'mandatory update acknowledgement must be versioned');
+assert(html.includes("const BUILD='3.37.14'"),'mandatory update check must target 3.37.0');
+assert(html.includes("outlast_update_ack_v3.37.14"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('game.upgradeChoices=(typeof window.makeChoices===\'function\'?window.makeChoices():makeChoices())'),'level-up must use the authoritative rarity-aware choice generator');
 
 assert(mod.includes('function authoritativeUpgradeChoice37'), 'authoritative upgrade choice resolver must exist');

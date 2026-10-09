@@ -1,7 +1,7 @@
 /* OUTLAST v3.30.18 — Map Creator */
 (function(){
 'use strict';
-const VERSION='3.30.18';
+const VERSION='3.37.6';
 const MAP_CREATOR_COST=100000;
 const MAX_CUSTOM_MAPS=5;
 const PREFIX='CustomMap:';
@@ -183,7 +183,7 @@ function openCreatorEditor(cm){renderEditor(cm||null);}
 
 function openMapSelector(){
  ensure();registerAll();
- const builtins=BASE_MAPS.filter(x=>mapDefs[x]);
+ const builtins=Object.keys(mapDefs||{}).filter(x=>x.indexOf(PREFIX)!==0&&!!mapDefs[x]);
  let html='<div class="option"><b>🗺️ MAP CREATOR</b><div class="small">'+(save.mapCreatorUnlocked?'Unlocked — create up to 5 saved maps.':'Unlock for 100,000 coins. Cost: 100,000 • Balance: '+(Number(save.coins)||0).toLocaleString())+'</div><button type="button" id="mcUnlock" class="'+(save.mapCreatorUnlocked?'gold':'option')+'">'+(save.mapCreatorUnlocked?'➕ CREATE CUSTOM MAP':'🔒 UNLOCK — 100,000 COINS')+'</button></div>';
  html+='<div class="grid">'+builtins.map(x=>'<button type="button" class="option '+(save.map===x?'selected':'')+'" data-mc-map="'+safe(x)+'"><b>'+safe(x)+'</b></button>').join('')+'</div>';
  if(save.customMaps.length){

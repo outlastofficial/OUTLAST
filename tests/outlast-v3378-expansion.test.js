@@ -26,7 +26,7 @@ const rarityPools=Object.fromEntries(tiers.map(t=>[t,[]]));
 const sandbox={
  console,Date,Math,Number,String,Object,Array,Set,JSON,performance:{now:()=>1000},W:4000,H:3000,CW:1280,CH:720,
  document:{readyState:'complete',title:'',querySelectorAll:()=>[],querySelector:()=>null,getElementById:()=>null,addEventListener:()=>{},head:{appendChild:()=>{}},body:{appendChild:()=>{}},createElement:()=>({style:{},appendChild:()=>{}})},
- setTimeout:()=>0,clearTimeout:()=>{},updates:[],helpArticles:[],tempUp:[],
+ setTimeout:fn=>{if(typeof fn==="function")fn();return 0;},clearTimeout:()=>{},updates:[],helpArticles:[],tempUp:[],
  upgradeRarities:Object.fromEntries(tiers.map((t,i)=>[t,{mult:scales[i],label:t.toUpperCase(),weight:1,glow:'#fff'}])),
  game:{running:true,paused:false,upgradeOpen:false,time:16,bossClock:16,bossCount:0,bossDefeatedCount:0,enemies:[],effects:[],particles:[],shake:0,
   player:{x:1600,y:1200,hp:100,max:100,damage:100,thorns:0,ult:100,ultDamage:1,ultGain:1,damageTakenMult:1,bossMult:1,critMult:1.8,magnet:100,coinMult:1,xpBonus:1,fireRate:.45,range:500}},

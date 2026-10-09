@@ -1,7 +1,7 @@
-/* OUTLAST v3.37.15 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
+/* OUTLAST v3.37.16 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
 (function(){
 'use strict';
-const VERSION='3.37.15';
+const VERSION='3.37.16';
 const SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:2.7,Celestial:3.2,Transcendent:3.8,Eternal:4.6,Omega:5.5});
 const TIER_ORDER=Object.keys(SCALE);
 const E=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
@@ -51,8 +51,8 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Regeneration'||name==='Second Wind')return {desc:'+'+nv(.3)+' HP/s',apply:()=>add('regen',.3*mult)};
  if(name==='Piercing'||name==='Rift Pierce')return {desc:'+'+ni(name==='Piercing'?1:2)+' pierce',apply:()=>add('pierce',ni(name==='Piercing'?1:2))};
  if(name==='Multi-Shot'||name==='Ammo Surge')return {desc:'+'+ni(1)+' projectiles',apply:()=>add('multiShot',ni(1))};
- if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(3)+'% XP',apply:()=>ratio('xpBonus',3)};
- if(name==='XP Burst')return {desc:'+'+np(3)+'% XP and +'+ni(12)+' pickup radius',apply:()=>{ratio('xpBonus',3);add('magnet',ni(12));}};
+ if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(8)+'% XP',apply:()=>ratio('xpBonus',8)};
+ if(name==='XP Burst')return {desc:'+'+np(12)+'% XP and +'+ni(20)+' pickup radius',apply:()=>{ratio('xpBonus',12);add('magnet',ni(20));}};
  if(name==='Overcharge')return {desc:'+'+np(4)+'% ultimate damage',apply:()=>ratio('ultDamage',4)};
  if(name==='Heavy Rounds'){const slow=2.2/mult;return {desc:'+'+nv(3)+' damage, with '+Number(slow.toFixed(2))+'% slower fire',apply:()=>{add('damage',3*mult);const q=p();if(q)q.fireRate=Math.min(1.2,(Number(q.fireRate)||.45)*(1+slow/100));}};}
  if(name==='Swift Aim')return {desc:'+'+ni(12)+' range',apply:()=>add('range',ni(12))};
@@ -84,7 +84,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Fortress')return {desc:'+'+ni(15)+' max HP and +'+np(2)+'% armor',apply:()=>{heal(ni(15));const q=p();if(q)q.armor=Math.max(.1,(Number(q.armor)||1)-.02*mult);}};
  if(name==='Adrenal Core')return {desc:'+'+np(2)+'% speed and +'+np(2.2)+'% attack speed',apply:()=>{const q=p();if(q)q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+2*mult/100));faster(2.2);}};
  if(name==='Salvager')return {desc:'+'+np(3)+'% coins and +'+ni(12)+' pickup range',apply:()=>{ratio('coinMult',3);add('magnet',ni(12));}};
- if(name==='XP Reactor')return {desc:'+'+np(3)+'% XP and +'+nv(2)+' Upgrade Luck',apply:()=>{ratio('xpBonus',3);add('upgradeLuck',2*mult);luck();}};
+ if(name==='XP Reactor')return {desc:'+'+np(8)+'% XP and +'+nv(2)+' Upgrade Luck',apply:()=>{ratio('xpBonus',8);add('upgradeLuck',2*mult);luck();}};
  if(name==='Ricochet')return {desc:'+'+ni(1)+' pierce and +'+np(3)+'% projectile size',apply:()=>{add('pierce',ni(1));ratio('bulletSize',3);}};
  if(name==='Executioner')return {desc:'+'+np(3)+'% damage to elites',apply:()=>add('executioner',.03*mult)};
  if(name==='Bossbreaker')return {desc:'+'+np(3)+'% damage to bosses',apply:()=>add('bossDamageBonus',.03*mult)};
@@ -95,8 +95,6 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Last Stand')return {desc:'+'+np(10)+'% damage below 25% HP',apply:()=>{const q=p();if(q){q.lastStand=true;q.lastStandBonus=(Number(q.lastStandBonus)||0)+.1*mult;}}};
  if(name==='Treasure Engine')return {desc:'+'+nv(2)+' Treasure Luck and '+nv(3)+'x drop chance',apply:()=>{const q=p();if(q){q.treasureLuck=(Number(q.treasureLuck)||0)+2*mult;q.treasure=true;q.treasureDropMultiplier=3*mult;luck();}}};
  if(name==='Deadly Precision')return {desc:'+'+np(1)+'% crit chance and +'+np(2)+'% crit damage',apply:()=>{const q=p();if(q){q.crit=Math.min(.99,(Number(q.crit)||0)+.01*mult);q.critMult=(Number(q.critMult)||1.8)+.02*mult;}}};
- if(name==='XP Boost')return {desc:'+'+Math.round(8*mult)+'% XP',apply:function(){const p=player();if(p)p.xpBonus*=1+.08*mult;}};
- if(name==='XP Burst')return {desc:'+'+Math.round(12*mult)+'% XP and +'+Math.round(20*mult)+' pickup radius',apply:function(){const p=player();if(p){p.xpBonus*=1+.12*mult;p.magnet+=20*mult;}}};
  if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledInteger37(name==='Piercing'?1:2,mult);return {desc:'+'+amount+(name==='Piercing'?' pierce':' projectile pierce'),apply:function(){const p=player();if(p)p.pierce=(Number(p.pierce)||0)+amount;}};}
  if(name==='Multi-Shot'||name==='Ammo Surge'){const amount=scaledInteger37(2,mult);return {desc:'+'+amount+(name==='Multi-Shot'?' projectiles':' extra projectiles'),apply:function(){const p=player();if(p)p.multiShot=(Number(p.multiShot)||0)+amount;}};}
  if(name==='Second Wind'){const amount=scaledInteger37(2,mult);return {desc:'+'+amount+' HP/s',apply:function(){const p=player();if(p)p.regen=(Number(p.regen)||0)+amount;}};}
@@ -453,9 +451,9 @@ function installEventDelegates37(){
 }
 function installRuntimeFlags37(){
  window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;window.OUTLAST_CORE_CONTENT_MODE='LIVE';window.OUTLAST_UI_SYSTEM_VERSION=VERSION;
- const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v3.37.5 • SURVIVOR HUB';
- document.title='OUTLAST v3.37.5';
- document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.5');
+ const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v3.37.16 • SURVIVOR HUB';
+ document.title='OUTLAST v3.37.16';
+ document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.16');
  const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
  const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
  const s=S();if(s){s.records=s.records||{};s.records.legendaryPlusOwned=Object.keys(s.skins||{}).filter(k=>s.skins[k]&&skins[k]&&['Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(skins[k].rarity)).length;persist?.();}

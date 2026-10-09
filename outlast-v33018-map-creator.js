@@ -1,7 +1,7 @@
 /* OUTLAST v3.30.18 — Map Creator */
 (function(){
 'use strict';
-const VERSION='3.37.6';
+const VERSION='3.37.16';
 const MAP_CREATOR_COST=100000;
 const MAX_CUSTOM_MAPS=5;
 const PREFIX='CustomMap:';

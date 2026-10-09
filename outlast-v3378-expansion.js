@@ -1,7 +1,7 @@
-/* OUTLAST v3.37.15 — Restore Approved Rarity Multiplier Ladder */
+/* OUTLAST v3.37.16 — Restore Approved Rarity Multiplier Ladder */
 (function(){
 'use strict';
-const VERSION='3.37.15';
+const VERSION='3.37.16';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:2.7,Celestial:3.2,Transcendent:3.8,Eternal:4.6,Omega:5.5};
 const fmt=n=>String(Number(Number(n).toFixed(1)));
@@ -27,7 +27,7 @@ const FAMILIES=[
  {name:'Critical Force',desc:m=>'Add '+fmt(8*m)+'% critical-hit damage.',apply:(p,m)=>{p.critMult=(Number(p.critMult)||1.8)+.08*m;}},
  {name:'Loot Magnet',desc:m=>'Increase pickup range by '+fmt(22*m)+'.',apply:(p,m)=>{p.magnet=(Number(p.magnet)||0)+22*m;}},
  {name:'Coin Cache',desc:m=>'Earn '+fmt(2.5*m)+'% more coins.',apply:(p,m)=>{p.coinMult=(Number(p.coinMult)||1)*(1+.025*m);}},
- {name:'XP Conduit',desc:m=>'Gain '+fmt(3.5*m)+'% more XP.',apply:(p,m)=>{p.xpBonus=(Number(p.xpBonus)||1)*(1+.035*m);}},
+ {name:'XP Conduit',desc:m=>'Gain '+fmt(8*m)+'% more XP.',apply:(p,m)=>{p.xpBonus=(Number(p.xpBonus)||1)*(1+.08*m);}},
  {name:'Combat Might',desc:m=>'Increase weapon damage by '+fmt(4*m)+'%.',apply:(p,m)=>{p.damage=(Number(p.damage)||1)*(1+.04*m);}},
  {name:'Rapid Fire',desc:m=>'Attack '+fmt(2.5*m)+'% faster.',apply:(p,m)=>{p.fireRate=Math.max(.08,(Number(p.fireRate)||.45)/(1+.025*m));}},
  {name:'Longshot',desc:m=>'Increase weapon range by '+fmt(20*m)+'.',apply:(p,m)=>{p.range=(Number(p.range)||0)+20*m;}}
@@ -153,14 +153,14 @@ function installVersionAndHelp(){
  document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(String(el.textContent||'')))el.textContent='v'+VERSION+' • SURVIVOR HUB';});
  if(typeof updates!=='undefined'&&Array.isArray(updates)){
   const releaseEntries=[
-   ['v3.37.8 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes','Added the Thorns counterattack upgrade and 132 additional rarity-scaled cards; expanded every built-in arena to 4000 × 3000 with more map-specific cover; aligned boss timers, retried failed spawns, and moved bosses into the visible fight; rebuilt rarity-specific upgrade reveal animations; repaired ultimate charge feedback and its full-charge area attack; removed the stray bottom release-note block and moved Chat away from the bottom edge.'],
+   ['v3.37.16 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes','Added the Thorns counterattack upgrade and 132 additional rarity-scaled cards; expanded every built-in arena to 4000 × 3000 with more map-specific cover; aligned boss timers, retried failed spawns, and moved bosses into the visible fight; rebuilt rarity-specific upgrade reveal animations; repaired ultimate charge feedback and its full-charge area attack; removed the stray bottom release-note block and moved Chat away from the bottom edge.'],
    ['v3.37.9 — Map Picker Overlay Fix','Fixed the map picker visibility and closing behavior, restored the Map Creator launcher, and expanded regression checks for map selection, Thorns, ultimate firing and boss visibility.'],
    ['v3.37.10 — Restore Map Picker Route After Load','Fixed the delayed Map Creator initializer overwriting Choose Map, explicitly restored the modern picker after load, and exposed a stable Map Creator opener.'],
    ['v3.37.11 — Separate Map Picker and Creator Routes','Separated the normal Choose Map action from the Map Creator route to prevent late module initialization from hijacking map selection.'],
    ['v3.37.12 — Remove Stale Update Popup','Stopped the outdated v3.35.0 popup from opening on current builds so it cannot stack over the current update notice or intercept menu clicks.'],
    ['v3.37.13 — Remove Forced Event Popup','Removed the obsolete October-event overlay from the live menu because it could intercept Start Run and map selection and add unrequested event-boss interruptions. Core boss scheduling, map hazards, maps, and regular combat remain active.'],
    ['v3.37.14 — Fix Floating Chat Layering','Moved the Global Chat launcher to the top-right area outside menu stacking contexts, restored touch/click handling above the tutorial layer, and added mobile end-to-end checks for Chat, map selection, gameplay controls and ultimate.'],
-   ['v3.37.15 — Restore Approved Rarity Multipliers','Corrected Divine through Omega to the agreed multipliers (2.7×, 3.2×, 3.8×, 4.6×, 5.5×) throughout the rarity authority, core upgrade system and new upgrade families. Added regression checks for the exact ladder.']
+   ['v3.37.16 — Restore Approved Rarity Multipliers','Corrected Divine through Omega to the agreed multipliers (2.7×, 3.2×, 3.8×, 4.6×, 5.5×) throughout the rarity authority, core upgrade system and new upgrade families. Added regression checks for the exact ladder.']
   ];
   for(const entry of releaseEntries){
    const key=String(entry[0]).split(' — ')[0];
@@ -180,7 +180,8 @@ function installVersionAndHelp(){
    ['Why is the old v3.35.0 popup gone?','Updates & Help','Current OUTLAST builds show the current release notice only. The outdated v3.35.0 popup is suppressed so it cannot cover the menu or block its buttons.'],
    ['How is Map Creator opened separately?','Maps','Choose Map uses OUTLAST_OPEN_MAP_PICKER_3377, while the existing Map Creator uses its own exported opener. Selecting a map closes the picker and persists the choice without replacing either route.'],
    ['What animations do upgrade rarities use?','Upgrades & Rarities','Uncommon and higher upgrade choices reveal with rarity-specific motion: Uncommon bounce, Rare pulse, Epic rise, Legendary roll, Mythic orbit, Divine halo, Celestial stars, Transcendent glitch, Eternal time dial, and Omega burst. The reveal finishes before you can select an animated card.'],
-   ['How many level-up choices are available?','Upgrades & Rarities','The existing 298-card pool is expanded by 133 additional choices, including 12 rarity-scaled upgrade families across all 11 rarity tiers. Upgrade family benefits scale upward with rarity.']
+   ['How many level-up choices are available?','Upgrades & Rarities','The existing 298-card pool is expanded by 133 additional choices, including 12 rarity-scaled upgrade families across all 11 rarity tiers. Upgrade family benefits scale upward with rarity.'],
+   ['Why is XP stronger at higher rarities?','Upgrades & Rarities','XP Boost, XP Burst, XP Hunter, XP Reactor, XP Conduit, and Scholar cards share a consistent rarity multiplier. Common XP starts at 8%; the same base effect is 18% at Mythic, with higher tiers continuing upward. Displayed values and applied effects use the same baseline.']
   ];
   for(let i=entries.length-1;i>=0;i--)if(!helpArticles.some(a=>a&&a[0]===entries[i][0]))helpArticles.unshift(entries[i]);
  }

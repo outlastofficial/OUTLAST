@@ -316,7 +316,7 @@ function progress37(){
  }
  // The old collection hub is replaced by direct Progress buttons.
  for(const button of [...document.querySelectorAll('#menu button')]){
-   if(/new content\\s*\\/\\s*collection/i.test(String(button.textContent||''))){
+   if(String(button.textContent||'').toLowerCase().includes('new content / collection')){
      button.closest('.menu-card')?.remove();
      button.remove();
    }

@@ -151,6 +151,7 @@ function authoritativeUpgradeChoice37(){
   }
   return out;
 }
+window.OUTLAST_UPGRADE_BASE37=upgradeBase37;
 window.OUTLAST_UPGRADE_RARITY_SCALING37=SCALE;
 window.authoritativeUpgradeChoice37=authoritativeUpgradeChoice37;
 

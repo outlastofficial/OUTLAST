@@ -1,7 +1,8 @@
-const fs=require('fs'),assert=require('assert'),path=require('path');
+const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const mod=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8');
+new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
 assert(html.includes('outlast-v3370-game-systems.js?v=3.37.0'),'v3.37.0 systems module must be loaded by the game');
 assert(html.includes('v3.37.0'),'game version marker must be 3.37.0');

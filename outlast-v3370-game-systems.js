@@ -307,6 +307,20 @@ window.openSkinMenu=skin37;
 
 function progress37(){
  const page=document.querySelector('[data-page-content="progress"]');if(!page)return;
+ // Canonical entry points for Inventory, Skins, Daily Shop, and Run Modifiers live in Progress.
+ // Remove their legacy cards from Inventory/Loadout to prevent duplicate navigation.
+ for(const id of ['inventoryBtn','skinBtn','shopBtn','modifierBtn']){
+   const button=document.getElementById(id);
+   const card=button?.closest('.menu-card');
+   if(card)card.remove();
+ }
+ // The old collection hub is replaced by direct Progress buttons.
+ for(const button of [...document.querySelectorAll('#menu button')]){
+   if(/new content\\s*\\/\\s*collection/i.test(String(button.textContent||''))){
+     button.closest('.menu-card')?.remove();
+     button.remove();
+   }
+ }
  document.getElementById('progressSystems36')?.remove();
  page.querySelector('#extrasBtn')?.closest('.menu-card')?.remove();
  let deck=document.getElementById('progressDeck37');

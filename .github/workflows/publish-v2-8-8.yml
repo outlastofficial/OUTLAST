@@ -1,8 +1,12 @@
-name: Validate OUTLAST v3.9.7
+name: Validate current OUTLAST entry-point routing
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'index.html'
+      - 'game.html'
+      - '.github/workflows/publish-v2-8-8.yml'
   workflow_dispatch:
 
 permissions:
@@ -13,14 +17,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate current OUTLAST build
+      - name: Validate current OUTLAST build and compatibility redirect
         shell: python
         run: |
           from pathlib import Path
-          for name in ("index.html", "game.html"):
-              html = Path(name).read_text(encoding="utf-8")
-              assert "OUTLAST v3.9.7" in html, f"{name}: missing v3.9.7 marker"
-              assert 'name="outlast-build" content="3.9.7"' in html, f"{name}: missing build marker"
-              assert 'outlast-v3.9.7.js' in html, f"{name}: missing v3.9.7 layer"
-              assert len(html) > 1000000, f"{name}: unexpectedly small build"
-          print("OUTLAST v3.9.7 validation passed.")
+          import re
+
+          index = Path("index.html").read_text(encoding="utf-8")
+          legacy = Path("game.html").read_text(encoding="utf-8")
+          title = re.search(r"<title>OUTLAST v([0-9]+\\.[0-9]+\\.[0-9]+)</title>", index)
+          build = re.search(r'name="outlast-build" content="([0-9]+\\.[0-9]+\\.[0-9]+)"', index)
+          assert title, "index.html: missing OUTLAST version title"
+          assert build, "index.html: missing build-version metadata"
+          assert title.group(1) == build.group(1), "index title and build metadata disagree"
+          assert len(index) > 100000, "index.html: current game entry unexpectedly small"
+          assert re.search(r"<title>OUTLAST v[0-9]+\\.[0-9]+\\.[0-9]+</title>", legacy), "game.html: missing compatibility title"
+          assert "location.replace('./index.html' + location.search + location.hash)" in legacy, "game.html must redirect legacy links to the current game"
+          assert '<a href="./index.html">OUTLAST</a>' in legacy, "game.html must keep the no-JavaScript fallback link"
+          print(f"OUTLAST entry points verified. Current build: v{title.group(1)}")

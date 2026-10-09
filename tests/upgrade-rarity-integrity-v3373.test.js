@@ -1,16 +1,16 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),system=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8'),expansion=fs.readFileSync(path.join(root,'outlast-v3378-expansion.js'),'utf8');
-assert(html.includes('<meta name="outlast-build" content="3.37.14">'),'current metadata');
-assert(html.includes("const BUILD='3.37.14',ACK='outlast_update_ack_v3.37.14'"),'mandatory update');
+assert(html.includes('<meta name="outlast-build" content="3.37.15">'),'current metadata');
+assert(html.includes("const BUILD='3.37.15',ACK='outlast_update_ack_v3.37.15'"),'mandatory update');
 assert(expansion.includes('v3.37.8 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes')&&expansion.includes("window.OUTLAST_VERSION='v'+VERSION"),'current release marker and log');
 assert(!html.includes('id="coreBtn"')&&!system.includes("['progressCore37','🧩 12 Core Systems','core']"),'remove the one-button core hub');
 assert(system.includes("weaponBtn:'combat'")&&system.includes("codexBtn:'enemies'")&&system.includes("worldBossBtn:'bosses'")&&system.includes("mapBtn:'world'")&&system.includes("shopBtn:'economy'")&&system.includes("missionBtn:'objectives'"),'route core content into existing feature areas');
-assert(system.includes("const VERSION='3.37.5';")&&library.includes("const V='3.37.5';"),'runtime script versions');
-assert(system.includes('Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8'),'preserve high rarity multipliers');
+assert(system.includes("const VERSION='3.37.15';")&&library.includes("const V='3.37.15';"),'runtime script versions');
+assert(system.includes('Divine:2.7,Celestial:3.2,Transcendent:3.8,Eternal:4.6,Omega:5.5'),'preserve approved high rarity multipliers');
 assert(html.includes('const bossAlive=outlastBossIsAlive();')&&html.includes('const bossTarget=(Number(game.bossCount)||0)===0?15:30;')&&html.includes('game.bossSpawnFailures'),'boss scheduler cadence and retries');
 assert(html.includes('if(game)game.activeBossId=null;')&&html.includes('game.bossCount=(Number(game.bossCount)||0)+1;'),'clear stale locks and count each spawn');
 assert(!html.includes('if(spawnBoss())game.bossCount=(game.bossCount||0)+1'),'no double boss count');
-const tiers=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'],mult=[1,1.15,1.35,1.6,1.9,2.25,4,5,6,7,8],pools=Object.fromEntries(tiers.map(t=>[t,[]]));
+const tiers=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'],mult=[1,1.15,1.35,1.6,1.9,2.25,2.7,3.2,3.8,4.6,5.5],pools=Object.fromEntries(tiers.map(t=>[t,[]]));
 const doc={readyState:'complete',title:'',querySelectorAll:()=>[],querySelector:()=>null,addEventListener:()=>{},getElementById:()=>null,head:{appendChild:()=>{}},body:{classList:{toggle:()=>{}},appendChild:()=>{}},documentElement:{classList:{toggle:()=>{}},dataset:{}}};
 const s={window:{OUTLAST_UPGRADE_RARITY_POOLS:pools,OUTLAST_UPGRADE_RARITY_BY_NAME:{}},document:doc,tempUp:[],game:{player:{}},save:{records:{}},run:{kills:0},helpArticles:[],upgradeRarities:{},setTimeout:()=>{},setInterval:()=>{},console,outlastGrantTempShield:v=>{s.shieldSeconds=v;}};s.window.window=s.window;
 vm.runInNewContext(library,s,{timeout:1500});assert.strictEqual(s.tempUp.length,220);for(const t of tiers)assert.strictEqual(pools[t].length,20,t);assert.deepStrictEqual(mult.map(v=>s.window.OUTLAST_UPGRADE_TIER_INTEGER(1,v)),[1,2,3,4,5,6,7,8,9,10,11]);
@@ -21,4 +21,4 @@ const cases=[['Power Shot',x=>x.p.damage],['Rapid Fire',x=>1/x.p.fireRate],['Vit
 for(const [name,metric] of cases){const vals=tiers.map(t=>metric(apply(name,t)));for(let i=1;i<vals.length;i++)assert(vals[i]>vals[i-1],name+' must increase at '+tiers[i]);}
 const families=[['Might 01',p=>p.damage],['Haste 02',p=>1/p.fireRate],['Vital Core 03',p=>p.max-100],['Fleet 04',p=>p.speed-300],['Magnet 05',p=>p.magnet],['Renewal 06',p=>p.regen],['Breach 07',p=>p.pierce],['Volley 08',p=>p.multiShot],['Velocity 09',p=>p.projectileSpeed-1],['Deadeye 10',p=>p.crit],['Fortune 11',p=>p.coinMult-1],['Scholar 12',p=>p.xpBonus-1],['Piercer 13',p=>p.armorPierce],['Bossbane 14',p=>p.bossMult-1],['Arcane 15',p=>p.ultDamage-1],['Medic 16',p=>p.healMult-1],['Luck 17',p=>p.upgradeLuck],['Cache 18',p=>p.lootLuck],['Treasure 19',p=>p.treasureLuck],['Aegis 20',p=>p.shield]];
 for(const [name,metric] of families){const vals=tiers.map((t,i)=>{const card=s.tempUp.find(x=>x&&x[0]===t+' '+name);assert(card,'missing '+t+' '+name);s.game.player=p();const d=String(card[1](mult[i]));const result=card[2](mult[i]);if(typeof result==='function')result();return {value:metric(s.game.player),desc:d};});for(let i=1;i<vals.length;i++)assert(vals[i].value>vals[i-1].value,name+' applied effect ties at '+tiers[i]);}
-console.log('OUTLAST v3.37.5 rarity, boss reliability, and core placement checks passed');
+console.log('OUTLAST v3.37.15 rarity, boss reliability, and core placement checks passed');

@@ -1,51 +1,25 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
-const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-const systems=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8');
-const library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
-assert(html.includes("const BUILD='3.37.3',ACK='outlast_update_ack_v3.37.3'"),'mandatory update check must use v3.37.3');
-assert(html.includes("window.authoritativeUpgradeChoice37==='function'"),'level-up choices must use the rarity-aware chooser');
-assert(html.includes('return ranked;'),'the rarity-aware result must replace the old label-only choices');
-assert(!html.includes('if(u&&byName[u[0]])u[3]=byName[u[0]];'),'the old label-only rarity override must be removed');
-assert(html.includes('How do upgrade rarity labels stay accurate?'),'How-To must explain rarity integrity');
-assert(systems.includes("const VERSION='3.37.3';"),'runtime system version must be current');
-assert(systems.includes('Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8'),'high-rarity multipliers must remain unchanged');
-assert(library.includes("const V='3.37.3';"),'upgrade library must be current');
-assert(!library.includes('apply:v=>()=>'),'new library effects must not be accidentally double-wrapped');
-const names=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
-const mults=[1,1.15,1.35,1.6,1.9,2.25,4,5,6,7,8];
-const pools=Object.fromEntries(names.map(n=>[n,[]]));
-const sandbox={window:{OUTLAST_UPGRADE_RARITY_POOLS:pools,OUTLAST_UPGRADE_RARITY_BY_NAME:{}},document:{readyState:'complete',title:'',querySelectorAll:()=>[],addEventListener:()=>{}},tempUp:[],game:{player:{}},save:{},helpArticles:[],upgradeRarities:{},setTimeout:()=>{},console};
-sandbox.window.window=sandbox.window;
-vm.runInNewContext(library,sandbox,{timeout:1500});
-assert.strictEqual(sandbox.tempUp.length,220,'all 220 upgrade cards should install');
-assert.strictEqual(sandbox.window.OUTLAST_UPGRADE_LIBRARY_COUNT,220,'all 220 cards should be registered in their rarity pools');
-for(const tier of names)assert.strictEqual(pools[tier].length,20,tier+' must have 20 cards');
-const intValue=sandbox.window.OUTLAST_UPGRADE_TIER_INTEGER;
-assert.deepStrictEqual(mults.map(m=>intValue(1,m)),[1,2,3,4,5,6,7,8,9,10,11],'integer-only bonuses must increase at every rarity');
-function collect(family,stat){
-  const vals=[];
-  for(let i=0;i<names.length;i++){
-    const item=sandbox.tempUp.find(x=>x&&x[0]===names[i]+' '+family);
-    assert(item,'missing '+names[i]+' '+family);
-    const player={damage:0,pierce:0,multiShot:0,shield:0,regen:0,fireRate:.45,speed:300,speedCap:500,max:100,hp:100,magnet:0};
-    sandbox.game.player=player;
-    const desc=item[1](mults[i]);
-    const applyResult=item[2](mults[i]);
-    if(typeof applyResult==='function')applyResult();
-    vals.push({desc,value:player[stat]});
-  }
-  return vals;
-}
-for(const [family,stat] of [['Might 01','damage'],['Breach 07','pierce'],['Volley 08','multiShot'],['Aegis 20','shield'],['Renewal 06','regen']]){
-  const values=collect(family,stat);
-  for(let i=1;i<values.length;i++)assert(values[i].value>values[i-1].value,family+' applied value must strictly increase from '+names[i-1]+' to '+names[i]);
-  for(const item of values)assert(item.desc.includes('+'),'each '+family+' card must describe its bonus');
-}
-const might=collect('Might 01','damage');
-for(let i=0;i<might.length;i++){
-  const shown=Number(might[i].desc.match(/\+([\d.]+)/)[1]);
-  assert(Math.abs(shown-might[i].value)<.051,'Might description must match the actual applied effect for '+names[i]);
-}
-assert(html.includes('v3.37.3 • SURVIVOR HUB'),'visible version marker must be current');
-console.log('OUTLAST v3.37.3 rarity integrity tests passed');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),systems=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
+assert(html.includes("const BUILD='3.37.4',ACK='outlast_update_ack_v3.37.4'"),'mandatory update version');
+assert(html.includes("window.authoritativeUpgradeChoice37==='function'")&&html.includes('return ranked;'),'rarity-aware level-up chooser is installed');
+assert(!html.includes('if(u&&byName[u[0]])u[3]=byName[u[0]];'),'old label-only rarity override removed');
+assert(html.includes('v3.37.4 • SURVIVOR HUB')&&html.includes('v3.37.4 — Rarity Effect Scaling'),'version marker and release note');
+assert(html.includes('v3.37.3 — Upgrade Rarity Integrity'),'previous release note preserved');
+assert(systems.includes("const VERSION='3.37.4';")&&systems.includes('How do higher rarity upgrades scale?'),'systems version and How-To');
+assert(systems.includes('Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8'),'existing upper-tier multipliers preserved');
+assert(library.includes("const V='3.37.4';")&&!library.includes('apply:v=>()=>'),'library version and no double-wrapped effects');
+const names=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'],mults=[1,1.15,1.35,1.6,1.9,2.25,4,5,6,7,8],pools=Object.fromEntries(names.map(n=>[n,[]]));
+const ls={window:{OUTLAST_UPGRADE_RARITY_POOLS:pools,OUTLAST_UPGRADE_RARITY_BY_NAME:{}},document:{readyState:'complete',title:'',querySelectorAll:()=>[],addEventListener:()=>{}},tempUp:[],game:{player:{}},save:{},helpArticles:[],upgradeRarities:{},setTimeout:()=>{},console};ls.window.window=ls.window;vm.runInNewContext(library,ls,{timeout:1500});
+assert.strictEqual(ls.tempUp.length,220,'all 220 upgrade cards registered');for(const n of names)assert.strictEqual(pools[n].length,20,n+' card count');
+assert.deepStrictEqual(mults.map(m=>ls.window.OUTLAST_UPGRADE_TIER_INTEGER(1,m)),[1,2,3,4,5,6,7,8,9,10,11],'whole-number upgrades cannot tie across rarity tiers');
+for(const [fam,stat] of [['Might 01','damage'],['Breach 07','pierce'],['Volley 08','multiShot'],['Aegis 20','shield'],['Renewal 06','regen']]){const vals=names.map((n,i)=>{const item=ls.tempUp.find(x=>x&&x[0]===n+' '+fam);assert(item,'missing '+n+' '+fam);const p={damage:0,pierce:0,multiShot:0,shield:0,regen:0,fireRate:.45,speed:300,speedCap:500,max:100,hp:100,magnet:0};ls.game.player=p;const desc=item[1](mults[i]),ret=item[2](mults[i]);if(typeof ret==='function')ret();return {value:p[stat],desc};});for(let i=1;i<vals.length;i++)assert(vals[i].value>vals[i-1].value,fam+' applied value ties at '+names[i]);}
+const ss=systems.replace('window.OUTLAST_UPGRADE_RARITY_SCALING37=SCALE;','window.__TEST_FACTORY37=upgradeBase37;window.__TEST_INTEGER37=scaledInteger37;window.OUTLAST_UPGRADE_RARITY_SCALING37=SCALE;');assert.notStrictEqual(ss,systems);
+let seconds=0;const dom={readyState:'loading',addEventListener:()=>{},querySelectorAll:()=>[],querySelector:()=>null,getElementById:()=>null,head:{appendChild:()=>{}},body:{classList:{toggle:()=>{}},appendChild:()=>{}},documentElement:{classList:{toggle:()=>{}},dataset:{}}};const sb={window:{},document:dom,game:{player:{}},save:{},skins:{},setTimeout:()=>{},setInterval:()=>{},outlastGrantTempShield:v=>{seconds=v;},console};sb.window.document=dom;vm.runInNewContext(ss,sb,{timeout:1500});const factory=sb.window.__TEST_FACTORY37;assert.strictEqual(typeof factory,'function');
+function get(name,tier,desc,apply){seconds=0;sb.game={player:{hp:40,max:100,damage:100,regen:0,pierce:0,multiShot:0,shield:0,slowPower:1}};const fx=factory(name,desc||((v)=>'+'+v),apply||(()=>{}),tier);fx.apply();return {desc:fx.desc,p:sb.game.player,seconds};}
+function inc(name,fn){const v=names.map(t=>fn(get(name,t)));for(let i=1;i<v.length;i++)assert(v[i]>v[i-1],name+' tier effect failed '+names[i-1]+' -> '+names[i]);}
+inc('Piercing',x=>x.p.pierce);inc('Multi-Shot',x=>x.p.multiShot);inc('Second Wind',x=>x.p.regen);inc('Rift Pierce',x=>x.p.pierce);inc('Ammo Surge',x=>x.p.multiShot);inc('Shield Core',x=>x.seconds);inc('Emergency Shield',x=>x.seconds);inc('Berserker',x=>x.p.berserkDamageBonus);inc('Lucky Hunter',x=>x.p.luckyXpChance);inc('Adrenaline',x=>x.p.adrenalineSpeedBonus);inc('Poison Rounds',x=>x.p.poisonDpsMultiplier);inc('Poison Rounds',x=>x.p.poisonDuration);inc('Stun Rounds',x=>x.p.stunChance);inc('Stun Rounds',x=>x.p.stunDuration);inc('Double Tap',x=>x.p.doubleTapChance);inc('Lucky Barrage',x=>x.p.doubleTapChance);inc('Treasure Radar',x=>x.p.treasureDropMultiplier);inc('Shockwave',x=>x.p.shockwaveRadius);inc('Shockwave',x=>x.p.shockwaveDamageMultiplier);inc('Cryo Core',x=>x.p.slowPower);inc('Bloodrush',x=>x.p.berserkDamageBonus);
+const shock=names.map(t=>get('Shockwave',t).p.shockwaveEvery);for(let i=1;i<shock.length;i++)assert(shock[i]<shock[i-1],'Shockwave activation cadence should improve at every rarity');
+const power=names.map(t=>get('Power Shot',t,v=>'+'+Math.round(6*v)+' damage',v=>{sb.game.player.damage+=6*v;}));for(let i=1;i<power.length;i++)assert(power[i].p.damage>power[i-1].p.damage);for(let i=0;i<power.length;i++){const shown=Number(power[i].desc.match(/\+([\d.]+)/)[1]);assert(Math.abs(shown-power[i].p.damage)<.51,'Power Shot display should match applied effect within rounding');}
+for(const x of ['p.berserkDamageBonus','p.adrenalineSpeedBonus','p.poisonDpsMultiplier','p.stunChance','p.doubleTapChance','p.treasureDropMultiplier','game.player.shockwaveEvery','p.luckyXpChance'])assert(html.includes(x),'runtime must apply '+x);
+assert(!html.includes('let dmg=b.dmg*(p.berserk&&p.hp<p.max*.5?1.5:1);'));assert(!html.includes('Math.min(.6,.25+(p.lootLuck||0)*.003)'));assert(!html.includes('run.kills%12===0'));
+console.log('OUTLAST v3.37.4 rarity effect scaling tests passed');

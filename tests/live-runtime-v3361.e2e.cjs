@@ -13,14 +13,14 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','pc');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
-    localStorage.setItem('outlast_update_ack_v3.37.10','1');
+    localStorage.setItem('outlast_update_ack_v3.37.11','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
   });
 
   const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
-  if(!servedTitle.includes('v3.37.10')) console.log('Version marker diagnostic: '+servedTitle);
+  if(!servedTitle.includes('v3.37.11')) console.log('Version marker diagnostic: '+servedTitle);
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(250); // Let the late systems module finish installing before auditing the menu.
@@ -32,16 +32,16 @@ const { chromium } = require('playwright');
     audit:typeof window.OUTLAST_EXPANSION_AUDIT==='function'?window.OUTLAST_EXPANSION_AUDIT():null
   }));
   if(!featureRegistry.thorns||featureRegistry.cards<400||!featureRegistry.mapReady||!featureRegistry.ultimateReady){
-    throw new Error('v3.37.10 features were not registered: '+JSON.stringify(featureRegistry));
+    throw new Error('v3.37.11 features were not registered: '+JSON.stringify(featureRegistry));
   }
-  await page.evaluate(()=>window.openMapSelector());
+  await page.evaluate(()=>window.OUTLAST_OPEN_MAP_PICKER_3377());
   await page.waitForTimeout(80);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<18)throw new Error('New map picker did not render visibly: '+JSON.stringify(pickerAudit));
   await page.locator('button[data-outlast3377-map="Ribhouse"]').click();
   const selectedMap=await page.evaluate(()=>save.map);
   if(selectedMap!=='Ribhouse')throw new Error('New map selection did not persist: '+selectedMap);
-  await page.evaluate(()=>window.openMapSelector());
+  await page.evaluate(()=>window.OUTLAST_OPEN_MAP_PICKER_3377());
   await page.locator('button[data-outlast3377-create-map]').click();
   await page.locator('#mcUnlock').waitFor({state:'visible',timeout:8000});
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));

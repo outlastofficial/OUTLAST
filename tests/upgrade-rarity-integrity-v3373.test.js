@@ -1,13 +1,13 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
-const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),system=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
-assert(html.includes('<meta name="outlast-build" content="3.37.5">'),'current metadata');
-assert(html.includes("const BUILD='3.37.5',ACK='outlast_update_ack_v3.37.5'"),'mandatory update');
-assert(html.includes('v3.37.5 • SURVIVOR HUB')&&html.includes('v3.37.5 — Strict Rarity Ladder + Boss Spawn Reliability'),'release marker and log');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),system=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8'),expansion=fs.readFileSync(path.join(root,'outlast-v3378-expansion.js'),'utf8');
+assert(html.includes('<meta name="outlast-build" content="3.37.8">'),'current metadata');
+assert(html.includes("const BUILD='3.37.8',ACK='outlast_update_ack_v3.37.8'"),'mandatory update');
+assert(expansion.includes('v3.37.8 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes')&&expansion.includes("window.OUTLAST_VERSION='v'+VERSION"),'current release marker and log');
 assert(!html.includes('id="coreBtn"')&&!system.includes("['progressCore37','🧩 12 Core Systems','core']"),'remove the one-button core hub');
 assert(system.includes("weaponBtn:'combat'")&&system.includes("codexBtn:'enemies'")&&system.includes("worldBossBtn:'bosses'")&&system.includes("mapBtn:'world'")&&system.includes("shopBtn:'economy'")&&system.includes("missionBtn:'objectives'"),'route core content into existing feature areas');
 assert(system.includes("const VERSION='3.37.5';")&&library.includes("const V='3.37.5';"),'runtime script versions');
 assert(system.includes('Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8'),'preserve high rarity multipliers');
-assert(html.includes('const bossAlive=outlastBossIsAlive();')&&html.includes("===0?20:Math.max(30,Math.min(45,Number(game.stats&&game.stats.bossEvery)||40))"),'boss scheduler cadence');
+assert(html.includes('const bossAlive=outlastBossIsAlive();')&&html.includes('const bossTarget=(Number(game.bossCount)||0)===0?15:30;')&&html.includes('game.bossSpawnFailures'),'boss scheduler cadence and retries');
 assert(html.includes('if(game)game.activeBossId=null;')&&html.includes('game.bossCount=(Number(game.bossCount)||0)+1;'),'clear stale locks and count each spawn');
 assert(!html.includes('if(spawnBoss())game.bossCount=(game.bossCount||0)+1'),'no double boss count');
 const tiers=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'],mult=[1,1.15,1.35,1.6,1.9,2.25,4,5,6,7,8],pools=Object.fromEntries(tiers.map(t=>[t,[]]));

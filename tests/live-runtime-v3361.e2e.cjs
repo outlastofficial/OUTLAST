@@ -99,8 +99,14 @@ const { chromium } = require('playwright');
     throw new Error('Thorns upgrade did not retaliate on hit: '+JSON.stringify(thornsPrep));
   }
   const ultimatePrep=await page.evaluate(()=>{
-    const p=game.player,probe={__outlastUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
-    game.enemies=[probe];p.ult=100;return {hp:probe.hp,charge:p.ult};
+    const p=game.player;
+    // Clear any incidental level-up pause created by the preceding smoke steps.
+    game.running=true;game.paused=false;game.over=false;game.upgradeOpen=false;
+    game.xp=0;game.xpNeed=Math.max(Number(game.xpNeed)||1,1000000000);
+    game.upgradeChoices=[];
+    const probe={__outlastUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
+    game.enemies=[probe];p.ult=100;
+    return {hp:probe.hp,charge:p.ult,running:game.running,paused:game.paused,upgradeOpen:game.upgradeOpen};
   });
   await page.keyboard.press('r');await page.waitForTimeout(200);
   const ultimateResult=await page.evaluate(()=>{

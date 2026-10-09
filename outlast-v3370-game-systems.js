@@ -1,7 +1,7 @@
-/* OUTLAST v3.37.2 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
+/* OUTLAST v3.37.3 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
 (function(){
 'use strict';
-const VERSION='3.37.2';
+const VERSION='3.37.3';
 const SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8});
 const E=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const S=()=>{try{return save}catch(_){return null}};
@@ -39,7 +39,7 @@ function upgradeBase37(name,desc,apply,rarity){
   };
   const d=typeof desc==='function'?desc(mult):String(desc||'');
   const a=typeof apply==='function'?apply:()=>{};
-  return {desc:d,apply:()=>a(mult)};
+  return {desc:d,apply:()=>{const result=a(mult);if(typeof result==='function')return result();return result;}};
 }
 function authoritativeUpgradeChoice37(){
   const poolMap=window.OUTLAST_UPGRADE_RARITY_POOLS||{};
@@ -378,9 +378,9 @@ function installEventDelegates37(){
 }
 function installRuntimeFlags37(){
  window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;window.OUTLAST_CORE_CONTENT_MODE='LIVE';window.OUTLAST_UI_SYSTEM_VERSION=VERSION;
- const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v3.37.2 • SURVIVOR HUB';
- document.title='OUTLAST v3.37.2';
- document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.2');
+ const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v3.37.3 • SURVIVOR HUB';
+ document.title='OUTLAST v3.37.3';
+ document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.3');
  const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
  const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
  const s=S();if(s){s.records=s.records||{};s.records.legendaryPlusOwned=Object.keys(s.skins||{}).filter(k=>s.skins[k]&&skins[k]&&['Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(skins[k].rarity)).length;persist?.();}

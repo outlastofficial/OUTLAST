@@ -1,7 +1,7 @@
 /* OUTLAST v3.37.16 — Restore Approved Rarity Multiplier Ladder */
 (function(){
 'use strict';
-const VERSION='3.37.17';
+const VERSION='3.37.18';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:2.7,Celestial:3.2,Transcendent:3.8,Eternal:4.6,Omega:5.5};
 const fmt=n=>String(Number(Number(n).toFixed(1)));
@@ -160,7 +160,8 @@ function installVersionAndHelp(){
    ['v3.37.12 — Remove Stale Update Popup','Stopped the outdated v3.35.0 popup from opening on current builds so it cannot stack over the current update notice or intercept menu clicks.'],
    ['v3.37.13 — Remove Forced Event Popup','Removed the obsolete October-event overlay from the live menu because it could intercept Start Run and map selection and add unrequested event-boss interruptions. Core boss scheduling, map hazards, maps, and regular combat remain active.'],
    ['v3.37.14 — Fix Floating Chat Layering','Moved the Global Chat launcher to the top-right area outside menu stacking contexts, restored touch/click handling above the tutorial layer, and added mobile end-to-end checks for Chat, map selection, gameplay controls and ultimate.'],
-   ['v3.37.17 — Global Chat Connection Repair','Rebuilt Global Chat to load message history directly from the live server API, send messages through the server, show connection errors instead of hanging on Connecting, and refresh live messages every 3 seconds.']
+   ['v3.37.17 — Global Chat Connection Repair','Rebuilt Global Chat to load message history directly from the live server API, send messages through the server, show connection errors instead of hanging on Connecting, and refresh live messages every 3 seconds.'],
+   ['v3.37.18 — Restore Global Chat Tags','Restored the OWNER and TESTER badges in Global Chat while preserving the logged-in username and live server message flow.']
   ];
   for(const entry of releaseEntries){
    const key=String(entry[0]).split(' — ')[0];
@@ -181,7 +182,8 @@ function installVersionAndHelp(){
    ['How is Map Creator opened separately?','Maps','Choose Map uses OUTLAST_OPEN_MAP_PICKER_3377, while the existing Map Creator uses its own exported opener. Selecting a map closes the picker and persists the choice without replacing either route.'],
    ['What animations do upgrade rarities use?','Upgrades & Rarities','Uncommon and higher upgrade choices reveal with rarity-specific motion: Uncommon bounce, Rare pulse, Epic rise, Legendary roll, Mythic orbit, Divine halo, Celestial stars, Transcendent glitch, Eternal time dial, and Omega burst. The reveal finishes before you can select an animated card.'],
    ['How many level-up choices are available?','Upgrades & Rarities','The existing 298-card pool is expanded by 133 additional choices, including 12 rarity-scaled upgrade families across all 11 rarity tiers. Upgrade family benefits scale upward with rarity.'],
-   ['How does Global Chat connect?','Menus & Chat','Global Chat reads recent messages from the live OUTLAST server and refreshes every 3 seconds. Send posts directly to the chat API. If the server is unreachable, the panel shows a retry/error status instead of remaining stuck on Connecting to chat.']
+   ['How does Global Chat connect?','Menus & Chat','Global Chat reads recent messages from the live OUTLAST server and refreshes every 3 seconds. Send posts directly to the chat API. If the server is unreachable, the panel shows a retry/error status instead of remaining stuck on Connecting to chat.'],
+   ['Where did the Global Chat tags go?','Menus & Chat','Global Chat shows the OWNER badge for BestGamer, Landon, and Phone Landon, and the TESTER badge for Max and SS. These badges are displayed beside the username and do not replace the username.']
   ];
   for(let i=entries.length-1;i>=0;i--)if(!helpArticles.some(a=>a&&a[0]===entries[i][0]))helpArticles.unshift(entries[i]);
  }

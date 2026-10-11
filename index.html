@@ -6028,7 +6028,9 @@ function init(){
  }
  async function sendMessage(){
   const message=String(input.value||'').trim().slice(0,180);if(!message||busy)return;
-  const username=String(window.currentUsername||'Player').trim().slice(0,18)||'Player';
+  let savedUsername='';try{savedUsername=localStorage.getItem('outlastUsername')||'';}catch(_){};
+  let activeUsername='';try{activeUsername=typeof currentUsername!=='undefined'?currentUsername:'';}catch(_){};
+  const username=String(activeUsername||window.currentUsername||savedUsername||'Player').trim().slice(0,18)||'Player';
   busy=true;send.disabled=true;send.textContent='Sending…';
   try{
    const res=await fetch(api,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Cache-Control':'no-cache'},body:JSON.stringify({username,message})});

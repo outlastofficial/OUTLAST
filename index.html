@@ -6011,10 +6011,17 @@ function init(){
   if(!list.length){const empty=document.createElement('div');empty.className='small';empty.textContent='No messages yet.';msgs.appendChild(empty);return;}
   list.slice(-80).forEach(m=>{
    const row=document.createElement('div');row.style.cssText='padding:4px 0;overflow-wrap:anywhere';
-   const name=document.createElement('b');name.textContent=String(m.username||'Player')+': ';
-   const body=document.createElement('span');body.textContent=String(m.message||'');
+   const rawName=String(m.username||'Player').trim()||'Player';
+   const normalized=rawName.toLowerCase().replace(/[^a-z0-9]/g,'');
+   const name=document.createElement('b');name.textContent=rawName;
+   row.appendChild(name);
+   let badgeText='',badgeColor='';
+   if(['bestgamer','landon','phonelandon'].includes(rawName.toLowerCase())){badgeText=' 👑 OWNER';badgeColor='#f4ca68';}
+   else if(['max','ss'].includes(normalized)){badgeText=' 🧪 TESTER';badgeColor='#8bd4ff';}
+   if(badgeText){const badge=document.createElement('span');badge.textContent=badgeText;badge.style.cssText='display:inline-block;margin-left:5px;padding:1px 5px;border-radius:5px;font-size:9px;font-weight:900;color:#101820;background:'+badgeColor;row.appendChild(badge);}
+   const body=document.createElement('span');body.textContent=': '+String(m.message||'');
    const time=document.createElement('small');time.style.cssText='display:block;color:#8da1b0;font-size:10px';time.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-   row.append(name,body,time);msgs.appendChild(row);
+   row.append(body,time);msgs.appendChild(row);
   });
   msgs.scrollTop=msgs.scrollHeight;
  }

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.37.16">
-<meta name="build-version" content="3.37.16">
-<title>OUTLAST v3.37.16</title>
+<meta name="outlast-build" content="3.37.17">
+<meta name="build-version" content="3.37.17">
+<title>OUTLAST v3.37.17</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -5983,38 +5983,72 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
 </div>
 <script>
 (function(){
- function init(){
-  const root=document.getElementById('outlastEverywhereChat');if(!root||root.dataset.ready)return;if(root.parentElement!==document.body)document.body.appendChild(root);root.dataset.ready='1';
-  const panel=root.querySelector('.gec-panel'),msgs=document.getElementById('gecMessages'),input=document.getElementById('gecInput');
-  let chatOpen=false;
-  function setChatOpen(open){
-   chatOpen=!!open;
-   panel.style.display=chatOpen?'block':'none';
-   root.classList.toggle('chat-open',chatOpen);
-  }
-  document.getElementById('gecToggle').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(!chatOpen);};
-  document.getElementById('gecClose').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(false);};
-  setChatOpen(false);
-  function render(){
-   const source=document.getElementById('globalChatMessages')||document.getElementById('chatMessages');
-   if(source&&source!==msgs) msgs.innerHTML=source.innerHTML;
-  }
-  document.getElementById('gecSend').onclick=()=>{
-   const text=input.value.trim();if(!text)return;
-   const candidates=[document.getElementById('globalChatInput'),document.getElementById('chatInput')];
-   const target=candidates.find(x=>x);
-   if(target){target.value=text;target.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true}));}
-   else if(typeof window.sendGlobalChatMessage==='function')window.sendGlobalChatMessage(text);
-   input.value='';setTimeout(render,120);
-  };
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('gecSend').click();}});
-  setInterval(()=>{render();if(document.body&&getComputedStyle(root).display==='none')root.style.display='block';},500);
-  root.style.display='block';
+'use strict';
+function init(){
+ const root=document.getElementById('outlastEverywhereChat');
+ if(!root||root.dataset.ready)return;
+ if(root.parentElement!==document.body)document.body.appendChild(root);
+ root.dataset.ready='1';
+ const panel=root.querySelector('.gec-panel');
+ const msgs=document.getElementById('gecMessages');
+ const input=document.getElementById('gecInput');
+ const send=document.getElementById('gecSend');
+ const close=document.getElementById('gecClose');
+ const toggle=document.getElementById('gecToggle');
+ const api='https://outlast-server.onrender.com/api/chat';
+ let open=false, busy=false, lastSignature='';
+ function status(text,online){
+  const head=panel.querySelector('.gec-head .gec-title');
+  if(head)head.textContent='💬 Global Chat '+(online?'🟢':'🔴');
+  if(!msgs.children.length)msgs.textContent=text;
  }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ function setOpen(v){open=!!v;panel.style.display=open?'block':'none';root.classList.toggle('chat-open',open);}
+ function render(messages){
+  const list=Array.isArray(messages)?messages:[];
+  const sig=list.map(m=>String(m.id||'')+':'+String(m.message||'')).join('|');
+  if(sig===lastSignature)return;
+  lastSignature=sig;msgs.replaceChildren();
+  if(!list.length){const empty=document.createElement('div');empty.className='small';empty.textContent='No messages yet.';msgs.appendChild(empty);return;}
+  list.slice(-80).forEach(m=>{
+   const row=document.createElement('div');row.style.cssText='padding:4px 0;overflow-wrap:anywhere';
+   const name=document.createElement('b');name.textContent=String(m.username||'Player')+': ';
+   const body=document.createElement('span');body.textContent=String(m.message||'');
+   const time=document.createElement('small');time.style.cssText='display:block;color:#8da1b0;font-size:10px';time.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+   row.append(name,body,time);msgs.appendChild(row);
+  });
+  msgs.scrollTop=msgs.scrollHeight;
+ }
+ async function refresh(){
+  try{
+   const res=await fetch(api+'?limit=80&_='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+   if(!res.ok)throw new Error('HTTP '+res.status);
+   const data=await res.json();if(!data||data.ok!==true||!Array.isArray(data.messages))throw new Error('Invalid chat response');
+   render(data.messages);status('',true);
+  }catch(err){status('Chat server unavailable — retrying…',false);root.dataset.chatError=String(err&&err.message||err);}
+ }
+ async function sendMessage(){
+  const message=String(input.value||'').trim().slice(0,180);if(!message||busy)return;
+  const username=String(window.currentUsername||'Player').trim().slice(0,18)||'Player';
+  busy=true;send.disabled=true;send.textContent='Sending…';
+  try{
+   const res=await fetch(api,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Cache-Control':'no-cache'},body:JSON.stringify({username,message})});
+   const data=await res.json().catch(()=>({}));
+   if(!res.ok||!data.ok)throw new Error(data.error||('HTTP '+res.status));
+   input.value='';await refresh();
+  }catch(err){status('Could not send: '+String(err&&err.message||err),false);}
+  finally{busy=false;send.disabled=false;send.textContent='Send';}
+ }
+ toggle.onclick=e=>{e.preventDefault();e.stopPropagation();setOpen(!open);if(open){refresh();input.focus();}};
+ close.onclick=e=>{e.preventDefault();e.stopPropagation();setOpen(false);};
+ send.onclick=sendMessage;
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendMessage();}});
+ setOpen(false);root.style.display='block';
+ refresh();setInterval(refresh,3000);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
-<script src="outlast-v32797-dash-spawn-hardening.js?v=3.29.1"></script>
+<script src="outlast-v32797-dash-spawn-hardening.js<script src="outlast-v32797-dash-spawn-hardening.js?v=3.29.1"></script>
 <script src="rarity-rebuild-v3.27.96.js?v=3.29.2"></script>
 <script src="outlast-v32798-void-arsenal-balance.js?v=3.29.2"></script>
 <script src="outlast-v32799-premium-rarity-balance.js?v=3.29.2"></script>
@@ -6334,6 +6368,6 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 })();</script><script src="outlast-v3360-focused-systems.js?v=3.36.0"></script><script src="outlast-v3370-game-systems.js?v=3.37.16"></script>
 <script src="outlast-v3376-interaction-fixes.js?v=3.37.6"></script>
 <script src="outlast-v3377-map-boss-rebuild.js?v=3.37.16"></script>
-<script src="outlast-v3378-expansion.js?v=3.37.16"></script>
+<script src="outlast-v3378-expansion.js?v=3.37.17"></script>
 </body>
 </html>

@@ -5999,8 +5999,8 @@ function init(){
  let open=false, busy=false, lastSignature='';
  function status(text,online){
   const head=panel.querySelector('.gec-head .gec-title');
-  if(head)head.textContent='💬 Global Chat '+(online?'🟢':'🔴');
-  if(!msgs.children.length)msgs.textContent=text;
+  if(head)head.textContent='💬 Global Chat '+(online?'🟢 Online':'🔴 Offline');
+  if(text){const notice=document.createElement('div');notice.className='small';notice.textContent=text;msgs.replaceChildren(notice);}
  }
  function setOpen(v){open=!!v;panel.style.display=open?'block':'none';root.classList.toggle('chat-open',open);}
  function render(messages){

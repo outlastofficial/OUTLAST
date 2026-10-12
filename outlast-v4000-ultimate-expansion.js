@@ -177,6 +177,18 @@
     if (trophyCardRetries <= 40) setTimeout(retryTrophyCard, 250);
   }
 
+  function removeLegacyProgressSystems() {
+    // The v3.36 installer can run on DOMContentLoaded after v3.37 has built its newer deck.
+    // Remove only the obsolete v3.36 group wrapper, leaving the current v3.37 deck and v4 Trophy card intact.
+    const page = document.querySelector('[data-page-content="progress"]');
+    const legacy = (page && page.querySelector('#progressSystems36')) || document.getElementById('progressSystems36');
+    if (legacy && legacy.parentNode) legacy.parentNode.removeChild(legacy);
+    if (page) page.querySelectorAll('.progress-v3360-stack').forEach(node => {
+      if (node.id === 'progressSystems36' && node.parentNode) node.parentNode.removeChild(node);
+    });
+    return !document.getElementById('progressSystems36');
+  }
+
   function installVersionAndHelp() {
     window.OUTLAST_BUILD = VERSION;
     window.OUTLAST_VERSION = 'v' + VERSION;
@@ -285,6 +297,11 @@
   function install() {
     installVersionAndHelp();
     wrapKillEnemy();
+    // Enforce one source of Progress entry buttons after legacy DOMContentLoaded installers run.
+    removeLegacyProgressSystems();
+    setTimeout(removeLegacyProgressSystems, 0);
+    setTimeout(removeLegacyProgressSystems, 100);
+    setTimeout(removeLegacyProgressSystems, 500);
     installTrophyCard();
     installUpdateLog();
     if (!trophyCardInstalled) setTimeout(retryTrophyCard, 250);
@@ -298,7 +315,8 @@
         trophyCardReady: trophyCardInstalled,
         updateLogReady: updateLogHookInstalled,
         popupReady: popupInstalled,
-        mandatoryUpdateCheck: !!window.OUTLAST_MANDATORY_UPDATE_CHECK
+        mandatoryUpdateCheck: !!window.OUTLAST_MANDATORY_UPDATE_CHECK,
+        legacyProgressRemoved: removeLegacyProgressSystems()
       };
     };
   }

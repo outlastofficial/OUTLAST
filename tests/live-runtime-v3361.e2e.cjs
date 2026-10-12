@@ -51,8 +51,12 @@ const { chromium } = require('playwright');
     ultimateReady:!!window.OUTLAST_ULTIMATE_READY,
     audit:typeof window.OUTLAST_EXPANSION_AUDIT==='function'?window.OUTLAST_EXPANSION_AUDIT():null
   }));
-  if(!featureRegistry.thorns||featureRegistry.cards<400||!featureRegistry.mapReady||!featureRegistry.ultimateReady){
-    throw new Error('v4.0.0 features were not registered: '+JSON.stringify(featureRegistry));
+  if(!featureRegistry.thorns||featureRegistry.cards<500||!featureRegistry.mapReady||!featureRegistry.ultimateReady){
+    throw new Error('v4.1.0 features were not registered: '+JSON.stringify(featureRegistry));
+  }
+  const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
+  if(!expansionAudit||expansionAudit.version!=='4.1.0'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
+    throw new Error('v4.1.0 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
@@ -60,6 +64,22 @@ const { chromium } = require('playwright');
   if(pickerBuild!=='4.0.0')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<18)throw new Error('New map picker did not render visibly: '+JSON.stringify(pickerAudit));
+  const allMapProbe=await page.evaluate(()=>{
+    const keys=['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
+    const result=[];
+    for(const key of keys){
+      const button=document.querySelector('button[data-outlast3377-map="'+key+'"]');
+      if(!button)return {ok:false,missing:key,result};
+      button.click();
+      result.push({key,selected:save.map===key,definition:!!mapDefs[key],obstacles:Array.isArray(mapObstacles[key]),hazard:!!mapHazards[key]});
+      if(save.map!==key||!mapDefs[key]||!Array.isArray(mapObstacles[key]))return {ok:false,failed:key,result};
+      if(!document.getElementById('outlast3377MapPickerModal'))window.OUTLAST_OPEN_MAP_PICKER_3377();
+    }
+    save.map='Forest';persist();
+    return {ok:true,count:result.length,result};
+  });
+  if(!allMapProbe.ok||allMapProbe.count!==18)throw new Error('Not all built-in maps are selectable/playable: '+JSON.stringify(allMapProbe));
+  await page.locator('#mapBtn').click();
   await page.locator('button[data-outlast3377-map="Ribhouse"]').click();
   const selectedMap=await page.evaluate(()=>save.map);
   if(selectedMap!=='Ribhouse')throw new Error('New map selection did not persist: '+selectedMap);

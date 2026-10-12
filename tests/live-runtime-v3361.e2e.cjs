@@ -19,10 +19,22 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
 
-  const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?e2e='+Date.now();
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
-  const servedTitle=await page.title();
-  if(!servedTitle.includes('v4.2.4')) console.log('Version marker diagnostic: '+servedTitle);
+  const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
+  let url='',servedTitle='',servedBuild=null;
+  // Auto-deploy services and GitHub Pages can briefly serve the prior build while a push is deploying.
+  // Always reload with a fresh query until the active release and runtime marker agree.
+  for(let attempt=0;attempt<20;attempt++){
+    url=baseUrl+'?e2e='+Date.now()+'&deployCheck='+attempt;
+    await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
+    await page.waitForTimeout(500);
+    servedTitle=await page.title();
+    servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
+    if(servedTitle.includes('v4.2.4')&&servedBuild==='4.2.4')break;
+    if(attempt<19)await page.waitForTimeout(3000);
+  }
+  if(!servedTitle.includes('v4.2.4')||servedBuild!=='4.2.4'){
+    throw new Error('Latest build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
+  }
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
@@ -58,7 +70,7 @@ const { chromium } = require('playwright');
   }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
   if(!expansionAudit||expansionAudit.version!=='4.2.4'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
-    throw new Error('v4.1.0 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
+    throw new Error('v4.2.4 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);

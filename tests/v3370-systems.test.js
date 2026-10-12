@@ -6,9 +6,9 @@ const library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
 assert.match(html,/outlast-v3370-game-systems\.js\?v=3\.37\.\d+/,'current v3.37 systems module is loaded with a cache-busting version');
-assert(html.includes('OUTLAST v3.37.16'),'visible game version marker must match the current build');
-assert(html.includes("const BUILD='3.37.16'"),'mandatory update check must target 3.37.0');
-assert(html.includes("outlast_update_ack_v3.37.16"),'mandatory update acknowledgement must be versioned');
+assert(html.includes('<title>OUTLAST v4.0.0</title>'),'visible game version marker must match the current build');
+assert(html.includes("const BUILD='4.0.0'"),'mandatory update check must target v4.0.0');
+assert(html.includes("outlast_update_ack_v4.0.0"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('game.upgradeChoices=(typeof window.makeChoices===\'function\'?window.makeChoices():makeChoices())'),'level-up must use the authoritative rarity-aware choice generator');
 
 assert(mod.includes('function authoritativeUpgradeChoice37'), 'authoritative upgrade choice resolver must exist');

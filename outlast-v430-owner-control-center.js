@@ -1,7 +1,7 @@
 /* OUTLAST v4.3.0 — Owner Control Center */
 (function(){
 'use strict';
-const ID='outlastOwnerV430',V='4.3.2',T=[['home','Dashboard'],['maps','100-Map Lab'],['game','Gameplay'],['server','Server'],['players','Players'],['events','Events'],['rewards','Rewards + Raffle'],['activity','Chat + Activity'],['announce','Announcements'],['diag','Diagnostics'],['tools','Tools']];
+const ID='outlastOwnerV430',V='4.3.3',T=[['home','Dashboard'],['maps','100-Map Lab'],['game','Gameplay'],['server','Server'],['players','Players'],['events','Events'],['rewards','Rewards + Raffle'],['activity','Chat + Activity'],['announce','Announcements'],['diag','Diagnostics'],['tools','Tools']];
 const n=v=>Number.isFinite(Number(v))?Number(v):0, esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sv=()=>{try{return typeof save!=='undefined'&&save?save:window.save||null}catch(_){return null}},gv=()=>{try{return typeof game!=='undefined'&&game?game:window.game||null}catch(_){return null}};
 const owner=()=>{try{return typeof isOwner==='function'&&isOwner()}catch(_){return false}},say=m=>{try{if(typeof toast==='function')toast(m)}catch(_){}};

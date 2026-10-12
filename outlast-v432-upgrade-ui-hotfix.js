@@ -119,13 +119,21 @@ function install(){
  releaseNotes();releaseNotesV432();setVersion();installCanvasTextFix();overlayPolicy();installPickerVersionSync();window.OUTLAST_UI_HOTFIX_V432=true;
 }
 function installPickerVersionSync(){
- if(window.__OUTLAST_V432_PICKER_VERSION_SYNC)return;
- window.__OUTLAST_V432_PICKER_VERSION_SYNC=true;
- document.addEventListener('click',e=>{
-  if(!e.target?.closest?.('#mapBtn'))return;
-  setTimeout(setVersion,0);
-  setTimeout(setVersion,120);
- },true);
+ const picker=window.OUTLAST_OPEN_MAP_PICKER_3377;
+ if(typeof picker==='function'&&!picker.__outlastV432BuildGuard){
+  const wrapped=function(){const result=picker.apply(this,arguments);setVersion();return result};
+  wrapped.__outlastV432BuildGuard=true;
+  wrapped.__outlastV423BuildMarker=true;
+  window.OUTLAST_OPEN_MAP_PICKER_3377=wrapped;
+  const button=document.getElementById('mapBtn');if(button)button.onclick=wrapped;
+ }
+ if(!window.__OUTLAST_V432_PICKER_VERSION_SYNC){
+  window.__OUTLAST_V432_PICKER_VERSION_SYNC=true;
+  document.addEventListener('click',e=>{
+   if(!e.target?.closest?.('#mapBtn'))return;
+   setTimeout(setVersion,0);setTimeout(setVersion,35);setTimeout(setVersion,80);setTimeout(setVersion,150);
+  },true);
+ }
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 window.addEventListener('load',install,{once:true});

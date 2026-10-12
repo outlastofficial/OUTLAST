@@ -202,6 +202,8 @@
 
     const oldPopup = document.getElementById('updatePopup');
     if (oldPopup) oldPopup.style.display = 'none';
+    const oldMandatoryPopup = document.getElementById('outlastMandatoryUpdate');
+    if (oldMandatoryPopup) oldMandatoryPopup.style.display = 'none';
 
     let modal = document.getElementById('outlastV4000UpdatePopup');
     if (!modal) {

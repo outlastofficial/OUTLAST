@@ -8,7 +8,7 @@ const owned=o=>Object.keys(o||{}).filter(k=>o[k]).length;
 
 function installRarity36(){
   if(!window.OUTLAST_UPGRADE_RARITY_BY_NAME)window.OUTLAST_UPGRADE_RARITY_BY_NAME={};
-  window.OUTLAST_UPGRADE_RARITY_SCALING={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:2.7,Celestial:3.2,Transcendent:3.8,Eternal:4.6,Omega:5.5};
+  window.OUTLAST_UPGRADE_RARITY_SCALING={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
   const fallback=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
   const getRarity=name=>{
     const mapped=window.OUTLAST_UPGRADE_RARITY_BY_NAME?.[name];

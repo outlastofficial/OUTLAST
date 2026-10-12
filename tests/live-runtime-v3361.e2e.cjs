@@ -69,7 +69,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='3.37.16')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.0.0')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skinPrep=await page.evaluate(()=>{
     if(typeof skins==='undefined'||typeof save==='undefined') return {ok:false};
@@ -199,6 +199,9 @@ const { chromium } = require('playwright');
   await mobilePage.goto(mobileUrl,{waitUntil:'domcontentloaded',timeout:30000});
   await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await mobilePage.waitForTimeout(400);
+  if (await mobilePage.locator('#outlastV4000GotIt').isVisible().catch(()=>false)) {
+    await mobilePage.locator('#outlastV4000GotIt').click();
+  }
   const mobileMenuCheck=await mobilePage.evaluate(()=>{
     const b=document.getElementById('gecToggle'),r=b&&b.getBoundingClientRect(),controls=document.getElementById('mobileControls');
     return {build:window.OUTLAST_BUILD||null,chatExists:!!b,chatTop:r?r.top:null,chatBottom:r?r.bottom:null,

@@ -1,7 +1,7 @@
 /* OUTLAST v4.1.0 — Map Selection Repair + 500 Permanent / 500 In-Run Upgrade Choices */
 (function () {
   'use strict';
-  const VERSION = '4.1.0';
+  const VERSION = '4.2.0';
   const MAPS = ['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
   const TIERS = ['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
   const SCALE = {Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
@@ -239,13 +239,13 @@
       document.head.appendChild(style);
     }
     try {
-      if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.1.0'))){
-        updates.unshift(['v4.1.0 — Map Selection Repair + 1,000 Upgrade Choices','Repaired built-in map registry and selection validation. Expanded the permanent upgrade tree to 500 choices and the in-run level-up pool to at least 500 distinct cards, added a searchable permanent tree, and increased upper-rarity scaling through Omega 8×.']);
+      if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.2.0'))){
+        updates.unshift(['v4.2.0 — Maps, Skills + AFK Lounge','Repaired built-in map registry and selection validation. Expanded the permanent upgrade tree to 500 choices and the in-run level-up pool to at least 500 distinct cards, added a searchable permanent tree, and increased upper-rarity scaling through Omega 8×.']);
       }
       if(Array.isArray(helpArticles)){
         const articles=[
           ['How do I select the new maps?','Maps','Open Play → Choose Map, select any map tile, and check the SELECTED marker. The selection is saved before the picker closes. All 18 built-in maps have registered terrain, obstacles, and hazard profiles.'],
-          ['How many upgrade choices are there in v4.1.0?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Use the search field at the top of the permanent tree to find a specific upgrade.'],
+          ['How many upgrade choices are there in v4.2.0?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Use the search field at the top of the permanent tree to find a specific upgrade.'],
           ['What are the updated rarity multipliers?','Upgrades & Rarities','Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 4.8×, Transcendent 5.6×, Eternal 6.8×, Omega 8×. Higher tiers scale above lower tiers.']
         ];
         for(let i=articles.length-1;i>=0;i--)if(!helpArticles.some(a=>a&&a[0]===articles[i][0]))helpArticles.unshift(articles[i]);
@@ -265,9 +265,9 @@
     const modal=document.getElementById('outlastV4000UpdatePopup');
     if(modal){
       const title=modal.querySelector('#outlastV4000UpdateTitle');
-      if(title)title.textContent='OUTLAST v4.1.0 — Map Fix + 1,000 Upgrades';
+      if(title)title.textContent='OUTLAST v4.2.0 — Maps, Skills + AFK Lounge';
       const paragraphs=modal.querySelectorAll('p');
-      if(paragraphs[0])paragraphs[0].textContent='This release repairs map selection, makes all 18 built-in maps playable, expands the permanent tree to 500 choices and the in-run pool to 500 distinct cards, and increases upper-rarity scaling through Omega 8×.';
+      if(paragraphs[0])paragraphs[0].textContent='This release fixes map-tile selection and Active Skill changes, makes purchased Ascension upgrades apply when a run starts, keeps 500 permanent and 500 in-run upgrade choices, and adds a safe AFK Lounge that pauses gameplay and rewards.';
       const gotIt=document.getElementById('outlastV4000GotIt'),close=document.getElementById('outlastV4000Close');
       const acknowledge=()=>{try{localStorage.setItem('outlastSeenUpdateVersion',VERSION)}catch(_){};modal.style.display='none';};
       if(gotIt)gotIt.onclick=acknowledge;
@@ -277,17 +277,59 @@
     }
     const updateNote=document.querySelector('[data-outlast-v4000-update-note]');
     if(updateNote){
-      updateNote.innerHTML='<b>v4.1.0 — Map Selection + 1,000 Upgrade Choices</b><div class="small">Fixed map registry/selection; 500 permanent upgrades and 500 in-run choices; searchable permanent tree; upper rarities now scale to Omega 8×.</div>';
+      updateNote.innerHTML='<b>v4.2.0 — Maps, Skills + AFK Lounge</b><div class="small">Reliable map tile selection; Active Skills can be purchased/equipped; permanent Ascension effects apply on run start; 500 permanent and 500 in-run upgrade choices; safe AFK Lounge.</div>';
     }
   }
 
+
+  function installPermanentApplyHook() {
+    const original=window.startGame;
+    if(typeof original!=='function'||original.__outlastV420PermanentApply)return;
+    const wrapped=function(){const result=original.apply(this,arguments);try{const g=getGame();if(g&&g.player&&!g.player.__outlastAscensionApplied){applyPermanentChoices();g.player.__outlastAscensionApplied=true;}}catch(error){window.OUTLAST_PERMANENT_APPLY_ERROR=String(error&&error.message||error);}return result;};
+    wrapped.__outlastV420PermanentApply=true;window.startGame=wrapped;try{startGame=wrapped}catch(_){}
+  }
+  function installMapClickRepair() {
+    if(window.__OUTLAST_V420_MAP_CLICK_REPAIR)return;window.__OUTLAST_V420_MAP_CLICK_REPAIR=true;
+    document.addEventListener('click',function(event){
+      const tile=event.target&&event.target.closest&&event.target.closest('button[data-outlast3377-map]');if(!tile)return;
+      event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();ensureMapRegistry();
+      const key=String(tile.getAttribute('data-outlast3377-map')||'');
+      try{if(typeof window.selectMap==='function')window.selectMap(key);else{const s=getSave();if(s&&MAPS.includes(key)){s.map=key;if(typeof persist==='function')persist();if(typeof updateMenuSummary==='function')updateMenuSummary();if(typeof closeSub==='function')closeSub();if(typeof toast==='function')toast('Map selected: '+key);}}window.OUTLAST_LAST_MAP_SELECTION=key;}
+      catch(error){window.OUTLAST_MAP_SELECTION_ERROR=String(error&&error.message||error);if(typeof toast==='function')toast('Could not select this map. Reopen Choose Map and try again.');}
+    },true);
+    const style=document.createElement('style');style.id='outlast-v420-map-click-style';style.textContent='#outlast3377MapPickerModal{z-index:999999!important;pointer-events:auto!important}#outlast3377MapPickerModal *{pointer-events:auto}';document.head.appendChild(style);
+  }
+  function installSkillSelectionRepair() {
+    window.selectSkill=function(name){
+      const s=getSave();if(!s||!activeSkills||!activeSkills[name])return false;s.ownedSkills=s.ownedSkills||{};const def=activeSkills[name];
+      if(!s.ownedSkills[name]){const cost=Math.max(0,Number(def.cost)||0);if((Number(s.coins)||0)<cost){if(typeof toast==='function')toast('Need '+cost.toLocaleString()+' coins to unlock '+name+'.');return false;}s.coins=Math.max(0,Number(s.coins)-cost);s.ownedSkills[name]=true;}
+      s.activeSkill=name;if(typeof persist==='function')persist();if(typeof updateMenuSummary==='function')updateMenuSummary();if(typeof renderSkills==='function')renderSkills();if(typeof toast==='function')toast(name+' equipped — press Q during a run.');window.OUTLAST_ACTIVE_SKILL_SELECTION=name;return true;
+    };
+  }
+  function installAFKLounge() {
+    if(window.__OUTLAST_V420_AFK_INSTALLED)return;window.__OUTLAST_V420_AFK_INSTALLED=true;
+    const more=document.querySelector('[data-page-content="more"] .menu-cards');
+    if(more&&!document.getElementById('outlastAFKLoungeBtn')){const card=document.createElement('div');card.className='menu-card';card.innerHTML='<h3>☕ AFK Lounge</h3><p class="small">A safe place to step away. Enemies and rewards pause while you are here.</p><button class="menu-btn" id="outlastAFKLoungeBtn" type="button">Open AFK Lounge</button>';more.appendChild(card);}
+    if(!document.getElementById('outlastAFKSpotButton')){const b=document.createElement('button');b.id='outlastAFKSpotButton';b.type='button';b.textContent='☕ AFK Spot';b.style.cssText='position:fixed;left:12px;bottom:12px;z-index:130;display:none;padding:10px 13px;border-radius:12px;border:1px solid #6c927c;background:#14261e;color:#e9fff1;font-weight:800;box-shadow:0 5px 20px #0008;cursor:pointer';document.body.appendChild(b);}
+    if(!document.getElementById('outlastAFKLounge')){const m=document.createElement('div');m.id='outlastAFKLounge';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.style.cssText='position:fixed;inset:0;z-index:1000000;display:none;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at center,#213a31ee,#050b0af5);backdrop-filter:blur(7px)';m.innerHTML='<section style="width:min(600px,94vw);border:1px solid #527c68;border-radius:22px;padding:26px;background:linear-gradient(145deg,#172b23,#09110e);color:#edfff4;box-shadow:0 25px 80px #000b;text-align:center"><div style="font-size:46px">☕ 🌿</div><div style="font-size:28px;font-weight:900;margin:8px 0">AFK LOUNGE</div><p style="color:#c1d9cb;line-height:1.55">Safe spot: the run is paused, enemies stop, and no run rewards are earned while you take a break.</p><div style="margin:18px auto;padding:14px;border-radius:12px;background:#0b1711;border:1px solid #2e4c3b"><b>SAFE ZONE • PAUSED</b></div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button type="button" id="outlastAFKResume" class="menu-btn">▶ Resume Run</button><button type="button" id="outlastAFKReturn" class="menu-btn">Return to Menu</button></div></section>';document.body.appendChild(m);}
+    let wasRunning=false,wasPaused=false;
+    const open=()=>{const g=getGame();wasRunning=!!(g&&g.running&&!g.over);wasPaused=!!(g&&g.paused);if(g&&wasRunning)g.paused=true;const m=document.getElementById('outlastAFKLounge');if(m)m.style.display='flex';window.OUTLAST_AFK_ACTIVE=true;};
+    const close=resume=>{const g=getGame(),m=document.getElementById('outlastAFKLounge');if(m)m.style.display='none';if(g&&wasRunning)g.paused=resume?false:wasPaused;window.OUTLAST_AFK_ACTIVE=false;if(!resume&&wasRunning&&typeof showMenu==='function')showMenu();};
+    document.getElementById('outlastAFKLoungeBtn')?.addEventListener('click',open);document.getElementById('outlastAFKSpotButton')?.addEventListener('click',open);document.getElementById('outlastAFKResume')?.addEventListener('click',()=>close(true));document.getElementById('outlastAFKReturn')?.addEventListener('click',()=>close(false));
+    const spot=document.getElementById('outlastAFKSpotButton');setInterval(()=>{const g=getGame();if(spot)spot.style.display=g&&g.running&&!g.over?'block':'none';},1000);
+  }
+
   function install() {
-    if(window.__OUTLAST_V410_INSTALLED){installInRunChoices();try{window.OUTLAST_UPGRADE_LIBRARY_COUNT=new Set(tempUp.map(x=>x&&x[0]).filter(Boolean)).size}catch(_){}setVersionAndPopup();return;}
+    if(window.__OUTLAST_V410_INSTALLED){installInRunChoices();try{window.OUTLAST_UPGRADE_LIBRARY_COUNT=new Set(tempUp.map(x=>x&&x[0]).filter(Boolean)).size}catch(_){}repairMapSelection();installMapClickRepair();installSkillSelectionRepair();installAFKLounge();installPermanentApplyHook();setVersionAndPopup();return;}
     window.__OUTLAST_V410_INSTALLED=true;
     const mapOk=ensureMapRegistry();
     installPermanentChoices();
     const runCount=installInRunChoices();
     repairMapSelection();
+    installMapClickRepair();
+    installSkillSelectionRepair();
+    installAFKLounge();
+    installPermanentApplyHook();
     addStylesAndHelp();
     setVersionAndPopup();
     const host=document.getElementById('subContent');

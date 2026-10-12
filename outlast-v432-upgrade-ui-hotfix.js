@@ -116,7 +116,16 @@ function releaseNotesV432(){try{
  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('Which overlays hide during level-up?')))helpArticles.unshift(['Which overlays hide during level-up?','Upgrades & Rarities','While choosing an upgrade, the October event banner, floating threat badge and AFK Spot shortcut hide so the three cards and level-up heading have clear space. They return when the upgrade choice closes.']);
 }catch(_){}}
 function install(){
- releaseNotes();releaseNotesV432();setVersion();installCanvasTextFix();overlayPolicy();window.OUTLAST_UI_HOTFIX_V432=true;
+ releaseNotes();releaseNotesV432();setVersion();installCanvasTextFix();overlayPolicy();installPickerVersionSync();window.OUTLAST_UI_HOTFIX_V432=true;
+}
+function installPickerVersionSync(){
+ if(window.__OUTLAST_V432_PICKER_VERSION_SYNC)return;
+ window.__OUTLAST_V432_PICKER_VERSION_SYNC=true;
+ document.addEventListener('click',e=>{
+  if(!e.target?.closest?.('#mapBtn'))return;
+  setTimeout(setVersion,0);
+  setTimeout(setVersion,120);
+ },true);
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 window.addEventListener('load',install,{once:true});

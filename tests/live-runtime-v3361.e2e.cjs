@@ -67,22 +67,6 @@ const { chromium } = require('playwright');
   if(!worldAndUiAudit.audit||!worldAndUiAudit.audit.ready||worldAndUiAudit.audit.count!==100||worldAndUiAudit.audit.unique!==100){
     throw new Error('100-map registry audit failed: '+JSON.stringify(worldAndUiAudit.audit));
   }
-  const cardRendererAudit=await page.evaluate(()=>{
-    const before={running:game.running,paused:game.paused,over:game.over,open:game.upgradeOpen,choices:game.upgradeChoices,rolling:game.__upgradeRollActive};
-    if(!game.player)return {ready:false,reason:'player not initialized'};
-    try{
-      game.running=true;game.over=false;game.paused=true;game.upgradeOpen=true;game.__upgradeRollActive=false;
-      game.upgradeChoices=[
-        ['Ascension • Renewal Circuit [Uncommon]','Regenerate +0.03 HP every second, including during long survival runs.',function(){},'Uncommon'],
-        ['Ascension • Renewal Circuit [Mythic]','Regenerate +0.07 HP per second and gain a stronger recovery bonus.',function(){},'Mythic'],
-        ['Omega Guardian: Infinite Renewal Circuit [Omega]','Restore health more quickly and create a protective field around the player.',function(){},'Omega']
-      ];
-      draw();
-      const audit=window.OUTLAST_UPGRADE_CARD_DESIGN_V433?.audit?.()||null;
-      return {ready:!!audit?.renderHook&&audit.active&&audit.choices===3,error:audit?.error||window.OUTLAST_V433_CARD_ERROR||null,build:window.OUTLAST_BUILD};
-    } finally {game.running=before.running;game.paused=before.paused;game.over=before.over;game.upgradeOpen=before.open;game.upgradeChoices=before.choices;game.__upgradeRollActive=before.rolling;draw();}
-  });
-  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('Redesigned upgrade cards failed a long-title render check: '+JSON.stringify(cardRendererAudit));
   const featureRegistry=await page.evaluate(()=>({
     thorns:typeof tempUp!=='undefined'&&Array.isArray(tempUp)&&tempUp.some(u=>u&&u[0]==='Thorns'),
     cards:Number(window.OUTLAST_UPGRADE_LIBRARY_COUNT||0),
@@ -158,6 +142,22 @@ const { chromium } = require('playwright');
   });
   await page.locator('#startBtn').click();
   await page.waitForTimeout(2500);
+  const cardRendererAudit=await page.evaluate(()=>{
+    const before={running:game.running,paused:game.paused,over:game.over,open:game.upgradeOpen,choices:game.upgradeChoices,rolling:game.__upgradeRollActive};
+    if(!game.player)return {ready:false,reason:'player not initialized'};
+    try{
+      game.running=true;game.over=false;game.paused=true;game.upgradeOpen=true;game.__upgradeRollActive=false;
+      game.upgradeChoices=[
+        ['Ascension • Renewal Circuit [Uncommon]','Regenerate +0.03 HP every second, including during long survival runs.',function(){},'Uncommon'],
+        ['Ascension • Renewal Circuit [Mythic]','Regenerate +0.07 HP per second and gain a stronger recovery bonus.',function(){},'Mythic'],
+        ['Omega Guardian: Infinite Renewal Circuit [Omega]','Restore health more quickly and create a protective field around the player.',function(){},'Omega']
+      ];
+      draw();
+      const audit=window.OUTLAST_UPGRADE_CARD_DESIGN_V433?.audit?.()||null;
+      return {ready:!!audit?.renderHook&&audit.active&&audit.choices===3,error:audit?.error||window.OUTLAST_V433_CARD_ERROR||null,build:window.OUTLAST_BUILD};
+    } finally {game.running=before.running;game.paused=before.paused;game.over=before.over;game.upgradeOpen=before.open;game.upgradeChoices=before.choices;game.__upgradeRollActive=before.rolling;draw();}
+  });
+  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('Redesigned upgrade cards failed a long-title render check: '+JSON.stringify(cardRendererAudit));
 
   const layoutAudit=await page.evaluate(()=>{
     const buttons=[...document.querySelectorAll('#menu .menu-page button')].map(b=>({id:b.id,text:(b.innerText||b.textContent||'').replace(/\s+/g,' ').trim(),page:b.closest('.menu-page')?.dataset.pageContent||''}));

@@ -1,7 +1,7 @@
 /* OUTLAST v3.37.7 — Rebuilt Map Picker + Boss Spawn Retry */
 (function(){
 'use strict';
-const VERSION='3.37.12';
+const VERSION='3.37.16';
 const PREFIX='CustomMap:';
 const BUILTIN_MAPS=['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
 const MAP_DESCRIPTIONS={

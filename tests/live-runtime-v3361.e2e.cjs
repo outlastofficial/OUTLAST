@@ -87,7 +87,7 @@ const { chromium } = require('playwright');
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
   if(pickerBuild!=='4.3.1')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
-  if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<18)throw new Error('New map picker did not render visibly: '+JSON.stringify(pickerAudit));
+  if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<100)throw new Error('100-map picker did not render all selectable tiles: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{
     const modal=document.getElementById('outlast3377MapPickerModal');
     const first=[...(modal?.querySelectorAll('button[data-outlast3377-map]')||[])].slice(0,2);

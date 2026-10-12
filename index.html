@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="3.37.15">
-<meta name="build-version" content="3.37.15">
-<title>OUTLAST v3.37.15</title>
+<meta name="outlast-build" content="4.0.0">
+<meta name="build-version" content="4.0.0">
+<title>OUTLAST v4.0.0</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3706,6 +3706,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+    ['v4.0.0 — OUTLAST: Ultimate Expansion','Added lifetime Boss Trophies with one-time coin rewards at 1, 5, 10, 25 and 50 boss defeats; brought the expanded combat, map, upgrade, weapon-evolution, rarity animation and progression systems into the major release; refreshed version metadata, release notice and How-To guide.'],
    ['v3.30.17 — Laser/FrostNova projectile fix','Laser and FrostNova now spawn their own visible projectiles too; their existing special effects remain in place.'],
    ['v3.30.16 — Full-Arena Map Layout','Rebalanced every map’s real obstacle layout across the full arena. Objects now occupy upper, middle, and lower zones while the center start area stays clear.'],
    ['v3.34.0 — Omega Shield','Added the Omega Shield permanent upgrade. It costs 20,000 coins per level, blocks incoming hits with shield charges, restores 1 charge every 5 seconds, and gains +1 hit capacity per level up to 5. Omega Vacuum and Omega Shield both use a fixed 20,000-coin price per level.'],
@@ -6331,9 +6332,10 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.37.5')}))updates.unshift(['v3.37.5 — Strict Rarity Ladder + Boss Spawn Reliability','Normalized older overlapping upgrades to shared tier baselines so Common is the floor and matching effects rise through every rarity. Fixed stale boss locks, kept a single boss active at a time, and set scheduled bosses to arrive after about 20 seconds initially and about 40 seconds after each defeat.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('How is each upgrade rarity stronger?')}))helpArticles.unshift(['How is each upgrade rarity stronger?','Upgrades & Rarities','Common is the baseline and weakest rarity. Matching upgrades increase in order: Uncommon, Rare, Epic, Legendary, Mythic, Divine, Celestial, Transcendent, Eternal, then Omega. Legacy upgrades share the same baseline stats as equivalent library upgrades; descriptions and applied effects use matching rarity scaling. Whole-number stats step up instead of tying due to rounding. Multipliers: Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, Omega 8×.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('Why are bosses not spawning consistently?')}))helpArticles.unshift(['Why are bosses not spawning consistently?','Bosses & Runs','The first scheduled boss appears after about 20 seconds. Later bosses wait for the current boss to be defeated, then appear after about 40 seconds. Only one boss can be active at once. If a boss entity disappears but its ID remains stuck, the stale lock is cleared so the scheduler can retry.']);
-})();</script><script src="outlast-v3360-focused-systems.js?v=3.36.0"></script><script src="outlast-v3370-game-systems.js?v=3.37.15"></script>
+})();</script><script src="outlast-v3360-focused-systems.js?v=3.36.0"></script><script src="outlast-v3370-game-systems.js?v=3.37.16"></script>
 <script src="outlast-v3376-interaction-fixes.js?v=3.37.6"></script>
-<script src="outlast-v3377-map-boss-rebuild.js?v=3.37.15"></script>
-<script src="outlast-v3378-expansion.js?v=3.37.15"></script>
+<script src="outlast-v3377-map-boss-rebuild.js?v=3.37.16"></script>
+<script src="outlast-v3378-expansion.js?v=3.37.18"></script>
+<script src="outlast-v4000-ultimate-expansion.js?v=4.0.0"></script>
 </body>
 </html>

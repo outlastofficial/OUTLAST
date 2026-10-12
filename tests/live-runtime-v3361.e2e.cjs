@@ -61,7 +61,7 @@ const { chromium } = require('playwright');
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.0.0')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  if(pickerBuild!=='4.1.0')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<18)throw new Error('New map picker did not render visibly: '+JSON.stringify(pickerAudit));
   const allMapProbe=await page.evaluate(()=>{
@@ -89,7 +89,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.0.0')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.1.0')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skinPrep=await page.evaluate(()=>{
     if(typeof skins==='undefined'||typeof save==='undefined') return {ok:false};

@@ -76,7 +76,7 @@ const { chromium } = require('playwright');
       if(save.map!==key||!mapDefs[key]||!Array.isArray(mapObstacles[key]))return {ok:false,failed:key,result};
       if(!document.getElementById('outlast3377MapPickerModal'))window.OUTLAST_OPEN_MAP_PICKER_3377();
     }
-    save.map='Forest';persist();
+    save.map='Forest';persist();document.getElementById('outlast3377MapPickerModal')?.remove();window.OUTLAST_MAP_PICKER_OPEN=false;
     return {ok:true,count:result.length,result};
   });
   if(!allMapProbe.ok||allMapProbe.count!==18)throw new Error('Not all built-in maps are selectable/playable: '+JSON.stringify(allMapProbe));

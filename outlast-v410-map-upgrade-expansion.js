@@ -1,7 +1,7 @@
 /* OUTLAST v4.1.0 — Map Selection Repair + 500 Permanent / 500 In-Run Upgrade Choices */
 (function () {
   'use strict';
-  const VERSION = '4.2.0';
+  const VERSION = '4.2.1';
   const MAPS = ['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
   const TIERS = ['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
   const SCALE = {Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
@@ -239,13 +239,15 @@
       document.head.appendChild(style);
     }
     try {
-      if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.2.0'))){
-        updates.unshift(['v4.2.0 — Maps, Skills + AFK Lounge','Repaired built-in map registry and selection validation. Expanded the permanent upgrade tree to 500 choices and the in-run level-up pool to at least 500 distinct cards, added a searchable permanent tree, and increased upper-rarity scaling through Omega 8×.']);
+      if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.2.1'))){
+        updates.unshift(['v4.2.1 — Map, Skill + AFK Reliability','Repaired built-in map registry and selection validation. Expanded the permanent upgrade tree to 500 choices and the in-run level-up pool to at least 500 distinct cards, added a searchable permanent tree, and increased upper-rarity scaling through Omega 8×.']);
       }
       if(Array.isArray(helpArticles)){
         const articles=[
           ['How do I select the new maps?','Maps','Open Play → Choose Map, select any map tile, and check the SELECTED marker. The selection is saved before the picker closes. All 18 built-in maps have registered terrain, obstacles, and hazard profiles.'],
-          ['How many upgrade choices are there in v4.2.0?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Use the search field at the top of the permanent tree to find a specific upgrade.'],
+          ['How do I change my Active Skill?','Active Skills','Open Loadout → Manage Skills. Click an owned skill to equip it, or click an unowned skill to buy it if you have enough coins. The selected skill is saved and used with Q during a run.'],
+          ['What is the AFK Lounge?','AFK Lounge','Open More → AFK Lounge, or use the AFK Spot button during a run. It is a safe pause area: enemies and run rewards are paused until you resume.'],
+          ['How many upgrade choices are there in v4.2.1?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Use the search field at the top of the permanent tree to find a specific upgrade.'],
           ['What are the updated rarity multipliers?','Upgrades & Rarities','Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 4.8×, Transcendent 5.6×, Eternal 6.8×, Omega 8×. Higher tiers scale above lower tiers.']
         ];
         for(let i=articles.length-1;i>=0;i--)if(!helpArticles.some(a=>a&&a[0]===articles[i][0]))helpArticles.unshift(articles[i]);
@@ -265,9 +267,9 @@
     const modal=document.getElementById('outlastV4000UpdatePopup');
     if(modal){
       const title=modal.querySelector('#outlastV4000UpdateTitle');
-      if(title)title.textContent='OUTLAST v4.2.0 — Maps, Skills + AFK Lounge';
+      if(title)title.textContent='OUTLAST v4.2.1 — Map, Skill + AFK Reliability';
       const paragraphs=modal.querySelectorAll('p');
-      if(paragraphs[0])paragraphs[0].textContent='This release fixes map-tile selection and Active Skill changes, makes purchased Ascension upgrades apply when a run starts, keeps 500 permanent and 500 in-run upgrade choices, and adds a safe AFK Lounge that pauses gameplay and rewards.';
+      if(paragraphs[0])paragraphs[0].textContent='Reliability patch: map tiles now have a dedicated selection route, Active Skills can be purchased and equipped, purchased Ascension bonuses apply at run start, and the safe AFK Lounge pauses the run and rewards.';
       const gotIt=document.getElementById('outlastV4000GotIt'),close=document.getElementById('outlastV4000Close');
       const acknowledge=()=>{try{localStorage.setItem('outlastSeenUpdateVersion',VERSION)}catch(_){};modal.style.display='none';};
       if(gotIt)gotIt.onclick=acknowledge;

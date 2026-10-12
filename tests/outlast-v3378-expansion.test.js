@@ -36,7 +36,7 @@ assert(html.includes('<meta name="outlast-build" content="4.3.1">')&&html.includ
 assert(html.includes('outlast-v431-upgrade-ui-hotfix.js?v=4.3.1'),'upgrade UI hotfix is loaded after map and owner systems');
 new vm.Script(uiHotfix,{filename:'outlast-v431-upgrade-ui-hotfix.js'});
 assert(uiHotfix.includes('drawCleanUpgradeText')&&uiHotfix.includes('outlastPinkToy'),'upgrade layout and unwanted floating toy hotfix are present');
-assert(html.includes('outlast-v430-world-maps.js?v=4.3.0')&&html.includes('outlast-v430-owner-control-center.js?v=4.3.0'),'v4.3.0 map and owner modules are loaded');
+assert(html.includes('outlast-v430-world-maps.js?v=4.3.1')&&html.includes('outlast-v430-owner-control-center.js?v=4.3.1'),'v4.3.0 map and owner modules are loaded');
 new vm.Script(worldMaps,{filename:'outlast-v430-world-maps.js'});
 new vm.Script(ownerPanel,{filename:'outlast-v430-owner-control-center.js'});
 const newMapNames=[...worldMaps.matchAll(/^\s*'([^|]+)\|/gm)].map(m=>m[1]);

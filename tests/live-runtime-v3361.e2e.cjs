@@ -27,6 +27,11 @@ const { chromium } = require('playwright');
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
   await page.locator('#outlastV4000GotIt').waitFor({state:'visible',timeout:8000});
   await page.locator('#outlastV4000GotIt').click();
+  const majorRelease=await page.evaluate(()=>typeof window.OUTLAST_ULTIMATE_EXPANSION_AUDIT==='function'?window.OUTLAST_ULTIMATE_EXPANSION_AUDIT():null);
+  if(!majorRelease||majorRelease.version!=='4.0.0'||!majorRelease.bossTrophiesReady||!majorRelease.trophyCardReady||!majorRelease.updateLogReady||!majorRelease.popupReady||!majorRelease.mandatoryUpdateCheck){
+    throw new Error('v4.0.0 release modules did not initialize fully: '+JSON.stringify(majorRelease));
+  }
+  if(await page.locator('#outlastV4000BossTrophiesBtn').count()!==1)throw new Error('Progress → Boss Trophies card is missing.');
   const stalePopupShowing=await page.evaluate(()=>{const el=document.getElementById('outlastV3350UpdatePopup');return !!el&&getComputedStyle(el).display!=='none';});
   if(stalePopupShowing)throw new Error('Obsolete v3.35.0 popup is still covering the current build.');
   const featureRegistry=await page.evaluate(()=>({

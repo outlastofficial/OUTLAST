@@ -52,7 +52,8 @@ const { chromium } = require('playwright');
     audit:typeof window.OUTLAST_EXPANSION_AUDIT==='function'?window.OUTLAST_EXPANSION_AUDIT():null
   }));
   if(!featureRegistry.thorns||featureRegistry.cards<500||!featureRegistry.mapReady||!featureRegistry.ultimateReady){
-    throw new Error('v4.1.0 features were not registered: '+JSON.stringify(featureRegistry));
+    const runtimeDiag=await page.evaluate(()=>({expansionReady:!!window.OUTLAST_MAP_UPGRADE_EXPANSION_READY,expansionAudit:typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null,loadedExpansionResources:performance.getEntriesByType('resource').map(x=>x.name).filter(x=>x.includes('outlast-v410-map-upgrade-expansion'))}));
+    throw new Error('v4.1.0 features were not registered: '+JSON.stringify({featureRegistry,runtimeDiag,consoleErrors,http404}));
   }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
   if(!expansionAudit||expansionAudit.version!=='4.1.0'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){

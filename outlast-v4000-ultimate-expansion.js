@@ -141,6 +141,13 @@
     }
     const progress = document.querySelector('[data-page-content="progress"]');
     let cards = progress && progress.querySelector('.menu-cards');
+    if (!cards && progress) {
+      // Some menu variants render the Progress heading but omit its original card grid.
+      // Create the grid inside the existing Progress page instead of dropping the feature.
+      cards = document.createElement('div');
+      cards.className = 'menu-cards';
+      progress.appendChild(cards);
+    }
     if (!cards) {
       const statsButton = document.getElementById('statsBtn');
       if (statsButton && typeof statsButton.closest === 'function') cards = statsButton.closest('.menu-cards');

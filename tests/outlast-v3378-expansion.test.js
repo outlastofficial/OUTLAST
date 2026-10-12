@@ -6,7 +6,7 @@ const mapPicker=fs.readFileSync(path.join(root,'outlast-v3377-map-boss-rebuild.j
 const mapCreator=fs.readFileSync(path.join(root,'outlast-v33018-map-creator.js'),'utf8');
 const worldMaps=fs.readFileSync(path.join(root,'outlast-v430-world-maps.js'),'utf8');
 const ownerPanel=fs.readFileSync(path.join(root,'outlast-v430-owner-control-center.js'),'utf8');
-const uiHotfix=fs.readFileSync(path.join(root,'outlast-v431-upgrade-ui-hotfix.js'),'utf8');
+const uiHotfix=fs.readFileSync(path.join(root,'outlast-v432-upgrade-ui-hotfix.js'),'utf8');
 const corePopup=fs.readFileSync(path.join(root,'outlast-v33500-core-content-engine.js'),'utf8');
 const major=fs.readFileSync(path.join(root,'outlast-v4000-ultimate-expansion.js'),'utf8');
 const eventHelpRemoved=!html.includes('How does the October Event work?');
@@ -32,11 +32,11 @@ assert(expansion.includes('Why was the old event overlay removed?'),'How To docu
 assert(expansion.includes('v3.37.14 — Fix Floating Chat Layering'),'release log records the chat fix');
 assert(expansion.includes('v3.37.18 — Restore Global Chat Tags'),'release log records restored chat tags');
 assert(expansion.includes('Why is Chat at the top of the screen?'),'How To documents the chat placement');
-assert(html.includes('<meta name="outlast-build" content="4.3.1">')&&html.includes('<meta name="build-version" content="4.3.1">')&&html.includes('<title>OUTLAST v4.3.1</title>'),'current version metadata');
-assert(html.includes('outlast-v431-upgrade-ui-hotfix.js?v=4.3.1'),'upgrade UI hotfix is loaded after map and owner systems');
-new vm.Script(uiHotfix,{filename:'outlast-v431-upgrade-ui-hotfix.js'});
-assert(uiHotfix.includes('drawCleanUpgradeText')&&uiHotfix.includes('outlastPinkToy'),'upgrade layout and unwanted floating toy hotfix are present');
-assert(html.includes('outlast-v430-world-maps.js?v=4.3.1')&&html.includes('outlast-v430-owner-control-center.js?v=4.3.1'),'v4.3.0 map and owner modules are loaded');
+assert(html.includes('<meta name="outlast-build" content="4.3.2">')&&html.includes('<meta name="build-version" content="4.3.2">')&&html.includes('<title>OUTLAST v4.3.2</title>'),'current version metadata');
+assert(html.includes('outlast-v432-upgrade-ui-hotfix.js?v=4.3.2'),'upgrade UI hotfix is loaded after map and owner systems');
+new vm.Script(uiHotfix,{filename:'outlast-v432-upgrade-ui-hotfix.js'});
+assert(uiHotfix.includes('drawCleanUpgradeText')&&uiHotfix.includes('outlastPinkToy')&&uiHotfix.includes('outlastV431ThreatBanner'),'upgrade layout, threat/event overlays and unwanted floating toy hotfix are present');
+assert(html.includes('outlast-v430-world-maps.js?v=4.3.2')&&html.includes('outlast-v430-owner-control-center.js?v=4.3.2'),'v4.3.0 map and owner modules are loaded');
 new vm.Script(worldMaps,{filename:'outlast-v430-world-maps.js'});
 new vm.Script(ownerPanel,{filename:'outlast-v430-owner-control-center.js'});
 const newMapNames=[...worldMaps.matchAll(/^\s*'([^|]+)\|/gm)].map(m=>m[1]);

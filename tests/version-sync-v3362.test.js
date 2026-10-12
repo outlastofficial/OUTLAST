@@ -3,8 +3,8 @@ const index=fs.readFileSync('index.html','utf8');
 const core=fs.readFileSync('outlast-v33500-core-content-engine.js','utf8');
 const expansion=fs.readFileSync('outlast-v4000-ultimate-expansion.js','utf8');
 
-assert(index.includes('<meta name="outlast-build" content="4.0.0">')&&index.includes('<meta name="build-version" content="4.0.0">'),'current release metadata must match v4.0.0');
-assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0'),'the final loaded module is the current major version');
+assert(index.includes('<meta name="outlast-build" content="4.1.0">')&&index.includes('<meta name="build-version" content="4.1.0">'),'current release metadata must match v4.1.0');
+assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.1.0'),'the current release and expansion modules are loaded');
 assert(expansion.includes("window.OUTLAST_BUILD = VERSION;")&&expansion.includes("document.title = 'OUTLAST v' + VERSION;"),'the final module publishes the global build and title');
 assert(core.includes("window.OUTLAST_CORE_CONTENT"),'12-core engine must still install its content container');
 assert(core.includes("window.OUTLAST_CORE_CONTENT_VERSION=VERSION"),'12-core engine should expose its own version without changing global build state');
@@ -22,4 +22,4 @@ const declIndex=index.indexOf("let fatalGameError='',fatalErrorShown=false;");
 assert(startIndex>0 && declIndex>=0 && declIndex<startIndex,'fatalGameError must be declared before startGame; Start Run uses it before the loop begins');
 assert(!index.includes("document.getElementById('progressionBtn').onclick=renderProgression"),'progression button binding must be null-safe');
 assert(!index.includes("document.getElementById('questBtn').onclick=renderQuestBoard"),'quest button binding must be null-safe');
-console.log('v4.0.0 version synchronization regression test passed');
+console.log('v4.1.0 version synchronization regression test passed');

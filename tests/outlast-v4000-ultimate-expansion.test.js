@@ -4,7 +4,7 @@ const path = require('path');
 const vm = require('vm');
 
 const source = fs.readFileSync(path.join(__dirname, '..', 'outlast-v4000-ultimate-expansion.js'), 'utf8');
-assert(source.includes("const VERSION='4.0.0'"), 'major expansion exposes the 4.0.0 release');
+assert(source.includes("const VERSION = '4.0.0'"), 'major expansion exposes the 4.0.0 release');
 assert(source.includes('function awardBossDefeat'), 'boss trophy awards are implemented');
 assert(source.includes('outlastV4000BossTrophiesBtn'), 'Boss Trophies is reachable from Progress');
 assert(source.includes('outlastSeenUpdateVersion'), 'the update notice is remembered per version');

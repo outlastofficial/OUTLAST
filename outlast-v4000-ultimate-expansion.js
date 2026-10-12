@@ -207,9 +207,11 @@
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'outlastV4000UpdatePopup';
-      modal.setAttribute('role', 'dialog');
-      modal.setAttribute('aria-modal', 'true');
-      modal.setAttribute('aria-labelledby', 'outlastV4000UpdateTitle');
+      if (typeof modal.setAttribute === 'function') {
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-labelledby', 'outlastV4000UpdateTitle');
+      }
       modal.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.82);z-index:2147483005;font-family:Arial,sans-serif;color:#f3f7fb;box-sizing:border-box;';
       modal.innerHTML = '<div style="width:min(720px,100%);max-height:90vh;overflow:auto;background:#101923;border:1px solid #41576b;border-radius:18px;padding:22px;box-shadow:0 24px 90px rgba(0,0,0,.65)">' +
         '<div style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between"><div><div style="font-size:12px;letter-spacing:.12em;color:#9fb7ca;font-weight:800">MAJOR RELEASE</div><h2 id="outlastV4000UpdateTitle" style="margin:6px 0 10px;font-size:clamp(22px,4vw,32px)">OUTLAST v4.0.0 — Ultimate Expansion</h2></div>' +

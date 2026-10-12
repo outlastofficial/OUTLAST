@@ -131,16 +131,35 @@
   }
 
   function installTrophyCard() {
-    if (trophyCardInstalled) return;
-    const cards = document.querySelector('[data-page-content="progress"] .menu-cards');
-    if (!cards || document.getElementById('outlastV4000BossTrophiesBtn')) return;
+    if (trophyCardInstalled) return true;
+    const existing = document.getElementById('outlastV4000BossTrophiesBtn');
+    if (existing) {
+      existing.addEventListener('click', openTrophyPanel);
+      trophyCardInstalled = true;
+      return true;
+    }
+    const progress = document.querySelector('[data-page-content="progress"]');
+    let cards = progress && progress.querySelector('.menu-cards');
+    if (!cards) {
+      const statsButton = document.getElementById('statsBtn');
+      if (statsButton && typeof statsButton.closest === 'function') cards = statsButton.closest('.menu-cards');
+    }
+    if (!cards) {
+      const candidates = Array.from(document.querySelectorAll('.menu-cards'));
+      cards = candidates.find(node => node.querySelector('#statsBtn')) || null;
+    }
+    if (!cards) {
+      window.OUTLAST_V4000_TROPHY_CARD_ERROR = 'Progress card container not ready';
+      return false;
+    }
     const card = document.createElement('div');
     card.className = 'menu-card';
     card.innerHTML = '<h3>Boss Trophies</h3><button class="menu-btn" id="outlastV4000BossTrophiesBtn" type="button">🏆 View Boss Trophies</button>';
     cards.appendChild(card);
-    const button = document.getElementById('outlastV4000BossTrophiesBtn');
+    const button = card.querySelector('#outlastV4000BossTrophiesBtn') || document.getElementById('outlastV4000BossTrophiesBtn');
     if (button) button.addEventListener('click', openTrophyPanel);
     trophyCardInstalled = !!button;
+    return trophyCardInstalled;
   }
 
   function installVersionAndHelp() {
@@ -253,6 +272,7 @@
     wrapKillEnemy();
     installTrophyCard();
     installUpdateLog();
+    if (!trophyCardInstalled) setTimeout(installTrophyCard, 250);
     installPopup();
     window.OUTLAST_ULTIMATE_EXPANSION_AUDIT = function () {
       const s = ensureTrophySave(currentSave()) || {};

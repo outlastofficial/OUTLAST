@@ -80,29 +80,38 @@ function drawCleanUpgradeText(ctx,native){
  ctx.restore();ctx.textAlign='left';
 }
 function overlayPolicy(){
- if(!$('#outlastV431OverlayStyle')){const st=document.createElement('style');st.id='outlastV431OverlayStyle';st.textContent='#outlastPinkToy{display:none!important}#outlastV431HideForUpgrade{display:none!important}';document.head.appendChild(st)}
- const candidates=[];
- document.querySelectorAll('body *').forEach(el=>{
-  if(el===document.body||el===document.documentElement||el.id==='outlastV431OverlayStyle')return;
-  const txt=String(el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase();
-  if(!txt.includes('OCTOBER EVENT')||!txt.includes('LIVE NOW'))return;
-  let cur=el;
-  for(let k=0;k<5&&cur&&cur!==document.body;k++,cur=cur.parentElement){
-   const r=cur.getBoundingClientRect(),cs=getComputedStyle(cur);
-   if(r.top<145&&r.width>=100&&r.width<=520&&r.height>=25&&r.height<=140&&(['fixed','absolute','sticky'].includes(cs.position)||Number(cs.zIndex)>15)){
-    candidates.push({el:cur,area:r.width*r.height});break;
+ if(!$('#outlastV431OverlayStyle')){const st=document.createElement('style');st.id='outlastV431OverlayStyle';st.textContent='#outlastPinkToy{display:none!important}.outlastV431HiddenUpgrade{display:none!important}';document.head.appendChild(st)}
+ function findBadges(predicate,klass,positionCheck){
+  const found=[];
+  document.querySelectorAll('body *').forEach(el=>{
+   if(el===document.body||el===document.documentElement||el.id==='outlastV431OverlayStyle'||el.classList?.contains(klass))return;
+   const txt=String(el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase();
+   if(!predicate(txt))return;
+   let cur=el;
+   for(let k=0;k<5&&cur&&cur!==document.body;k++,cur=cur.parentElement){
+    const r=cur.getBoundingClientRect(),cs=getComputedStyle(cur);
+    const floating=['fixed','absolute','sticky'].includes(cs.position)||Number(cs.zIndex)>15;
+    if(r.top<150&&r.width>=75&&r.width<=540&&r.height>=20&&r.height<=145&&floating&&positionCheck(r)){
+     found.push({el:cur,area:r.width*r.height});break;
+    }
    }
-  }
- });
- candidates.sort((a,b)=>a.area-b.area);
- let banner=candidates[0]?.el||null;
- if(banner&&banner.id!=='outlastV431OverlayStyle')banner.classList.add('outlastV431EventBanner');
- if(!document.getElementById('outlastV431BannerStyle')){const st=document.createElement('style');st.id='outlastV431BannerStyle';st.textContent='.outlastV431EventBanner.outlastV431HiddenUpgrade{display:none!important}';document.head.appendChild(st)}
- const all=document.querySelectorAll('.outlastV431EventBanner');
- all.forEach(e=>e.classList.toggle('outlastV431HiddenUpgrade',activeUpgrade()));
- const afk=$('#outlastAFKSpotButton');if(afk)afk.style.setProperty('visibility',activeUpgrade()?'hidden':'visible','important');
+  });
+  found.sort((a,b)=>a.area-b.area);
+  const chosen=found[0]?.el||null;
+  document.querySelectorAll('.'+klass).forEach(el=>{
+    if(el!==chosen)el.classList.remove(klass);
+  });
+  if(chosen)chosen.classList.add(klass);
+  return chosen;
+ }
+ const banner=findBadges(t=>t.includes('OCTOBER EVENT')&&t.includes('LIVE NOW'),'outlastV431EventBanner',r=>true);
+ const threat=findBadges(t=>t.includes('THREAT')&&t.includes('HIGH'),'outlastV431ThreatBanner',r=>r.right>window.innerWidth*.52);
+ const hidden=activeUpgrade();
+ [banner,threat].filter(Boolean).forEach(el=>el.classList.toggle('outlastV431HiddenUpgrade',hidden));
+ if(!document.getElementById('outlastV431BannerStyle')){const st=document.createElement('style');st.id='outlastV431BannerStyle';st.textContent='.outlastV431EventBanner.outlastV431HiddenUpgrade,.outlastV431ThreatBanner.outlastV431HiddenUpgrade{display:none!important}';document.head.appendChild(st)}
+ const afk=$('#outlastAFKSpotButton');if(afk)afk.style.setProperty('visibility',hidden?'hidden':'visible','important');
 }
-function releaseNotes(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.3.1')))updates.unshift(['v4.3.1 — Upgrade UI Collision Fix','Wrapped long upgrade names within their cards, separated rarity footer labels, stopped duplicate rarity overlays from covering text, hid the October event badge during upgrade selection, and removed the unwanted pink corner toy. Owner tools and map catalog remain enabled.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('Why were upgrade cards overlapping?')))helpArticles.unshift(['Why were upgrade cards overlapping?','Upgrades & Rarities','Upgrade titles are now wrapped and clipped to each card. The rarity footer has separate rows for power tier, multiplier and selection, and duplicate animation labels are suppressed. The October event banner and AFK shortcut are hidden while selecting upgrades so they do not cover the level-up heading.']);}catch(_){}}
+function releaseNotes(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.3.1')))updates.unshift(['v4.3.1 — Upgrade UI Collision Fix','Wrapped long upgrade names within their cards, separated rarity footer labels, stopped duplicate rarity overlays from covering text, hid the October event and threat badges during upgrade selection, and removed the unwanted pink corner toy. Owner tools and map catalog remain enabled.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('Why were upgrade cards overlapping?')))helpArticles.unshift(['Why were upgrade cards overlapping?','Upgrades & Rarities','Upgrade titles are now wrapped and clipped to each card. The rarity footer has separate rows for power tier, multiplier and selection, and duplicate animation labels are suppressed. The October event and threat banners and AFK shortcut are hidden while selecting upgrades so they do not cover the level-up heading.']);}catch(_){}}
 function install(){
  releaseNotes();setVersion();installCanvasTextFix();overlayPolicy();window.OUTLAST_UI_HOTFIX_V431=true;
 }

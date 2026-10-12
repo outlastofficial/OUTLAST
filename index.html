@@ -6328,7 +6328,7 @@ async function check(){
  let remote=BUILD;
  try{
    const response=await fetch('./index.html?update-check='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
-   if(response.ok){const txt=await response.text();const m=txt.match(/name=["']build-version["']\\s+content=["']([^"']+)["']/i);if(m)remote=m[1]||BUILD}
+   if(response.ok){const txt=await response.text();const m=txt.match(/name=["']build-version["']\s+content=["']([^"']+)["']/i);if(m)remote=m[1]||BUILD}
  }catch(_){}
  if(cmp(remote,BUILD)>0){show(true,remote);return}
  let acknowledged=false;try{acknowledged=localStorage.getItem(ACK)==='1'}catch(_){}

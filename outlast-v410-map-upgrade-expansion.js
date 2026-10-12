@@ -282,7 +282,7 @@
   }
 
   function install() {
-    if(window.__OUTLAST_V410_INSTALLED){setVersionAndPopup();return;}
+    if(window.__OUTLAST_V410_INSTALLED){installInRunChoices();try{window.OUTLAST_UPGRADE_LIBRARY_COUNT=new Set(tempUp.map(x=>x&&x[0]).filter(Boolean)).size}catch(_){}setVersionAndPopup();return;}
     window.__OUTLAST_V410_INSTALLED=true;
     const mapOk=ensureMapRegistry();
     installPermanentChoices();

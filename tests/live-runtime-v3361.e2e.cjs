@@ -57,6 +57,16 @@ const { chromium } = require('playwright');
   if(await page.locator('#outlastV4000BossTrophiesBtn').count()!==1)throw new Error('Progress → Boss Trophies card is missing.');
   const stalePopupShowing=await page.evaluate(()=>{const el=document.getElementById('outlastV3350UpdatePopup');return !!el&&getComputedStyle(el).display!=='none';});
   if(stalePopupShowing)throw new Error('Obsolete v3.35.0 popup is still covering the current build.');
+  const worldAndUiAudit=await page.evaluate(()=>{
+    const audit=typeof window.OUTLAST_MAP_PLAYABILITY_AUDIT_V430==='function'?window.OUTLAST_MAP_PLAYABILITY_AUDIT_V430():null;
+    return {build:window.OUTLAST_BUILD||null,title:document.title,uiHotfix:window.OUTLAST_UI_HOTFIX_V431===true,ownerPanelEntrypoint:typeof window.openOwnerPanel==='function',audit};
+  });
+  if(worldAndUiAudit.build!=='4.3.1'||!worldAndUiAudit.title.includes('v4.3.1')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.ownerPanelEntrypoint){
+    throw new Error('v4.3.1 UI/owner modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
+  }
+  if(!worldAndUiAudit.audit||!worldAndUiAudit.audit.ready||worldAndUiAudit.audit.count!==100||worldAndUiAudit.audit.unique!==100){
+    throw new Error('100-map registry audit failed: '+JSON.stringify(worldAndUiAudit.audit));
+  }
   const featureRegistry=await page.evaluate(()=>({
     thorns:typeof tempUp!=='undefined'&&Array.isArray(tempUp)&&tempUp.some(u=>u&&u[0]==='Thorns'),
     cards:Number(window.OUTLAST_UPGRADE_LIBRARY_COUNT||0),

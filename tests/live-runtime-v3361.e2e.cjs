@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.2.4','1');
+    localStorage.setItem('outlast_update_ack_v4.3.1','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
@@ -29,10 +29,10 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(500);
     servedTitle=await page.title();
     servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-    if(servedTitle.includes('v4.2.4')&&servedBuild==='4.2.4')break;
+    if(servedTitle.includes('v4.3.1')&&servedBuild==='4.3.1')break;
     if(attempt<19)await page.waitForTimeout(3000);
   }
-  if(!servedTitle.includes('v4.2.4')||servedBuild!=='4.2.4'){
+  if(!servedTitle.includes('v4.3.1')||servedBuild!=='4.3.1'){
     throw new Error('Latest build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
   }
 
@@ -69,13 +69,13 @@ const { chromium } = require('playwright');
     throw new Error('v4.1.0 features were not registered: '+JSON.stringify({featureRegistry,runtimeDiag,consoleErrors,http404}));
   }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
-  if(!expansionAudit||expansionAudit.version!=='4.2.4'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
-    throw new Error('v4.2.4 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
+  if(!expansionAudit||expansionAudit.version!=='4.3.1'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
+    throw new Error('v4.3.1 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.2.4')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  if(pickerBuild!=='4.3.1')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<18)throw new Error('New map picker did not render visibly: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{
@@ -109,7 +109,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.2.4')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.3.1')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skillPrep=await page.evaluate(()=>{save.coins=Math.max(Number(save.coins)||0,10000);persist();return {coins:save.coins};});
   if(skillPrep.coins<900)throw new Error('Skill test could not fund Blink: '+JSON.stringify(skillPrep));
@@ -257,7 +257,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.2.4','1');
+    localStorage.setItem('outlast_update_ack_v4.3.1','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.16');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');

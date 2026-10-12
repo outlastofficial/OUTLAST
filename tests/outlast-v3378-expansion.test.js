@@ -27,7 +27,8 @@ assert(expansion.includes('Why was the old event overlay removed?'),'How To docu
 assert(expansion.includes('v3.37.14 — Fix Floating Chat Layering'),'release log records the chat fix');
 assert(expansion.includes('v3.37.18 — Restore Global Chat Tags'),'release log records restored chat tags');
 assert(expansion.includes('Why is Chat at the top of the screen?'),'How To documents the chat placement');
-assert(html.includes('<meta name="outlast-build" content="4.1.0">')&&html.includes('<meta name="build-version" content="4.1.0">'),'current version metadata');
+assert(html.includes('<meta name="outlast-build" content="4.2.3">')&&html.includes('<meta name="build-version" content="4.2.3">'),'current version metadata');
+assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.2.3'),'current repair module is loaded');
 assert(major.includes("const VERSION = '4.0.0'")&&major.includes('window.OUTLAST_MANDATORY_UPDATE_CHECK = true'),'v4.0.0 includes its own version-aware release gate');
 assert(html.includes('outlast-v3378-expansion.js?v=4.1.0'),'existing expansion script is loaded');
 assert(html.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0'),'major expansion script is loaded');

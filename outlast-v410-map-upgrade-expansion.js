@@ -1,7 +1,7 @@
-/* OUTLAST v4.1.0 — Map Selection Repair + 500 Permanent / 500 In-Run Upgrade Choices */
+/* OUTLAST v4.2.3 — Skill + Map Routing, AFK Safety, Accurate Upgrade Effects */
 (function () {
   'use strict';
-  const VERSION = '4.2.2';
+  const VERSION = '4.2.3';
   const MAPS = ['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
   const TIERS = ['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
   const SCALE = {Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
@@ -51,7 +51,8 @@
 
   function repairMapSelection() {
     ensureMapRegistry();
-    const picker = window.OUTLAST_OPEN_MAP_PICKER_3377;
+    let picker = window.OUTLAST_OPEN_MAP_PICKER_3377;
+    if(typeof picker==='function'&&!picker.__outlastV423BuildMarker){const originalPicker=picker;const wrappedPicker=function(){const result=originalPicker.apply(this,arguments);setVersionAndPopup();return result;};wrappedPicker.__outlastV423BuildMarker=true;window.OUTLAST_OPEN_MAP_PICKER_3377=wrappedPicker;picker=wrappedPicker;}
     if (typeof picker === 'function') {
       const btn = document.getElementById('mapBtn');
       if (btn && btn.dataset.outlastMapRepair !== VERSION) {
@@ -87,7 +88,7 @@
   const FAMILIES = [
     {name:'Damage Matrix',desc:n=>'+'+fmt(.25*n)+' starting weapon damage',apply:(p,n)=>{p.damage=(Number(p.damage)||0)+.25*n;}},
     {name:'Vital Core',desc:n=>'+'+fmt(2*n)+' starting max HP',apply:(p,n)=>{p.max+=2*n;p.hp=Math.min(p.max,p.hp+2*n);}},
-    {name:'Fleet Engine',desc:n=>'+'+fmt(.006*n*100)+'% movement speed',apply:(p,n)=>{p.speed=Math.min(Number(p.speedCap)||9,(Number(p.speed)||1)*(1+.006*n));}},
+    {name:'Fleet Engine',label:'Movement Drive',desc:n=>'+'+fmt(.006*n*100)+'% movement speed',apply:(p,n)=>{p.speed=Math.min(Number(p.speedCap)||9,(Number(p.speed)||1)*(1+.006*n));}},
     {name:'Longshot Array',desc:n=>'+'+fmt(3*n)+' weapon range',apply:(p,n)=>{p.range=(Number(p.range)||0)+3*n;}},
     {name:'Magnet Field',desc:n=>'+'+fmt(4*n)+' pickup range',apply:(p,n)=>{p.magnet=(Number(p.magnet)||0)+4*n;}},
     {name:'Renewal Circuit',desc:n=>'+'+fmt(.025*n)+' HP per second',apply:(p,n)=>{p.regen=(Number(p.regen)||0)+.025*n;}},
@@ -102,68 +103,65 @@
     {name:'Bossbreaker Core',desc:n=>'+'+fmt(.015*n*100)+'% boss damage',apply:(p,n)=>{p.bossMult=(Number(p.bossMult)||1)*(1+.015*n);}},
     {name:'Ultimate Amplifier',desc:n=>'+'+fmt(.02*n*100)+'% ultimate damage',apply:(p,n)=>{p.ultDamage=(Number(p.ultDamage)||1)*(1+.02*n);}},
     {name:'Ultimate Capacitor',desc:n=>'+'+fmt(.015*n*100)+'% ultimate charge gain',apply:(p,n)=>{p.ultGain=(Number(p.ultGain)||1)*(1+.015*n);}},
-    {name:'Armor Piercing',desc:n=>'+'+fmt(.01*n*100)+'% armor pierce',apply:(p,n)=>{p.armorPierce=(Number(p.armorPierce)||0)+.01*n;}},
+    {name:'Armor Piercing',label:'Damage Penetration',desc:n=>'+'+fmt(.01*n*100)+'% damage dealt to all enemies',apply:(p,n)=>{p.armorPierce=(Number(p.armorPierce)||0)+.01*n;}},
     {name:'Vampiric Edge',desc:n=>'+'+fmt(.002*n*100)+'% lifesteal',apply:(p,n)=>{p.lifesteal=(Number(p.lifesteal)||0)+.002*n;}},
     {name:'Thorn Armor',desc:n=>'+'+fmt(.015*n*100)+'% thorns retaliation',apply:(p,n)=>{p.thorns=(Number(p.thorns)||0)+.015*n;p.thornsRadius=Math.max(Number(p.thornsRadius)||0,180);}},
-    {name:'Shield Weave',desc:n=>'+'+fmt(.08*n)+' seconds of shield',apply:(p,n)=>{p.shield=Math.max(Number(p.shield)||0,.08*n);}},
+    {name:'Shield Weave',desc:n=>'+'+fmt(.08*n)+' seconds added to the shield timer',apply:(p,n)=>{p.shield=Math.min(15,Math.max(0,Number(p.shield)||0)+.08*n);}},
     {name:'Damage Dampener',desc:n=>fmt(.003*n*100)+'% less incoming damage',apply:(p,n)=>{p.damageTakenMult=(Number(p.damageTakenMult)||1)*(1-Math.min(.35,.003*n));}},
     {name:'Healing Resonance',desc:n=>'+'+fmt(.015*n*100)+'% healing strength',apply:(p,n)=>{p.healMult=(Number(p.healMult)||1)*(1+.015*n);}},
     {name:'Upgrade Fortune',desc:n=>'+'+fmt(.5*n)+' upgrade luck',apply:(p,n)=>{p.upgradeLuck=(Number(p.upgradeLuck)||0)+.5*n;p.luck=(Number(p.luck)||0)+.5*n;}},
     {name:'Loot Fortune',desc:n=>'+'+fmt(.5*n)+' loot luck',apply:(p,n)=>{p.lootLuck=(Number(p.lootLuck)||0)+.5*n;p.luck=(Number(p.luck)||0)+.5*n;}},
     {name:'Treasure Fortune',desc:n=>'+'+fmt(.5*n)+' treasure luck',apply:(p,n)=>{p.treasureLuck=(Number(p.treasureLuck)||0)+.5*n;p.luck=(Number(p.luck)||0)+.5*n;}},
-    {name:'Pet Bond',desc:n=>'+'+fmt(.01*n*100)+'% pet power',apply:(p,n)=>{p.petPower=(Number(p.petPower)||1)*(1+.01*n);}},
-    {name:'Relic Resonance',desc:n=>'+'+fmt(.01*n*100)+'% relic power',apply:(p,n)=>{p.relicPower=(Number(p.relicPower)||1)*(1+.01*n);}},
-    {name:'Charm Resonance',desc:n=>'+'+fmt(.01*n*100)+'% charm power',apply:(p,n)=>{p.charmPower=(Number(p.charmPower)||1)*(1+.01*n);}},
+    {name:'Pet Bond',label:'Companion Synergy',desc:n=>'+'+fmt(.01*n*100)+'% damage while a pet is equipped',apply:(p,n)=>{p.petPower=(Number(p.petPower)||1)*(1+.01*n);}},
+    {name:'Relic Resonance',label:'Relic Synergy',desc:n=>'+'+fmt(.01*n*100)+'% damage while a relic is equipped',apply:(p,n)=>{p.relicPower=(Number(p.relicPower)||1)*(1+.01*n);}},
+    {name:'Charm Resonance',label:'Charm Synergy',desc:n=>'+'+fmt(.01*n*100)+'% damage while a charm is equipped',apply:(p,n)=>{p.charmPower=(Number(p.charmPower)||1)*(1+.01*n);}},
     {name:'Blast Radius',desc:n=>'+'+fmt(2*n)+' explosion radius',apply:(p,n)=>{p.explosionRadius=(Number(p.explosionRadius)||0)+2*n;}},
-    {name:'Burning Edge',desc:n=>'+'+fmt(.001*n*100)+'% burn chance',apply:(p,n)=>{p.burnChance=(Number(p.burnChance)||0)+.001*n;}},
-    {name:'Frost Circuit',desc:n=>'+'+fmt(.01*n*100)+'% enemy slow strength',apply:(p,n)=>{p.slowPower=(Number(p.slowPower)||1)+.01*n;}},
-    {name:'Poison Payload',desc:n=>'+'+fmt(.001*n*100)+'% poison chance',apply:(p,n)=>{p.poisonChance=(Number(p.poisonChance)||0)+.001*n;}},
-    {name:'Chain Conductor',desc:n=>'+'+fmt(.001*n*100)+'% chain chance',apply:(p,n)=>{p.chainChance=(Number(p.chainChance)||0)+.001*n;}},
+    {name:'Burning Edge',desc:n=>'+'+fmt(Math.min(.4,.02*n)*100)+'% chance to apply burn (40% cap)',apply:(p,n)=>{p.burnChance=Math.min(.4,(Number(p.burnChance)||0)+.02*n);}},
+    {name:'Frost Circuit',desc:n=>'+'+fmt(.01*n*100)+'% stronger enemy slow',apply:(p,n)=>{p.slowPower=(Number(p.slowPower)||1)*(1+.01*n);}},
+    {name:'Poison Payload',desc:n=>'+'+fmt(Math.min(.4,.02*n)*100)+'% chance to apply poison (40% cap)',apply:(p,n)=>{p.poisonChance=Math.min(.4,(Number(p.poisonChance)||0)+.02*n);}},
+    {name:'Chain Conductor',desc:n=>'+'+fmt(Math.min(.4,.02*n)*100)+'% chance to trigger a chain hit (40% cap)',apply:(p,n)=>{p.chainChance=Math.min(.4,(Number(p.chainChance)||0)+.02*n);}},
     {name:'Dash Calibration',desc:n=>'+'+fmt(.01*n*100)+'% dash distance',apply:(p,n)=>{p.dashDistanceMult=(Number(p.dashDistanceMult)||1)*(1+.01*n);}},
     {name:'Dash Coolant',desc:n=>fmt(.01*n*100)+'% shorter dash cooldown',apply:(p,n)=>{p.dashCooldownMult=(Number(p.dashCooldownMult)||1)*(1-.01*n);}},
     {name:'Skill Coolant',desc:n=>fmt(.01*n*100)+'% shorter skill cooldown',apply:(p,n)=>{p.skillCooldownMult=(Number(p.skillCooldownMult)||1)*(1-.01*n);}},
-    {name:'Elite Hunter',desc:n=>'+'+fmt(.02*n*100)+'% elite damage',apply:(p,n)=>{p.eliteMult=(Number(p.eliteMult)||1)*(1+.02*n);}},
+    {name:'Elite Hunter',desc:n=>'+'+fmt(.02*n*100)+'% damage against elite enemies',apply:(p,n)=>{p.eliteMult=(Number(p.eliteMult)||1)*(1+.02*n);}},
     {name:'Coin Value',desc:n=>'+'+fmt(.01*n*100)+'% coin pickup value',apply:(p,n)=>{p.coinValueMult=(Number(p.coinValueMult)||1)*(1+.01*n);}},
     {name:'XP Value',desc:n=>'+'+fmt(.01*n*100)+'% XP pickup value',apply:(p,n)=>{p.xpValueMult=(Number(p.xpValueMult)||1)*(1+.01*n);}},
     {name:'Knockback Training',desc:n=>'+'+fmt(2*n)+' knockback force',apply:(p,n)=>{p.knockback=(Number(p.knockback)||0)+2*n;}},
     {name:'Score Multiplier',desc:n=>'+'+fmt(.01*n*100)+'% score gain',apply:(p,n)=>{p.scoreMult=(Number(p.scoreMult)||1)*(1+.01*n);}},
-    {name:'Projectile Mass',desc:n=>'+'+fmt(.5*n)+' projectile size',apply:(p,n)=>{p.projectileSize=(Number(p.projectileSize)||1)+.5*n;}},
-    {name:'Ammo Efficiency',desc:n=>'+'+fmt(.01*n*100)+'% ammo efficiency',apply:(p,n)=>{p.ammoEfficiency=(Number(p.ammoEfficiency)||1)*(1+.01*n);}},
-    {name:'Pickup Duration',desc:n=>'+'+fmt(1*n)+' pickup attraction strength',apply:(p,n)=>{p.magnet=(Number(p.magnet)||0)+n;}},
-    {name:'Boss Stagger',desc:n=>'+'+fmt(.001*n*100)+'% boss stagger chance',apply:(p,n)=>{p.bossStunChance=(Number(p.bossStunChance)||0)+.001*n;}},
-    {name:'Emergency Guard',desc:n=>'+'+fmt(.002*n*100)+'% emergency shield chance',apply:(p,n)=>{p.emergencyShieldChance=(Number(p.emergencyShieldChance)||0)+.002*n;}},
-    {name:'Rebirth Reserve',desc:n=>'+'+fmt(.001*n*100)+'% revive chance',apply:(p,n)=>{p.reviveChance=(Number(p.reviveChance)||0)+.001*n;}},
-    {name:'Weapon Stability',desc:n=>'+'+fmt(.01*n*100)+'% weapon stability',apply:(p,n)=>{p.weaponStability=(Number(p.weaponStability)||1)*(1+.01*n);}},
-    {name:'Overheat Control',desc:n=>'+'+fmt(.01*n*100)+'% overheat control',apply:(p,n)=>{p.overheatControl=(Number(p.overheatControl)||1)*(1+.01*n);}},
-    {name:'Evolution Catalyst',desc:n=>'+'+fmt(.015*n*100)+'% evolved weapon damage',apply:(p,n)=>{p.evolutionDamage=(Number(p.evolutionDamage)||1)*(1+.015*n);}},
-    {name:'Wave Rewards',desc:n=>'+'+fmt(.015*n*100)+'% wave reward bonus',apply:(p,n)=>{p.waveRewardMult=(Number(p.waveRewardMult)||1)*(1+.015*n);}},
-    {name:'Resource Saver',desc:n=>'+'+fmt(.01*n*100)+'% resource bonus',apply:(p,n)=>{p.resourceMult=(Number(p.resourceMult)||1)*(1+.01*n);}}
+    {name:'Projectile Mass',desc:n=>'+'+fmt(.03*n*100)+'% projectile size',apply:(p,n)=>{p.bulletSize=(Number(p.bulletSize)||1)*(1+.03*n);}},
+    {name:'Ammo Efficiency',label:'Sustained Volley',desc:n=>'+'+fmt(.01*n*100)+'% attack speed',apply:(p,n)=>{p.fireRate=Math.max(.045,(Number(p.fireRate)||.45)/(1+.01*n));}},
+    {name:'Pickup Duration',label:'Pickup Range',desc:n=>'+'+fmt(n)+' pickup range',apply:(p,n)=>{p.magnet=(Number(p.magnet)||0)+n;}},
+    {name:'Boss Stagger',desc:n=>'+'+fmt(Math.min(.75,.05*n)*100)+'% chance to stagger a boss (75% cap)',apply:(p,n)=>{p.bossStunChance=Math.min(.75,(Number(p.bossStunChance)||0)+.05*n);}},
+    {name:'Emergency Guard',desc:n=>'+'+fmt(Math.min(.5,.02*n)*100)+'% chance to block a hit below 25% HP (50% cap)',apply:(p,n)=>{p.emergencyShieldChance=Math.min(.5,(Number(p.emergencyShieldChance)||0)+.02*n);}},
+    {name:'Rebirth Reserve',desc:n=>'+'+fmt(Math.min(.4,.01*n)*100)+'% chance to survive one lethal hit per run (40% cap)',apply:(p,n)=>{p.reviveChance=Math.min(.4,(Number(p.reviveChance)||0)+.01*n);}},
+    {name:'Weapon Stability',label:'Precision Training',desc:n=>'+'+fmt(.005*n*100)+'% critical-hit chance',apply:(p,n)=>{p.crit=Math.min(.95,(Number(p.crit)||0)+.005*n);}},
+    {name:'Overheat Control',label:'Reinforced Rounds',desc:n=>'+'+fmt(.01*n*100)+'% damage dealt',apply:(p,n)=>{p.weaponDamageMult=(Number(p.weaponDamageMult)||1)*(1+.01*n);}},
+    {name:'Evolution Catalyst',desc:n=>'+'+fmt(.015*n*100)+'% damage while your selected weapon is evolved',apply:(p,n)=>{p.evolutionDamage=(Number(p.evolutionDamage)||1)*(1+.015*n);}},
+    {name:'Wave Rewards',desc:n=>'+'+fmt(.015*n*100)+'% score and XP from enemy defeats',apply:(p,n)=>{p.waveRewardMult=(Number(p.waveRewardMult)||1)*(1+.015*n);}},
+    {name:'Resource Saver',label:'Supply Finder',desc:n=>'+'+fmt(.01*n*100)+'% material-drop chance',apply:(p,n)=>{p.resourceBonusChance=Math.min(.75,(Number.isFinite(Number(p.resourceBonusChance))?Number(p.resourceBonusChance):.12)+.01*n);}}
   ];
 
   const permanentDefs = Object.create(null);
   let permanentAdded = 0;
   function installPermanentChoices() {
     try { if (typeof permanent === 'undefined' || !Array.isArray(permanent)) return 0; } catch (_) { return 0; }
-    const existing = new Set(permanent.map(x=>Array.isArray(x)?String(x[0]):''));
-    // Interleave families by rank so all available mechanics are represented even when filling a partially populated tree.
-    for (let rank=0; rank<10 && permanent.length<500; rank++) {
-      for (let fi=0; fi<FAMILIES.length && permanent.length<500; fi++) {
-        const family=FAMILIES[fi];
-        const name='Ascension • '+family.name+' '+String(rank+1).padStart(2,'0');
-        if (existing.has(name)) continue;
-        const strength=rank+1;
-        const desc=family.desc(strength)+' per purchased level. Max level 5.';
-        const cost=1200+fi*95+rank*260;
-        permanent.push([name,desc,cost,'Ascension']);
-        permanentDefs[name]={family,rank};
-        existing.add(name);
-        permanentAdded++;
-      }
+    const s=getSave();let migrated=false;
+    for(let rank=0;rank<10;rank++)for(const family of FAMILIES){
+      const suffix=String(rank+1).padStart(2,'0'),oldName='Ascension • '+family.name+' '+suffix,display='Ascension • '+(family.label||family.name)+' '+suffix;
+      if(oldName===display)continue;
+      const oldEntry=permanent.find(x=>Array.isArray(x)&&String(x[0])===oldName);
+      if(oldEntry){oldEntry[0]=display;oldEntry[1]=family.desc(rank+1)+' per purchased level. Max level 5.';migrated=true;}
+      if(s&&s.upgrades&&Object.prototype.hasOwnProperty.call(s.upgrades,oldName)){s.upgrades[display]=Math.max(Number(s.upgrades[display])||0,Number(s.upgrades[oldName])||0);delete s.upgrades[oldName];migrated=true;}
     }
-    // If the existing tree was already over 500, do not remove old upgrades or player progress.
-    window.OUTLAST_PERMANENT_EXPANSION_COUNT=permanent.length;
-    window.OUTLAST_PERMANENT_EXPANSION_ADDED=permanentAdded;
-    return permanent.length;
+    for(let rank=0;rank<10;rank++)for(let fi=0;fi<FAMILIES.length;fi++){
+      const family=FAMILIES[fi],name='Ascension • '+(family.label||family.name)+' '+String(rank+1).padStart(2,'0');
+      const desc=family.desc(rank+1)+' per purchased level. Max level 5.',present=permanent.find(x=>Array.isArray(x)&&String(x[0])===name);
+      if(present){present[1]=desc;present[3]='Ascension';permanentDefs[name]={family,rank};continue;}
+      if(permanent.length>=500)continue;
+      permanent.push([name,desc,1200+fi*95+rank*260,'Ascension']);permanentDefs[name]={family,rank};permanentAdded++;
+    }
+    if(migrated&&typeof persist==='function')try{persist();}catch(_){}
+    window.OUTLAST_PERMANENT_EXPANSION_COUNT=permanent.length;window.OUTLAST_PERMANENT_EXPANSION_ADDED=permanentAdded;return permanent.length;
   }
 
   function applyPermanentChoices() {
@@ -189,7 +187,7 @@
     outer: for (const family of FAMILIES) {
       for (const tier of TIERS) {
         if (names.size >= 500) break outer;
-        const name='Ascension • '+family.name+' ['+tier+']';
+        const name='Ascension • '+(family.label||family.name)+' ['+tier+']';
         if (names.has(name)) continue;
         const entry=[
           name,
@@ -239,15 +237,16 @@
       document.head.appendChild(style);
     }
     try {
-      if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.2.2'))){
-        updates.unshift(['v4.2.2 — Map, Skill + AFK Reliability','Repaired built-in map registry and selection validation. Expanded the permanent upgrade tree to 500 choices and the in-run level-up pool to at least 500 distinct cards, added a searchable permanent tree, and increased upper-rarity scaling through Omega 8×.']);
+      if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.2.3'))){
+        updates.unshift(['v4.2.3 — Skill, Map, AFK + Upgrade Accuracy','Fixed skill equip routing and run skill loading; hardened all 18 map selection routes; added safe pause/resume in the AFK Lounge; corrected several upgrade labels and connected their effects to combat, pickups, movement, and rewards.']);
       }
       if(Array.isArray(helpArticles)){
         const articles=[
+          ['How do Ascension upgrades work?','Upgrades & Rarities','Ascension nodes apply when a run starts. Their displayed labels and descriptions match their effects; renamed nodes preserve previously purchased levels. Pet, relic, and charm synergy bonuses require that item to be equipped.'],
           ['How do I select the new maps?','Maps','Open Play → Choose Map, select any map tile, and check the SELECTED marker. The selection is saved before the picker closes. All 18 built-in maps have registered terrain, obstacles, and hazard profiles.'],
           ['How do I change my Active Skill?','Active Skills','Open Loadout → Manage Skills. Click an owned skill to equip it, or click an unowned skill to buy it if you have enough coins. The selected skill is saved and used with Q during a run.'],
           ['What is the AFK Lounge?','AFK Lounge','Open More → AFK Lounge, or use the AFK Spot button during a run. It is a safe pause area: enemies and run rewards are paused until you resume.'],
-          ['How many upgrade choices are there in v4.2.2?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Use the search field at the top of the permanent tree to find a specific upgrade.'],
+          ['How many upgrade choices are there in v4.2.3?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Search the permanent tree by its displayed name. Upgrade descriptions now match live gameplay; damage, status chances, cooldowns, pickup values, shield time, and bonus drops are connected.'],
           ['What are the updated rarity multipliers?','Upgrades & Rarities','Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 4.8×, Transcendent 5.6×, Eternal 6.8×, Omega 8×. Higher tiers scale above lower tiers.']
         ];
         for(let i=articles.length-1;i>=0;i--)if(!helpArticles.some(a=>a&&a[0]===articles[i][0]))helpArticles.unshift(articles[i]);
@@ -259,6 +258,8 @@
     window.OUTLAST_BUILD=VERSION;
     window.OUTLAST_VERSION='v'+VERSION;
     document.title='OUTLAST v'+VERSION;
+    const buildMeta=document.querySelector('meta[name="outlast-build"]');if(buildMeta)buildMeta.content=VERSION;
+    const versionMeta=document.querySelector('meta[name="build-version"]');if(versionMeta)versionMeta.content=VERSION;
     document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+VERSION);
     document.querySelectorAll('.menu-chip').forEach(el=>{
       const t=String(el.textContent||'');
@@ -267,7 +268,7 @@
     const modal=document.getElementById('outlastV4000UpdatePopup');
     if(modal){
       const title=modal.querySelector('#outlastV4000UpdateTitle');
-      if(title)title.textContent='OUTLAST v4.2.2 — Map, Skill + AFK Reliability';
+      if(title)title.textContent='OUTLAST v4.2.3 — Skill, Map, AFK + Upgrade Accuracy';
       const paragraphs=modal.querySelectorAll('p');
       if(paragraphs[0])paragraphs[0].textContent='Reliability patch: map tiles now have a dedicated selection route, Active Skills can be purchased and equipped, purchased Ascension bonuses apply at run start, and the safe AFK Lounge pauses the run and rewards.';
       const gotIt=document.getElementById('outlastV4000GotIt'),close=document.getElementById('outlastV4000Close');
@@ -279,7 +280,7 @@
     }
     const updateNote=document.querySelector('[data-outlast-v4000-update-note]');
     if(updateNote){
-      updateNote.innerHTML='<b>v4.2.0 — Maps, Skills + AFK Lounge</b><div class="small">Reliable map tile selection; Active Skills can be purchased/equipped; permanent Ascension effects apply on run start; 500 permanent and 500 in-run upgrade choices; safe AFK Lounge.</div>';
+      updateNote.innerHTML='<b>v4.2.3 — Skill, Map, AFK + Upgrade Accuracy</b><div class="small">Fixes skill equipping and run skill loading, all 18 map routes, AFK pause/resume, and accurate upgrade names/effects. Permanent and in-run catalogs retain 500 choices each.</div>';
     }
   }
 
@@ -291,7 +292,7 @@
     wrapped.__outlastV420PermanentApply=true;window.startGame=wrapped;try{startGame=wrapped}catch(_){}
   }
   function installMapClickRepair() {
-    if(window.__OUTLAST_V420_MAP_CLICK_REPAIR)return;window.__OUTLAST_V420_MAP_CLICK_REPAIR=true;
+    if(window.__OUTLAST_V423_MAP_CLICK_REPAIR)return;window.__OUTLAST_V423_MAP_CLICK_REPAIR=true;
     document.addEventListener('click',function(event){
       const tile=event.target&&event.target.closest&&event.target.closest('button[data-outlast3377-map]');if(!tile)return;
       event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();ensureMapRegistry();
@@ -305,18 +306,19 @@
     window.selectSkill=function(name){
       const s=getSave();if(!s||!activeSkills||!activeSkills[name])return false;s.ownedSkills=s.ownedSkills||{};const def=activeSkills[name];
       if(!s.ownedSkills[name]){const cost=Math.max(0,Number(def.cost)||0);if((Number(s.coins)||0)<cost){if(typeof toast==='function')toast('Need '+cost.toLocaleString()+' coins to unlock '+name+'.');return false;}s.coins=Math.max(0,Number(s.coins)-cost);s.ownedSkills[name]=true;}
-      s.activeSkill=name;if(typeof persist==='function')persist();if(typeof updateMenuSummary==='function')updateMenuSummary();if(typeof renderSkills==='function')renderSkills();if(typeof toast==='function')toast(name+' equipped — press Q during a run.');window.OUTLAST_ACTIVE_SKILL_SELECTION=name;return true;
+      s.activeSkill=name;const g=getGame();if(g&&g.player)g.player.activeSkill=name;if(typeof persist==='function')persist();if(typeof updateMenuSummary==='function')updateMenuSummary();if(typeof renderSkills==='function')renderSkills();if(typeof toast==='function')toast(name+' equipped — press Q during a run.');window.OUTLAST_ACTIVE_SKILL_SELECTION=name;window.OUTLAST_SELECT_ACTIVE_SKILL_423=window.selectSkill;return true;
     };
+    window.OUTLAST_SELECT_ACTIVE_SKILL_423=window.selectSkill;
   }
   function installAFKLounge() {
-    if(window.__OUTLAST_V420_AFK_INSTALLED)return;window.__OUTLAST_V420_AFK_INSTALLED=true;
+    if(window.__OUTLAST_V423_AFK_INSTALLED)return;window.__OUTLAST_V423_AFK_INSTALLED=true;
     const more=document.querySelector('[data-page-content="more"] .menu-cards');
     if(more&&!document.getElementById('outlastAFKLoungeBtn')){const card=document.createElement('div');card.className='menu-card';card.innerHTML='<h3>☕ AFK Lounge</h3><p class="small">A safe place to step away. Enemies and rewards pause while you are here.</p><button class="menu-btn" id="outlastAFKLoungeBtn" type="button">Open AFK Lounge</button>';more.appendChild(card);}
     if(!document.getElementById('outlastAFKSpotButton')){const b=document.createElement('button');b.id='outlastAFKSpotButton';b.type='button';b.textContent='☕ AFK Spot';b.style.cssText='position:fixed;left:12px;bottom:12px;z-index:130;display:none;padding:10px 13px;border-radius:12px;border:1px solid #6c927c;background:#14261e;color:#e9fff1;font-weight:800;box-shadow:0 5px 20px #0008;cursor:pointer';document.body.appendChild(b);}
     if(!document.getElementById('outlastAFKLounge')){const m=document.createElement('div');m.id='outlastAFKLounge';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.style.cssText='position:fixed;inset:0;z-index:1000000;display:none;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at center,#213a31ee,#050b0af5);backdrop-filter:blur(7px)';m.innerHTML='<section style="width:min(600px,94vw);border:1px solid #527c68;border-radius:22px;padding:26px;background:linear-gradient(145deg,#172b23,#09110e);color:#edfff4;box-shadow:0 25px 80px #000b;text-align:center"><div style="font-size:46px">☕ 🌿</div><div style="font-size:28px;font-weight:900;margin:8px 0">AFK LOUNGE</div><p style="color:#c1d9cb;line-height:1.55">Safe spot: the run is paused, enemies stop, and no run rewards are earned while you take a break.</p><div style="margin:18px auto;padding:14px;border-radius:12px;background:#0b1711;border:1px solid #2e4c3b"><b>SAFE ZONE • PAUSED</b></div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button type="button" id="outlastAFKResume" class="menu-btn">▶ Resume Run</button><button type="button" id="outlastAFKReturn" class="menu-btn">Close Lounge (Stay Paused)</button></div></section>';document.body.appendChild(m);}
-    let wasRunning=false,wasPaused=false;
-    const open=()=>{const g=getGame();wasRunning=!!(g&&g.running&&!g.over);wasPaused=!!(g&&g.paused);if(g&&wasRunning)g.paused=true;const m=document.getElementById('outlastAFKLounge');if(m)m.style.display='flex';window.OUTLAST_AFK_ACTIVE=true;};
-    const close=resume=>{const g=getGame(),m=document.getElementById('outlastAFKLounge');if(m)m.style.display='none';if(g&&wasRunning)g.paused=resume?false:true;window.OUTLAST_AFK_ACTIVE=false;};
+    let wasRunning=false;
+    const open=()=>{const g=getGame();wasRunning=!!(g&&g.running&&!g.over);if(g&&wasRunning)g.paused=true;const m=document.getElementById('outlastAFKLounge');if(m)m.style.display='flex';window.OUTLAST_AFK_ACTIVE=true;};
+    const close=resume=>{const g=getGame(),m=document.getElementById('outlastAFKLounge');if(m)m.style.display='none';if(g&&wasRunning)g.paused=!resume;window.OUTLAST_AFK_ACTIVE=false;};
     document.getElementById('outlastAFKLoungeBtn')?.addEventListener('click',open);document.getElementById('outlastAFKSpotButton')?.addEventListener('click',open);document.getElementById('outlastAFKResume')?.addEventListener('click',()=>close(true));document.getElementById('outlastAFKReturn')?.addEventListener('click',()=>close(false));
     const spot=document.getElementById('outlastAFKSpotButton');setInterval(()=>{const g=getGame();if(spot)spot.style.display=g&&g.running&&!g.over?'block':'none';},1000);
   }

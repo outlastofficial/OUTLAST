@@ -14,6 +14,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
+    localStorage.setItem('outlast_update_ack_v4.2.3','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
@@ -21,7 +22,7 @@ const { chromium } = require('playwright');
   const url=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?e2e='+Date.now();
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:30000});
   const servedTitle=await page.title();
-  if(!servedTitle.includes('v4.0.0')) console.log('Version marker diagnostic: '+servedTitle);
+  if(!servedTitle.includes('v4.2.3')) console.log('Version marker diagnostic: '+servedTitle);
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
@@ -56,13 +57,13 @@ const { chromium } = require('playwright');
     throw new Error('v4.1.0 features were not registered: '+JSON.stringify({featureRegistry,runtimeDiag,consoleErrors,http404}));
   }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
-  if(!expansionAudit||expansionAudit.version!=='4.1.0'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
+  if(!expansionAudit||expansionAudit.version!=='4.2.3'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
     throw new Error('v4.1.0 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.1.0')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  if(pickerBuild!=='4.2.3')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<18)throw new Error('New map picker did not render visibly: '+JSON.stringify(pickerAudit));
   const allMapProbe=await page.evaluate(()=>{
@@ -90,8 +91,18 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.1.0')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.2.3')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
+  const skillPrep=await page.evaluate(()=>{save.coins=Math.max(Number(save.coins)||0,10000);persist();return {coins:save.coins};});
+  if(skillPrep.coins<900)throw new Error('Skill test could not fund Blink: '+JSON.stringify(skillPrep));
+  await page.locator('.menu-nav-btn[data-page="loadout"]').click();
+  await page.locator('#skillBtn').click();
+  await page.locator('button[data-action="skill"][data-value="Blink"]').waitFor({state:'visible',timeout:8000});
+  await page.locator('button[data-action="skill"][data-value="Blink"]').click();
+  const chosenSkill=await page.evaluate(()=>({skill:save.activeSkill,owned:!!save.ownedSkills?.Blink}));
+  if(chosenSkill.skill!=='Blink'||!chosenSkill.owned)throw new Error('Active Skill could not be purchased/equipped: '+JSON.stringify(chosenSkill));
+  await page.locator('#closeSub').click();
+  await page.locator('.menu-nav-btn[data-page="play"]').click();
   const skinPrep=await page.evaluate(()=>{
     if(typeof skins==='undefined'||typeof save==='undefined') return {ok:false};
     const name=Object.keys(skins).find(n=>n!=='Classic');
@@ -117,6 +128,8 @@ const { chromium } = require('playwright');
 
   const state=await page.evaluate(()=>window.__OUTLAST_RUNTIME_STATE||null);
   if(!state) throw new Error('Runtime heartbeat was not published; game loop is not running.');
+  const runSkill=await page.evaluate(()=>game.player?.activeSkill||null);
+  if(runSkill!=='Blink')throw new Error('Equipped skill was not copied into the run: '+runSkill);
   if(state.fatal) throw new Error('Game loop fatal error after Start Run: '+(state.error||'unknown'));
   if(!state.running) throw new Error('Start Run did not leave the game running.');
   if(!state.player) throw new Error('Start Run left the game without a player.');
@@ -131,6 +144,18 @@ const { chromium } = require('playwright');
   const afterMove=await page.evaluate(()=>({x:game.player.x,y:game.player.y,time:game.time}));
   const displacement=Math.hypot(afterMove.x-beforeMove.x,afterMove.y-beforeMove.y);
   if(!(displacement>10))throw new Error('WASD did not move the player after Start Run: '+JSON.stringify({beforeMove,afterMove,layoutAudit}));
+  const afkReady=await page.locator('#outlastAFKSpotButton').waitFor({state:'visible',timeout:8000}).then(()=>true).catch(()=>false);
+  if(!afkReady)throw new Error('AFK Spot button did not appear during gameplay.');
+  await page.locator('#outlastAFKSpotButton').click();
+  await page.locator('#outlastAFKLounge').waitFor({state:'visible',timeout:3000});
+  const afkBefore=await page.evaluate(()=>({paused:game.paused,active:window.OUTLAST_AFK_ACTIVE,time:game.time}));
+  if(!afkBefore.paused||!afkBefore.active)throw new Error('AFK Lounge did not pause the run: '+JSON.stringify(afkBefore));
+  await page.waitForTimeout(650);
+  const afkDuring=await page.evaluate(()=>({paused:game.paused,time:game.time}));
+  if(!afkDuring.paused||Math.abs(afkDuring.time-afkBefore.time)>.08)throw new Error('Game time advanced inside the AFK Lounge: '+JSON.stringify({afkBefore,afkDuring}));
+  await page.locator('#outlastAFKResume').click();
+  const afkAfter=await page.evaluate(()=>({paused:game.paused,active:window.OUTLAST_AFK_ACTIVE}));
+  if(afkAfter.paused||afkAfter.active)throw new Error('AFK Resume did not restore gameplay: '+JSON.stringify(afkAfter));
   const thornsPrep=await page.evaluate(()=>{
     const p=game.player;p.thorns=.5;p.thornsRadius=180;p.__outlastThornsReadyAt=0;p.shield=0;p.omegaShieldMaxHits=0;p.omegaShieldHits=0;p.god=false;p.godMode=false;
     const probe={__outlastThornsProbe:true,x:p.x+28,y:p.y,hp:1000000,max:1000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
@@ -212,6 +237,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
+    localStorage.setItem('outlast_update_ack_v4.2.3','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.16');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');

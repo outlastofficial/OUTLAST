@@ -29,7 +29,7 @@ assert(expansion.includes('v3.37.18 — Restore Global Chat Tags'),'release log 
 assert(expansion.includes('Why is Chat at the top of the screen?'),'How To documents the chat placement');
 assert(html.includes('<meta name="outlast-build" content="4.0.0">')&&html.includes('<meta name="build-version" content="4.0.0">'),'current version metadata');
 assert(major.includes("const VERSION = '4.0.0'")&&major.includes('window.OUTLAST_MANDATORY_UPDATE_CHECK = true'),'v4.0.0 includes its own version-aware release gate');
-assert(html.includes('outlast-v3378-expansion.js?v=3.37.18'),'existing expansion script is loaded');
+assert(html.includes('outlast-v3378-expansion.js?v=4.1.0'),'existing expansion script is loaded');
 assert(html.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0'),'major expansion script is loaded');
 assert(!html.includes('v3.14.1 — Menu Organization</b>'),'stray release-note block removed from bottom of the page');
 assert(html.includes('#outlastEverywhereChat .gec-toggle{position:fixed;right:18px;top:118px;bottom:auto;border-radius:999px;font-weight:800;pointer-events:auto!important;z-index:2147483001!important}'),'chat launcher is touchable and moved above overlays');

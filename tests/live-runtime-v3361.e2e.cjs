@@ -102,6 +102,8 @@ const { chromium } = require('playwright');
   const chosenSkill=await page.evaluate(()=>({skill:save.activeSkill,owned:!!save.ownedSkills?.Blink}));
   if(chosenSkill.skill!=='Blink'||!chosenSkill.owned)throw new Error('Active Skill could not be purchased/equipped: '+JSON.stringify(chosenSkill));
   await page.locator('#closeSub').click();
+  await page.evaluate(()=>{if(typeof closeSub==='function')closeSub();const panel=document.getElementById('subPanel');if(panel)panel.style.display='none';});
+  await page.waitForFunction(()=>{const panel=document.getElementById('subPanel');return !panel||getComputedStyle(panel).display==='none';});
   await page.locator('.menu-nav-btn[data-page="play"]').click();
   const skinPrep=await page.evaluate(()=>{
     if(typeof skins==='undefined'||typeof save==='undefined') return {ok:false};

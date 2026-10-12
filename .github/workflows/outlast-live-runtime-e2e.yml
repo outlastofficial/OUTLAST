@@ -25,4 +25,6 @@ jobs:
           npm install --no-save playwright@1.52.0
           npx playwright install --with-deps chromium
       - name: Run live Start Run smoke test
+        env:
+          OUTLAST_RUNTIME_TEST_URL: https://outlast-test.onrender.com/index.html
         run: node tests/live-runtime-v3361.e2e.cjs

@@ -15,6 +15,7 @@
   let trophyCardInstalled = false;
   let updateLogHookInstalled = false;
   let popupInstalled = false;
+  let trophyCardRetries = 0;
 
   function currentSave() {
     try { if (typeof save !== 'undefined' && save) return save; } catch (_) {}
@@ -162,6 +163,13 @@
     return trophyCardInstalled;
   }
 
+  function retryTrophyCard() {
+    if (trophyCardInstalled) return;
+    if (installTrophyCard()) return;
+    trophyCardRetries += 1;
+    if (trophyCardRetries <= 40) setTimeout(retryTrophyCard, 250);
+  }
+
   function installVersionAndHelp() {
     window.OUTLAST_BUILD = VERSION;
     window.OUTLAST_VERSION = 'v' + VERSION;
@@ -272,7 +280,7 @@
     wrapKillEnemy();
     installTrophyCard();
     installUpdateLog();
-    if (!trophyCardInstalled) setTimeout(installTrophyCard, 250);
+    if (!trophyCardInstalled) setTimeout(retryTrophyCard, 250);
     installPopup();
     window.OUTLAST_ULTIMATE_EXPANSION_AUDIT = function () {
       const s = ensureTrophySave(currentSave()) || {};

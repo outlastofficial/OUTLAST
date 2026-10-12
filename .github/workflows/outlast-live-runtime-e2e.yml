@@ -26,3 +26,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Run live Start Run smoke test
         run: node tests/live-runtime-v3361.e2e.cjs
+      - name: Verify GitHub Pages map picker and gameplay
+        env:
+          OUTLAST_RUNTIME_TEST_URL: https://outlastofficial.github.io/OUTLAST/index.html
+        run: node tests/live-runtime-v3361.e2e.cjs

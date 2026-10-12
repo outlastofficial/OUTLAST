@@ -102,8 +102,8 @@ function overlayPolicy(){
  all.forEach(e=>e.classList.toggle('outlastV431HiddenUpgrade',activeUpgrade()));
  const afk=$('#outlastAFKSpotButton');if(afk)afk.style.setProperty('visibility',activeUpgrade()?'hidden':'visible','important');
 }
-function install(){
- setVersion();installCanvasTextFix();overlayPolicy();
+function releaseNotes(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.3.1')))updates.unshift(['v4.3.1 — Upgrade UI Collision Fix','Wrapped long upgrade names within their cards, separated rarity footer labels, stopped duplicate rarity overlays from covering text, hid the October event badge during upgrade selection, and removed the unwanted pink corner toy. Owner tools and map catalog remain enabled.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('Why were upgrade cards overlapping?')))helpArticles.unshift(['Why were upgrade cards overlapping?','Upgrades & Rarities','Upgrade titles are now wrapped and clipped to each card. The rarity footer has separate rows for power tier, multiplier and selection, and duplicate animation labels are suppressed. The October event banner and AFK shortcut are hidden while selecting upgrades so they do not cover the level-up heading.']);}catch(_){}}\nfunction install(){
+ releaseNotes();setVersion();installCanvasTextFix();overlayPolicy();window.OUTLAST_UI_HOTFIX_V431=true;
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 window.addEventListener('load',install,{once:true});

@@ -211,7 +211,7 @@
 
   function enhancePermanentTree() {
     const host=document.getElementById('subContent');
-    const title=document.getElementById('subTitle');
+    const title=host&&host.querySelector('h2');
     if(!host||!title||!String(title.textContent||'').includes('Permanent Upgrade Tree'))return;
     if(host.querySelector('#outlastV410PermanentSearch'))return;
     const grid=host.querySelector('.grid');

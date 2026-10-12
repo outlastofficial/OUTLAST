@@ -1,7 +1,7 @@
-/* OUTLAST v4.2.3 — Skill + Map Routing, AFK Safety, Accurate Upgrade Effects */
+/* OUTLAST v4.2.4 — Put New Maps First and Make Them Visible */
 (function () {
   'use strict';
-  const VERSION = '4.2.3';
+  const VERSION = '4.2.4';
   const MAPS = ['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
   const TIERS = ['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
   const SCALE = {Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
@@ -237,16 +237,20 @@
       document.head.appendChild(style);
     }
     try {
+      if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.2.4'))){
+        updates.unshift(['v4.2.4 — New Maps Visible First','Moved Seizure and Ribhouse to the first row of Choose Map, marked both NEW, and added a visible banner so they are easy to find on mobile and desktop. All 18 built-in maps remain selectable.']);
+      }
       if(Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.2.3'))){
         updates.unshift(['v4.2.3 — Skill, Map, AFK + Upgrade Accuracy','Fixed skill equip routing and run skill loading; hardened all 18 map selection routes; added safe pause/resume in the AFK Lounge; corrected several upgrade labels and connected their effects to combat, pickups, movement, and rewards.']);
       }
       if(Array.isArray(helpArticles)){
         const articles=[
+          ['Where are the newest maps?','Maps','Open Play → Choose Map. Seizure and Ribhouse are the first two built-in tiles, each marked NEW beneath the green NEW MAPS banner. Select a tile to save it, then start a run.'],
           ['How do Ascension upgrades work?','Upgrades & Rarities','Ascension nodes apply when a run starts. Their displayed labels and descriptions match their effects; renamed nodes preserve previously purchased levels. Pet, relic, and charm synergy bonuses require that item to be equipped.'],
           ['How do I select the new maps?','Maps','Open Play → Choose Map, select any map tile, and check the SELECTED marker. The selection is saved before the picker closes. All 18 built-in maps have registered terrain, obstacles, and hazard profiles.'],
           ['How do I change my Active Skill?','Active Skills','Open Loadout → Manage Skills. Click an owned skill to equip it, or click an unowned skill to buy it if you have enough coins. The selected skill is saved and used with Q during a run.'],
           ['What is the AFK Lounge?','AFK Lounge','Open More → AFK Lounge, or use the AFK Spot button during a run. It is a safe pause area: enemies and run rewards are paused until you resume.'],
-          ['How many upgrade choices are there in v4.2.3?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Search the permanent tree by its displayed name. Upgrade descriptions now match live gameplay; damage, status chances, cooldowns, pickup values, shield time, and bonus drops are connected.'],
+          ['How many upgrade choices are there in v4.2.4?','Upgrades & Rarities','The permanent upgrade tree contains at least 500 choices, and the in-run level-up pool contains at least 500 distinct cards. Search the permanent tree by its displayed name. Upgrade descriptions now match live gameplay; damage, status chances, cooldowns, pickup values, shield time, and bonus drops are connected.'],
           ['What are the updated rarity multipliers?','Upgrades & Rarities','Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 4.8×, Transcendent 5.6×, Eternal 6.8×, Omega 8×. Higher tiers scale above lower tiers.']
         ];
         for(let i=articles.length-1;i>=0;i--)if(!helpArticles.some(a=>a&&a[0]===articles[i][0]))helpArticles.unshift(articles[i]);
@@ -268,7 +272,7 @@
     const modal=document.getElementById('outlastV4000UpdatePopup');
     if(modal){
       const title=modal.querySelector('#outlastV4000UpdateTitle');
-      if(title)title.textContent='OUTLAST v4.2.3 — Skill, Map, AFK + Upgrade Accuracy';
+      if(title)title.textContent='OUTLAST v4.2.4 — New Maps Visible First';
       const paragraphs=modal.querySelectorAll('p');
       if(paragraphs[0])paragraphs[0].textContent='Reliability patch: map tiles now have a dedicated selection route, Active Skills can be purchased and equipped, purchased Ascension bonuses apply at run start, and the safe AFK Lounge pauses the run and rewards.';
       const gotIt=document.getElementById('outlastV4000GotIt'),close=document.getElementById('outlastV4000Close');
@@ -280,7 +284,7 @@
     }
     const updateNote=document.querySelector('[data-outlast-v4000-update-note]');
     if(updateNote){
-      updateNote.innerHTML='<b>v4.2.3 — Skill, Map, AFK + Upgrade Accuracy</b><div class="small">Fixes skill equipping and run skill loading, all 18 map routes, AFK pause/resume, and accurate upgrade names/effects. Permanent and in-run catalogs retain 500 choices each.</div>';
+      updateNote.innerHTML='<b>v4.2.4 — New Maps Visible First</b><div class="small">Seizure and Ribhouse are now the first two map tiles, both marked NEW, with a visible map banner. All 18 built-in maps remain available.</div>';
     }
   }
 

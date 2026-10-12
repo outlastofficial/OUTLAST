@@ -193,7 +193,7 @@
         if (names.has(name)) continue;
         const entry=[
           name,
-          value=>'+ '+family.desc(Math.max(1,Number(value)||SCALE.Common)),
+          value=>family.desc(Math.max(1,Number(value)||SCALE.Common)),
           value=>{const p=getPlayer();if(p)family.apply(p,Math.max(1,Number(value)||SCALE.Common));}
         ];
         pool.push(entry);
@@ -282,7 +282,7 @@
   }
 
   function install() {
-    if(window.__OUTLAST_V410_INSTALLED)return;
+    if(window.__OUTLAST_V410_INSTALLED){setVersionAndPopup();return;}
     window.__OUTLAST_V410_INSTALLED=true;
     const mapOk=ensureMapRegistry();
     installPermanentChoices();

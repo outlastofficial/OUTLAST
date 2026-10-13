@@ -86,7 +86,7 @@ assert(expansion.includes('name:\'Thorns\''),'Thorns upgrade family exists');
 assert(expansion.includes('window.OUTLAST_UPGRADE_LIBRARY_COUNT=unique.length'),'upgrade count is recomputed after adding the new cards');
 
 const tiers=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
-const scales=[1,1.15,1.35,1.6,1.9,2.25,2.7,3.2,3.8,4.6,5.5];
+const scales=[1,1.15,1.35,1.6,1.9,2.25,4,4.8,5.6,6.8,8];
 const maps=['Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland','Seizure','Ribhouse'];
 const rarityPools=Object.fromEntries(tiers.map(t=>[t,[]]));
 const sandbox={

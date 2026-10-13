@@ -163,6 +163,20 @@ function installOverlayFix(){
 }
 
 function gearNotes(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('How do Gear Room presets work?')))helpArticles.unshift(['How do Gear Room presets work?','Gear','Open Gear → Gear Room → Manage Presets. Save up to three snapshots of your character, weapon, skin, pet, relic, charm, active skill, and element. Equipping a snapshot only applies items already unlocked in this save. Gear Profile shows your current equipment, collection totals, currencies, and an at-a-glance Gear Score.']);}catch(_){}}
-function install(){try{notes();gearNotes();version();installGear();installOverlayFix();const canvas=document.getElementById('game');if(!canvas||!canvas.getContext)return;const c=canvas.getContext('2d');if(!c)return;if(!window.__OUTLAST_V435_CARD_REDRAW){const previous=window.draw;if(typeof previous!=='function')return;const wrapped=function(){const res=previous.apply(this,arguments);try{redraw(c)}catch(e){window.OUTLAST_V435_CARD_ERROR=String(e&&e.message||e)}return res};wrapped.__outlastV435UpgradeRedesign=true;window.draw=wrapped;try{draw=wrapped}catch(_){}window.__OUTLAST_V435_CARD_REDRAW=true}window.OUTLAST_UPGRADE_CARD_DESIGN_V435={version:VERSION,ready:true,threeCards:true,clickRegionsPreserved:true,keyboardKeys:['1','2','3'],audit:()=>({active:active(),choices:(typeof game!=='undefined'&&Array.isArray(game.upgradeChoices))?game.upgradeChoices.length:0,renderHook:!!window.__OUTLAST_V435_CARD_REDRAW,error:window.OUTLAST_V435_CARD_ERROR||null})}}catch(e){window.OUTLAST_V435_INSTALL_ERROR=String(e&&e.message||e)}}
+
+function keepLatestBuild(){
+ if(window.__OUTLAST_V435_BUILD_GUARD)return;
+ window.__OUTLAST_V435_BUILD_GUARD=true;
+ const settle=()=>{try{version();const badge=document.getElementById('outlastQualityBadge');if(badge)badge.textContent='v'+VERSION+' • SURVIVOR HUB'}catch(_){}};
+ document.addEventListener('click',e=>{
+  if(!e.target||!e.target.closest||!e.target.closest('#mapBtn'))return;
+  [0,20,45,80,130,220,400,700,1100].forEach(ms=>setTimeout(settle,ms));
+ },true);
+ setInterval(()=>{
+  if(window.OUTLAST_BUILD!==VERSION||document.title!=='OUTLAST v'+VERSION)settle();
+  else {const badge=document.getElementById('outlastQualityBadge');if(badge&&badge.textContent!=='v'+VERSION+' • SURVIVOR HUB')badge.textContent='v'+VERSION+' • SURVIVOR HUB'}
+ },250);
+}
+function install(){try{notes();gearNotes();version();keepLatestBuild();installGear();installOverlayFix();const canvas=document.getElementById('game');if(!canvas||!canvas.getContext)return;const c=canvas.getContext('2d');if(!c)return;if(!window.__OUTLAST_V435_CARD_REDRAW){const previous=window.draw;if(typeof previous!=='function')return;const wrapped=function(){const res=previous.apply(this,arguments);try{redraw(c)}catch(e){window.OUTLAST_V435_CARD_ERROR=String(e&&e.message||e)}return res};wrapped.__outlastV435UpgradeRedesign=true;window.draw=wrapped;try{draw=wrapped}catch(_){}window.__OUTLAST_V435_CARD_REDRAW=true}window.OUTLAST_UPGRADE_CARD_DESIGN_V435={version:VERSION,ready:true,threeCards:true,clickRegionsPreserved:true,keyboardKeys:['1','2','3'],audit:()=>({active:active(),choices:(typeof game!=='undefined'&&Array.isArray(game.upgradeChoices))?game.upgradeChoices.length:0,renderHook:!!window.__OUTLAST_V435_CARD_REDRAW,error:window.OUTLAST_V435_CARD_ERROR||null})}}catch(e){window.OUTLAST_V435_INSTALL_ERROR=String(e&&e.message||e)}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();window.addEventListener('load',install,{once:true});setTimeout(install,0);setTimeout(install,100);setTimeout(install,350);
 })();

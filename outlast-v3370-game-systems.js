@@ -39,7 +39,7 @@ function upgradeBase37(name,desc,apply,rarity){
  // Align overlapping legacy cards to the same baseline as the tier-family library.
  const nv=b=>Number((Number(b)*mult).toFixed(2)).toString(),np=b=>pct(b,mult),ni=b=>scaledInteger37(b,mult),p=()=>G()?.player;
  const add=(k,v)=>{const q=p();if(q)q[k]=(Number(q[k])||0)+v;},ratio=(k,b)=>{const q=p();if(q)q[k]=(Number(q[k])||1)*(1+b*mult/100);};
- const faster=b=>{const q=p();if(q)q.fireRate=Math.max(.045,(Number(q.fireRate)||.45)*(1-b*mult/100));},heal=h=>{const q=p();if(q){q.max=(Number(q.max)||0)+h;q.hp=Math.min(q.max,(Number(q.hp)||0)+h);}};
+ const faster=b=>{const q=p();if(q)q.fireRate=Math.max(.045,(Number(q.fireRate)||.45)/(1+b*mult/100));},heal=h=>{const q=p();if(q){q.max=(Number(q.max)||0)+h;q.hp=Math.min(q.max,(Number(q.hp)||0)+h);}};
  const shield=s=>{if(typeof outlastGrantTempShield==='function')return outlastGrantTempShield(s);const q=p();if(q)q.shield=Math.max(Number(q.shield)||0,s);};
  const luck=()=>{const q=p();if(q)q.luck=(Number(q.upgradeLuck)||0)+(Number(q.lootLuck)||0)+(Number(q.treasureLuck)||0);};
  if(name==='Power Shot')return {desc:'+'+nv(3)+' damage',apply:()=>add('damage',3*mult)};
@@ -48,9 +48,9 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Second Heart')return {desc:'+'+ni(15)+' max HP and +'+np(5)+'% healing',apply:()=>{heal(ni(15));ratio('healMult',5);}};
  if(name==='Swift Feet')return {desc:'+'+np(2)+'% move speed',apply:()=>{const q=p();if(q)q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+2*mult/100));}};
  if(name==='Magnet')return {desc:'+'+ni(12)+' pickup radius',apply:()=>add('magnet',ni(12))};
- if(name==='Regeneration'||name==='Second Wind')return {desc:'+'+nv(.3)+' HP/s',apply:()=>add('regen',.3*mult)};
+ if(name==='Regeneration')return {desc:'+'+nv(.3)+' HP/s',apply:()=>add('regen',.3*mult)};
  if(name==='Piercing'||name==='Rift Pierce')return {desc:'+'+ni(name==='Piercing'?1:2)+' pierce',apply:()=>add('pierce',ni(name==='Piercing'?1:2))};
- if(name==='Multi-Shot'||name==='Ammo Surge')return {desc:'+'+ni(1)+' projectiles',apply:()=>add('multiShot',ni(1))};
+ if(name==='Multi-Shot')return {desc:'+'+ni(1)+' projectiles',apply:()=>add('multiShot',ni(1))};
  if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(8)+'% XP',apply:()=>ratio('xpBonus',8)};
  if(name==='XP Burst')return {desc:'+'+np(12)+'% XP and +'+ni(20)+' pickup radius',apply:()=>{ratio('xpBonus',12);add('magnet',ni(20));}};
  if(name==='Overcharge')return {desc:'+'+np(4)+'% ultimate damage',apply:()=>ratio('ultDamage',4)};
@@ -60,10 +60,10 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Chain Reaction'||name==='Shock Circuit')return {desc:'+'+np(3)+'% chain effect',apply:()=>{const q=p();if(q)q.chain=(Number(q.chain)||1)*(1+.03*mult);}};
  if(name==='Lucky Coins')return {desc:'+'+np(3)+'% coins',apply:()=>ratio('coinMult',3)};
  if(name==='Adrenaline')return {desc:'+'+np(2)+'% speed below 50% HP',apply:()=>{const q=p();if(q){q.adrenaline=true;q.adrenalineSpeedBonus=(Number(q.adrenalineSpeedBonus)||0)+.02*mult;}}};
- if(name==='Shield Core'||name==='Emergency Shield')return {desc:'Gain '+nv(.65)+'s shield',apply:()=>shield(.65*mult)};
+ if(name==='Shield Core'||name==='Emergency Shield'){const seconds=name==='Shield Core'?5:7;return {desc:'Gain '+seconds+'s shield',apply:()=>shield(seconds)};}
  if(name==='Rapid Recovery')return {desc:'+'+np(5)+'% pickup healing',apply:()=>ratio('healMult',5)};
- if(name==='Berserker'||name==='Bloodrush')return {desc:'+'+np(10)+'% damage below 50% HP',apply:()=>{const q=p();if(q){q.berserk=true;if(name==='Bloodrush')q.bloodrush=true;q.berserkDamageBonus=(Number(q.berserkDamageBonus)||0)+.1*mult;}}};
- if(name==='Lucky Hunter')return {desc:np(10)+'% chance for double XP',apply:()=>{const q=p();if(q){q.lucky=true;q.luckyXpChance=.1*mult;}}};
+ 
+ if(name==='Lucky Hunter'){const chance=.15*mult;return {desc:pct(15,mult)+'% chance for double XP',apply:()=>{const q=p();if(q){q.lucky=true;q.luckyXpChance=chance;}}};}
  if(name==='Poison Rounds')return {desc:'Poison deals '+np(11)+'% weapon damage per second for '+nv(3)+'s',apply:()=>{const q=p();if(q){q.poison=true;q.poisonDpsMultiplier=.11*mult;q.poisonDuration=3*mult;}}};
  if(name==='Stun Rounds')return {desc:'+'+np(12)+'% chance to stun for '+nv(1.5)+'s',apply:()=>{const q=p();if(q){q.stun=true;q.stunChance=Math.min(.95,.12*mult);q.stunDuration=1.5*mult;}}};
  if(name==='Double Tap')return {desc:'+'+np(12)+'% chance to fire an extra shot',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=Math.min(.95,.12*mult);}}};
@@ -71,7 +71,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Treasure Radar')return {desc:nv(3)+'x power-up drop chance',apply:()=>{const q=p();if(q){q.treasure=true;q.treasureDropMultiplier=3*mult;}}};
  if(name==='Shockwave'){const rank=Math.max(0,TIER_ORDER.indexOf(rarity)),every=Math.max(2,12-rank),radius=150*Math.sqrt(mult),dmg=.8*mult;return {desc:'Every '+every+' kills, blast '+Math.round(radius)+' radius for '+np(80)+'% damage',apply:()=>{const q=p();if(q){q.shockwave=true;q.shockwaveEvery=every;q.shockwaveRadius=radius;q.shockwaveDamageMultiplier=dmg;}}};}
  if(name==='Frost Aura'||name==='Cryo Burst')return {desc:'+'+ni(18)+' aura radius, +'+np(8)+'% slow strength',apply:()=>{const q=p();if(q){q.frost=true;q.frostAuraRadius=(Number(q.frostAuraRadius)||130)+ni(18);q.frostSlow=(Number(q.frostSlow)||.5)+.08*mult;q.frostAuraDps=(Number(q.frostAuraDps)||.12)+.1*mult;}}};
- if(name==='Cryo Core')return {desc:'+'+np(8)+'% enemy-slowing aura strength',apply:()=>{const q=p();if(q){q.frost=true;q.slowPower=(Number(q.slowPower)||1)+.08*mult;}}};
+ 
  if(name==='Armor Pierce')return {desc:'+'+np(2)+'% enemy defense ignored',apply:()=>add('armorPierce',.02*mult)};
  if(name==='Upgrade Luck'||name==='Lucky Charm')return {desc:'+'+nv(2)+' Upgrade Luck',apply:()=>{add('upgradeLuck',2*mult);luck();}};
  if(name==='Fortune'||name==='Scavenger Luck')return {desc:'+'+nv(2)+' Loot Luck',apply:()=>{add('lootLuck',2*mult);luck();}};
@@ -96,12 +96,12 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Treasure Engine')return {desc:'+'+nv(2)+' Treasure Luck and '+nv(3)+'x drop chance',apply:()=>{const q=p();if(q){q.treasureLuck=(Number(q.treasureLuck)||0)+2*mult;q.treasure=true;q.treasureDropMultiplier=3*mult;luck();}}};
  if(name==='Deadly Precision')return {desc:'+'+np(1)+'% crit chance and +'+np(2)+'% crit damage',apply:()=>{const q=p();if(q){q.crit=Math.min(.99,(Number(q.crit)||0)+.01*mult);q.critMult=(Number(q.critMult)||1.8)+.02*mult;}}};
  if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledInteger37(name==='Piercing'?1:2,mult);return {desc:'+'+amount+(name==='Piercing'?' pierce':' projectile pierce'),apply:function(){const p=player();if(p)p.pierce=(Number(p.pierce)||0)+amount;}};}
- if(name==='Multi-Shot'||name==='Ammo Surge'){const amount=scaledInteger37(2,mult);return {desc:'+'+amount+(name==='Multi-Shot'?' projectiles':' extra projectiles'),apply:function(){const p=player();if(p)p.multiShot=(Number(p.multiShot)||0)+amount;}};}
+ if(name==='Ammo Surge'){const amount=scaledInteger37(2,mult);return {desc:'+'+amount+' extra projectiles',apply:function(){const p=player();if(p)p.multiShot=(Number(p.multiShot)||0)+amount;}};}
  if(name==='Second Wind'){const amount=scaledInteger37(2,mult);return {desc:'+'+amount+' HP/s',apply:function(){const p=player();if(p)p.regen=(Number(p.regen)||0)+amount;}};}
- if(name==='Shield Core'||name==='Emergency Shield'){const seconds=scaledInteger37(name==='Shield Core'?3:5,mult);return {desc:'Gain '+seconds+'s shield',apply:function(){if(typeof outlastGrantTempShield==='function')return outlastGrantTempShield(seconds);}};}
+ 
  if(name==='Berserker'){const bonus=.50*mult;return {desc:'+'+pct(50,mult)+'% damage below 50% HP',apply:function(){const p=player();if(p){p.berserk=true;p.berserkDamageBonus=(Number(p.berserkDamageBonus)||0)+bonus;}}};}
  if(name==='Bloodrush'){const bonus=.18*mult;return {desc:'+'+pct(18,mult)+'% damage below 50% HP',apply:function(){const p=player();if(p){p.bloodrush=true;p.berserk=true;p.berserkDamageBonus=(Number(p.berserkDamageBonus)||0)+bonus;}}};}
- if(name==='Lucky Hunter'){const chance=.10*mult;return {desc:pct(10,mult)+'% chance for double XP',apply:function(){const p=player();if(p){p.lucky=true;p.luckyXpChance=chance;}}};}
+ 
  if(name==='Adrenaline'){const bonus=.20*mult;return {desc:'+'+pct(20,mult)+'% speed below 50% HP',apply:function(){const p=player();if(p){p.adrenaline=true;p.adrenalineSpeedBonus=(Number(p.adrenalineSpeedBonus)||0)+bonus;}}};}
  if(name==='Poison Rounds'){const dps=.11*mult,duration=3*mult;return {desc:'Poison deals '+pct(11,mult)+'% weapon damage per second for '+pct(3,mult)+'s',apply:function(){const p=player();if(p){p.poison=true;p.poisonDpsMultiplier=dps;p.poisonDuration=duration;}}};}
  if(name==='Stun Rounds'){const chance=Math.min(.95,.12*mult),duration=1.5*mult;return {desc:'+'+pct(Math.min(95,12*mult),1)+'% chance to stun for '+pct(1.5,mult)+'s',apply:function(){const p=player();if(p){p.stun=true;p.stunChance=chance;p.stunDuration=duration;}}};}
@@ -109,7 +109,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Lucky Barrage'){const chance=.08*mult;return {desc:'+'+pct(8,mult)+'% extra-shot chance',apply:function(){const p=player();if(p){p.doubleTap=true;p.doubleTapChance=Math.min(.95,(Number(p.doubleTapChance)||0)+chance);p.extraShotLuck=(Number(p.extraShotLuck)||0)+chance;}}};}
  if(name==='Treasure Radar'){const dropMultiplier=3*mult;return {desc:pct(3,mult)+'x power-up drop chance',apply:function(){const p=player();if(p){p.treasure=true;p.treasureDropMultiplier=dropMultiplier;}}};}
  if(name==='Shockwave'){const ti=Math.max(0,TIER_ORDER.indexOf(rarity)),every=Math.max(2,12-ti),radius=150*Math.sqrt(mult),damageMultiplier=.8*mult;return {desc:'Every '+every+' kill'+(every===1?'':'s')+', blast '+Math.round(radius)+' radius for '+pct(80,mult)+'% damage',apply:function(){const p=player();if(p){p.shockwave=true;p.shockwaveEvery=every;p.shockwaveRadius=radius;p.shockwaveDamageMultiplier=damageMultiplier;}}};}
- if(name==='Cryo Core')return {desc:'+'+pct(25,mult)+'% enemy-slowing aura strength',apply:function(){const p=player();if(p){p.frost=true;p.slowPower=(Number(p.slowPower)||1)+.25*mult;}}};
+ if(name==='Cryo Core'){const slow=.25*mult;return {desc:pct(25,mult)+'% enemy-slowing aura strength',apply:function(){const p=player();if(p){p.frost=true;p.slowPower=(Number(p.slowPower)||1)+slow;}}};}
  const d=typeof desc==='function'?desc(mult):String(desc||''),a=typeof apply==='function'?apply:()=>{};
  return {desc:d,apply:()=>{const result=a(mult);if(typeof result==='function')return result();return result;}};
 }

@@ -96,7 +96,7 @@ const { chromium } = require('playwright');
       tierCount:tiers.filter(t=>reachable.find(x=>x.tier===t&&x.rolled===t)).length,
       tiers:reachable,poolCounts:Object.fromEntries(tiers.map(t=>[t,(Array.isArray(pools[t])?pools[t]:[]).filter(n=>source.some(x=>Array.isArray(x)&&x[0]===n)).length])),
       choiceCount:source.length,uniqueChoiceCount:unique.size,duplicateCount:names.length-unique.size,
-      orphanCount:names.filter(n=>!poolNames.has(n)).length,highTierPools:tiers.slice(6).map(t=>({tier:t,count:(pools[t]||[]).filter(n=>source.some(x=>Array.isArray(x)&&x[0]===n)).length}))
+      orphanCount:names.filter(n=>!poolNames.has(n)).length,orphanNames:names.filter(n=>!poolNames.has(n)).map(n=>({name:n,declaredTier:window.OUTLAST_UPGRADE_RARITY_BY_NAME?.[n]||null})),highTierPools:tiers.slice(6).map(t=>({tier:t,count:(pools[t]||[]).filter(n=>source.some(x=>Array.isArray(x)&&x[0]===n)).length}))
     };
   });
   if(!rarityRuntimeAudit.ready||rarityRuntimeAudit.tierCount!==11||rarityRuntimeAudit.duplicateCount!==0||rarityRuntimeAudit.orphanCount!==0||rarityRuntimeAudit.highTierPools.some(x=>x.count===0)){

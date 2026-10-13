@@ -25,4 +25,5 @@ assert(!index.includes("document.getElementById('progressionBtn').onclick=render
 assert(!index.includes("document.getElementById('questBtn').onclick=renderQuestBoard"),'quest button binding must be null-safe');
 assert(index.includes('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),'level-up and Gear Room layer loads after the renderer');
 assert(index.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.9')&&index.indexOf('outlast-v438-upgrade-boss-balance.js?v=4.3.9')>index.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),'balance patch loads last');
+assert(index.includes('outlast-v439-skill-ui-redesign.js?v=4.3.9')&&index.indexOf('outlast-v439-skill-ui-redesign.js?v=4.3.9')>index.indexOf('outlast-v438-upgrade-boss-balance.js?v=4.3.9'),'skill/UI patch is the final script');
 console.log('v4.3.6 version synchronization regression test passed');

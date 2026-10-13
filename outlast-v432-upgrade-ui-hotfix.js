@@ -58,7 +58,7 @@ function drawCleanUpgradeText(ctx,native){
  let choices;try{choices=game.upgradeChoices}catch(_){return}
  if(!Array.isArray(choices)||choices.length!==3)return;
  const rarityRanks={Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Mythic:5,Divine:6,Celestial:7,Transcendent:8,Eternal:9,Omega:10};
- const rarityMult={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
+ const rarityMult={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8};
  ctx.save();ctx.textAlign='center';ctx.textBaseline='alphabetic';
  choices.forEach((u,i)=>{
   if(!u)return;

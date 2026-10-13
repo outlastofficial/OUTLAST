@@ -58,7 +58,7 @@
     'Lucky Charm':['Lucky Charm',()=>'+8 Upgrade Luck',()=>{const p=game.player;p.upgradeLuck=(p.upgradeLuck||0)+8;p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
     'Treasure Luck':['Treasure Luck',()=>'+20 Treasure Luck',()=>{const p=game.player;p.treasureLuck=(p.treasureLuck||0)+20;p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
     'Fortune':['Fortune',()=>'+15 Loot Luck',()=>{const p=game.player;p.lootLuck=(p.lootLuck||0)+15;p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
-    'Abyssal Core':['Abyssal Core',()=>'+60% damage, +20% attack speed, +2 pierce, +15% boss damage',()=>{const p=game.player;p.damage*=1.60;p.fireRate=Math.max(.10,(p.fireRate||.45)*.80);p.pierce=(p.pierce||0)+2;p.bossMult=(p.bossMult||1)*1.15}],
+    'Abyssal Core':['Abyssal Core',()=>'+60% damage, +20% attack speed, +2 pierce, +15% boss damage',()=>{const p=game.player;p.damage*=1.60;p.fireRate=Math.max(.10,(p.fireRate||.45)/1.20);p.pierce=(p.pierce||0)+2;p.bossMult=(p.bossMult||1)*1.15}],
 
     // DIVINE — very strong but not runaway
     'Overheat':['Overheat',()=>'+25% attack speed and +5% damage',()=>{const p=game.player;p.fireRate=Math.max(.12,(p.fireRate||.45)*.75);p.damage*=1.05}],
@@ -87,7 +87,7 @@
     'Bossbreaker':['Bossbreaker',()=>'+20% boss damage',()=>game.player.bossDamageBonus=(game.player.bossDamageBonus||0)+.20],
     'Cryo Burst':['Cryo Burst',()=>'Large frost aura, stronger slow and chill damage',()=>{const p=game.player;p.frost=true;p.frostAuraRadius=(p.frostAuraRadius||130)+70;p.frostSlow=Math.min(.93,(p.frostSlow||.50)+.12);p.frostAuraDps=(p.frostAuraDps||.12)+.12}],
     'Shock Circuit':['Shock Circuit',()=>'+20% chain effect',()=>game.player.chain=(game.player.chain||1)*1.20],
-    'Transcendent Fury':['Transcendent Fury',()=>'+125% damage, +60% attack speed, +20% crit, +3 pierce, +25% boss damage, +30% ultimate damage',()=>{const p=game.player;p.damage*=2.25;p.fireRate=Math.max(.065,(p.fireRate||.45)*.40);p.crit=Math.min(.97,(p.crit||0)+.20);p.pierce=(p.pierce||0)+3;p.bossMult=(p.bossMult||1)*1.25;p.ultDamage=(p.ultDamage||1)*1.30}],
+    'Transcendent Fury':['Transcendent Fury',()=>'+125% damage, +60% attack speed, +20% crit, +3 pierce, +25% boss damage, +30% ultimate damage',()=>{const p=game.player;p.damage*=2.25;p.fireRate=Math.max(.065,(p.fireRate||.45)/1.60);p.crit=Math.min(.97,(p.crit||0)+.20);p.pierce=(p.pierce||0)+3;p.bossMult=(p.bossMult||1)*1.25;p.ultDamage=(p.ultDamage||1)*1.30}],
 
     // ETERNAL — extreme survivability and scaling
     'Vampire Core':['Vampire Core',()=>'+0.6 HP per kill and +8% max HP',()=>{const p=game.player;p.vampire=(p.vampire||0)+.60;p.max*=1.08;p.hp=Math.min(p.max,p.hp+p.max*.08)}],
@@ -101,7 +101,7 @@
     // OMEGA — apex choices
     'Treasure Engine':['Treasure Engine',()=>'+30 Treasure Luck and 2.25x power-up drop chance',()=>{const p=game.player;p.treasureLuck=(p.treasureLuck||0)+30;p.treasure=true;p.treasureMultiplier=Math.max(p.treasureMultiplier||1,2.25);p.luck=(p.upgradeLuck||0)+(p.lootLuck||0)+(p.treasureLuck||0)}],
     'Deadly Precision':['Deadly Precision',()=>'+12% crit chance and +15% crit damage',()=>{const p=game.player;p.crit=Math.min(.99,(p.crit||0)+.12);p.critMult=(p.critMult||1.8)+.15}],
-    'Omega Ascension':['Omega Ascension',()=>'+300% damage, +80% attack speed, +30% crit, +7 projectiles, +7 pierce, +125% ultimate damage, +50% boss damage, +40% chain',()=>{const p=game.player;p.damage*=4.00;p.fireRate=Math.max(.045,(p.fireRate||.45)*.20);p.crit=Math.min(.99,(p.crit||0)+.30);p.multiShot=(p.multiShot||0)+7;p.pierce=(p.pierce||0)+7;p.ultDamage=(p.ultDamage||1)*2.25;p.bossMult=(p.bossMult||1)*1.50;p.chain=(p.chain||1)*1.40;p.shockwave=true;p.shockwaveEvery=10;p.shockwaveRadius=170;p.shockwaveDamage=.90}]
+    'Omega Ascension':['Omega Ascension',()=>'+300% damage, +80% attack speed, +30% crit, +7 projectiles, +7 pierce, +125% ultimate damage, +50% boss damage, +40% chain',()=>{const p=game.player;p.damage*=4.00;p.fireRate=Math.max(.045,(p.fireRate||.45)/1.80);p.crit=Math.min(.99,(p.crit||0)+.30);p.multiShot=(p.multiShot||0)+7;p.pierce=(p.pierce||0)+7;p.ultDamage=(p.ultDamage||1)*2.25;p.bossMult=(p.bossMult||1)*1.50;p.chain=(p.chain||1)*1.40;p.shockwave=true;p.shockwaveEvery=10;p.shockwaveRadius=170;p.shockwaveDamage=.90}]
   };
 
   function install(){

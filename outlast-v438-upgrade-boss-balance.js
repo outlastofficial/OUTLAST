@@ -15,6 +15,29 @@ const LUCK_FACTOR=Object.freeze({
  Divine:4.2,Celestial:5.2,Transcendent:6.2,Eternal:7,Omega:8
 });
 const tiers=Object.keys(SCALE);
+
+const SPECIAL_CARD_TIERS=Object.freeze({
+ 'Final Swarm':'Mythic','Glass Reactor':'Epic','Overdrive':'Mythic',
+ 'Guardian Core':'Epic','Treasure Hunter':'Rare','Weapon Mastery':'Legendary'
+});
+function repairUnassignedChoices(){
+ let source=[];
+ try{if(typeof tempUp!=='undefined'&&Array.isArray(tempUp))source=tempUp;}catch(_){}
+ const pools=window.OUTLAST_UPGRADE_RARITY_POOLS,byName=window.OUTLAST_UPGRADE_RARITY_BY_NAME;
+ if(!pools||!byName||!source.length)return {ready:false,added:[]};
+ const added=[];
+ for(const [name,tier] of Object.entries(SPECIAL_CARD_TIERS)){
+  if(!source.some(item=>item&&item[0]===name))continue;
+  for(const [existingTier,names] of Object.entries(pools)){
+   if(Array.isArray(names)&&names.includes(name)){byName[name]=existingTier;break;}
+  }
+  if(byName[name])continue;
+  if(!Array.isArray(pools[tier]))pools[tier]=[];
+  pools[tier].push(name);byName[name]=tier;added.push({name,tier});
+ }
+ window.OUTLAST_UPGRADE_CATALOG_REPAIRS=added;
+ return {ready:true,added};
+}
 function weightsFor(luck){
  const bonus=Math.min(.72,Math.max(0,Number(luck)||0)/125);
  const result={};
@@ -73,6 +96,7 @@ function installReleaseNotes(){
  }catch(err){window.OUTLAST_BALANCE_NOTES_ERROR=String(err&&err.message||err);}
 }
 function install(){
+ repairUnassignedChoices();
  installReleaseNotes();
  setVersion();
  window.OUTLAST_RARITY_AUDIT=function(){

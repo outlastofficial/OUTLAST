@@ -130,13 +130,14 @@ function prepareRunEffects(){
 function installCombat(){
  let old=window.update;
  if(typeof old==='function'&&!old.__outlastV441Update){
+  const originalUpdate=old;
   const wrap=function(dt){
    const g=currentGame();prepareRunEffects();
    if(g&&g.running&&Array.isArray(g.enemies)&&!g.enemies.some(e=>e&&e.boss&&!e.__dead&&num(e.hp)>0)){
     const interval=Math.max(.2,num(g.bossIntervalMult)||1);
     if(interval<1)g.bossClock=num(g.bossClock)+num(dt)*(1/interval-1);
    }
-   const p=g&&g.player,hp=p?num(p.hp):0,result=old.apply(this,arguments);
+   const p=g&&g.player,hp=p?num(p.hp):0,result=originalUpdate.apply(this,arguments);
    if(g&&p&&g.player===p&&g.noHealing&&num(p.hp)>hp)p.hp=hp;
    return result;
   };
@@ -144,12 +145,14 @@ function installCombat(){
  }
  old=window.outlastTakePlayerDamage;
  if(typeof old==='function'&&!old.__outlastV441Incoming){
-  const wrap=function(p,amount,reason,minHp){const g=currentGame();let d=num(amount);if(g&&p===g.player)d*=Math.max(0,num(g.enemyDamageMult)||1);return old.call(this,p,d,reason,minHp)};
+  const originalHit=old;
+  const wrap=function(p,amount,reason,minHp){const g=currentGame();let d=num(amount);if(g&&p===g.player)d*=Math.max(0,num(g.enemyDamageMult)||1);return originalHit.call(this,p,d,reason,minHp)};
   wrap.__outlastV441Incoming=true;window.outlastTakePlayerDamage=wrap;try{outlastTakePlayerDamage=wrap}catch(_){}
  }
  old=window.damageEnemy;
  if(typeof old==='function'&&!old.__outlastV441Damage){
-  const wrap=function(e,amount){const g=currentGame(),p=g&&g.player;let d=num(amount);if(e&&e.boss&&g){d*=Math.max(0,num(g.bossDamageTakenMult)||1);if(e.raidName==='Eternal Warden'&&num(e.guardTimer)>0)d*=.45}if(p&&num(p.armorPierce)>0)d*=1+Math.min(.75,num(p.armorPierce));return old.call(this,e,d)};
+  const originalDamage=old;
+  const wrap=function(e,amount){const g=currentGame(),p=g&&g.player;let d=num(amount);if(e&&e.boss&&g){d*=Math.max(0,num(g.bossDamageTakenMult)||1);if(e.raidName==='Eternal Warden'&&num(e.guardTimer)>0)d*=.45}if(p&&num(p.armorPierce)>0)d*=1+Math.min(.75,num(p.armorPierce));return originalDamage.call(this,e,d)};
   wrap.__outlastV441Damage=true;window.damageEnemy=wrap;try{damageEnemy=wrap}catch(_){}
  }
  old=window.spawnEnemy;

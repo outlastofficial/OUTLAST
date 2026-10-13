@@ -21,7 +21,7 @@ assert(/bossDamageTakenMult:modifiers\.reduce\(\(a,v\)=>a\*\(v\.bossDamageTakenM
 assert(/BossArmor:\{desc:'Bosses take longer to defeat\.[^}]*bossDamageTakenMult:\.70/.test(systems),
   'Boss Armor must retain its documented resistance value');
 
-assert(/const modBossEvery=modifiers\.reduce\(\(a,v\)=>a\*\(Number\(v\.bossEveryMult\|\|v\.bossEvery\)\|\|1\),1\)/.test(html),
+assert(/modBossEvery=modifiers\.reduce\(\(a,v\)=>a\*\(Number\(v\.bossEveryMult\|\|v\.bossEvery\)\|\|1\),1\)/.test(html),
   'Both bossEveryMult and bossEvery run-modifier properties must affect boss timing');
 assert(/bossEvery:\(cm\.bossEvery\|\|m\.bossEvery\|\|60\)\*modBossEvery/.test(html),
   'Run boss cadence must combine the selected mode/challenge with boss-speed modifiers');

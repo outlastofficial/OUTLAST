@@ -209,7 +209,7 @@ const extraModifiers37={
   HyperZombies:{desc:'Zombies move 45% faster. 2.4x rewards.',spawn:1,reward:2.4,enemy:1.12,zombieSpeedMult:1.45},
   BossArmor:{desc:'Bosses take longer to defeat. 2.3x rewards.',spawn:1,reward:2.3,enemy:1.15,bossDamageTakenMult:.70},
   FragileBuild:{desc:'Your max HP is reduced by 25%. 2.0x rewards.',spawn:1,reward:2.0,enemy:1,playerHpMult:.75},
-  EliteWorld:{desc:'Elite enemies appear much more often. 2.6x rewards.',spawn:.90,reward:2.6,enemy:1.18,eliteChance:.30},
+  EliteWorld:{desc:'Elite enemies appear 2.5x as often. 2.6x rewards.',spawn:.90,reward:2.6,enemy:1.18,eliteChance:2.5},
   Relentless:{desc:'No enemy recovery window. 2.2x rewards.',spawn:.78,reward:2.2,enemy:1.10},
   ApexTrial:{desc:'Hard AI + faster bosses + higher rewards. 3.0x rewards.',spawn:.72,reward:3.0,enemy:1.25,bossEveryMult:.70,aiAggressive:true,zombieSpeedMult:1.25}
 };

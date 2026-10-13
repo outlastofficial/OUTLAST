@@ -24,6 +24,8 @@ jobs:
         run: node tests/outlast-v3378-expansion.test.js
       - name: Verify redesigned upgrade choice cards
         run: node tests/upgrade-choice-redesign-v433.test.js
+      - name: Verify all 82 added map visuals and layouts
+        run: node tests/outlast-v434-map-visuals.test.js
       - name: Verify current build and version marker synchronization
         run: node tests/version-sync-v3362.test.js
       - name: Run upgrade rarity integrity checks

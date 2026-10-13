@@ -82,6 +82,26 @@ const { chromium } = require('playwright');
     const runtimeDiag=await page.evaluate(()=>({expansionReady:!!window.OUTLAST_MAP_UPGRADE_EXPANSION_READY,expansionAudit:typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null,loadedExpansionResources:performance.getEntriesByType('resource').map(x=>x.name).filter(x=>x.includes('outlast-v410-map-upgrade-expansion'))}));
     throw new Error('v4.1.0 features were not registered: '+JSON.stringify({featureRegistry,runtimeDiag,consoleErrors,http404}));
   }
+  const rarityRuntimeAudit=await page.evaluate(()=>{
+    const tiers=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
+    const scale=window.OUTLAST_RARITY_AUDIT_SCALE||{},base=window.OUTLAST_RARITY_AUDIT_WEIGHTS||{},roller=window.OUTLAST_ROLL_UPGRADE_RARITY_AT;
+    const source=Array.isArray(tempUp)?tempUp:[],pools=window.OUTLAST_UPGRADE_RARITY_POOLS||{};
+    const names=source.map(x=>Array.isArray(x)?String(x[0]):'').filter(Boolean),unique=new Set(names);
+    const poolNames=new Set(Object.values(pools).flat().filter(Boolean));
+    const total=tiers.reduce((n,t)=>n+(Number(base[t])||0),0);
+    let cursor=0;
+    const reachable=tiers.map(t=>{const w=Number(base[t])||0;const point=total>0?(cursor+w/2)/total:0;cursor+=w;return {tier:t,rolled:typeof roller==='function'?roller(point,0):null,multiplier:Number(scale[t])||0,weight:w};});
+    return {
+      ready:typeof roller==='function'&&window.rollUpgradeRarity===window.rollUpgradeRarity&&tiers.every(t=>Number(scale[t])>0&&Number(base[t])>0),
+      tierCount:tiers.filter(t=>reachable.find(x=>x.tier===t&&x.rolled===t)).length,
+      tiers:reachable,poolCounts:Object.fromEntries(tiers.map(t=>[t,(Array.isArray(pools[t])?pools[t]:[]).filter(n=>source.some(x=>Array.isArray(x)&&x[0]===n)).length])),
+      choiceCount:source.length,uniqueChoiceCount:unique.size,duplicateCount:names.length-unique.size,
+      orphanCount:names.filter(n=>!poolNames.has(n)).length,highTierPools:tiers.slice(6).map(t=>({tier:t,count:(pools[t]||[]).filter(n=>source.some(x=>Array.isArray(x)&&x[0]===n)).length}))
+    };
+  });
+  if(!rarityRuntimeAudit.ready||rarityRuntimeAudit.tierCount!==11||rarityRuntimeAudit.duplicateCount!==0||rarityRuntimeAudit.orphanCount!==0||rarityRuntimeAudit.highTierPools.some(x=>x.count===0)){
+    throw new Error('Runtime upgrade catalog audit failed: '+JSON.stringify(rarityRuntimeAudit));
+  }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
   if(!expansionAudit||expansionAudit.version!=='4.2.4'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
     throw new Error('v4.3.6 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
@@ -89,7 +109,7 @@ const { chromium } = require('playwright');
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.3.6')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  if(pickerBuild!=='4.3.8')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<100)throw new Error('100-map picker did not render all selectable tiles: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{
@@ -141,7 +161,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.3.6')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.3.8')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skillPrep=await page.evaluate(()=>{save.coins=Math.max(Number(save.coins)||0,10000);persist();return {coins:save.coins};});
   if(skillPrep.coins<900)throw new Error('Skill test could not fund Blink: '+JSON.stringify(skillPrep));

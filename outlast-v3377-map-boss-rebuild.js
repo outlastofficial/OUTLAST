@@ -3,7 +3,8 @@
 'use strict';
 const VERSION='3.37.16';
 const PREFIX='CustomMap:';
-const BUILTIN_MAPS=['Seizure','Ribhouse','Forest','Desert','Snow','Lava','City','Hospital','Laboratory','Subway','Prison','MilitaryBase','RuinedTown','Harbor','Bunker','Swamp','Skyscraper','Wasteland'];
+const BUILTIN_MAPS=["Seizure","Ribhouse","Forest","Desert","Snow","Lava","City","Hospital","Laboratory","Subway","Prison","MilitaryBase","RuinedTown","Harbor","Bunker","Swamp","Skyscraper","Wasteland","The Void","Neon District","Clockwork Factory","Crystal Caverns","The Abyss","Overgrown Mall","Power Plant","Frozen Research Base","The Catacombs","Biohazard Lab","Sky Fortress","The Colosseum","Graveyard District","Toxic Marsh","Magma Core","The Sunken City","Desert Temple","Cyber Prison","The Hive","Abandoned Carnival","Storm Island","The Backrooms","Orbital Station","The Museum","Wasteland Highway","The Clocktower","Dreamscape","The Dungeon","Frozen Ship","The Final Frontier","Volcanic Observatory","Glasshouse","Rail Yard","Sunken Temple","Lunar Crater","Solar Array","Acid Refinery","Black Ice Pass","Redwood Sanctuary","Bone Orchard","Rust Cathedral","Magnetic Fields","Echo Canyon","Shardfall Basin","Flooded Metro","Steamworks","Frozen Observatory","Deep Core Mine","Skybridge","Mirage Bazaar","Monsoon Port","Thunder Plains","Cursed Library","Clockwork Vault","Parasite Nursery","Fallen Kingdom","Warzone Outpost","Ghost Town","Mirror Maze","Red Sand Rift","The Furnace","Starship Graveyard","Quantum Lab","The Spiral","Drowned Prison","Iron Foundry","Puppet Theater","Carnival Underground","Acid Rain City","The Maw","Glass Desert","Arctic Trench","Sunken Cathedral","Fallen Satellite","Reactor Zero","Blood Moon Village","The Bone Pit","Wyrm Nest","The Silent Forest","The Endless Bridge","Rift Garden","Frozen Abyss"];
+const NEW_BUILTIN_MAPS=BUILTIN_MAPS.slice(18);
 const MAP_DESCRIPTIONS={
  Forest:'Woodland cover, fallen logs and rocky clearings.',Desert:'Sandstone ruins, cacti and wide sightlines.',
  Snow:'Ice shelves, frozen lanes and snow banks.',Lava:'Volcanic ground with glowing fissures.',
@@ -51,7 +52,7 @@ function selectMap(key){
 function tile(key,current){
  const selected=String(current||'Forest')===key;
  const desc=MAP_DESCRIPTIONS[key]||definitions()[key]?.desc||'Unique terrain, obstacles and hazards.';
- return '<button type="button" class="option outlast3377-map-card'+(selected?' selected':'')+'" data-outlast3377-map="'+esc(key)+'" aria-pressed="'+(selected?'true':'false')+'"><b>'+((!BUILTIN_MAPS.includes(key)||['Seizure','Ribhouse'].includes(key))?'<span class="outlast3377-map-new">NEW</span> ':'')+esc(mapName(key))+'</b><small>'+esc(desc)+'</small>'+(selected?'<strong>✓ SELECTED</strong>':'<span class="outlast3377-map-hint">SELECT MAP</span>')+'</button>';
+ return '<button type="button" class="option outlast3377-map-card'+(selected?' selected':'')+'" data-outlast3377-map="'+esc(key)+'" aria-pressed="'+(selected?'true':'false')+'"><b>'+((!BUILTIN_MAPS.includes(key)||NEW_BUILTIN_MAPS.includes(key)||['Seizure','Ribhouse'].includes(key))?'<span class="outlast3377-map-new">NEW</span> ':'')+esc(mapName(key))+'</b><small>'+esc(desc)+'</small>'+(selected?'<strong>✓ SELECTED</strong>':'<span class="outlast3377-map-hint">SELECT MAP</span>')+'</button>';
 }
 function openMapPicker(){
  const s=currentSave();

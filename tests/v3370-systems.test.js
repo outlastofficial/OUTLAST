@@ -8,8 +8,8 @@ new vm.Script(expansion,{filename:'outlast-v410-map-upgrade-expansion.js'});
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
 assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.1\.0/,'current v3.37 systems module is loaded with a cache-busting version');
-assert(html.includes('<title>OUTLAST v4.3.5</title>'),'visible game version marker must match the current build');
-assert(html.includes("const BUILD='4.3.5'"),'mandatory update check must target v4.2.4');
+assert(html.includes('<title>OUTLAST v4.3.6</title>'),'visible game version marker must match the current build');
+assert(html.includes("const BUILD='4.3.6'"),'mandatory update check must target v4.2.4');
 assert(html.includes("outlast_update_ack_v4.3.5"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.2.4'),'active repair module is cache-busted');
 assert(expansion.includes("const VERSION = '4.2.4'"),'module version matches the page');
@@ -55,4 +55,4 @@ assert(mod.includes('syncOwnerLauncher37'),'owner launcher must be owner-only');
 assert(mod.includes("card.style.display=ok?'':'none'")||mod.includes("card.style.display=(typeof isOwner==='function'&&isOwner())?'':'none'"),'non-owners must not see the Owner Panel card');
 assert(!mod.match(/ownerPassword|OWNER_PASSWORD/i),'owner panel must not use a password');
 
-console.log('OUTLAST v4.3.5 systems regression checks passed');
+console.log('OUTLAST v4.3.6 systems regression checks passed');

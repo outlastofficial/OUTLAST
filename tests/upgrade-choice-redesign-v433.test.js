@@ -13,5 +13,6 @@ assert(design.includes('scaleFor(rarity)'),'cards use the authoritative rarity m
 assert(design.includes('gearLoadouts')&&design.includes('function gearPresetsOpen')&&design.includes('function gearApplyPreset'),'saved gear presets support save and equip');
 assert(design.includes('outlastGearRoom435')&&design.includes('GEAR ROOM')&&design.includes('OPEN CRAFTING'),'expanded Gear Room shortcuts are registered');
 assert(design.includes('function overlayCollisionFix')&&design.includes('outlastQualityBadge')&&design.includes('OCTOBER EVENT')&&design.includes('THREAT'),'stale badge and floating overlays are handled during level-up');
+assert(design.includes("if(!up)document.querySelectorAll('.outlastV435HideOnUpgrade')")&&design.includes("!tl.some(line=>line.endsWith('…'))"),'overlay badges return after selection and title fitting tries smaller text before truncating');
 assert(design.includes('How do Gear Room presets work?'),'Gear Room instructions are added to How-To');
 console.log('OUTLAST v4.3.6 upgrade-choice and Gear Room checks passed');

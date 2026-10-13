@@ -34,9 +34,9 @@ assert(Math.abs(apply('Lucky Hunter','Legendary').p.luckyXpChance-.285)<1e-9,'Le
 assert(Math.abs(apply('Cryo Core','Divine').p.frostSlow-.82)<1e-9,'Divine Cryo Core must strengthen the frost aura stat that gameplay actually reads');
 assert.strictEqual(apply('Cryo Core','Divine').p.slowPower,1,'Cryo Core must not write only to the unrelated slowTimer stat');
 assert(systems.includes("Relentless:{desc:'Enemy HP +10%; spawn interval -22%. 2.2x rewards.'"),'Relentless must describe real implemented effects, not a nonexistent recovery-window mechanic');
-assert(/armor:kind==='armored'\?\.25:kind==='juggernaut'\?\.35:0/.test(html),'armored enemy classes must have actual armor for Armor Pierce to ignore');
-assert(/if\(Number\(e\.armor\)>0\)[\s\S]{0,250}armorPierce/.test(html),'Armor Pierce must reduce enemy armor instead of increasing damage against every target');
-assert(/if\(name==='Armor Pierce'\)return \{desc:'\+'\+np\(15\)\+'% enemy defense ignored',apply:\(\)=>add\('armorPierce',\.15\*mult\)\}/.test(systems),'Armor Pierce must match the documented 15% base');
+assert(html.includes("armor:(kind==='armored'?0.25:(kind==='juggernaut'?0.35:0))"),'armored enemy classes must have actual armor for Armor Pierce to ignore');
+assert(html.includes('if(Number(e.armor)>0){const enemyArmor=')&&html.includes('armorIgnore=Math.max(0,Math.min(1,Number(p.armorPierce)||0))'),'Armor Pierce must reduce enemy armor instead of increasing damage against every target');
+assert(systems.includes("if(name==='Armor Pierce')return {desc:'+'+np(15)+'% enemy defense ignored',apply:()=>add('armorPierce',.15*mult)};"),'Armor Pierce must match the documented 15% base');
 
 const commonXP=apply('XP Boost','Common').p.xpBonus-1;
 const mythicXP=apply('XP Hunter','Mythic').p.xpBonus-1;

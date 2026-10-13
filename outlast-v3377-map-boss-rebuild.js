@@ -21,8 +21,9 @@ const definitions=()=>{try{return typeof mapDefs!=='undefined'&&mapDefs?mapDefs:
 let previousPicker=null,installed=false;
 function allBuiltinMaps(){
  const defs=definitions();
- return [...new Set([...BUILTIN_MAPS,...Object.keys(defs).filter(k=>k&&k.indexOf(PREFIX)!==0)])]
-  .filter(k=>BUILTIN_MAPS.includes(k)||!!defs[k]);
+ const original=BUILTIN_MAPS.filter(k=>k!=='Seizure'&&k!=='Ribhouse');
+ const added=Object.keys(defs).filter(k=>k&&k.indexOf(PREFIX)!==0&&!BUILTIN_MAPS.includes(k));
+ return [...new Set(['Seizure','Ribhouse',...added,...original])].filter(k=>BUILTIN_MAPS.includes(k)||!!defs[k]);
 }
 function mapName(key){return ({MilitaryBase:'Military Base',RuinedTown:'Ruined Town'})[key]||key;}
 function showToast(text){try{if(typeof toast==='function')toast(text)}catch(_){}}
@@ -50,7 +51,7 @@ function selectMap(key){
 function tile(key,current){
  const selected=String(current||'Forest')===key;
  const desc=MAP_DESCRIPTIONS[key]||definitions()[key]?.desc||'Unique terrain, obstacles and hazards.';
- return '<button type="button" class="option outlast3377-map-card'+(selected?' selected':'')+'" data-outlast3377-map="'+esc(key)+'" aria-pressed="'+(selected?'true':'false')+'"><b>'+(['Seizure','Ribhouse'].includes(key)?'<span class="outlast3377-map-new">NEW</span> ':'')+esc(mapName(key))+'</b><small>'+esc(desc)+'</small>'+(selected?'<strong>✓ SELECTED</strong>':'<span class="outlast3377-map-hint">SELECT MAP</span>')+'</button>';
+ return '<button type="button" class="option outlast3377-map-card'+(selected?' selected':'')+'" data-outlast3377-map="'+esc(key)+'" aria-pressed="'+(selected?'true':'false')+'"><b>'+((!BUILTIN_MAPS.includes(key)||['Seizure','Ribhouse'].includes(key))?'<span class="outlast3377-map-new">NEW</span> ':'')+esc(mapName(key))+'</b><small>'+esc(desc)+'</small>'+(selected?'<strong>✓ SELECTED</strong>':'<span class="outlast3377-map-hint">SELECT MAP</span>')+'</button>';
 }
 function openMapPicker(){
  const s=currentSave();
@@ -62,7 +63,7 @@ function openMapPicker(){
   const key=PREFIX+String(cm.id||''),selected=active===key;
   return '<button type="button" class="option outlast3377-map-card'+(selected?' selected':'')+'" data-outlast3377-map="'+esc(key)+'" aria-pressed="'+(selected?'true':'false')+'"><b>🧩 '+esc(cm.name||'Custom Map')+'</b><small>'+esc(cm.theme||'Forest')+' theme • '+(Array.isArray(cm.objects)?cm.objects.length:0)+' objects</small>'+(selected?'<strong>✓ SELECTED</strong>':'<span class="outlast3377-map-hint">SELECT MAP</span>')+'</button>';
  }).join('');
- const html='<div class="outlast3377-map-picker"><div class="outlast3377-map-new-banner"><strong>🆕 NEW MAPS</strong><span>Seizure and Ribhouse are the first two tiles.</span></div><div class="option outlast3377-map-current"><div><b>Current Map</b><small>The selected map is saved for your next run.</small></div><strong>'+esc(mapName(active))+'</strong></div><div class="outlast3377-map-section"><b>BUILT-IN MAPS • '+builtins.length+'</b><small>Newest maps are first and marked NEW. Choose one, then press Play.</small></div><div class="outlast3377-map-grid">'+builtins.map(k=>tile(k,active)).join('')+'</div>'+(custom.length?'<div class="outlast3377-map-section"><b>YOUR CUSTOM MAPS</b><small>Saved maps are selectable here too.</small></div><div class="outlast3377-map-grid">'+customTiles+'</div>':'<div class="option outlast3377-map-custom"><b>Want to make your own map?</b><small>Unlock Map Creator for 100,000 coins to create, save and edit custom maps.</small><button type="button" class="gold" data-outlast3377-create-map>OPEN MAP CREATOR</button></div>')+(custom.length?'<div class="option outlast3377-map-custom"><b>Create or edit a custom map</b><small>Open the Map Creator to manage your saved arenas.</small><button type="button" class="gold" data-outlast3377-create-map>OPEN MAP CREATOR</button></div>':'')+'</div>';
+ const html='<div class="outlast3377-map-picker"><div class="outlast3377-map-new-banner"><strong>🆕 NEW MAPS</strong><span>Seizure, Ribhouse and the 82 added arenas are grouped first.</span></div><div class="option outlast3377-map-current"><div><b>Current Map</b><small>The selected map is saved for your next run.</small></div><strong>'+esc(mapName(active))+'</strong></div><div class="outlast3377-map-section"><b>BUILT-IN MAPS • '+builtins.length+'</b><small>Newest maps are first and marked NEW. Choose one, then press Play.</small></div><div class="outlast3377-map-grid">'+builtins.map(k=>tile(k,active)).join('')+'</div>'+(custom.length?'<div class="outlast3377-map-section"><b>YOUR CUSTOM MAPS</b><small>Saved maps are selectable here too.</small></div><div class="outlast3377-map-grid">'+customTiles+'</div>':'<div class="option outlast3377-map-custom"><b>Want to make your own map?</b><small>Unlock Map Creator for 100,000 coins to create, save and edit custom maps.</small><button type="button" class="gold" data-outlast3377-create-map>OPEN MAP CREATOR</button></div>')+(custom.length?'<div class="option outlast3377-map-custom"><b>Create or edit a custom map</b><small>Open the Map Creator to manage your saved arenas.</small><button type="button" class="gold" data-outlast3377-create-map>OPEN MAP CREATOR</button></div>':'')+'</div>';
  let modal=document.getElementById('outlast3377MapPickerModal');
  if(!modal){modal=document.createElement('div');modal.id='outlast3377MapPickerModal';modal.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;background:rgba(2,6,10,.94);backdrop-filter:blur(5px);pointer-events:auto';document.body.appendChild(modal);}
  modal.innerHTML='<div class="card" style="width:min(1000px,96vw);max-height:92vh;overflow:auto;box-sizing:border-box"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px"><h2 style="margin:0">🗺️ Choose Map</h2><button type="button" data-outlast3377-map-close aria-label="Close map picker" style="margin:0;flex:0 0 auto">×</button></div>'+html+'</div>';
@@ -99,11 +100,20 @@ function installReleaseText(){
  }catch(_){}
 }
 function setVersion(){
- window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;document.title='OUTLAST v'+VERSION;
- document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+VERSION);
- const title=document.querySelector('#menu .menu-chip');if(title)title.textContent='v'+VERSION+' • SURVIVOR HUB';
- const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
- const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
+ const parts=v=>{const m=String(v||'').match(/\d+(?:\.\d+){1,3}/);return m?m[0].split('.').map(n=>Number(n)||0):[0]};
+ const label=v=>parts(v).join('.');
+ const cmp=(a,b)=>{for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0))return (a[i]||0)>(b[i]||0)?1:-1}return 0};
+ const meta=document.querySelector('meta[name="outlast-build"]'),versionMeta=document.querySelector('meta[name="build-version"]');
+ const fromTitle=(document.title.match(/v(\d+(?:\.\d+){1,3})/i)||[])[1]||'0';
+ const candidates=[VERSION,window.OUTLAST_BUILD,meta&&meta.content,versionMeta&&versionMeta.content,fromTitle].filter(Boolean);
+ let release=candidates[0]||VERSION;
+ for(const candidate of candidates.slice(1))if(cmp(parts(candidate),parts(release))>0)release=label(candidate);
+ release=label(release);
+ window.OUTLAST_BUILD=release;window.OUTLAST_VERSION='v'+release;document.title='OUTLAST v'+release;
+ if(meta)meta.content=release;if(versionMeta)versionMeta.content=release;
+ document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+release);
+ const title=document.querySelector('#menu .menu-chip');if(title)title.textContent='v'+release+' • SURVIVOR HUB';
+ window.OUTLAST_MAP_PICKER_VERSION_GUARD='max-declared-build';
 }
 function install(){
  if(!installed){

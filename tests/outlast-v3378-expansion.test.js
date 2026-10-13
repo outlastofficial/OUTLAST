@@ -19,6 +19,7 @@ assert(mapPicker.includes("const BUILTIN_MAPS=['Seizure','Ribhouse','Forest'"),'
 assert(mapPicker.includes('outlast3377-map-new-banner')&&mapPicker.includes('outlast3377-map-new'),'new maps have a visible banner and NEW labels');
 assert(mapPicker.includes('data-outlast3377-map-close'),'map picker has a close button');
 assert(mapPicker.includes('window.OUTLAST_MAP_PICKER_AUDIT'),'map picker exposes a runtime audit');
+assert(mapPicker.includes("window.OUTLAST_MAP_PICKER_VERSION_GUARD='max-declared-build'"),'opening Choose Map cannot downgrade the visible game version');
 assert(mapPicker.includes('window.OUTLAST_OPEN_MAP_PICKER_3377=openMapPicker'),'normal map picker has its own global route');
 assert(html.includes('window.OUTLAST_OPEN_MAP_PICKER_3377||window.openMapSelector'),'main menu routes map button to dedicated picker first');
 assert(mapPicker.includes('window.addEventListener(\'load\',install,{once:true})'),'map picker restores its route after the load event');
@@ -35,14 +36,15 @@ assert(expansion.includes('Why was the old event overlay removed?'),'How To docu
 assert(expansion.includes('v3.37.14 — Fix Floating Chat Layering'),'release log records the chat fix');
 assert(expansion.includes('v3.37.18 — Restore Global Chat Tags'),'release log records restored chat tags');
 assert(expansion.includes('Why is Chat at the top of the screen?'),'How To documents the chat placement');
-assert(html.includes('<meta name="outlast-build" content="4.3.5">')&&html.includes('<meta name="build-version" content="4.3.5">')&&html.includes('<title>OUTLAST v4.3.5</title>'),'current version metadata');
+assert(html.includes('<meta name="outlast-build" content="4.3.6">')&&html.includes('<meta name="build-version" content="4.3.6">')&&html.includes('<title>OUTLAST v4.3.6</title>'),'current version metadata');
 assert(html.includes('outlast-v432-upgrade-ui-hotfix.js?v=4.3.5'),'upgrade UI hotfix is cache-busted for the current release');
 assert(uiHotfix.includes('const VERSION=\'4.3.5\'')&&uiHotfix.includes('DECLARED_BUILD'),'hotfix preserves the declared build marker after opening Choose Map');
 assert(uiHotfix.includes('activeUpgrade()&&!window.__OUTLAST_CUSTOM_UPGRADE_RENDER')&&gearRedesign.includes('window.__OUTLAST_CUSTOM_UPGRADE_RENDER=true'),'redesigned card labels bypass the legacy overlap filter');
 new vm.Script(uiHotfix,{filename:'outlast-v432-upgrade-ui-hotfix.js'});
 new vm.Script(cardRedesign,{filename:'outlast-v433-upgrade-choice-redesign.js'});
-assert(html.includes('outlast-v435-upgrade-gear-redesign.js?v=4.3.5'),'v4.3.5 level-up and Gear Room module is loaded');
+assert(html.includes('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),'v4.3.5 level-up and Gear Room module is loaded');
 new vm.Script(gearRedesign,{filename:'outlast-v435-upgrade-gear-redesign.js'});
+assert(gearRedesign.includes('for(const ch of Array.from(w))')&&gearRedesign.includes('tl=wrap(c,title,w-42,3)')&&gearRedesign.includes('h=296'),'v4.3.6 upgrade text fit wraps long words and gives the cards safe height');
 assert(gearRedesign.includes('function drawCard')&&gearRedesign.includes('function rollingFX')&&gearRedesign.includes('RARITY MULTIPLIER'),'full upgrade card redesign and tier animations exist');
 assert(gearRedesign.includes('outlastGearRoom435')&&gearRedesign.includes('gearLoadouts')&&gearRedesign.includes('gearApplyPreset'),'Gear Room, saved builds and equip logic are wired');
 assert(!['INVENTORY','OPEN SHOP','RUN MODIFIERS'].some(label=>{const start=gearRedesign.indexOf('function gearMount()'),end=gearRedesign.indexOf('function gearHandleClick',start);return gearRedesign.slice(start,end).includes('>'+label+'<')}),'Gear Room does not duplicate canonical Progress launchers');
@@ -52,7 +54,7 @@ assert(cardRedesign.includes('PRESS '+"'+(i+1)+'"+'  OR  CLICK CARD'),'card rede
 assert(uiHotfix.includes('drawCleanUpgradeText')&&uiHotfix.includes('outlastPinkToy')&&uiHotfix.includes('outlastV431ThreatBanner'),'upgrade layout, threat/event overlays and unwanted floating toy hotfix are present');
 assert(html.includes('outlast-v430-world-maps.js?v=4.3.3')&&html.includes('outlast-v430-owner-control-center.js?v=4.3.4'),'world map and owner modules are loaded with current cache keys');
 assert(html.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'new themed terrain renderer is loaded');
-assert(html.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.5')>html.indexOf('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'upgrade/gear polish loads after the map renderer and draws level-up cards last');
+assert(html.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6')>html.indexOf('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'upgrade/gear polish loads after the map renderer and draws level-up cards last');
 new vm.Script(worldMaps,{filename:'outlast-v430-world-maps.js'});
 new vm.Script(ownerPanel,{filename:'outlast-v430-owner-control-center.js'});
 new vm.Script(mapVisuals,{filename:'outlast-v434-distinct-map-renderer.js'});

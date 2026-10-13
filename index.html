@@ -2059,7 +2059,7 @@ function spawnEnemy(type){
  let base={normal:[22,70,15],fast:[16,120,11],runner:[12,175,9],tank:[70,48,20],ranged:[28,58,12],spitter:[30,48,18],crawler:[18,140,13],armored:[140,54,28],golden:[80,88,22],swarm:[7,165,5],elite:[95,82,23],leaper:[42,165,20],brute:[220,46,38],screamer:[55,65,14],leech:[70,95,16],toxic:[60,78,19],phantom:[48,130,24],juggernaut:[360,38,45],frostbitten:[95,72,22],volt:[75,74,21],splitter:[110,72,20],LeechKing:[180,88,24],WastelandStalker:[260,155,32],RiftBrute:[520,52,48]}[kind]||[22,70,15];
  const levelHP=1+Math.pow(Math.max(0,lvl-1),1.18)*0.062;const levelSpeed=1+Math.max(0,lvl-1)*0.026;const levelDamage=1+Math.pow(Math.max(0,lvl-1),1.12)*0.034;
  let scale=levelHP*dm*levelDifficulty;let xp=Math.max(1,Math.floor(1+(lvl-1)*0.24));
- if(game.enemies.length<MAX_ENEMIES){const aiBehavior=({ranged:'Sniper',spitter:'Sniper',volt:'Sniper',runner:'Rammer',fast:'Rammer',leaper:'Rammer',phantom:'Ambusher',leech:'Ambusher',tank:'Chaser',armored:'Chaser',brute:'Chaser',juggernaut:'Chaser',shielder:'Support',summoner:'Support',toxic:'Flanker',splitter:'Flanker',swarm:'Flanker'}[String(kind||'normal').toLowerCase()]||'Hunter');game.enemies.push({x,y,kind,hp:base[0]*scale,max:base[0]*scale,speed:base[1]*levelSpeed,aiBehavior,aiPhase:Math.random()*Math.PI*2,r:(['tank','armored','brute','juggernaut'].includes(kind)?24:['elite','golden','phantom','LeechKing','WastelandStalker','RiftBrute'].includes(kind)?20:['crawler','swarm'].includes(kind)?12:15)*(Number(game.enemySizeMult)||1),damage:base[2]*levelDamage*levelDifficulty,xp:kind==='golden'?xp*5:xp,shoot:['ranged','spitter','volt'].includes(kind)?1.5:99,golden:kind==='golden'});if(save.codex)save.codex[kind]=true;if(kind==='splitter'){game.enemies.push({x:x+12,y:y+12,kind:'runner',hp:12*scale,max:12*scale,speed:175*levelSpeed,r:9,damage:9*levelDamage*levelDifficulty,xp:2,shoot:99})}}
+ if(game.enemies.length<MAX_ENEMIES){const aiBehavior=({ranged:'Sniper',spitter:'Sniper',volt:'Sniper',runner:'Rammer',fast:'Rammer',leaper:'Rammer',phantom:'Ambusher',leech:'Ambusher',tank:'Chaser',armored:'Chaser',brute:'Chaser',juggernaut:'Chaser',shielder:'Support',summoner:'Support',toxic:'Flanker',splitter:'Flanker',swarm:'Flanker'}[String(kind||'normal').toLowerCase()]||'Hunter');game.enemies.push({x,y,kind,hp:base[0]*scale,max:base[0]*scale,speed:base[1]*levelSpeed,aiBehavior,aiPhase:Math.random()*Math.PI*2,armor:(kind==='armored'?0.25:(kind==='juggernaut'?0.35:0)),r:(['tank','armored','brute','juggernaut'].includes(kind)?24:['elite','golden','phantom','LeechKing','WastelandStalker','RiftBrute'].includes(kind)?20:['crawler','swarm'].includes(kind)?12:15)*(Number(game.enemySizeMult)||1),damage:base[2]*levelDamage*levelDifficulty,xp:kind==='golden'?xp*5:xp,shoot:['ranged','spitter','volt'].includes(kind)?1.5:99,golden:kind==='golden'});if(save.codex)save.codex[kind]=true;if(kind==='splitter'){game.enemies.push({x:x+12,y:y+12,kind:'runner',hp:12*scale,max:12*scale,speed:175*levelSpeed,r:9,damage:9*levelDamage*levelDifficulty,xp:2,shoot:99})}}
 }
 function spawnShrine(){
  const types=[['Berserk Shrine','#ff5f68'],['Haste Shrine','#67c7ff'],['Magnet Shrine','#b48cff'],['XP Shrine','#59e0c3']];
@@ -2150,7 +2150,7 @@ function damageEnemy(e,dmg){
   if(save.selectedPet&&save.selectedPet!=='None')dmg*=Math.max(1,Number(p.petPower)||1);
   if(save.selectedRelic&&save.selectedRelic!=='None')dmg*=Math.max(1,Number(p.relicPower)||1);
   if(save.selectedCharm&&save.selectedCharm!=='None')dmg*=Math.max(1,Number(p.charmPower)||1);
-  if(Number(p.armorPierce)>0)dmg*=1+Number(p.armorPierce);
+  if(Number(e.armor)>0){const enemyArmor=Math.max(0,Math.min(.85,Number(e.armor)||0)),armorIgnore=Math.max(0,Math.min(1,Number(p.armorPierce)||0));dmg*=1-enemyArmor*(1-armorIgnore);}
   const inflicted=Math.max(0,Math.min(Math.max(0,dmg),Math.max(0,Number(e.hp)||0)));
   e.hp-=Math.max(0,dmg);
   if(Number(p.lifesteal)>0&&Number(p.max)>0)p.hp=Math.min(p.max,Number(p.hp||0)+inflicted*Number(p.lifesteal));
@@ -6063,7 +6063,7 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
 <script src="outlast-v32798-void-arsenal-balance.js?v=3.29.2"></script>
 <script src="outlast-v32799-premium-rarity-balance.js?v=3.29.2"></script>
 <script src="outlast-v327100-lower-rarity-balance.js?v=3.29.2"></script>
-<script src="outlast-v327101-all-upgrade-balance.js?v=3.29.1"></script>
+<script src="outlast-v327101-all-upgrade-balance.js?v=4.3.8"></script>
 <script src="outlast-v327102-bouncing-bullets.js?v=3.29.1"></script>
 <script src="outlast-v327103-coin-farm-hardening.js?v=3.29.1"></script>
 <script src="outlast-v327108-rarity-card-authority.js?v=3.29.1"></script>
@@ -6376,7 +6376,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.37.5')}))updates.unshift(['v3.37.5 — Strict Rarity Ladder + Boss Spawn Reliability','Normalized older overlapping upgrades to shared tier baselines so Common is the floor and matching effects rise through every rarity. Fixed stale boss locks, kept a single boss active at a time, and set scheduled bosses to arrive after about 20 seconds initially and about 40 seconds after each defeat.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('How is each upgrade rarity stronger?')}))helpArticles.unshift(['How is each upgrade rarity stronger?','Upgrades & Rarities','Common is the baseline and weakest rarity. Matching upgrades increase in order: Uncommon, Rare, Epic, Legendary, Mythic, Divine, Celestial, Transcendent, Eternal, then Omega. Legacy upgrades share the same baseline stats as equivalent library upgrades; descriptions and applied effects use matching rarity scaling. Whole-number stats step up instead of tying due to rounding. Multipliers: Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, Omega 8×.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('Why are bosses not spawning consistently?')}))helpArticles.unshift(['Why are bosses not spawning consistently?','Bosses & Runs','Boss timing follows the selected mode and active modifiers. Most runs schedule an early first boss; later bosses wait until the previous boss is defeated and then use the mode interval. Boss Gauntlet uses a 45-second interval. FastBosses and ApexTrial shorten boss intervals.']);
-})();</script><script src="outlast-v3360-focused-systems.js?v=4.1.0"></script><script src="outlast-v3370-game-systems.js?v=4.1.0"></script>
+})();</script><script src="outlast-v3360-focused-systems.js?v=4.1.0"></script><script src="outlast-v3370-game-systems.js?v=4.3.8"></script>
 <script src="outlast-v3376-interaction-fixes.js?v=3.37.6"></script>
 <script src="outlast-v3377-map-boss-rebuild.js?v=4.3.6"></script>
 <script src="outlast-v3378-expansion.js?v=4.1.0"></script>

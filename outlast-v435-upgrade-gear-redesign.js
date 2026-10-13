@@ -1,13 +1,21 @@
-/* OUTLAST v4.3.5 — Level-up redesign + Gear Room expansion */
+/* OUTLAST v4.3.6 — Upgrade text-fit + overlay spacing */
 (function(){
 'use strict';
-const VERSION='4.3.5';
+const VERSION='4.3.6';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const COLORS={Common:'#93a6b5',Uncommon:'#63d98b',Rare:'#61c7ff',Epic:'#bc8cff',Legendary:'#ffd66e',Mythic:'#ff70d7',Divine:'#fff0a0',Celestial:'#85ebff',Transcendent:'#b0a0ff',Eternal:'#ffd2ed',Omega:'#ff9f65'};
 const num=v=>Number.isFinite(Number(v))?Number(v):0, txt=v=>String(v==null?'':v).replace(/\s+/g,' ').trim();
 function active(){try{return typeof game!=='undefined'&&!!game.upgradeOpen&&Array.isArray(game.upgradeChoices)&&game.upgradeChoices.length===3}catch(_){return false}}
 function rr(c,x,y,w,h,r){c.beginPath();c.roundRect(x,y,w,h,r)}
-function wrap(c,s,maxWidth,maxLines){const words=txt(s).split(' '),out=[];let line='';for(const word of words){const test=(line+' '+word).trim();if(line&&c.measureText(test).width>maxWidth){out.push(line);line=word;if(out.length>=maxLines)break}else line=test}if(line&&out.length<maxLines)out.push(line);if(out.length===maxLines&&out.join(' ')!==txt(s)){let last=out[out.length-1];while(last&&c.measureText(last+'…').width>maxWidth)last=last.slice(0,-1).trimEnd();out[out.length-1]=last+'…'}return out}
+function wrap(c,s,maxWidth,maxLines){
+ const input=txt(s),raw=input.split(/\s+/).filter(Boolean),words=[];
+ for(const w of raw){if(c.measureText(w).width<=maxWidth){words.push(w);continue}let part='';for(const ch of Array.from(w)){if(part&&c.measureText(part+ch).width>maxWidth){words.push(part);part=ch}else part+=ch}if(part)words.push(part)}
+ const out=[];let line='',used=0,truncated=false;
+ for(let i=0;i<words.length;i++){const test=(line+' '+words[i]).trim();if(line&&c.measureText(test).width>maxWidth){out.push(line);line=words[i];if(out.length>=maxLines){truncated=true;break}}else line=test;used=i+1}
+ if(line&&out.length<maxLines)out.push(line);if(used<words.length)truncated=true;if(out.length>maxLines){out.length=maxLines;truncated=true}
+ if(truncated&&out.length){let last=out[out.length-1]||'';while(last&&c.measureText(last+'…').width>maxWidth)last=last.slice(0,-1).trimEnd();out[out.length-1]=(last||'').replace(/[\s.,;:!?-]+$/,'')+'…'}return out;
+}
+
 function titleFor(title,rarity){let s=txt(title);const m=s.match(/\s*\[([^\]]+)\]\s*$/);if(m&&m[1].toLowerCase()===rarity.toLowerCase())s=s.slice(0,m.index).trim();return s||'Unknown Upgrade'}
 function color(r){return COLORS[r]||COLORS.Common}
 function scaleFor(r){try{const x=typeof upgradeRarities!=='undefined'&&upgradeRarities[r];if(x&&Number.isFinite(Number(x.mult)))return Number(x.mult)}catch(_){}try{const x=window.OUTLAST_UPGRADE_RARITY_SCALING37;if(x&&Number.isFinite(Number(x[r])))return Number(x[r])}catch(_){}return ({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8})[r]||1}
@@ -27,34 +35,35 @@ function rollingFX(c,cx,cy,col,rank,t,i){
  c.restore()
 }
 function drawCard(c,u,i,t){
- const x=45+i*350,y=180,w=325,h=285,cx=x+w/2,rarity=TIERS.includes(u&&u[3])?u[3]:'Common',rank=TIERS.indexOf(rarity),col=color(rarity),mult=scaleFor(rarity);
+ const x=45+i*350,y=180,w=325,h=296,cx=x+w/2,rarity=TIERS.includes(u&&u[3])?u[3]:'Common',rank=TIERS.indexOf(rarity),col=color(rarity),mult=scaleFor(rarity);
  let rolling=false;try{rolling=!!game.__upgradeRollActive&&rank>0}catch(_){}
  const pulse=.5+.5*Math.sin(t*2.3+i*.8),title=titleFor(u&&u[0],rarity),desc=txt(u&&u[1]);
  c.save();c.globalAlpha=1;c.shadowBlur=0;c.shadowColor='transparent';
- // Opaque repaint clears all old, overlapping title/footer and rarity FX in this card.
  const bg=c.createLinearGradient(x,y,x+w,y+h);bg.addColorStop(0,'#172735');bg.addColorStop(.56,'#0b141d');bg.addColorStop(1,'#101925');
  c.fillStyle='#04090e';rr(c,x-5,y-5,w+10,h+10,21);c.fill();c.fillStyle=bg;rr(c,x,y,w,h,18);c.fill();
- c.globalAlpha=rank>=4?.72+.22*pulse:.96;c.strokeStyle=col;c.lineWidth=rank>=4?2.2+1.1*pulse:2.1;rr(c,x+1,y+1,w-2,h-2,17);c.stroke();c.globalAlpha=1;
+ c.globalAlpha=rank>=4?.76+.18*pulse:.98;c.strokeStyle=col;c.lineWidth=rank>=4?2.2+1.0*pulse:2.1;rr(c,x+1,y+1,w-2,h-2,17);c.stroke();c.globalAlpha=1;
  c.fillStyle=col;c.globalAlpha=.1;rr(c,x+4,y+4,w-8,50,14);c.fill();c.globalAlpha=1;
- const badgeW=Math.min(190,Math.max(130,c.measureText(rarity.toUpperCase()).width+38));
+ const badgeText=(rolling?'✧ REVEALING ':'✦ ')+rarity.toUpperCase(),badgeW=Math.min(218,Math.max(130,c.measureText(badgeText).width+36));
  c.fillStyle=col;c.globalAlpha=.14;rr(c,cx-badgeW/2,y+13,badgeW,25,12);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.55;c.lineWidth=1;rr(c,cx-badgeW/2,y+13,badgeW,25,12);c.stroke();c.globalAlpha=1;
- c.textAlign='center';c.textBaseline='alphabetic';c.fillStyle=col;c.font='bold 12px Arial';c.fillText((rolling?'✧ REVEALING ':'✦ ')+rarity.toUpperCase(),cx,y+30);
+ c.textAlign='center';c.textBaseline='alphabetic';c.fillStyle=col;c.font='bold 12px Arial';c.fillText(badgeText,cx,y+30);
  c.fillStyle='#09121a';c.beginPath();c.arc(x+w-27,y+26,14,0,Math.PI*2);c.fill();c.strokeStyle=col;c.globalAlpha=.8;c.lineWidth=1.5;c.stroke();c.globalAlpha=1;c.fillStyle='#ffe16b';c.font='bold 16px Arial';c.fillText(String(i+1),x+w-27,y+31);
- const iy=y+80;c.fillStyle=col;c.globalAlpha=.11;c.beginPath();c.arc(cx,iy,31,0,Math.PI*2);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.65;c.lineWidth=1.4;c.beginPath();c.arc(cx,iy,31,0,Math.PI*2);c.stroke();c.globalAlpha=1;
+ const iy=y+78;c.fillStyle=col;c.globalAlpha=.11;c.beginPath();c.arc(cx,iy,30,0,Math.PI*2);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.65;c.lineWidth=1.4;c.beginPath();c.arc(cx,iy,30,0,Math.PI*2);c.stroke();c.globalAlpha=1;
  if(rolling){rollingFX(c,cx,iy,col,rank,t,i);c.fillStyle='#fff';c.font='bold 13px Arial';c.fillText('ROLLING…',cx,iy+4)}else{c.fillStyle=col;c.font='bold 32px "Segoe UI Symbol",Arial';c.fillText(glyphFor(title,desc),cx,iy+11)}
- c.fillStyle='#f4f7fb';c.font='bold '+(title.length>33?14:title.length>23?15:title.length>16?16:18)+'px Arial';
- let tl=wrap(c,title,w-34,2);if(tl.some(s=>c.measureText(s).width>w-36)){c.font='bold 13px Arial';tl=wrap(c,title,w-36,2)}
- const titleY=tl.length>1?y+121:y+130;tl.forEach((s,j)=>c.fillText(s,cx,titleY+j*16));
- c.save();c.beginPath();c.rect(x+17,y+148,w-34,62);c.clip();c.fillStyle='#cfdae5';c.font='14px Arial';
- const dl=wrap(c,desc,w-40,3),descY=tl.length>1?y+164:y+157;dl.forEach((s,j)=>c.fillText(s,cx,descY+j*16));c.restore();
- c.globalAlpha=.38;c.strokeStyle=col;c.lineWidth=1;c.beginPath();c.moveTo(x+22,y+216);c.lineTo(x+w-22,y+216);c.stroke();c.globalAlpha=1;
- c.fillStyle=col;c.font='bold 11px Arial';c.fillText(rarity==='Common'?'BASE TIER':rarity.toUpperCase()+' TIER',cx,y+235);
- c.fillStyle='#b9c8d5';c.font='11px Arial';c.fillText('RARITY MULTIPLIER  ×'+mult.toFixed(2),cx,y+252);
- c.fillStyle=rolling?'#f4d67a':'#8fa5b6';c.font='bold 10px Arial';c.fillText(rolling?'WAIT FOR REVEAL':'PRESS '+(i+1)+'  OR  CLICK CARD',cx,y+274);
- c.restore()
+ c.fillStyle='#f4f7fb';let titleSize=17,tl=[];
+ for(;titleSize>=12;titleSize--){c.font='bold '+titleSize+'px Arial';tl=wrap(c,title,w-42,3);if(tl.every(line=>c.measureText(line).width<=w-42)&&tl.length<=3)break}
+ const titleStep=tl.length>=3?14:16,titleY=tl.length===1?y+132:tl.length===2?y+124:y+120;tl.forEach((line,j)=>c.fillText(line,cx,titleY+j*titleStep));
+ const descTop=y+(tl.length>=3?164:tl.length===2?158:153);
+ c.save();c.beginPath();c.rect(x+16,y+146,w-32,67);c.clip();c.fillStyle='#cfdae5';c.font='13px Arial';
+ const dl=wrap(c,desc,w-44,3);dl.forEach((line,j)=>c.fillText(line,cx,descTop+j*15));c.restore();
+ c.globalAlpha=.38;c.strokeStyle=col;c.lineWidth=1;c.beginPath();c.moveTo(x+22,y+221);c.lineTo(x+w-22,y+221);c.stroke();c.globalAlpha=1;
+ c.fillStyle=col;c.font='bold 11px Arial';c.fillText(rarity==='Common'?'BASE TIER':rarity.toUpperCase()+' TIER',cx,y+239);
+ c.fillStyle='#b9c8d5';c.font='11px Arial';c.fillText('RARITY MULTIPLIER  ×'+mult.toFixed(2),cx,y+256);
+ c.fillStyle=rolling?'#f4d67a':'#8fa5b6';c.font='bold 10px Arial';c.fillText(rolling?'WAIT FOR REVEAL':'PRESS '+(i+1)+'  OR  CLICK CARD',cx,y+278);
+ c.restore();
 }
+
 function redraw(c){if(!active())return;let choices;try{choices=game.upgradeChoices}catch(_){return}if(!Array.isArray(choices)||choices.length!==3)return;const t=(typeof performance!=='undefined'&&performance.now?performance.now():Date.now())/1000;c.save();c.globalAlpha=1;c.textAlign='center';choices.forEach((u,i)=>drawCard(c,u,i,t));c.restore();c.textAlign='left'}
-function notes(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.3.5')))updates.unshift(['v4.3.5 — Level-Up Choice Redesign','Redesigned level-up cards with clean typography, wrapped upgrade names and descriptions, distinct rarity colors, tier-specific rolling animations, the game’s actual rarity multiplier, and a single uncluttered footer. Added persistent gear presets, a Gear Score/profile, and quick access to Forge, relics, charms, pets, crafting, sets, evolutions, and the daily shop. Card positions and 1/2/3 selection controls are preserved.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('How do I read the redesigned upgrade cards?')))helpArticles.unshift(['How do I read the redesigned upgrade cards?','Upgrades & Rarities','Each level-up card shows rarity and selection number at the top, an upgrade icon and wrapped name, a readable effect description, and a footer with the rarity multiplier. Click a card or press 1, 2, or 3. Higher-rarity rolls use distinct animations and show the effect after revealing.'])}catch(_){}}
+function notes(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.3.6')))updates.unshift(['v4.3.6 — Upgrade Text Fit Fix','Fixed cut-off upgrade text: names support measured wrapping across up to three lines, long words are split to fit card width, descriptions stay in their own clipped box, and the footer has extra bottom clearance. The October event, threat and AFK badges are independently detected and hidden while choosing. Rarity animations and 1/2/3 selection remain.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('Why were some upgrade words cut off?')))helpArticles.unshift(['Why were some upgrade words cut off?','Upgrades & Rarities','Upgrade names use measured wrapping and can span up to three lines. Long words are split to fit the card width, descriptions are clipped to a dedicated text area, and the footer has extra spacing. The event, threat and AFK overlays hide while choosing. Click a card or press 1, 2, or 3.'])}catch(_){}}
 function version(){const cur=String(window.OUTLAST_BUILD||'0').split('.').map(x=>Number(x)||0),next=VERSION.split('.').map(x=>Number(x)||0);for(let i=0;i<Math.max(cur.length,next.length);i++){if((cur[i]||0)>(next[i]||0))return;if((cur[i]||0)<(next[i]||0))break}window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;document.title='OUTLAST v'+VERSION;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(q=>{const e=document.querySelector(q);if(e)e.content=VERSION});document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent='v'+VERSION+' • SURVIVOR HUB'})}
 
 function gearEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
@@ -135,28 +144,32 @@ function installGear(){
  window.OUTLAST_GEAR_ROOM_V435={version:VERSION,ready:!!document.getElementById('outlastGearRoom435'),audit:()=>{const s=gearSave()||{};return {ready:!!document.getElementById('outlastGearRoom435'),presets:Object.keys(s.gearLoadouts||{}).length,score:gearScore(s),weapon:s.selectedWeapon||'Blaster',cards:document.querySelectorAll('#outlastGearRoom435 .outlast-gear-card').length}}};
 }
 function overlayCollisionFix(){
- const up=active();
- const styleId='outlastV435OverlayStyle';
+ const up=active(),styleId='outlastV435OverlayStyle';
  if(!document.getElementById(styleId)){const st=document.createElement('style');st.id=styleId;st.textContent='.outlastV435HideOnUpgrade{display:none!important}#outlastPinkToy{display:none!important}';document.head.appendChild(st)}
- const matches=[];
+ const kinds={event:[],threat:[],afk:[]};
  document.querySelectorAll('body *').forEach(el=>{
   if(el===document.body||el===document.documentElement||el.id===styleId||el.classList.contains('outlastV435HideOnUpgrade'))return;
-  const t=txt(el.textContent).toUpperCase();
-  if(!(t.includes('OCTOBER EVENT')&&t.includes('LIVE NOW'))&&!(t.includes('THREAT')&&(t.includes('HIGH')||t.includes('STABLE')))&&!t.includes('AFK SPOT'))return;
-  if([...el.children].some(ch=>{const ct=txt(ch.textContent).toUpperCase();return ct===t||((ct.includes('OCTOBER EVENT')&&ct.includes('LIVE NOW')))||(ct.includes('THREAT')&&(ct.includes('HIGH')||ct.includes('STABLE')))||ct.includes('AFK SPOT')}))return;
-  let cur=el;
-  for(let n=0;n<5&&cur&&cur!==document.body;n++,cur=cur.parentElement){
+  const text=txt(el.textContent).toUpperCase();
+  const type=text.includes('OCTOBER EVENT')||text.includes('LIVE NOW')?'event':(text.includes('THREAT')&&(text.includes('HIGH')||text.includes('STABLE'))?'threat':(text.includes('AFK SPOT')?'afk':null));
+  if(!type)return;let cur=el;
+  for(let n=0;n<7&&cur&&cur!==document.body;n++,cur=cur.parentElement){
    const r=cur.getBoundingClientRect(),cs=window.getComputedStyle(cur),floating=['fixed','absolute','sticky'].includes(cs.position)||Number(cs.zIndex)>10;
-   if(r.top<170&&r.width>=70&&r.width<=560&&r.height>=20&&r.height<=150&&floating){matches.push(cur);break}
+   if(r.top<180&&r.width>=65&&r.width<=580&&r.height>=18&&r.height<=170&&floating){
+    const t=txt(cur.textContent).toUpperCase(),full=type==='event'?(t.includes('OCTOBER EVENT')&&t.includes('LIVE NOW')):(type==='threat'?t.includes('THREAT')&&(t.includes('HIGH')||t.includes('STABLE')):t.includes('AFK SPOT'));
+    kinds[type].push({el:cur,area:r.width*r.height,full});break;
+   }
   }
  });
- const uniq=[...new Set(matches)];
- uniq.forEach(el=>el.classList.toggle('outlastV435HideOnUpgrade',up));
- const badge=document.getElementById('outlastQualityBadge');
- if(badge)badge.textContent='v'+VERSION+' • SURVIVOR HUB';
+ for(const type of Object.keys(kinds)){
+  const list=[...new Map(kinds[type].map(x=>[x.el,x])).values()],full=list.filter(x=>x.full),pool=full.length?full:list;
+  const target=pool.sort((a,b)=>b.area-a.area)[0]?.el;if(target)target.classList.toggle('outlastV435HideOnUpgrade',up);
+ }
+ const afk=document.getElementById('outlastAFKSpotButton');if(afk)afk.style.setProperty('visibility',up?'hidden':'visible','important');
  const toy=document.getElementById('outlastPinkToy');if(toy)toy.style.setProperty('display','none','important');
- window.OUTLAST_UPGRADE_OVERLAY_AUDIT_V435={upgradeOpen:up,hiddenCandidates:uniq.length,qualityBadgeCorrect:!!badge&&badge.textContent==='v'+VERSION+' • SURVIVOR HUB'};
+ const badge=document.getElementById('outlastQualityBadge');if(badge)badge.textContent='v'+VERSION+' • SURVIVOR HUB';
+ window.OUTLAST_UPGRADE_OVERLAY_AUDIT_V436={upgradeOpen:up,hiddenCandidates:Object.values(kinds).reduce((n,a)=>n+a.length,0),qualityBadgeCorrect:!!badge&&badge.textContent==='v'+VERSION+' • SURVIVOR HUB'};
 }
+
 function installOverlayFix(){
  overlayCollisionFix();
  if(!window.__OUTLAST_V435_OVERLAY_TIMER){window.__OUTLAST_V435_OVERLAY_TIMER=setInterval(overlayCollisionFix,450)}

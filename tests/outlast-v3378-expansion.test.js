@@ -19,6 +19,7 @@ assert(mapPicker.includes("const BUILTIN_MAPS=['Seizure','Ribhouse','Forest'"),'
 assert(mapPicker.includes('outlast3377-map-new-banner')&&mapPicker.includes('outlast3377-map-new'),'new maps have a visible banner and NEW labels');
 assert(mapPicker.includes('data-outlast3377-map-close'),'map picker has a close button');
 assert(mapPicker.includes('window.OUTLAST_MAP_PICKER_AUDIT'),'map picker exposes a runtime audit');
+assert(mapPicker.includes("window.OUTLAST_MAP_PICKER_VERSION_GUARD='max-declared-build'"),'opening Choose Map cannot downgrade the visible game version');
 assert(mapPicker.includes('window.OUTLAST_OPEN_MAP_PICKER_3377=openMapPicker'),'normal map picker has its own global route');
 assert(html.includes('window.OUTLAST_OPEN_MAP_PICKER_3377||window.openMapSelector'),'main menu routes map button to dedicated picker first');
 assert(mapPicker.includes('window.addEventListener(\'load\',install,{once:true})'),'map picker restores its route after the load event');

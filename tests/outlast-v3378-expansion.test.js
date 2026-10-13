@@ -36,9 +36,9 @@ assert(expansion.includes('Why was the old event overlay removed?'),'How To docu
 assert(expansion.includes('v3.37.14 — Fix Floating Chat Layering'),'release log records the chat fix');
 assert(expansion.includes('v3.37.18 — Restore Global Chat Tags'),'release log records restored chat tags');
 assert(expansion.includes('Why is Chat at the top of the screen?'),'How To documents the chat placement');
-assert(html.includes('<meta name="outlast-build" content="4.3.8">')&&html.includes('<meta name="build-version" content="4.3.8">')&&html.includes('<title>OUTLAST v4.3.8</title>'),'v4.3.8 current version metadata');
+assert(html.includes('<meta name="outlast-build" content="4.3.9">')&&html.includes('<meta name="build-version" content="4.3.9">')&&html.includes('<title>OUTLAST v4.3.9</title>'),'v4.3.9 current version metadata');
 assert(html.includes('outlast-v432-upgrade-ui-hotfix.js?v=4.3.6'),'existing upgrade UI hotfix remains loaded');
-assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.8'),'final rarity/boss patch is loaded');
+assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.9'),'final rarity/boss patch is loaded');
 assert(uiHotfix.includes('const VERSION=\'4.3.6\'')&&uiHotfix.includes('const compare=')&&uiHotfix.includes('window.OUTLAST_BUILD=release'),'hotfix preserves the declared build marker after opening Choose Map');
 assert(uiHotfix.includes('activeUpgrade()&&!window.__OUTLAST_CUSTOM_UPGRADE_RENDER')&&gearRedesign.includes('window.__OUTLAST_CUSTOM_UPGRADE_RENDER=true'),'redesigned card labels bypass the legacy overlap filter');
 new vm.Script(uiHotfix,{filename:'outlast-v432-upgrade-ui-hotfix.js'});

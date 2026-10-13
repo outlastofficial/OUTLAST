@@ -42,8 +42,8 @@ for (const [label, source] of [['systems', systems], ['library', library]]) {
 }
 assert(systems.includes('window.makeChoices=authoritativeUpgradeChoice37'),
   'The checked rarity authority must remain the final active choice generator');
-assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.8') &&
-  html.indexOf('outlast-v438-upgrade-boss-balance.js?v=4.3.8') > html.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),
+assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.9') &&
+  html.indexOf('outlast-v438-upgrade-boss-balance.js?v=4.3.9') > html.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),
   'Balance patch must load after older UI and rarity patches');
 new (require('vm').Script)(roller, { filename: 'outlast-v438-upgrade-boss-balance.js' });
 const win = { addEventListener: () => {} };

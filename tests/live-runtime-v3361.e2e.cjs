@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.8','1');
+    localStorage.setItem('outlast_update_ack_v4.3.9','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
@@ -29,10 +29,10 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(500);
     servedTitle=await page.title();
     servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-    if(servedTitle.includes('v4.3.8')&&servedBuild==='4.3.8')break;
+    if(servedTitle.includes('v4.3.9')&&servedBuild==='4.3.9')break;
     if(attempt<19)await page.waitForTimeout(3000);
   }
-  if(!servedTitle.includes('v4.3.8')||servedBuild!=='4.3.8'){
+  if(!servedTitle.includes('v4.3.9')||servedBuild!=='4.3.9'){
     throw new Error('Latest build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
   }
 
@@ -62,7 +62,7 @@ const { chromium } = require('playwright');
     const visualAudit=typeof window.OUTLAST_MAP_VISUAL_AUDIT_V434==='function'?window.OUTLAST_MAP_VISUAL_AUDIT_V434():null;
     return {build:window.OUTLAST_BUILD||null,title:document.title,uiHotfix:window.OUTLAST_UI_HOTFIX_V432===true,upgradeCardRedesign:!!window.OUTLAST_UPGRADE_CARD_DESIGN_V435?.ready,gearRoom:!!window.OUTLAST_GEAR_ROOM_V435?.ready,ownerPanelEntrypoint:typeof window.openOwnerPanel==='function',visualAudit,visualReady:window.OUTLAST_MAP_VISUAL_READY_V434===true,audit};
   });
-  if(worldAndUiAudit.build!=='4.3.8'||!worldAndUiAudit.title.includes('v4.3.8')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
+  if(worldAndUiAudit.build!=='4.3.9'||!worldAndUiAudit.title.includes('v4.3.9')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
     throw new Error('v4.3.6 UI, owner and map renderer modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
   }
   if(!worldAndUiAudit.visualAudit||worldAndUiAudit.visualAudit.added!==82||worldAndUiAudit.visualAudit.distinctPalettes!==82||worldAndUiAudit.visualAudit.distinctLayouts!==82){
@@ -109,7 +109,7 @@ const { chromium } = require('playwright');
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.3.8')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  if(pickerBuild!=='4.3.9')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<100)throw new Error('100-map picker did not render all selectable tiles: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{
@@ -161,7 +161,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.3.8')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.3.9')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skillPrep=await page.evaluate(()=>{save.coins=Math.max(Number(save.coins)||0,10000);persist();return {coins:save.coins};});
   if(skillPrep.coins<900)throw new Error('Skill test could not fund Blink: '+JSON.stringify(skillPrep));
@@ -225,6 +225,8 @@ const { chromium } = require('playwright');
   if(!state) throw new Error('Runtime heartbeat was not published; game loop is not running.');
   const runSkill=await page.evaluate(()=>game.player?.activeSkill||null);
   if(runSkill!=='Blink')throw new Error('Equipped skill was not copied into the run: '+runSkill);
+  const skillUIAudit=await page.evaluate(()=>({ready:!!window.OUTLAST_SKILL_UI_V439?.ready,menu:!!window.OUTLAST_MENU_REDESIGN_V439?.ready,upgrade:!!window.OUTLAST_UPGRADE_CARD_DESIGN_V439?.ready,selection:typeof window.selectSkill==='function'}));
+  if(!skillUIAudit.ready||!skillUIAudit.menu||!skillUIAudit.upgrade||!skillUIAudit.selection)throw new Error('v4.3.9 skill/menu/upgrade redesign did not initialize: '+JSON.stringify(skillUIAudit));
   if(state.fatal) throw new Error('Game loop fatal error after Start Run: '+(state.error||'unknown'));
   if(!state.running) throw new Error('Start Run did not leave the game running.');
   if(!state.player) throw new Error('Start Run left the game without a player.');
@@ -239,6 +241,23 @@ const { chromium } = require('playwright');
   const afterMove=await page.evaluate(()=>({x:game.player.x,y:game.player.y,time:game.time}));
   const displacement=Math.hypot(afterMove.x-beforeMove.x,afterMove.y-beforeMove.y);
   if(!(displacement>10))throw new Error('WASD did not move the player after Start Run: '+JSON.stringify({beforeMove,afterMove,layoutAudit}));
+  const skillEffectAudit=await page.evaluate(()=>{
+    const p=game.player,old={skill:p.activeSkill,cooldown:p.skillCooldown,x:p.x,y:p.y,shield:p.shield,hp:p.hp,enemies:game.enemies,effects:game.effects};
+    const probe={id:'skill-audit-probe',x:p.x+40,y:p.y,hp:10000000,max:10000000,r:12,kind:'normal',speed:0,damage:0,xp:1,boss:false,phase:1,slowTimer:0,stunTimer:0};
+    const result={};
+    try{
+      game.running=true;game.paused=false;game.upgradeOpen=false;game.enemies=[probe];game.effects=[];
+      p.activeSkill='Nova';p.skillCooldown=0;const hp0=probe.hp;window.useActiveSkill();result.Nova={damage:hp0-probe.hp,cooldown:p.skillCooldown};
+      p.activeSkill='Blink';p.skillCooldown=0;const x0=p.x,y0=p.y;for(const k of ['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright'])if(typeof keys!=='undefined')keys[k]=false;window.useActiveSkill();result.Blink={distance:Math.hypot(p.x-x0,p.y-y0),cooldown:p.skillCooldown};
+      p.activeSkill='Fortify';p.skillCooldown=0;p.shield=0;window.useActiveSkill();result.Fortify={shield:p.shield,cooldown:p.skillCooldown};
+      p.activeSkill='TimeStop';p.skillCooldown=0;probe.stunTimer=0;window.useActiveSkill();result.TimeStop={stun:probe.stunTimer,cooldown:p.skillCooldown};
+      p.activeSkill='Meteor';p.skillCooldown=0;probe.hp=probe.max=10000000;const hp1=probe.hp;window.useActiveSkill();result.Meteor={damage:hp1-probe.hp,cooldown:p.skillCooldown};
+    } finally {p.activeSkill=old.skill;p.skillCooldown=old.cooldown;p.x=old.x;p.y=old.y;p.shield=old.shield;p.hp=old.hp;game.enemies=old.enemies;game.effects=old.effects;}
+    return result;
+  });
+  if(!(skillEffectAudit.Nova?.damage>0&&skillEffectAudit.Nova?.cooldown>0&&skillEffectAudit.Blink?.distance>300&&skillEffectAudit.Blink?.cooldown>0&&skillEffectAudit.Fortify?.shield>=8&&skillEffectAudit.TimeStop?.stun>=5&&skillEffectAudit.Meteor?.damage>0&&skillEffectAudit.Meteor?.cooldown>0)){
+    throw new Error('One or more Active Skills does not perform its promised effect: '+JSON.stringify(skillEffectAudit));
+  }
   const afkReady=await page.locator('#outlastAFKSpotButton').waitFor({state:'visible',timeout:8000}).then(()=>true).catch(()=>false);
   if(!afkReady)throw new Error('AFK Spot button did not appear during gameplay.');
   await page.locator('#outlastAFKSpotButton').click();
@@ -332,7 +351,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.8','1');
+    localStorage.setItem('outlast_update_ack_v4.3.9','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.16');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
@@ -390,6 +409,7 @@ const { chromium } = require('playwright');
       ];
       draw();
       const audit=window.OUTLAST_UPGRADE_CARD_DESIGN_V435?.audit?.()||null;
+      const v439=window.OUTLAST_UPGRADE_CARD_DESIGN_V439?.audit?.()||null;
       const visibleTitle=renderedText.some(t=>t.includes('Renewal Circuit'));
       const visibleFooter=renderedText.some(t=>t.includes('RARITY MULTIPLIER'));
       const visibleInteractionHint=renderedText.some(t=>t.includes('PRESS 1')||t.includes('WAIT FOR REVEAL'));

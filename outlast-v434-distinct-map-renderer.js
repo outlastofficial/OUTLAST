@@ -121,7 +121,7 @@ function drawThemeTerrain(name,scale=1,ox=0,oy=0){
   for(let k=0;k<26;k++){const x=100+(seed+k*313)%3800,y=80+(seed*2+k*191)%2800,w=(55+k%4*22)*scale,h=(18+k%3*9)*scale;c.beginPath();c.ellipse(sx(x),sy(y),w,h,(k%5)*.25,0,Math.PI*2);c.fill();c.globalAlpha=.24;c.beginPath();c.moveTo(sx(x-w*.8),sy(y));c.lineTo(sx(x),sy(y-h*1.6));c.lineTo(sx(x+w*.7),sy(y+h*.4));c.stroke();c.globalAlpha=.16}
  }else if(fam==='aquatic'){
   c.globalAlpha=.35;c.strokeStyle=accent;
-  for(let y=80;y<3000;y+=95){c.beginPath();for(let x=0;x<=4000;x+=90){const yy=y+Math.sin((x/135)+(y/110)+(seed%17))*(11+(seed%6));if(x===0)c.moveTo(ox+sx(x),sy(yy));else c.lineTo(ox+sx(x),sy(yy))}c.stroke()}
+  for(let y=80;y<3000;y+=95){c.beginPath();for(let x=0;x<=4000;x+=90){const yy=y+Math.sin((x/135)+(y/110)+(seed%17))*(11+(seed%6));if(x===0)c.moveTo(sx(x),sy(yy));else c.lineTo(sx(x),sy(yy))}c.stroke()}
   c.globalAlpha=.12;c.fillStyle='#1fc7d7';
   for(let k=0;k<14;k++){const x=100+(seed+k*293)%3700,y=120+(seed+k*173)%2700;c.beginPath();c.ellipse(sx(x),sy(y),70*scale,25*scale,0,0,Math.PI*2);c.fill()}
  }else if(fam==='nature'||fam==='hive'){
@@ -134,7 +134,7 @@ function drawThemeTerrain(name,scale=1,ox=0,oy=0){
   }
  }else if(fam==='desert'||fam==='magma'){
   c.globalAlpha=fam==='magma'?.20:.15;c.strokeStyle=accent;c.fillStyle=accent;
-  for(let y=160;y<3000;y+=155){c.beginPath();for(let x=0;x<=4000;x+=100){const yy=y+Math.sin(x/235+seed%17+y/150)*(fam==='magma'?19:27);if(x===0)c.moveTo(ox+sx(x),sy(yy));else c.lineTo(ox+sx(x),sy(yy))}c.stroke()}
+  for(let y=160;y<3000;y+=155){c.beginPath();for(let x=0;x<=4000;x+=100){const yy=y+Math.sin(x/235+seed%17+y/150)*(fam==='magma'?19:27);if(x===0)c.moveTo(sx(x),sy(yy));else c.lineTo(sx(x),sy(yy))}c.stroke()}
   if(fam==='magma'){c.globalAlpha=.14;for(let k=0;k<14;k++){const x=100+(seed+k*347)%3800,y=100+(seed+k*197)%2800;c.beginPath();c.ellipse(sx(x),sy(y),54*scale,22*scale,k*.3,0,Math.PI*2);c.fill()}}
   else{c.globalAlpha=.13;for(let k=0;k<30;k++){const x=90+(seed+k*227)%3800,y=100+(seed+k*311)%2750;c.fillRect(sx(x),sy(y),90*scale,4*scale)}}
  }else if(fam==='ruins'||fam==='temple'){

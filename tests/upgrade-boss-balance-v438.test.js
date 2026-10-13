@@ -5,6 +5,7 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const systems = fs.readFileSync(path.join(root, 'outlast-v3370-game-systems.js'), 'utf8');
 const library = fs.readFileSync(path.join(root, 'outlast-v33015-upgrade-library.js'), 'utf8');
+const roller = fs.readFileSync(path.join(root, 'outlast-v438-upgrade-boss-balance.js'), 'utf8');
 
 const spawnStart = html.indexOf('function spawnBoss');
 const spawnEnd = html.indexOf('function normalizeWeaponForFire', spawnStart);
@@ -26,8 +27,10 @@ assert(/bossEvery:\(cm\.bossEvery\|\|m\.bossEvery\|\|60\)\*modBossEvery/.test(ht
   'Run boss cadence must combine the selected mode/challenge with boss-speed modifiers');
 assert(/BossGauntlet:\{desc:'Boss every 45 seconds, 2\.5x score\/rewards',enemy:1\.15,spawn:\.8,reward:2\.5,bossEvery:45\}/.test(html),
   'Boss Gauntlet description, reward multiplier, and interval must agree');
-assert(/const bossTarget=save\.challengeMode==='BossGauntlet'\?Math\.max\(1,Number\(game\.stats\?\.bossEvery\)\|\|45\):Math\.max\(1,\(\(Number\(game\.bossCount\)\|\|0\)===0\?15:30\)\*\(\(Number\(game\.stats\?\.bossEvery\)\|\|60\)\/60\)\)/.test(html),
-  'Boss scheduler must use mode cadence and preserve the 15/30 second default cadence');
+assert(/function outlastBossTargetSeconds\(\)\{const base=Math\.max\(1,Number\(game\?\.stats\?\.bossEvery\)\|\|60\);if\(save\?\.challengeMode==='BossGauntlet'\)return base;return \(Number\(game\?\.bossCount\)\|\|0\)===0\?Math\.min\(15,base\):Math\.max\(1,base\/2\);\}/.test(html),
+  'Boss scheduler must use mode timing, preserve early spawns, and apply modifier cadence');
+assert((html.match(/const bossTarget=outlastBossTargetSeconds\(\);/g)||[]).length===2,
+  'The actual scheduler and displayed boss timer must share the same interval function');
 
 const expected = { Common: 1, Uncommon: 1.15, Rare: 1.35, Epic: 1.6, Legendary: 1.9,
   Mythic: 2.25, Divine: 4, Celestial: 4.8, Transcendent: 5.6, Eternal: 6.8, Omega: 8 };
@@ -39,4 +42,27 @@ for (const [label, source] of [['systems', systems], ['library', library]]) {
 }
 assert(systems.includes('window.makeChoices=authoritativeUpgradeChoice37'),
   'The checked rarity authority must remain the final active choice generator');
-console.log('OUTLAST boss/modifier/rarity regression checks passed');
+assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.8') &&
+  html.indexOf('outlast-v438-upgrade-boss-balance.js?v=4.3.8') > html.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),
+  'Balance patch must load after older UI and rarity patches');
+new (require('vm').Script)(roller, { filename: 'outlast-v438-upgrade-boss-balance.js' });
+const win = { addEventListener: () => {} };
+const document = { readyState: 'loading', addEventListener: () => {}, querySelector: () => null, querySelectorAll: () => [] };
+require('vm').runInNewContext(roller, { window: win, document, setTimeout: () => {}, game: { player: { upgradeLuck: 0 } } });
+const tiers = Object.keys(win.OUTLAST_RARITY_AUDIT_SCALE);
+assert.strictEqual(tiers.length, 11, 'all eleven tiers must be supported by the live roller');
+const base = win.OUTLAST_RARITY_AUDIT_WEIGHTS;
+assert(tiers.every(t => Number(base[t]) > 0), 'all eleven tiers must have a non-zero roll weight');
+const total = tiers.reduce((n, t) => n + base[t], 0);
+let before = 0;
+for (const tier of tiers) {
+  const midpoint = (before + base[tier] / 2) / total;
+  assert.strictEqual(win.OUTLAST_ROLL_UPGRADE_RARITY_AT(midpoint, 0), tier, tier + ' must be reachable by a real roll interval');
+  before += base[tier];
+}
+const basePremium = tiers.slice(6).reduce((n, t) => n + base[t], 0) / total;
+const luckWeights = win.OUTLAST_RARITY_AUDIT_WEIGHTS_FOR_LUCK(90);
+const luckTotal = Object.values(luckWeights).reduce((n, v) => n + v, 0);
+const luckPremium = tiers.slice(6).reduce((n, t) => n + luckWeights[t], 0) / luckTotal;
+assert(luckPremium > basePremium, 'Upgrade Luck must improve combined Divine-through-Omega odds');
+console.log('OUTLAST boss/modifier and eleven-tier rarity regression checks passed');

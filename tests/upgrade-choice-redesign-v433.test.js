@@ -6,7 +6,7 @@ assert(html.includes("const BUILD='4.3.6',ACK='outlast_update_ack_v4.3.6'"),'man
 assert(html.includes('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),'current redesign is cache-busted and loaded');
 assert(html.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6')>html.indexOf('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'card redraw runs after the legacy renderer');
 assert(design.includes('function drawCard')&&design.includes('function rollingFX'),'redesigned card painter and tier animations are present');
-assert(design.includes('const x=45+i*350,y=180,w=325,h=285'),'existing 1/2/3 card hitboxes remain in their original positions');
+assert(design.includes('const x=45+i*350,y=180,w=325,h=296'),'card positions remain compatible with the 1/2/3 hitboxes and footer has extra clearance');
 assert(design.includes('PRESS '+"'+(i+1)+'"+'  OR  CLICK CARD')&&design.includes("keyboardKeys:['1','2','3']"),'keyboard and click selection remain available');
 assert(design.includes('function wrap(')&&design.includes('titleFor(')&&design.includes('RARITY MULTIPLIER'),'long titles and rarity footer are laid out separately');
 assert(design.includes('scaleFor(rarity)'),'cards use the authoritative rarity multiplier');

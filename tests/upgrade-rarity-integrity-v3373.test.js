@@ -1,5 +1,5 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
-const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),system=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8'),expansion=fs.readFileSync(path.join(root,'outlast-v3378-expansion.js'),'utf8'),legacyBalance=fs.readFileSync(path.join(root,'outlast-v327101-all-upgrade-balance.js'),'utf8');
+const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),system=fs.readFileSync(path.join(root,'outlast-v3370-game-system.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8'),expansion=fs.readFileSync(path.join(root,'outlast-v3378-expansion.js'),'utf8'),legacyBalance=fs.readFileSync(path.join(root,'outlast-v327101-all-upgrade-balance.js'),'utf8');
 assert(html.includes('<meta name="outlast-build" content="4.3.8">'),'current metadata');
 assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.8'),'final balance patch loads after legacy modules');
 assert(html.includes("const BUILD='4.3.8',ACK='outlast_update_ack_v4.3.8'"),'mandatory update');
@@ -33,12 +33,12 @@ assert(Math.abs(apply('Bloodrush','Celestial').p.berserkDamageBonus-.864)<1e-9,'
 assert(Math.abs(apply('Lucky Hunter','Legendary').p.luckyXpChance-.285)<1e-9,'Legendary Lucky Hunter must improve on the default 25% double-XP chance');
 assert(Math.abs(apply('Cryo Core','Divine').p.frostSlow-.82)<1e-9,'Divine Cryo Core must strengthen the frost aura stat that gameplay actually reads');
 assert.strictEqual(apply('Cryo Core','Divine').p.slowPower,1,'Cryo Core must not write only to the unrelated slowTimer stat');
-assert(systems.includes("Relentless:{desc:'Enemy HP +10%; spawn interval -22%. 2.2x rewards.'"),'Relentless must describe real implemented effects, not a nonexistent recovery-window mechanic');
+assert(system.includes("Relentless:{desc:'Enemy HP +10%; spawn interval -22%. 2.2x rewards.'"),'Relentless must describe real implemented effects, not a nonexistent recovery-window mechanic');
 assert(html.includes("armor:(kind==='armored'?0.25:(kind==='juggernaut'?0.35:0))"),'armored enemy classes must have actual armor for Armor Pierce to ignore');
 assert(html.includes('if(Number(e.armor)>0){const enemyArmor=')&&html.includes('armorIgnore=Math.max(0,Math.min(1,Number(p.armorPierce)||0))'),'Armor Pierce must reduce enemy armor instead of increasing damage against every target');
-assert(systems.includes("if(name==='Armor Pierce')return {desc:'+'+np(15)+'% enemy defense ignored',apply:()=>add('armorPierce',.15*mult)};"),'Armor Pierce must match the documented 15% base');
+assert(system.includes("if(name==='Armor Pierce')return {desc:'+'+np(15)+'% enemy defense ignored',apply:()=>add('armorPierce',.15*mult)};"),'Armor Pierce must match the documented 15% base');
 assert(html.includes("e.stunTimer=Math.max(Number(e.stunTimer)||0,Number(p.stunDuration)||1.5)")&&html.includes("if(Number(e.stunTimer)>0){e.stunTimer=Math.max(0,Number(e.stunTimer)-dt);continue}"),'Stun Rounds must immobilize enemies during the stun timer');
-const effectBody=systems.slice(systems.indexOf('function upgradeBase37'),systems.indexOf('function authoritativeUpgradeChoice37'));
+const effectBody=system.slice(system.indexOf('function upgradeBase37'),system.indexOf('function authoritativeUpgradeChoice37'));
 const branchCounts={};for(const match of effectBody.matchAll(/if\(name===['"]([^'"]+)['"]/g))branchCounts[match[1]]=(branchCounts[match[1]]||0)+1;
 assert(Object.entries(branchCounts).every(([,count])=>count===1),'each upgrade name must have one authoritative active effect branch');
 assert(!effectBody.includes('doubleTapBonus')&&!effectBody.includes('extraShotLuck'),'Lucky Barrage must not write unused duplicate extra-shot stats');

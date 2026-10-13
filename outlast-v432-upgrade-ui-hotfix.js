@@ -1,22 +1,23 @@
 /* OUTLAST v4.3.2 — Upgrade-card text, rarity footer and overlay collision hotfix */
 (function(){
 'use strict';
-const VERSION='4.3.5';
+const VERSION='4.3.6';
 const $=s=>document.querySelector(s);
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
 function activeUpgrade(){try{return typeof game!=='undefined'&&!!game.upgradeOpen&&Array.isArray(game.upgradeChoices)}catch(_){return false}}
-const DECLARED_BUILD=String(document.querySelector('meta[name="outlast-build"]')?.content||VERSION);
 function setVersion(){
- const parts=v=>String(v||'0').split('.').map(x=>Number(x)||0);
- const target=parts(DECLARED_BUILD), own=parts(VERSION), current=parts(window.OUTLAST_BUILD||'0');
- const later=(a,b)=>{for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0))return (a[i]||0)>(b[i]||0)?a:b}return a};
- let chosen=later(target,own);
- // Never let a feature-specific UI script lower the page's declared build.
- if(current.some((v,i)=>v>(chosen[i]||0)))chosen=current;
- const release=chosen.join('.');
+ const parse=v=>{const match=String(v==null?'':v).match(/\d+(?:\.\d+){1,3}/);return match?match[0].split('.').map(n=>Number(n)||0):[0]};
+ const normalize=v=>parse(v).join('.');
+ const compare=(a,b)=>{const x=parse(a),y=parse(b);for(let i=0;i<Math.max(x.length,y.length);i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)>(y[i]||0)?1:-1}return 0};
+ const meta=document.querySelector('meta[name="outlast-build"]'),buildMeta=document.querySelector('meta[name="build-version"]');
+ const titleVersion=(document.title.match(/v(\d+(?:\.\d+){1,3})/i)||[])[1]||'0';
+ const candidates=[VERSION,window.OUTLAST_BUILD,meta&&meta.content,buildMeta&&buildMeta.content,titleVersion];
+ let release=normalize(VERSION);
+ for(const candidate of candidates)if(candidate&&compare(candidate,release)>0)release=normalize(candidate);
  window.OUTLAST_BUILD=release;window.OUTLAST_VERSION='v'+release;document.title='OUTLAST v'+release;
- ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(s=>{const e=$(s);if(e)e.content=release});
- document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent='v'+release+' • SURVIVOR HUB'});
+ if(meta)meta.content=release;if(buildMeta)buildMeta.content=release;
+ document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+release);
+ document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent='v'+release+' • SURVIVOR HUB'});
 }
 function installCanvasTextFix(){
  const canvas=$('#game');if(!canvas||!canvas.getContext)return false;

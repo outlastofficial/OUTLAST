@@ -100,11 +100,20 @@ function installReleaseText(){
  }catch(_){}
 }
 function setVersion(){
- window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;document.title='OUTLAST v'+VERSION;
- document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+VERSION);
- const title=document.querySelector('#menu .menu-chip');if(title)title.textContent='v'+VERSION+' • SURVIVOR HUB';
- const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
- const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
+ const parts=v=>{const m=String(v||'').match(/\d+(?:\.\d+){1,3}/);return m?m[0].split('.').map(n=>Number(n)||0):[0]};
+ const label=v=>parts(v).join('.');
+ const cmp=(a,b)=>{for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0))return (a[i]||0)>(b[i]||0)?1:-1}return 0};
+ const meta=document.querySelector('meta[name="outlast-build"]'),versionMeta=document.querySelector('meta[name="build-version"]');
+ const fromTitle=(document.title.match(/v(\d+(?:\.\d+){1,3})/i)||[])[1]||'0';
+ const candidates=[VERSION,window.OUTLAST_BUILD,meta&&meta.content,versionMeta&&versionMeta.content,fromTitle].filter(Boolean);
+ let release=candidates[0]||VERSION;
+ for(const candidate of candidates.slice(1))if(cmp(parts(candidate),parts(release))>0)release=label(candidate);
+ release=label(release);
+ window.OUTLAST_BUILD=release;window.OUTLAST_VERSION='v'+release;document.title='OUTLAST v'+release;
+ if(meta)meta.content=release;if(versionMeta)versionMeta.content=release;
+ document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+release);
+ const title=document.querySelector('#menu .menu-chip');if(title)title.textContent='v'+release+' • SURVIVOR HUB';
+ window.OUTLAST_MAP_PICKER_VERSION_GUARD='max-declared-build';
 }
 function install(){
  if(!installed){

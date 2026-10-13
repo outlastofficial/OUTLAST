@@ -165,6 +165,29 @@ const { chromium } = require('playwright');
   await page.locator('#startBtn').click();
   await page.waitForTimeout(2500);
 
+  const addedMapRenderProbe=await page.evaluate(()=>{
+    const original=String(save.map||'Forest'),names=['The Void','Neon District','Crystal Caverns'];
+    const results=[];
+    for(const name of names){
+      if(!mapDefs[name]||!Array.isArray(mapObstacles[name]))return {ok:false,missing:name,results};
+      const beforeTerrain=Number(window.OUTLAST_MAP_TERRAIN_RENDER_COUNT_V434)||0;
+      const beforeObjects=Number(window.OUTLAST_MAP_OBJECT_RENDER_COUNT_V434)||0;
+      save.map=name;game.map=name;game.mapEventTimer=(mapHazards[name]||mapHazards.Forest).interval;
+      if(typeof draw==='function')draw();
+      results.push({name,terrain:window.OUTLAST_MAP_LAST_TERRAIN_RENDER_V434,objects:window.OUTLAST_MAP_LAST_OBJECT_RENDER_V434,
+        terrainCount:(Number(window.OUTLAST_MAP_TERRAIN_RENDER_COUNT_V434)||0)-beforeTerrain,
+        objectCount:(Number(window.OUTLAST_MAP_OBJECT_RENDER_COUNT_V434)||0)-beforeObjects,
+        palette:mapDefs[name].bg,props:mapObstacles[name].length});
+    }
+    save.map=original;game.map=original;game.mapEventTimer=(mapHazards[original]||mapHazards.Forest).interval;
+    if(typeof draw==='function')draw();
+    return {ok:results.every(x=>x.terrain===x.name&&x.objects===x.name&&x.terrainCount>0&&x.objectCount>0&&x.props>=12),
+      uniquePalettes:new Set(results.map(x=>x.palette)).size,results};
+  });
+  if(!addedMapRenderProbe.ok||addedMapRenderProbe.uniquePalettes!==3){
+    throw new Error('New map canvas renderer did not draw unique terrain and themed props: '+JSON.stringify(addedMapRenderProbe));
+  }
+
   const layoutAudit=await page.evaluate(()=>{
     const buttons=[...document.querySelectorAll('#menu .menu-page button')].map(b=>({id:b.id,text:(b.innerText||b.textContent||'').replace(/\s+/g,' ').trim(),page:b.closest('.menu-page')?.dataset.pageContent||''}));
     const count=needle=>buttons.filter(b=>b.text.toLowerCase().includes(needle)).length;

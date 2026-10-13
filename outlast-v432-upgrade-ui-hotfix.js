@@ -1,21 +1,29 @@
 /* OUTLAST v4.3.2 — Upgrade-card text, rarity footer and overlay collision hotfix */
 (function(){
 'use strict';
-const VERSION='4.3.4';
+const VERSION='4.3.5';
 const $=s=>document.querySelector(s);
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
 function activeUpgrade(){try{return typeof game!=='undefined'&&!!game.upgradeOpen&&Array.isArray(game.upgradeChoices)}catch(_){return false}}
+const DECLARED_BUILD=String(document.querySelector('meta[name="outlast-build"]')?.content||VERSION);
 function setVersion(){
- window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;document.title='OUTLAST v'+VERSION;
- ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(s=>{const e=$(s);if(e)e.content=VERSION});
- document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent='v'+VERSION+' • SURVIVOR HUB'});
+ const parts=v=>String(v||'0').split('.').map(x=>Number(x)||0);
+ const target=parts(DECLARED_BUILD), own=parts(VERSION), current=parts(window.OUTLAST_BUILD||'0');
+ const later=(a,b)=>{for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0))return (a[i]||0)>(b[i]||0)?a:b}return a};
+ let chosen=later(target,own);
+ // Never let a feature-specific UI script lower the page's declared build.
+ if(current.some((v,i)=>v>(chosen[i]||0)))chosen=current;
+ const release=chosen.join('.');
+ window.OUTLAST_BUILD=release;window.OUTLAST_VERSION='v'+release;document.title='OUTLAST v'+release;
+ ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(s=>{const e=$(s);if(e)e.content=release});
+ document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent='v'+release+' • SURVIVOR HUB'});
 }
 function installCanvasTextFix(){
  const canvas=$('#game');if(!canvas||!canvas.getContext)return false;
  const c=canvas.getContext('2d');if(c.__outlastV431FillText)return true;
  const native=c.fillText.bind(c);
  c.fillText=function(text,x,y,maxWidth){
-  if(activeUpgrade()){
+  if(activeUpgrade()&&!window.__OUTLAST_CUSTOM_UPGRADE_RENDER){
    const str=String(text==null?'':text), yy=Number(y);
    let choices;try{choices=game.upgradeChoices}catch(_){choices=[]}
    const idx=Array.isArray(choices)?choices.findIndex(u=>u&&String(u[0])===str):-1;

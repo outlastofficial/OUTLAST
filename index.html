@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.3.4">
-<meta name="build-version" content="4.3.4">
-<title>OUTLAST v4.3.4</title>
+<meta name="outlast-build" content="4.3.5">
+<meta name="build-version" content="4.3.5">
+<title>OUTLAST v4.3.5</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3739,7 +3739,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
-    ['v4.0.0 — OUTLAST: Ultimate Expansion','Added lifetime Boss Trophies with one-time coin rewards at 1, 5, 10, 25 and 50 boss defeats; brought the existing expanded combat, map, upgrade, weapon-evolution, rarity animation and progression systems into the major release; refreshed version metadata, the release notice and How-To guide.'],
+    ['v4.0.0 — OUTLAST: Ultimate Expansion','Added lifetime Boss Trophies with one-time coin rewards at 1, 5, 10, 25 and 50 boss defeats; brought the expanded combat, map, upgrade, weapon-evolution, rarity animation and progression systems into the major release; refreshed version metadata, release notice and How-To guide.'],
    ['v3.30.17 — Laser/FrostNova projectile fix','Laser and FrostNova now spawn their own visible projectiles too; their existing special effects remain in place.'],
    ['v3.30.16 — Full-Arena Map Layout','Rebalanced every map’s real obstacle layout across the full arena. Objects now occupy upper, middle, and lower zones while the center start area stays clear.'],
    ['v3.34.0 — Omega Shield','Added the Omega Shield permanent upgrade. It costs 20,000 coins per level, blocks incoming hits with shield charges, restores 1 charge every 5 seconds, and gains +1 hit capacity per level up to 5. Omega Vacuum and Omega Shield both use a fixed 20,000-coin price per level.'],
@@ -5525,7 +5525,7 @@ document.getElementById('subContent')?.addEventListener('click',e=>{const b=e.ta
   };
 })();
 </script><script src="outlast-v3.14.18-upgrades.js?v=3.14.18"></script><script src="outlast-v3.14.19-juice.js?v=3.18.0"></script>
-<!-- Removed obsolete October-event auto-overlay and event-only boss interrupts in v3.37.13. -->
+<!-- Removed obsolete October-event overlay and event-boss interrupts in v3.37.13. -->
 <style id="outlast-v318-settings-css">
 #outlastSettingsClock{display:none}
 .outlast-settings-wrap{display:grid;gap:12px}
@@ -6019,78 +6019,35 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
 </div>
 <script>
 (function(){
-'use strict';
-function init(){
- const root=document.getElementById('outlastEverywhereChat');
- if(!root||root.dataset.ready)return;
- if(root.parentElement!==document.body)document.body.appendChild(root);
- root.dataset.ready='1';
- const panel=root.querySelector('.gec-panel');
- const msgs=document.getElementById('gecMessages');
- const input=document.getElementById('gecInput');
- const send=document.getElementById('gecSend');
- const close=document.getElementById('gecClose');
- const toggle=document.getElementById('gecToggle');
- const api='https://outlast-server.onrender.com/api/chat';
- let open=false, busy=false, lastSignature='';
- function status(text,online){
-  const head=panel.querySelector('.gec-head .gec-title');
-  if(head)head.textContent='💬 Global Chat '+(online?'🟢 Online':'🔴 Offline');
-  if(text){const notice=document.createElement('div');notice.className='small';notice.textContent=text;msgs.replaceChildren(notice);}
+ function init(){
+  const root=document.getElementById('outlastEverywhereChat');if(!root||root.dataset.ready)return;if(root.parentElement!==document.body)document.body.appendChild(root);root.dataset.ready='1';
+  const panel=root.querySelector('.gec-panel'),msgs=document.getElementById('gecMessages'),input=document.getElementById('gecInput');
+  let chatOpen=false;
+  function setChatOpen(open){
+   chatOpen=!!open;
+   panel.style.display=chatOpen?'block':'none';
+   root.classList.toggle('chat-open',chatOpen);
+  }
+  document.getElementById('gecToggle').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(!chatOpen);};
+  document.getElementById('gecClose').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(false);};
+  setChatOpen(false);
+  function render(){
+   const source=document.getElementById('globalChatMessages')||document.getElementById('chatMessages');
+   if(source&&source!==msgs) msgs.innerHTML=source.innerHTML;
+  }
+  document.getElementById('gecSend').onclick=()=>{
+   const text=input.value.trim();if(!text)return;
+   const candidates=[document.getElementById('globalChatInput'),document.getElementById('chatInput')];
+   const target=candidates.find(x=>x);
+   if(target){target.value=text;target.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true}));}
+   else if(typeof window.sendGlobalChatMessage==='function')window.sendGlobalChatMessage(text);
+   input.value='';setTimeout(render,120);
+  };
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('gecSend').click();}});
+  setInterval(()=>{render();if(document.body&&getComputedStyle(root).display==='none')root.style.display='block';},500);
+  root.style.display='block';
  }
- function setOpen(v){open=!!v;panel.style.display=open?'block':'none';root.classList.toggle('chat-open',open);}
- function render(messages){
-  const list=Array.isArray(messages)?messages:[];
-  const sig=list.map(m=>String(m.id||'')+':'+String(m.message||'')).join('|');
-  if(sig===lastSignature)return;
-  lastSignature=sig;msgs.replaceChildren();
-  if(!list.length){const empty=document.createElement('div');empty.className='small';empty.textContent='No messages yet.';msgs.appendChild(empty);return;}
-  list.slice(-80).forEach(m=>{
-   const row=document.createElement('div');row.style.cssText='padding:4px 0;overflow-wrap:anywhere';
-   const rawName=String(m.username||'Player').trim()||'Player';
-   const normalized=rawName.toLowerCase().replace(/[^a-z0-9]/g,'');
-   const name=document.createElement('b');name.textContent=rawName;
-   row.appendChild(name);
-   let badgeText='',badgeColor='';
-   if(['bestgamer','landon','phonelandon'].includes(rawName.toLowerCase())){badgeText=' 👑 OWNER';badgeColor='#f4ca68';}
-   else if(['max','ss'].includes(normalized)){badgeText=' 🧪 TESTER';badgeColor='#8bd4ff';}
-   if(badgeText){const badge=document.createElement('span');badge.textContent=badgeText;badge.style.cssText='display:inline-block;margin-left:5px;padding:1px 5px;border-radius:5px;font-size:9px;font-weight:900;color:#101820;background:'+badgeColor;row.appendChild(badge);}
-   const body=document.createElement('span');body.textContent=': '+String(m.message||'');
-   const time=document.createElement('small');time.style.cssText='display:block;color:#8da1b0;font-size:10px';time.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-   row.append(body,time);msgs.appendChild(row);
-  });
-  msgs.scrollTop=msgs.scrollHeight;
- }
- async function refresh(){
-  try{
-   const res=await fetch(api+'?limit=80&_='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
-   if(!res.ok)throw new Error('HTTP '+res.status);
-   const data=await res.json();if(!data||data.ok!==true||!Array.isArray(data.messages))throw new Error('Invalid chat response');
-   render(data.messages);status('',true);
-  }catch(err){status('Chat server unavailable — retrying…',false);root.dataset.chatError=String(err&&err.message||err);}
- }
- async function sendMessage(){
-  const message=String(input.value||'').trim().slice(0,180);if(!message||busy)return;
-  let savedUsername='';try{savedUsername=localStorage.getItem('outlastUsername')||'';}catch(_){};
-  let activeUsername='';try{activeUsername=typeof currentUsername!=='undefined'?currentUsername:'';}catch(_){};
-  const username=String(activeUsername||window.currentUsername||savedUsername||'Player').trim().slice(0,18)||'Player';
-  busy=true;send.disabled=true;send.textContent='Sending…';
-  try{
-   const res=await fetch(api,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Cache-Control':'no-cache'},body:JSON.stringify({username,message})});
-   const data=await res.json().catch(()=>({}));
-   if(!res.ok||!data.ok)throw new Error(data.error||('HTTP '+res.status));
-   input.value='';await refresh();
-  }catch(err){status('Could not send: '+String(err&&err.message||err),false);}
-  finally{busy=false;send.disabled=false;send.textContent='Send';}
- }
- toggle.onclick=e=>{e.preventDefault();e.stopPropagation();setOpen(!open);if(open){refresh();input.focus();}};
- close.onclick=e=>{e.preventDefault();e.stopPropagation();setOpen(false);};
- send.onclick=sendMessage;
- input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendMessage();}});
- setOpen(false);root.style.display='block';
- refresh();setInterval(refresh,3000);
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 <script src="outlast-v32797-dash-spawn-hardening.js?v=3.29.1"></script>
@@ -6345,7 +6302,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
-const BUILD='4.3.4',ACK='outlast_update_ack_v4.3.4',POP='outlastMandatoryUpdate';
+const BUILD='4.3.5',ACK='outlast_update_ack_v4.3.5',POP='outlastMandatoryUpdate';
 function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
 function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
 function show(newer,remote){
@@ -6372,10 +6329,10 @@ async function check(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check,{once:true});else check();
 window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,ackKey:ACK,check:check};
 })();</script><script id="outlast-v3377-final-marker">(function(){try{
-window.OUTLAST_BUILD='3.37.16';window.OUTLAST_VERSION='v3.37.16';document.title='OUTLAST v3.37.16';
-document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.16';});
-var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content='3.37.16';
-var b=document.querySelector('meta[name="build-version"]');if(b)b.content='3.37.16';
+window.OUTLAST_BUILD='3.37.15';window.OUTLAST_VERSION='v3.37.15';document.title='OUTLAST v3.37.15';
+document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.15';});
+var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content='3.37.15';
+var b=document.querySelector('meta[name="build-version"]');if(b)b.content='3.37.15';
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.8')}))updates.unshift(['v3.36.1 — Accurate Rarity + Shield Reliability','Normalized rarity power, fixed cards applying a different multiplier than their displayed rarity, made Omega Shield block all normal incoming damage paths, and added visible shield charge/recharge feedback.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the mandatory update check work?'}))helpArticles.unshift(['How does the mandatory update check work?','Updates & Reliability','Every new OUTLAST build performs a no-cache version check. The current release requires an acknowledgement before play, while a detected newer server build requires a reload.']);
 }catch(_){}})();</script><script id="outlast-v3360-systems">(function(){
@@ -6417,9 +6374,11 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v3378-expansion.js?v=4.1.0"></script>
 <script src="outlast-v4000-ultimate-expansion.js?v=4.0.0"></script>
 <script src="outlast-v410-map-upgrade-expansion.js?v=4.2.4"></script>
-<script src="outlast-v430-world-maps.js?v=4.3.2"></script>
+<script src="outlast-v430-world-maps.js?v=4.3.3"></script>
 <script src="outlast-v430-owner-control-center.js?v=4.3.4"></script>
-<script src="outlast-v432-upgrade-ui-hotfix.js?v=4.3.4"></script>
+<script src="outlast-v432-upgrade-ui-hotfix.js?v=4.3.5"></script>
+<script src="outlast-v433-upgrade-choice-redesign.js?v=4.3.3"></script>
 <script src="outlast-v434-distinct-map-renderer.js?v=4.3.4"></script>
+<script src="outlast-v435-upgrade-gear-redesign.js?v=4.3.5"></script>
 </body>
 </html>

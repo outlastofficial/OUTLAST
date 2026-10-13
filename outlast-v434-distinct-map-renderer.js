@@ -76,7 +76,7 @@ function applyData(){
   const family=familyOf(name),h=hash(name),baseHue=(HUE[family]||215)+(h%47)-23,hue=(baseHue+360)%360;
   const accentHue=(hue+78+(h%37))%360;
   const old=defs[name]||{};
-  defs[name]={...old,bg:'hsl('+hue+' 43% '+(11+(h%4))+'%)',grid:'hsl('+hue+' 35% '+(24+(h%5))+'%)',accent:'hsl('+accentHue+' 82% 66%)',theme:family,themeSeed:h,themeHue:hue,desc:(old.desc||'Distinct arena with a unique layout.')+' Terrain: '+family+'.'};
+  defs[name]={...old,bg:'hsl('+hue+' 43% '+(11+(h%4))+'%)',grid:'hsl('+hue+' 35% '+(24+(h%5))+'%)',accent:'hsl('+accentHue+' 82% 66%)',theme:family,themeSeed:h,themeHue:hue,desc:String(old.desc||'Distinct arena with a unique layout.').replace(/(?: Terrain: [^.]+\.)+$/,'')+' Terrain: '+family+'.'};
   obs[name]=makeLayout(name,i,family);
   if(haz[name])haz[name]={...haz[name],color:'hsl('+accentHue+' 88% 65%)',theme:family};
  });
@@ -89,6 +89,7 @@ function isAdded(name){return !!name&&!BASE.includes(name)&&!!(window.OUTLAST_MA
 function getTheme(name){return getDefs()[name]||{theme:familyOf(name),accent:'#81d8ff',grid:'#314351',bg:'#111720',themeSeed:hash(name)}}
 function drawPoly(c,points,fill,stroke,lw){if(!points.length)return;c.beginPath();c.moveTo(points[0][0],points[0][1]);for(let i=1;i<points.length;i++)c.lineTo(points[i][0],points[i][1]);c.closePath();if(fill){c.fillStyle=fill;c.fill()}if(stroke){c.strokeStyle=stroke;c.lineWidth=lw||2;c.stroke()}}
 function drawThemeTerrain(name,scale=1,ox=0,oy=0){
+ window.OUTLAST_MAP_TERRAIN_RENDER_COUNT_V434=(num(window.OUTLAST_MAP_TERRAIN_RENDER_COUNT_V434)+1);window.OUTLAST_MAP_LAST_TERRAIN_RENDER_V434=name;
  let c;try{c=ctx}catch(_){return}if(!c||typeof c.save!=='function')return;
  const m=getTheme(name),fam=m.theme||familyOf(name),seed=num(m.themeSeed)||hash(name),accent=m.accent||'#77d8ff',grid=m.grid||'#2a3d4d';
  c.save();c.globalAlpha=.42;c.lineWidth=Math.max(1,1.4*scale);c.strokeStyle=grid;c.fillStyle=accent;
@@ -128,7 +129,7 @@ function drawThemeTerrain(name,scale=1,ox=0,oy=0){
   c.globalAlpha=fam==='hive'?.17:.13;c.strokeStyle=accent;c.fillStyle=accent;
   if(fam==='hive'){
    const side=38*scale,hh=side*.866;
-   for(let row=0;row<15;row++)for(let col=0;col<19;col++){const x=120+col*side*1.5+(row%2)*side*.75,y=90+row*hh*1.7;if((col+row+seed)%3===0){c.beginPath();for(let a=0;a<6;a++){const an=Math.PI/3*a;c.lineTo(sx(x+side*Math.cos(an)),sy(y+side*Math.sin(an)))}c.closePath();c.stroke()}}
+   for(let row=0;row<15;row++)for(let col=0;col<19;col++){const x=120+col*side*1.5+(row%2)*side*.75,y=90+row*hh*1.7;if((col+row+seed)%3===0){c.beginPath();for(let a=0;a<6;a++){const an=Math.PI/3*a,px=sx(x+side*Math.cos(an)),py=sy(y+side*Math.sin(an));if(a===0)c.moveTo(px,py);else c.lineTo(px,py)}c.closePath();c.stroke()}}
   }else{
    for(let k=0;k<32;k++){const x=100+(seed+k*233)%3800,y=70+(seed*5+k*157)%2850,r=(32+k%5*13)*scale;c.beginPath();c.ellipse(sx(x),sy(y),r*1.4,r*.62,k%4*.4,0,Math.PI*2);c.fill();c.globalAlpha=.23;c.beginPath();c.arc(sx(x),sy(y),r,0,Math.PI*2);c.stroke();c.globalAlpha=.13}
   }
@@ -166,6 +167,7 @@ function paletteFor(family,m){
  return colors[family]||colors.cosmic;
 }
 function drawStyledObjects(scale=1,ox=0,oy=0){
+ const currentName=String(getSave()?.map||'');window.OUTLAST_MAP_OBJECT_RENDER_COUNT_V434=(num(window.OUTLAST_MAP_OBJECT_RENDER_COUNT_V434)+1);window.OUTLAST_MAP_LAST_OBJECT_RENDER_V434=currentName;
  let c;try{c=ctx}catch(_){return}if(!c||typeof c.save!=='function')return;
  const name=String(getSave()?.map||''),items=(getObstacles()[name]||[]),m=getTheme(name),fam=m.theme||familyOf(name),pal=paletteFor(fam,m);
  const [base,mid,bright]=pal,accent=m.accent||bright,seed=num(m.themeSeed)||hash(name);

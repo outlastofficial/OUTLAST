@@ -45,6 +45,7 @@ assert(html.includes('outlast-v435-upgrade-gear-redesign.js?v=4.3.5'),'v4.3.5 le
 new vm.Script(gearRedesign,{filename:'outlast-v435-upgrade-gear-redesign.js'});
 assert(gearRedesign.includes('function drawCard')&&gearRedesign.includes('function rollingFX')&&gearRedesign.includes('RARITY MULTIPLIER'),'full upgrade card redesign and tier animations exist');
 assert(gearRedesign.includes('outlastGearRoom435')&&gearRedesign.includes('gearLoadouts')&&gearRedesign.includes('gearApplyPreset'),'Gear Room, saved builds and equip logic are wired');
+assert(!['INVENTORY','OPEN SHOP','RUN MODIFIERS'].some(label=>{const start=gearRedesign.indexOf('function gearMount()'),end=gearRedesign.indexOf('function gearHandleClick',start);return gearRedesign.slice(start,end).includes('>'+label+'<')}),'Gear Room does not duplicate canonical Progress launchers');
 assert(gearRedesign.includes('outlastQualityBadge')&&gearRedesign.includes('OCTOBER EVENT')&&gearRedesign.includes('THREAT'),'stale badge and upgrade-overlay collisions are addressed');
 assert(cardRedesign.includes('function drawCard')&&cardRedesign.includes('function rollingFX')&&cardRedesign.includes('RARITY MULTIPLIER'),'full upgrade card redesign and tier animations exist');
 assert(cardRedesign.includes('PRESS '+"'+(i+1)+'"+'  OR  CLICK CARD'),'card redesign retains 1/2/3 and click hints');

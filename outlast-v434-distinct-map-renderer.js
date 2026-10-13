@@ -200,7 +200,7 @@ function drawStyledObjects(scale=1,ox=0,oy=0){
    c.beginPath();c.arc(x+w*.5,y+h*.5,Math.min(w,h)*.38,0,Math.PI*2);c.fill();c.stroke();c.fillStyle=base;c.beginPath();c.arc(x+w*.5,y+h*.5,Math.min(w,h)*.16,0,Math.PI*2);c.fill();c.stroke();for(let t=0;t<8;t++){const a=t*Math.PI/4;c.beginPath();c.moveTo(x+w*.5+Math.cos(a)*w*.19,y+h*.5+Math.sin(a)*h*.19);c.lineTo(x+w*.5+Math.cos(a)*w*.47,y+h*.5+Math.sin(a)*h*.47);c.stroke()}
   }else if(type==='Arch'||type==='Ruins'||type==='Pillar'||type==='ObsidianPillar'){
    c.fillStyle=type==='ObsidianPillar'?'#282632':'#70604d';c.fillRect(x+w*.10,y+h*.05,w*.80,h*.90);c.strokeRect(x+w*.10,y+h*.05,w*.80,h*.90);c.strokeStyle=accent;c.globalAlpha=.7;for(let q=1;q<4;q++){c.beginPath();c.moveTo(x+w*.12,y+h*q/4);c.lineTo(x+w*.88,y+h*q/4);c.stroke()}c.globalAlpha=1;
-   if(type==='Arch'){c.clearRect(x+w*.32,y+h*.38,w*.36,h*.58);c.strokeRect(x+w*.32,y+h*.38,w*.36,h*.58)}
+   if(type==='Arch'){c.fillStyle=m.bg||'#111720';c.fillRect(x+w*.32,y+h*.38,w*.36,h*.58);c.strokeRect(x+w*.32,y+h*.38,w*.36,h*.58)}
   }else{
    c.beginPath();c.roundRect(x,y,w,h,Math.min(8*scale,w*.12,h*.12));c.fill();c.stroke();
    // Distinct surface detail so unfamiliar props never become generic grey boxes.

@@ -1,7 +1,7 @@
 /* OUTLAST v4.3.2 — Upgrade-card text, rarity footer and overlay collision hotfix */
 (function(){
 'use strict';
-const VERSION='4.3.3';
+const VERSION='4.3.4';
 const $=s=>document.querySelector(s);
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
 function activeUpgrade(){try{return typeof game!=='undefined'&&!!game.upgradeOpen&&Array.isArray(game.upgradeChoices)}catch(_){return false}}

@@ -1,7 +1,7 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),design=fs.readFileSync(path.join(root,'outlast-v433-upgrade-choice-redesign.js'),'utf8');
 new vm.Script(design,{filename:'outlast-v433-upgrade-choice-redesign.js'});
-assert(html.includes('<meta name="outlast-build" content="4.3.3">')&&html.includes('<title>OUTLAST v4.3.3</title>'),'redesign is tied to the current visible build');
+assert(html.includes('<meta name="outlast-build" content="4.3.4">')&&html.includes('<title>OUTLAST v4.3.4</title>'),'redesign is tied to the current visible build');
 assert(html.includes('outlast-v433-upgrade-choice-redesign.js?v=4.3.3'),'redesign is loaded after the legacy renderer and rarity effects');
 assert(design.includes('function drawCard')&&design.includes('function rollingFX'),'redesigned card painter and animations are present');
 assert(design.includes('const x=45+i*350,y=180,w=325,h=285'),'existing 1/2/3 hitboxes remain in their original positions');
@@ -9,4 +9,4 @@ assert(design.includes('PRESS '+"'+(i+1)+'"+'  OR  CLICK CARD')&&design.includes
 assert(design.includes('function wrap(')&&design.includes('titleFor(')&&design.includes('RARITY MULTIPLIER'),'long titles, rarity suffixes and the footer are laid out separately');
 assert(design.includes('rarityScale')||design.includes('scaleFor(rarity)'),'cards show rarity scaling using the upgrade rarity table');
 assert(design.includes('v4.3.3 — Level-Up Choice Redesign'),'Update Log entry is included');
-console.log('OUTLAST v4.3.3 upgrade-choice redesign checks passed');
+console.log('OUTLAST v4.3.4 upgrade-choice redesign checks passed');

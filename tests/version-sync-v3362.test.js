@@ -3,9 +3,9 @@ const index=fs.readFileSync('index.html','utf8');
 const core=fs.readFileSync('outlast-v33500-core-content-engine.js','utf8');
 const expansion=fs.readFileSync('outlast-v4000-ultimate-expansion.js','utf8');
 
-assert(index.includes('<meta name="outlast-build" content="4.3.6">')&&index.includes('<meta name="build-version" content="4.3.6">')&&index.includes('<title>OUTLAST v4.3.6</title>'),'current release metadata must match v4.3.3');
+assert(index.includes('<meta name="outlast-build" content="4.3.8">')&&index.includes('<meta name="build-version" content="4.3.8">')&&index.includes('<title>OUTLAST v4.3.8</title>'),'current release metadata must match v4.3.8');
 assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.2.4')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, map expansion and owner modules are loaded');
-assert(index.includes("const BUILD='4.3.6',ACK='outlast_update_ack_v4.3.6'"),'mandatory update acknowledgement matches the current version');
+assert(index.includes("const BUILD='4.3.8',ACK='outlast_update_ack_v4.3.8'"),'mandatory update acknowledgement matches v4.3.8');
 assert(expansion.includes("window.OUTLAST_BUILD = VERSION;")&&expansion.includes("document.title = 'OUTLAST v' + VERSION;"),'the final module publishes the global build and title');
 assert(core.includes("window.OUTLAST_CORE_CONTENT"),'12-core engine must still install its content container');
 assert(core.includes("window.OUTLAST_CORE_CONTENT_VERSION=VERSION"),'12-core engine should expose its own version without changing global build state');
@@ -24,4 +24,5 @@ assert(startIndex>0 && declIndex>=0 && declIndex<startIndex,'fatalGameError must
 assert(!index.includes("document.getElementById('progressionBtn').onclick=renderProgression"),'progression button binding must be null-safe');
 assert(!index.includes("document.getElementById('questBtn').onclick=renderQuestBoard"),'quest button binding must be null-safe');
 assert(index.includes('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),'level-up and Gear Room layer loads after the renderer');
+assert(index.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.8')&&index.indexOf('outlast-v438-upgrade-boss-balance.js?v=4.3.8')>index.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),'balance patch loads last');
 console.log('v4.3.6 version synchronization regression test passed');

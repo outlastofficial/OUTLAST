@@ -22,14 +22,21 @@ const cases=[['Power Shot',x=>x.p.damage],['Rapid Fire',x=>1/x.p.fireRate],['Vit
 const regenCommon=apply('Regeneration','Common').p.regen;
 const windCommon=apply('Second Wind','Common').p.regen;
 assert(windCommon>regenCommon,'Second Wind must not be a duplicate of Regeneration');
-assert.strictEqual(windCommon,2,'Common Second Wind must use its distinct 2 HP/s baseline');
+assert.strictEqual(regenCommon,.5,'Common Regeneration must use its documented 0.5 HP/s baseline');
+assert.strictEqual(windCommon,1,'Common Second Wind must use its distinct 1 HP/s baseline');
 assert.strictEqual(apply('Shield Core','Legendary').shield,5,'Legendary Shield Core must grant its documented 5-second shield');
 assert.strictEqual(apply('Emergency Shield','Divine').shield,7,'Divine Emergency Shield must grant its documented 7-second shield');
 assert.strictEqual(apply('Ammo Surge','Divine').p.multiShot,8,'Divine Ammo Surge must provide more projectiles than the Rare Multi-Shot baseline');
-assert.strictEqual(apply('Berserker','Common').p.berserkDamageBonus,.5,'Common Berserker must use its dedicated conditional damage effect');
+assert.strictEqual(apply('Berserker','Common').p.berserkDamageBonus,.2,'Common Berserker must not overpower the low-rarity baseline');
+assert(Math.abs(apply('Adrenaline','Legendary').p.adrenalineSpeedBonus-.38)<1e-9,'Legendary Adrenaline must match its 20% rarity-scaled baseline');
 assert(Math.abs(apply('Bloodrush','Celestial').p.berserkDamageBonus-.864)<1e-9,'Celestial Bloodrush must use its distinct rarity-scaled effect');
 assert(Math.abs(apply('Lucky Hunter','Legendary').p.luckyXpChance-.285)<1e-9,'Legendary Lucky Hunter must improve on the default 25% double-XP chance');
-assert(Math.abs(apply('Cryo Core','Divine').p.slowPower-2)<1e-9,'Divine Cryo Core must use its intended stronger slowing effect');
+assert(Math.abs(apply('Cryo Core','Divine').p.frostSlow-.82)<1e-9,'Divine Cryo Core must strengthen the frost aura stat that gameplay actually reads');
+assert.strictEqual(apply('Cryo Core','Divine').p.slowPower,1,'Cryo Core must not write only to the unrelated slowTimer stat');
+assert(systems.includes("Relentless:{desc:'Enemy HP +10%; spawn interval -22%. 2.2x rewards.'"),'Relentless must describe real implemented effects, not a nonexistent recovery-window mechanic');
+assert(/armor:kind==='armored'\?\.25:kind==='juggernaut'\?\.35:0/.test(html),'armored enemy classes must have actual armor for Armor Pierce to ignore');
+assert(/if\(Number\(e\.armor\)>0\)[\s\S]{0,250}armorPierce/.test(html),'Armor Pierce must reduce enemy armor instead of increasing damage against every target');
+assert(/if\(name==='Armor Pierce'\)return \{desc:'\+'\+np\(15\)\+'% enemy defense ignored',apply:\(\)=>add\('armorPierce',\.15\*mult\)\}/.test(systems),'Armor Pierce must match the documented 15% base');
 
 const commonXP=apply('XP Boost','Common').p.xpBonus-1;
 const mythicXP=apply('XP Hunter','Mythic').p.xpBonus-1;

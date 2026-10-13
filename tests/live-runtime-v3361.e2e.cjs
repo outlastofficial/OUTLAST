@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.6','1');
+    localStorage.setItem('outlast_update_ack_v4.3.8','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
@@ -29,10 +29,10 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(500);
     servedTitle=await page.title();
     servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-    if(servedTitle.includes('v4.3.6')&&servedBuild==='4.3.6')break;
+    if(servedTitle.includes('v4.3.8')&&servedBuild==='4.3.8')break;
     if(attempt<19)await page.waitForTimeout(3000);
   }
-  if(!servedTitle.includes('v4.3.6')||servedBuild!=='4.3.6'){
+  if(!servedTitle.includes('v4.3.8')||servedBuild!=='4.3.8'){
     throw new Error('Latest build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
   }
 
@@ -62,7 +62,7 @@ const { chromium } = require('playwright');
     const visualAudit=typeof window.OUTLAST_MAP_VISUAL_AUDIT_V434==='function'?window.OUTLAST_MAP_VISUAL_AUDIT_V434():null;
     return {build:window.OUTLAST_BUILD||null,title:document.title,uiHotfix:window.OUTLAST_UI_HOTFIX_V432===true,upgradeCardRedesign:!!window.OUTLAST_UPGRADE_CARD_DESIGN_V435?.ready,gearRoom:!!window.OUTLAST_GEAR_ROOM_V435?.ready,ownerPanelEntrypoint:typeof window.openOwnerPanel==='function',visualAudit,visualReady:window.OUTLAST_MAP_VISUAL_READY_V434===true,audit};
   });
-  if(worldAndUiAudit.build!=='4.3.6'||!worldAndUiAudit.title.includes('v4.3.6')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
+  if(worldAndUiAudit.build!=='4.3.8'||!worldAndUiAudit.title.includes('v4.3.8')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
     throw new Error('v4.3.6 UI, owner and map renderer modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
   }
   if(!worldAndUiAudit.visualAudit||worldAndUiAudit.visualAudit.added!==82||worldAndUiAudit.visualAudit.distinctPalettes!==82||worldAndUiAudit.visualAudit.distinctLayouts!==82){
@@ -312,7 +312,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.6','1');
+    localStorage.setItem('outlast_update_ack_v4.3.8','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.16');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');

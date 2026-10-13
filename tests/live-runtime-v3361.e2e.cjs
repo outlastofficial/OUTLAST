@@ -413,8 +413,8 @@ const { chromium } = require('playwright');
       const visibleTitle=renderedText.some(t=>t.includes('Renewal Circuit'));
       const visibleFooter=renderedText.some(t=>t.includes('RARITY MULTIPLIER'));
       const visibleInteractionHint=renderedText.some(t=>t.includes('PRESS 1')||t.includes('WAIT FOR REVEAL'));
-      return {ready:!!audit?.renderHook&&audit.active&&audit.choices===3&&visibleTitle&&visibleFooter&&visibleInteractionHint,
-        error:audit?.error||window.OUTLAST_V435_CARD_ERROR||null,visibleTitle,visibleFooter,visibleInteractionHint,build:window.OUTLAST_BUILD,renderedText:renderedText.slice(-45)};
+      return {ready:!!audit?.renderHook&&audit.active&&audit.choices===3&&!!v439?.drawHook&&v439.active&&v439.choices===3&&visibleTitle&&visibleFooter&&visibleInteractionHint,
+        error:audit?.error||v439?.error||window.OUTLAST_V435_CARD_ERROR||null,visibleTitle,visibleFooter,visibleInteractionHint,build:window.OUTLAST_BUILD,v439,renderedText:renderedText.slice(-45)};
     } finally {if(ctx&&baseFill)ctx.fillText=baseFill;game.running=before.running;game.paused=before.paused;game.over=before.over;game.upgradeOpen=before.open;game.upgradeChoices=before.choices;game.__upgradeRollActive=before.rolling;draw();}
   });
   if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('v4.3.6 redesigned upgrade cards failed the long-title/text rendering check: '+JSON.stringify(cardRendererAudit));

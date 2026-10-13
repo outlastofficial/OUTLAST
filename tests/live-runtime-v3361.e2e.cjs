@@ -92,7 +92,7 @@ const { chromium } = require('playwright');
     let cursor=0;
     const reachable=tiers.map(t=>{const w=Number(base[t])||0;const point=total>0?(cursor+w/2)/total:0;cursor+=w;return {tier:t,rolled:typeof roller==='function'?roller(point,0):null,multiplier:Number(scale[t])||0,weight:w};});
     return {
-      ready:typeof roller==='function'&&window.rollUpgradeRarity===window.rollUpgradeRarity&&tiers.every(t=>Number(scale[t])>0&&Number(base[t])>0),
+      ready:typeof roller==='function'&&typeof window.rollUpgradeRarity==='function'&&tiers.every(t=>Number(scale[t])>0&&Number(base[t])>0),
       tierCount:tiers.filter(t=>reachable.find(x=>x.tier===t&&x.rolled===t)).length,
       tiers:reachable,poolCounts:Object.fromEntries(tiers.map(t=>[t,(Array.isArray(pools[t])?pools[t]:[]).filter(n=>source.some(x=>Array.isArray(x)&&x[0]===n)).length])),
       choiceCount:source.length,uniqueChoiceCount:unique.size,duplicateCount:names.length-unique.size,

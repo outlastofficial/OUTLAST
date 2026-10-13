@@ -43,7 +43,7 @@ function weightsFor(luck){
  const result={};
  for(const tier of tiers){
   const factor=LUCK_FACTOR[tier];
-  result[tier]=BASE_WEIGHTS[tier]*(factor<0?1+bonus*factor:1+bonus*factor);
+  result[tier]=BASE_WEIGHTS[tier]*(1+bonus*factor);
  }
  return result;
 }
@@ -84,10 +84,10 @@ function setVersion(){
 function installReleaseNotes(){
  try{
   if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.3.8 — Eleven-Tier Upgrade & Boss Balance'))){
-   updates.unshift(['v4.3.8 — Eleven-Tier Upgrade & Boss Balance','Enabled real upgrade rolls for all eleven rarity tiers. Fixed Boss Hunter leaking into boss outgoing damage, wired Boss Armor resistance, synchronized Boss Gauntlet rewards and mode-aware boss timing, and aligned the player-facing How-To.']);
+   updates.unshift(['v4.3.8 — Eleven-Tier Upgrade & Boss Balance','Enabled reachable rolls for all eleven upgrade rarities; fixed boss damage and modifier handling; removed shadowed upgrade effects; balanced Second Wind, Regeneration, Berserker, and Adrenaline; corrected Cryo Core's frost-aura stat; made Stun Rounds actually stun; and restored real armor-piercing behavior.']);
   }
   if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){
-   const text='All eleven upgrade rarities can now appear in level-up choices. Upgrade Luck shifts the odds toward higher tiers. Boss Hunter increases only your damage against bosses; Boss Armor reduces the damage you deal to bosses. Later bosses wait for the previous boss to be defeated. Mode intervals control the later cadence, Boss Gauntlet uses 45 seconds, and FastBosses/ApexTrial shorten the interval.';
+   const text='All eleven upgrade rarities can appear in level-up choices; Upgrade Luck shifts the odds toward higher tiers. The rarity ladder is Common 1x, Uncommon 1.15x, Rare 1.35x, Epic 1.6x, Legendary 1.9x, Mythic 2.25x, Divine 4x, Celestial 4.8x, Transcendent 5.6x, Eternal 6.8x, and Omega 8x. Second Wind restores 1 HP/s at its Common baseline while Regeneration restores 0.5 HP/s. Berserker's Common bonus is 20% damage below 50% HP; Adrenaline applies its 20% baseline speed bonus below 50% HP. Cryo Core increases the frost aura's actual slow stat. Stun Rounds stop enemies during their stun timer. Armor Pierce ignores a portion of armor on Armored and Juggernaut enemies, instead of giving a universal damage bonus. Boss Hunter increases only your damage against bosses; Boss Armor reduces damage dealt to bosses. Later bosses wait for the previous boss to be defeated, then follow the mode cadence. Boss Gauntlet uses a 45-second interval; FastBosses/ApexTrial shorten it.';
    const article=helpArticles.find(x=>Array.isArray(x)&&String(x[0]).includes('How do rarity rolls and boss modifiers work?'));
    if(article)article[2]=text;else helpArticles.unshift(['How do rarity rolls and boss modifiers work?','Upgrades & Bosses',text]);
    const stale=helpArticles.find(x=>Array.isArray(x)&&String(x[0]).includes('Why are bosses not spawning consistently?'));

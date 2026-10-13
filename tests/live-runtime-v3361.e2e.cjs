@@ -359,7 +359,9 @@ const { chromium } = require('playwright');
   const cardRendererAudit=await mobilePage.evaluate(()=>{
     const before={running:game.running,paused:game.paused,over:game.over,open:game.upgradeOpen,choices:game.upgradeChoices,rolling:game.__upgradeRollActive};
     if(!game.player)return {ready:false,reason:'player not initialized'};
+    const ctx=document.getElementById('game')?.getContext('2d'),baseFill=ctx?.fillText,renderedText=[];
     try{
+      if(ctx&&baseFill)ctx.fillText=function(text,...args){renderedText.push(String(text));return baseFill.call(this,text,...args)};
       game.running=true;game.over=false;game.paused=true;game.upgradeOpen=true;game.__upgradeRollActive=false;
       game.upgradeChoices=[
         ['Ascension • Renewal Circuit [Uncommon]','Regenerate +0.03 HP every second, including during long survival runs.',function(){},'Uncommon'],
@@ -367,11 +369,15 @@ const { chromium } = require('playwright');
         ['Omega Guardian: Infinite Renewal Circuit [Omega]','Restore health more quickly and create a protective field around the player.',function(){},'Omega']
       ];
       draw();
-      const audit=window.OUTLAST_UPGRADE_CARD_DESIGN_V433?.audit?.()||null;
-      return {ready:!!audit?.renderHook&&audit.active&&audit.choices===3,error:audit?.error||window.OUTLAST_V433_CARD_ERROR||null,build:window.OUTLAST_BUILD};
-    } finally {game.running=before.running;game.paused=before.paused;game.over=before.over;game.upgradeOpen=before.open;game.upgradeChoices=before.choices;game.__upgradeRollActive=before.rolling;draw();}
+      const audit=window.OUTLAST_UPGRADE_CARD_DESIGN_V435?.audit?.()||null;
+      const visibleTitle=renderedText.some(t=>t.includes('Renewal Circuit'));
+      const visibleFooter=renderedText.some(t=>t.includes('RARITY MULTIPLIER'));
+      const visibleSelectHint=renderedText.some(t=>t.includes('PRESS 1'));
+      return {ready:!!audit?.renderHook&&audit.active&&audit.choices===3&&visibleTitle&&visibleFooter&&visibleSelectHint,
+        error:audit?.error||window.OUTLAST_V435_CARD_ERROR||null,visibleTitle,visibleFooter,visibleSelectHint,build:window.OUTLAST_BUILD,renderedText:renderedText.slice(-45)};
+    } finally {if(ctx&&baseFill)ctx.fillText=baseFill;game.running=before.running;game.paused=before.paused;game.over=before.over;game.upgradeOpen=before.open;game.upgradeChoices=before.choices;game.__upgradeRollActive=before.rolling;draw();}
   });
-  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('Redesigned upgrade cards failed a long-title render check: '+JSON.stringify(cardRendererAudit));
+  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('v4.3.5 redesigned upgrade cards failed the long-title/text rendering check: '+JSON.stringify(cardRendererAudit));
   await mobilePage.evaluate(()=>{if(game.upgradeOpen){if(typeof chooseUpgrade!=='function')throw new Error('Upgrade choice function missing');chooseUpgrade(0)}if(game.paused&&!game.upgradeOpen)game.paused=false;});
   await mobilePage.waitForTimeout(250);
   if(!await mobilePage.locator('#mobileControls').isVisible())throw new Error('Mobile movement/actions did not appear during gameplay.');

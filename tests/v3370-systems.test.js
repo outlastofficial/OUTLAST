@@ -3,15 +3,20 @@ const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const mod=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8');
 const library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
+const skillUi=fs.readFileSync(path.join(root,'outlast-v439-skill-ui-redesign.js'),'utf8');
+new vm.Script(skillUi,{filename:'outlast-v439-skill-ui-redesign.js'});
 const expansion=fs.readFileSync(path.join(root,'outlast-v410-map-upgrade-expansion.js'),'utf8');
 new vm.Script(expansion,{filename:'outlast-v410-map-upgrade-expansion.js'});
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
 assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.3\.8/,'current v3.37 systems module cache-bust matches the release');
-assert(html.includes('<title>OUTLAST v4.3.8</title>'),'visible game version marker must match the current build');
-assert(html.includes("const BUILD='4.3.8'"),'mandatory update check must target v4.2.4');
-assert(html.includes("outlast_update_ack_v4.3.8"),'mandatory update acknowledgement must be versioned');
-assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.8'),'final balance patch is loaded after the older systems modules');
+assert(html.includes('<title>OUTLAST v4.3.9</title>'),'visible game version marker must match the current build');
+assert(html.includes("const BUILD='4.3.9'"),'mandatory update check must target v4.2.4');
+assert(html.includes("outlast_update_ack_v4.3.9"),'mandatory update acknowledgement must be versioned');
+assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.9'),'final balance patch is loaded after the older systems modules');
+assert(html.includes('outlast-v439-skill-ui-redesign.js?v=4.3.9'),'skill and UI redesign patch must load last');
+assert(skillUi.includes('function activateSkillV439')&&skillUi.includes('TimeStop')&&skillUi.includes('Meteor'),'active skills must have explicit working effects');
+assert(skillUi.includes('OUTLAST_SKILL_UI_V439')&&skillUi.includes('OUTLAST_MENU_REDESIGN_V439')&&skillUi.includes('OUTLAST_UPGRADE_CARD_DESIGN_V439'),'redesigned skill panel, menu, and upgrade cards must expose runtime audits');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.2.4'),'active repair module is cache-busted');
 assert(expansion.includes("const VERSION = '4.2.4'"),'module version matches the page');
 assert(/const map=\{map:\(\)=>selectMap\(v\),[^\n]*skill:/.test(html),'global router dispatches skill selections');
@@ -56,4 +61,4 @@ assert(mod.includes('syncOwnerLauncher37'),'owner launcher must be owner-only');
 assert(mod.includes("card.style.display=ok?'':'none'")||mod.includes("card.style.display=(typeof isOwner==='function'&&isOwner())?'':'none'"),'non-owners must not see the Owner Panel card');
 assert(!mod.match(/ownerPassword|OWNER_PASSWORD/i),'owner panel must not use a password');
 
-console.log('OUTLAST v4.3.8 systems regression checks passed');
+console.log('OUTLAST v4.3.9 systems regression checks passed');

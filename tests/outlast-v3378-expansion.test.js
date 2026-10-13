@@ -36,8 +36,9 @@ assert(expansion.includes('Why was the old event overlay removed?'),'How To docu
 assert(expansion.includes('v3.37.14 — Fix Floating Chat Layering'),'release log records the chat fix');
 assert(expansion.includes('v3.37.18 — Restore Global Chat Tags'),'release log records restored chat tags');
 assert(expansion.includes('Why is Chat at the top of the screen?'),'How To documents the chat placement');
-assert(html.includes('<meta name="outlast-build" content="4.3.6">')&&html.includes('<meta name="build-version" content="4.3.6">')&&html.includes('<title>OUTLAST v4.3.6</title>'),'current version metadata');
-assert(html.includes('outlast-v432-upgrade-ui-hotfix.js?v=4.3.6'),'upgrade UI hotfix is cache-busted for the current release');
+assert(html.includes('<meta name="outlast-build" content="4.3.8">')&&html.includes('<meta name="build-version" content="4.3.8">')&&html.includes('<title>OUTLAST v4.3.8</title>'),'v4.3.8 current version metadata');
+assert(html.includes('outlast-v432-upgrade-ui-hotfix.js?v=4.3.6'),'existing upgrade UI hotfix remains loaded');
+assert(html.includes('outlast-v438-upgrade-boss-balance.js?v=4.3.8'),'final rarity/boss patch is loaded');
 assert(uiHotfix.includes('const VERSION=\'4.3.6\'')&&uiHotfix.includes('const compare=')&&uiHotfix.includes('window.OUTLAST_BUILD=release'),'hotfix preserves the declared build marker after opening Choose Map');
 assert(uiHotfix.includes('activeUpgrade()&&!window.__OUTLAST_CUSTOM_UPGRADE_RENDER')&&gearRedesign.includes('window.__OUTLAST_CUSTOM_UPGRADE_RENDER=true'),'redesigned card labels bypass the legacy overlap filter');
 new vm.Script(uiHotfix,{filename:'outlast-v432-upgrade-ui-hotfix.js'});
@@ -75,7 +76,7 @@ assert(html.includes('#outlastEverywhereChat .gec-toggle{position:fixed;right:18
 assert(html.includes('document.body.appendChild(root)'),'chat escapes menu stacking contexts');
 assert(html.includes('W=4000,H=3000'),'arena world dimensions expanded');
 assert(html.includes('x:Math.min(W/2,1600),y:Math.min(H/2,1200)'),'starting position remains in the old safe central area');
-assert(html.includes('const bossTarget=(Number(game.bossCount)||0)===0?15:30;'),'boss HUD and scheduler use the same 15/30 second cadence');
+assert(html.includes('function outlastBossTargetSeconds()')&&(html.match(/const bossTarget=outlastBossTargetSeconds\(\);/g)||[]).length===2,'boss HUD and scheduler use the same mode-aware cadence');
 assert(html.includes('game.bossSpawnFailures'),'failed boss spawns retry rather than silently stalling');
 assert(html.includes('const baseAng=Math.random()*Math.PI*2;'),'new bosses spawn near the player instead of at the far map edge');
 assert(html.includes('const cardRolling=rank>=1&&rollProgress<1;'),'Uncommon and better choices animate');

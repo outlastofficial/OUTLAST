@@ -50,7 +50,7 @@ function drawCard(c,u,i,t){
  const iy=y+78;c.fillStyle=col;c.globalAlpha=.11;c.beginPath();c.arc(cx,iy,30,0,Math.PI*2);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.65;c.lineWidth=1.4;c.beginPath();c.arc(cx,iy,30,0,Math.PI*2);c.stroke();c.globalAlpha=1;
  if(rolling){rollingFX(c,cx,iy,col,rank,t,i);c.fillStyle='#fff';c.font='bold 13px Arial';c.fillText('ROLLING…',cx,iy+4)}else{c.fillStyle=col;c.font='bold 32px "Segoe UI Symbol",Arial';c.fillText(glyphFor(title,desc),cx,iy+11)}
  c.fillStyle='#f4f7fb';let titleSize=17,tl=[];
- for(;titleSize>=12;titleSize--){c.font='bold '+titleSize+'px Arial';tl=wrap(c,title,w-42,3);if(tl.every(line=>c.measureText(line).width<=w-42)&&tl.length<=3)break}
+ for(;titleSize>=12;titleSize--){c.font='bold '+titleSize+'px Arial';tl=wrap(c,title,w-42,3);if(tl.every(line=>c.measureText(line).width<=w-42)&&tl.length<=3&&!tl.some(line=>line.endsWith('…')))break}
  const titleStep=tl.length>=3?14:16,titleY=tl.length===1?y+132:tl.length===2?y+124:y+120;tl.forEach((line,j)=>c.fillText(line,cx,titleY+j*titleStep));
  const descTop=y+(tl.length>=3?164:tl.length===2?158:153);
  c.save();c.beginPath();c.rect(x+16,y+146,w-32,67);c.clip();c.fillStyle='#cfdae5';c.font='13px Arial';
@@ -147,6 +147,7 @@ function overlayCollisionFix(){
  const up=active(),styleId='outlastV435OverlayStyle';
  if(!document.getElementById(styleId)){const st=document.createElement('style');st.id=styleId;st.textContent='.outlastV435HideOnUpgrade{display:none!important}#outlastPinkToy{display:none!important}';document.head.appendChild(st)}
  const kinds={event:[],threat:[],afk:[]};
+ if(!up)document.querySelectorAll('.outlastV435HideOnUpgrade').forEach(el=>el.classList.remove('outlastV435HideOnUpgrade'));
  document.querySelectorAll('body *').forEach(el=>{
   if(el===document.body||el===document.documentElement||el.id===styleId||el.classList.contains('outlastV435HideOnUpgrade'))return;
   const text=txt(el.textContent).toUpperCase();

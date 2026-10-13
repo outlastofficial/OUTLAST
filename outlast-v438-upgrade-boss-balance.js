@@ -68,6 +68,8 @@ window.OUTLAST_ROLL_UPGRADE_RARITY_AT=rollAt;
 window.rollUpgradeRarity=roll;
 try{rollUpgradeRarity=roll}catch(_){}
 function setVersion(){
+ const current=String(window.OUTLAST_BUILD||'0').split('.').map(v=>Number(v)||0),next=VERSION.split('.').map(v=>Number(v)||0);
+ for(let i=0;i<Math.max(current.length,next.length);i++){if((current[i]||0)>(next[i]||0))return;if((current[i]||0)<(next[i]||0))break;}
  window.OUTLAST_BUILD=VERSION;
  window.OUTLAST_VERSION='v'+VERSION;
  window.OUTLAST_UI_SYSTEM_VERSION=VERSION;

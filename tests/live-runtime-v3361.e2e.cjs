@@ -14,7 +14,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.2','1');
+    localStorage.setItem('outlast_update_ack_v4.3.4','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
@@ -29,10 +29,10 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(500);
     servedTitle=await page.title();
     servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-    if(servedTitle.includes('v4.3.2')&&servedBuild==='4.3.2')break;
+    if(servedTitle.includes('v4.3.4')&&servedBuild==='4.3.4')break;
     if(attempt<19)await page.waitForTimeout(3000);
   }
-  if(!servedTitle.includes('v4.3.2')||servedBuild!=='4.3.2'){
+  if(!servedTitle.includes('v4.3.4')||servedBuild!=='4.3.4'){
     throw new Error('Latest build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
   }
 
@@ -59,10 +59,14 @@ const { chromium } = require('playwright');
   if(stalePopupShowing)throw new Error('Obsolete v3.35.0 popup is still covering the current build.');
   const worldAndUiAudit=await page.evaluate(()=>{
     const audit=typeof window.OUTLAST_MAP_PLAYABILITY_AUDIT_V430==='function'?window.OUTLAST_MAP_PLAYABILITY_AUDIT_V430():null;
-    return {build:window.OUTLAST_BUILD||null,title:document.title,uiHotfix:window.OUTLAST_UI_HOTFIX_V432===true,ownerPanelEntrypoint:typeof window.openOwnerPanel==='function',audit};
+    const visualAudit=typeof window.OUTLAST_MAP_VISUAL_AUDIT_V434==='function'?window.OUTLAST_MAP_VISUAL_AUDIT_V434():null;
+    return {build:window.OUTLAST_BUILD||null,title:document.title,uiHotfix:window.OUTLAST_UI_HOTFIX_V432===true,ownerPanelEntrypoint:typeof window.openOwnerPanel==='function',visualAudit,visualReady:window.OUTLAST_MAP_VISUAL_READY_V434===true,audit};
   });
-  if(worldAndUiAudit.build!=='4.3.2'||!worldAndUiAudit.title.includes('v4.3.2')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.ownerPanelEntrypoint){
-    throw new Error('v4.3.2 UI/owner modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
+  if(worldAndUiAudit.build!=='4.3.4'||!worldAndUiAudit.title.includes('v4.3.4')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
+    throw new Error('v4.3.4 map visuals and owner modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
+  }
+  if(!worldAndUiAudit.visualAudit||worldAndUiAudit.visualAudit.added!==82||worldAndUiAudit.visualAudit.distinctPalettes!==82||worldAndUiAudit.visualAudit.distinctLayouts!==82){
+    throw new Error('Distinct visual map audit failed: '+JSON.stringify(worldAndUiAudit.visualAudit));
   }
   if(!worldAndUiAudit.audit||!worldAndUiAudit.audit.ready||worldAndUiAudit.audit.count!==100||worldAndUiAudit.audit.unique!==100){
     throw new Error('100-map registry audit failed: '+JSON.stringify(worldAndUiAudit.audit));
@@ -80,12 +84,12 @@ const { chromium } = require('playwright');
   }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
   if(!expansionAudit||expansionAudit.version!=='4.2.4'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
-    throw new Error('v4.3.2 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
+    throw new Error('v4.3.4 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.3.2')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  if(pickerBuild!=='4.3.4')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<100)throw new Error('100-map picker did not render all selectable tiles: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{
@@ -109,6 +113,22 @@ const { chromium } = require('playwright');
     return {ok:true,count:result.length,result};
   });
   if(!allMapProbe.ok||allMapProbe.count!==18)throw new Error('Not all built-in maps are selectable/playable: '+JSON.stringify(allMapProbe));
+  const addedMapProbe=await page.evaluate(()=>{
+    const names=['The Void','Neon District','Clockwork Factory','Crystal Caverns','Frozen Research Base','The Sunken City','Desert Temple','The Backrooms'];
+    const results=[];
+    for(const name of names){
+      if(!document.getElementById('outlast3377MapPickerModal'))window.OUTLAST_OPEN_MAP_PICKER_3377();
+      const button=[...document.querySelectorAll('button[data-outlast3377-map]')].find(b=>b.getAttribute('data-outlast3377-map')===name);
+      if(!button)return {ok:false,missing:name,results};
+      button.click();
+      const d=mapDefs[name],layout=mapObstacles[name];
+      results.push({name,selected:save.map===name,theme:d&&d.theme,bg:d&&d.bg,props:Array.isArray(layout)?layout.length:0,hazard:!!mapHazards[name]});
+      if(save.map!==name||!d||!d.theme||!Array.isArray(layout)||layout.length<12||!mapHazards[name])return {ok:false,failed:name,results};
+    }
+    save.map='Forest';persist();document.getElementById('outlast3377MapPickerModal')?.remove();window.OUTLAST_MAP_PICKER_OPEN=false;
+    return {ok:true,count:results.length,uniqueThemes:new Set(results.map(x=>x.theme)).size,results};
+  });
+  if(!addedMapProbe.ok||addedMapProbe.count!==8||addedMapProbe.uniqueThemes<5)throw new Error('Added map selection/theme verification failed: '+JSON.stringify(addedMapProbe));
   await page.locator('#mapBtn').click();
   await page.locator('button[data-outlast3377-map="Ribhouse"]').click();
   const selectedMap=await page.evaluate(()=>save.map);
@@ -119,7 +139,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.3.2')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.3.4')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skillPrep=await page.evaluate(()=>{save.coins=Math.max(Number(save.coins)||0,10000);persist();return {coins:save.coins};});
   if(skillPrep.coins<900)throw new Error('Skill test could not fund Blink: '+JSON.stringify(skillPrep));
@@ -142,6 +162,26 @@ const { chromium } = require('playwright');
   });
   await page.locator('#startBtn').click();
   await page.waitForTimeout(2500);
+  const addedMapRenderProbe=await page.evaluate(()=>{
+    const original=String(save.map||'Forest'),names=['The Void','Neon District','Crystal Caverns'];
+    const results=[];
+    for(const name of names){
+      if(!mapDefs[name]||!Array.isArray(mapObstacles[name]))return {ok:false,missing:name,results};
+      const beforeTerrain=Number(window.OUTLAST_MAP_TERRAIN_RENDER_COUNT_V434)||0;
+      const beforeObjects=Number(window.OUTLAST_MAP_OBJECT_RENDER_COUNT_V434)||0;
+      save.map=name;game.map=name;game.mapEventTimer=(mapHazards[name]||mapHazards.Forest).interval;
+      if(typeof draw==='function')draw();
+      results.push({name,terrain:window.OUTLAST_MAP_LAST_TERRAIN_RENDER_V434,objects:window.OUTLAST_MAP_LAST_OBJECT_RENDER_V434,
+        terrainCount:(Number(window.OUTLAST_MAP_TERRAIN_RENDER_COUNT_V434)||0)-beforeTerrain,
+        objectCount:(Number(window.OUTLAST_MAP_OBJECT_RENDER_COUNT_V434)||0)-beforeObjects,
+        palette:mapDefs[name].bg,props:mapObstacles[name].length});
+    }
+    save.map=original;game.map=original;game.mapEventTimer=(mapHazards[original]||mapHazards.Forest).interval;
+    if(typeof draw==='function')draw();
+    return {ok:results.every(x=>x.terrain===x.name&&x.objects===x.name&&x.terrainCount>0&&x.objectCount>0&&x.props>=12),
+      uniquePalettes:new Set(results.map(x=>x.palette)).size,results};
+  });
+  if(!addedMapRenderProbe.ok||addedMapRenderProbe.uniquePalettes!==3)throw new Error('New map canvas renderer did not draw unique terrain and themed props: '+JSON.stringify(addedMapRenderProbe));
 
   const layoutAudit=await page.evaluate(()=>{
     const buttons=[...document.querySelectorAll('#menu .menu-page button')].map(b=>({id:b.id,text:(b.innerText||b.textContent||'').replace(/\s+/g,' ').trim(),page:b.closest('.menu-page')?.dataset.pageContent||''}));
@@ -267,7 +307,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.2','1');
+    localStorage.setItem('outlast_update_ack_v4.3.4','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.16');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');

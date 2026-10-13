@@ -37,6 +37,11 @@ assert(systems.includes("Relentless:{desc:'Enemy HP +10%; spawn interval -22%. 2
 assert(html.includes("armor:(kind==='armored'?0.25:(kind==='juggernaut'?0.35:0))"),'armored enemy classes must have actual armor for Armor Pierce to ignore');
 assert(html.includes('if(Number(e.armor)>0){const enemyArmor=')&&html.includes('armorIgnore=Math.max(0,Math.min(1,Number(p.armorPierce)||0))'),'Armor Pierce must reduce enemy armor instead of increasing damage against every target');
 assert(systems.includes("if(name==='Armor Pierce')return {desc:'+'+np(15)+'% enemy defense ignored',apply:()=>add('armorPierce',.15*mult)};"),'Armor Pierce must match the documented 15% base');
+assert(html.includes("e.stunTimer=Math.max(Number(e.stunTimer)||0,Number(p.stunDuration)||1.5)")&&html.includes("if(Number(e.stunTimer)>0){e.stunTimer=Math.max(0,Number(e.stunTimer)-dt);continue}"),'Stun Rounds must immobilize enemies during the stun timer');
+const effectBody=systems.slice(systems.indexOf('function upgradeBase37'),systems.indexOf('function authoritativeUpgradeChoice37'));
+const branchCounts={};for(const match of effectBody.matchAll(/if\(name===['"]([^'"]+)['"]/g))branchCounts[match[1]]=(branchCounts[match[1]]||0)+1;
+assert(Object.entries(branchCounts).every(([,count])=>count===1),'each upgrade name must have one authoritative active effect branch');
+assert(!effectBody.includes('doubleTapBonus')&&!effectBody.includes('extraShotLuck'),'Lucky Barrage must not write unused duplicate extra-shot stats');
 
 const commonXP=apply('XP Boost','Common').p.xpBonus-1;
 const mythicXP=apply('XP Hunter','Mythic').p.xpBonus-1;

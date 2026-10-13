@@ -30,6 +30,8 @@ jobs:
         run: node tests/upgrade-rarity-integrity-v3373.test.js
       - name: Run boss and modifier balance regression checks
         run: node tests/upgrade-boss-balance-v438.test.js
+      - name: Run v4.3.9 skill and UI redesign checks
+        run: node tests/skill-ui-v439.test.js
       - name: Run current v3.37 critical regressions
         run: node tests/v3370-systems.test.js
       - name: Run v4.0.0 boss trophy and release gate checks

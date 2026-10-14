@@ -6400,7 +6400,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 var V='4.4.3';
 function syncVersion(){try{
 window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;
-['meta[name="outlast-build"]','meta[name="build-version"]').forEach(function(sel){var e=document.querySelector(sel);if(e)e.content=V;});
+['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){var e=document.querySelector(sel);if(e)e.content=V;});
 document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version').forEach(function(e){e.textContent='v'+V;});
 document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){if(/SURVIVOR HUB/i.test(e.textContent||'')||/v\d+\.\d+\.\d+/i.test(e.textContent||''))e.textContent='v'+V+' • SURVIVOR HUB';});
 var uv=document.getElementById('updatePopupVersion');if(uv&&/v\d+\.\d+\.\d+/i.test(uv.textContent||''))uv.textContent='v'+V+' — Reliability & AFK Lounge';

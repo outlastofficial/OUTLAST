@@ -167,8 +167,8 @@ function overlayCollisionFix(){
  }
  const afk=document.getElementById('outlastAFKSpotButton');if(afk)afk.style.setProperty('visibility',up?'hidden':'visible','important');
  const toy=document.getElementById('outlastPinkToy');if(toy)toy.style.setProperty('display','none','important');
- const badge=document.getElementById('outlastQualityBadge');if(badge)badge.textContent='v'+VERSION+' • SURVIVOR HUB';
- window.OUTLAST_UPGRADE_OVERLAY_AUDIT_V436={upgradeOpen:up,hiddenCandidates:Object.values(kinds).reduce((n,a)=>n+a.length,0),qualityBadgeCorrect:!!badge&&badge.textContent==='v'+VERSION+' • SURVIVOR HUB'};
+ const badge=document.getElementById('outlastQualityBadge'),shown='v'+String(window.OUTLAST_BUILD||VERSION)+' • SURVIVOR HUB';if(badge)badge.textContent=shown;
+ window.OUTLAST_UPGRADE_OVERLAY_AUDIT_V436={upgradeOpen:up,hiddenCandidates:Object.values(kinds).reduce((n,a)=>n+a.length,0),qualityBadgeCorrect:!!badge&&badge.textContent===shown};
 }
 
 function installOverlayFix(){

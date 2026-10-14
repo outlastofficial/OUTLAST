@@ -430,10 +430,12 @@ function addReleaseNotes(){
  }catch(_){}
 }
 function setVersion(){
- window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;window.OUTLAST_V441_READY=true;document.title='OUTLAST v'+VERSION;
- const meta=$('meta[name="outlast-build"]'),build=$('meta[name="build-version"]');if(meta)meta.content=VERSION;if(build)build.content=VERSION;
- document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+VERSION);
- document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent='v'+VERSION+' • SURVIVOR HUB'});
+ const meta=$('meta[name="outlast-build"]'),build=$('meta[name="build-version"]');
+ const DISPLAY_VERSION=(meta&&meta.content)||(build&&build.content)||VERSION;
+ window.OUTLAST_BUILD=DISPLAY_VERSION;window.OUTLAST_VERSION='v'+DISPLAY_VERSION;window.OUTLAST_V441_READY=true;document.title='OUTLAST v'+DISPLAY_VERSION;
+ if(meta)meta.content=DISPLAY_VERSION;if(build)build.content=DISPLAY_VERSION;
+ document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+DISPLAY_VERSION);
+ document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(el.textContent||''))el.textContent='v'+DISPLAY_VERSION+' • SURVIVOR HUB'});
 }
 function install(){
  try{

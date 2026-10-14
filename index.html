@@ -3898,8 +3898,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='3.35.2';
-const CURRENT_UPDATE_INFO={title:'v3.35.2 — Permanent Progression Expansion',summary:'A major permanent-upgrade balance pass adds 40 new long-term upgrades and spreads power more evenly across damage, defense, economy, mobility, luck, XP, and combat utility.',items:['Added 40 new permanent upgrades for many different build paths.','Rebalanced new stat gains so individual levels stay modest and stack predictably.','Added new pierce, multishot, crit, range, pickup, XP, luck, defense, boss, score, and ultimate progression.','Existing Start Run, login, maps, and weapon systems were left intact.']};
+const CURRENT_UPDATE_VERSION='4.4.3';
+const CURRENT_UPDATE_INFO={title:'v4.4.3 — Reliability & AFK Lounge',summary:'Reliability improvements for skill selection, map selection, runtime checks, and a safe AFK Lounge.',items:['Added runtime checks for equipped skills, map selection, rarity scaling, and boss state.','Reinforced skill click routing.','Introduced an AFK Lounge that does not award idle progress.','Login flow is unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6399,11 +6399,16 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v440-skill-upgrade-menu-rework.js?v=4.4.0"></script>
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.4.3-r4"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.3-r3"></script>
-<script id="outlast-v443-final-version-marker">(function(){try{
+<script id="outlast-v443-final-version-marker">(function(){'use strict';
 var V='4.4.3';
+function syncVersion(){try{
 window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;
-['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){var e=document.querySelector(sel);if(e)e.content=V;});
+['meta[name="outlast-build"]','meta[name="build-version"]').forEach(function(sel){var e=document.querySelector(sel);if(e)e.content=V;});
 document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version').forEach(function(e){e.textContent='v'+V;});
-}catch(e){console.error('OUTLAST version marker sync failed',e);}})();</script>
+document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){if(/SURVIVOR HUB/i.test(e.textContent||'')||/v\d+\.\d+\.\d+/i.test(e.textContent||''))e.textContent='v'+V+' • SURVIVOR HUB';});
+var uv=document.getElementById('updatePopupVersion');if(uv&&/v\d+\.\d+\.\d+/i.test(uv.textContent||''))uv.textContent='v'+V+' — Reliability & AFK Lounge';
+}catch(e){console.error('OUTLAST version marker sync failed',e);}}
+syncVersion();if(!window.__OUTLAST_V443_VERSION_GUARD){window.__OUTLAST_V443_VERSION_GUARD=true;setInterval(syncVersion,250);}
+</script>
 </body>
 </html>

@@ -6400,16 +6400,20 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v440-skill-upgrade-menu-rework.js?v=4.4.0"></script>
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.4.4-r5"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.4-r4"></script>
-<script id="outlast-v444-final-version-marker">(function(){'use strict';
-var V='4.4.4';
+<script id="outlast-v445-final-version-marker">(function(){'use strict';
+var V='4.4.5';
+function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
+function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
 function syncVersion(){try{
-window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;
-['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){var e=document.querySelector(sel);if(e)e.content=V;});
-document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V;});
-document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v'+V+' • SURVIVOR HUB';});
-var uv=document.getElementById('updatePopupVersion');if(uv)uv.textContent='v'+V+' — Version Marker Repair';
+if(window.OUTLAST_BUILD!==V)window.OUTLAST_BUILD=V;
+if(window.OUTLAST_VERSION!=='v'+V)window.OUTLAST_VERSION='v'+V;
+if(document.title!=='OUTLAST v'+V)document.title='OUTLAST v'+V;
+['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){setAttr(document.querySelector(sel),'content',V);});
+document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){setText(e,'v'+V);});
+document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • SURVIVOR HUB');});
+setText(document.getElementById('updatePopupVersion'),'v'+V+' — Reload Freeze Fix');
 }catch(e){console.error('OUTLAST version marker sync failed',e);}}
-function install(){syncVersion();if(!window.__OUTLAST_V444_VERSION_GUARD){window.__OUTLAST_V444_VERSION_GUARD=true;window.setInterval(syncVersion,500);try{new MutationObserver(syncVersion).observe(document.documentElement,{childList:true,subtree:true,characterData:true});}catch(_){}}}
+function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();</script>
 <script id="outlast-v444-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'}))helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should show the same current version as the page title. If they differ, reload the page; the version marker continuously re-syncs the visible labels.']);</script>

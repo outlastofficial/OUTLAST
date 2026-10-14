@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.4.7">
-<meta name="build-version" content="4.4.7">
-<title>OUTLAST v4.4.7</title>
+<meta name="outlast-build" content="4.5.0">
+<meta name="build-version" content="4.5.0">
+<title>OUTLAST v4.5.0</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3155,7 +3155,7 @@ function activateStartRun(ev){
 }
 startBtn.onclick=activateStartRun;
 startBtn.addEventListener('pointerup',e=>{if(e.pointerType==='touch'||e.pointerType==='pen')activateStartRun(e)},{passive:false});
-window.openMapSelector=()=>{const maps=Object.keys(mapDefs);openSub('🗺️ Choose Map','<div class="grid">'+maps.map(x=>`<button type="button" class="option ${save.map===x?'selected':''}" data-action="map" data-value="${x}"><b>${x}</b></button>`).join('')+'</div>')};document.getElementById('mapBtn').onclick=window.openMapSelector;
+window.openMapSelector=()=>{const maps=Object.keys(mapDefs);openSub('🗺️ Choose Map','<input id="outlastMapSearch450" type="search" placeholder="Search maps…" aria-label="Search maps" style="width:100%;box-sizing:border-box;margin:0 0 12px;padding:11px 12px;border-radius:10px;border:1px solid #46606b;background:#101820;color:#fff"><div id="outlastMapGrid450" class="grid">'+maps.map(x=>`<button type="button" class="option ${save.map===x?'selected':''}" data-action="map" data-value="${x}"><b>${x}</b></button>`).join('')+'</div>');const q=document.getElementById('outlastMapSearch450'),g=document.getElementById('outlastMapGrid450');if(q&&g)q.addEventListener('input',()=>{const term=q.value.trim().toLowerCase();g.querySelectorAll('[data-action="map"]').forEach(b=>{b.hidden=!b.dataset.value.toLowerCase().includes(term);});});};document.getElementById('mapBtn').onclick=window.openMapSelector;
 window.selectMap=(x)=>{save.map=x;persist();closeSub()};
 document.getElementById('difficultyBtn').onclick=()=>{openSub('🎚️ Difficulty','<div class="grid">'+Object.keys(diffDefs).map(x=>`<button class="option ${save.difficulty===x?'selected':''}" data-action="difficulty" data-value="${x}"><b>${x}</b><div class="small">Enemy x${diffDefs[x].enemy} • Reward x${diffDefs[x].reward}</div></button>`).join('')+'</div>')};
 window.selectDiff=(x)=>{save.difficulty=x;persist();closeSub()};
@@ -3753,7 +3753,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.4.7 — Visible Build Marker Hotfix','Corrected the stale Survivor Hub build marker across the page title, metadata, mandatory update check, popup, and visible menu chip. This is a marker hotfix, not the full v4.5.0 overhaul.'],
+const updates=[ ['v4.5.0 — The Survival Overhaul','Survival Overhaul release foundation: synchronized build metadata and update checks, added searchable map selection, and improved menu discovery. Remaining gameplay systems are being rolled out in verified stages.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -3900,7 +3900,7 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.4.7';
+const CURRENT_UPDATE_VERSION='4.5.0';
 const CURRENT_UPDATE_INFO={title:'v4.4.5 — Reload Freeze Fix',summary:'Fixed a version-label observer loop that could make reload hang.',items:['Version labels are only rewritten when they actually differ.','The version monitor no longer creates a continuous mutation loop.','Login flow is unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
@@ -6320,7 +6320,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
-const BUILD='4.4.7',ACK='outlast_update_ack_v4.4.7',POP='outlastMandatoryUpdateV443',STYLE='outlastMandatoryUpdateV443Style';
+const BUILD='4.5.0',ACK='outlast_update_ack_v4.5.0',POP='outlastMandatoryUpdateV443',STYLE='outlastMandatoryUpdateV443Style';
 function versionParts(v){return String(v||'0').replace(/^v/i,'').split('.').map(x=>{const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
 function cmp(a,b){const x=versionParts(a),y=versionParts(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
 function show(newer,remote){
@@ -6399,7 +6399,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.4.5-r1-test-test"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1-test-test"></script>
 <script id="outlast-v445-final-version-marker">(function(){'use strict';
-var V='4.4.7';
+var V='4.5.0';
 function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
 function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
 function syncVersion(){try{
@@ -6414,7 +6414,7 @@ setText(document.getElementById('updatePopupVersion'),'v'+V+' — Version Sync +
 function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();</script>
-<script id="outlast-v445-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles))helpArticles.unshift(['What changed in v4.4.7?','Updates & Reliability','The stale Survivor Hub marker was corrected across the page title, build metadata, mandatory update check, update popup, and visible marker. This hotfix does not represent the full v4.5.0 overhaul. This is a reliability patch; the larger Survival Overhaul is still being implemented and is not represented as complete.']);
+<script id="outlast-v445-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles))helpArticles.unshift(['What changed in v4.5.0?','Updates & Reliability','The build marker and update checks are synchronized. The map picker now includes a search field to find maps faster. This is the first verified slice of the Survival Overhaul; additional gameplay systems still need implementation and testing. This is a reliability patch; the larger Survival Overhaul is still being implemented and is not represented as complete.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'});if(h)h[2]='The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.']);}</script>
 </body>
 </html>

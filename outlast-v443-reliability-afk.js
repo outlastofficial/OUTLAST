@@ -28,7 +28,7 @@ function installSkillRoute(){
  },true);
  const original=window.selectSkill;
  if(typeof original==='function'&&!original.__outlastV443){
-  const wrapped=function(name,options){const result=original.call(this,name,options);try{const s=getSave(),g=getGame();if(result!==false&&s&&s.activeSkill===name&&g&&g.player)g.player.activeSkill=name;window.OUTLAST_V443_SKILL_AUDIT={selected:s&&s.activeSkill||null,runUpdated:!!(g&&g.player&&g.player.activeSkill===(s&&s.activeSkill),saved:true,time:Date.now()}}catch(_){}return result};
+  const wrapped=function(name,options){const result=original.call(this,name,options);try{const s=getSave(),g=getGame();if(result!==false&&s&&s.activeSkill===name&&g&&g.player)g.player.activeSkill=name;window.OUTLAST_V443_SKILL_AUDIT={selected:s&&s.activeSkill||null,runUpdated:!!(g&&g.player&&g.player.activeSkill===(s&&s.activeSkill)),saved:true,time:Date.now()}}catch(_){}return result};
   wrapped.__outlastV443=true;window.selectSkill=wrapped;try{selectSkill=wrapped}catch(_){}
  }
  window.__OUTLAST_V443_SKILL_ROUTE_READY=true;

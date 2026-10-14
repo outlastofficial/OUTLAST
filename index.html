@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.4.3">
-<meta name="build-version" content="4.4.3">
-<title>OUTLAST v4.4.3</title>
+<meta name="outlast-build" content="4.4.4">
+<meta name="build-version" content="4.4.4">
+<title>OUTLAST v4.4.4</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -912,7 +912,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.4.2 • SURVIVOR HUB</div>
+          <div class="menu-chip">v4.4.4 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3754,6 +3754,7 @@ function openHelp(){
 function renderUpdates(){
  
 const updates=[
+    ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
     ['v4.0.0 — OUTLAST: Ultimate Expansion','Added lifetime Boss Trophies with one-time coin rewards at 1, 5, 10, 25 and 50 boss defeats; brought the expanded combat, map, upgrade, weapon-evolution, rarity animation and progression systems into the major release; refreshed version metadata, release notice and How-To guide.'],
    ['v3.30.17 — Laser/FrostNova projectile fix','Laser and FrostNova now spawn their own visible projectiles too; their existing special effects remain in place.'],
@@ -3898,8 +3899,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.4.3';
-const CURRENT_UPDATE_INFO={title:'v4.4.3 — Reliability & AFK Lounge',summary:'Reliability improvements for skill selection, map selection, runtime checks, and a safe AFK Lounge.',items:['Added runtime checks for equipped skills, map selection, rarity scaling, and boss state.','Reinforced skill click routing.','Introduced an AFK Lounge that does not award idle progress.','Login flow is unchanged.']};
+const CURRENT_UPDATE_VERSION='4.4.4';
+const CURRENT_UPDATE_INFO={title:'v4.4.4 — Version Marker Repair',summary:'Fixed competing version-label writers and strengthened the final build marker.',items:['The main-menu version chip and quality badge now follow the current build.','The page title and build metadata stay synchronized.','Added this repair to the Update Log and How-To guide.','Login flow is unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6392,20 +6393,22 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v432-upgrade-ui-hotfix.js?v=4.4.0"></script>
 <script src="outlast-v433-upgrade-choice-redesign.js?v=4.4.0"></script>
 <script src="outlast-v434-distinct-map-renderer.js?v=4.3.4"></script>
-<script src="outlast-v435-upgrade-gear-redesign.js?v=4.4.3-r6-test"></script>
+<script src="outlast-v435-upgrade-gear-redesign.js?v=4.4.4-r7-test"></script>
 <script src="outlast-v440-skill-upgrade-menu-rework.js?v=4.4.0"></script>
-<script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.4.3-r4"></script>
-<script src="outlast-v443-reliability-afk.js?v=4.4.3-r3"></script>
-<script id="outlast-v443-final-version-marker">(function(){'use strict';
-var V='4.4.3';
+<script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.4.4-r5-test"></script>
+<script src="outlast-v443-reliability-afk.js?v=4.4.4-r4-test"></script>
+<script id="outlast-v444-final-version-marker">(function(){'use strict';
+var V='4.4.4';
 function syncVersion(){try{
 window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;
 ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){var e=document.querySelector(sel);if(e)e.content=V;});
-document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version').forEach(function(e){e.textContent='v'+V;});
-document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){if(/SURVIVOR HUB/i.test(e.textContent||'')||/v\d+\.\d+\.\d+/i.test(e.textContent||''))e.textContent='v'+V+' • SURVIVOR HUB';});
-var uv=document.getElementById('updatePopupVersion');if(uv&&/v\d+\.\d+\.\d+/i.test(uv.textContent||''))uv.textContent='v'+V+' — Reliability & AFK Lounge';
+document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V;});
+document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v'+V+' • SURVIVOR HUB';});
+var uv=document.getElementById('updatePopupVersion');if(uv)uv.textContent='v'+V+' — Version Marker Repair';
 }catch(e){console.error('OUTLAST version marker sync failed',e);}}
-syncVersion();if(!window.__OUTLAST_V443_VERSION_GUARD){window.__OUTLAST_V443_VERSION_GUARD=true;setInterval(syncVersion,250);}
-</script>
+function install(){syncVersion();if(!window.__OUTLAST_V444_VERSION_GUARD){window.__OUTLAST_V444_VERSION_GUARD=true;window.setInterval(syncVersion,500);try{new MutationObserver(syncVersion).observe(document.documentElement,{childList:true,subtree:true,characterData:true});}catch(_){}}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();</script>
+<script id="outlast-v444-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'}))helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should show the same current version as the page title. If they differ, reload the page; the version marker continuously re-syncs the visible labels.']);</script>
 </body>
 </html>

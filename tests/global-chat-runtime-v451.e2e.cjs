@@ -49,6 +49,15 @@ const assert = require('node:assert/strict');
         if(attempt<19)await page.waitForTimeout(2500);
       }
       assert.ok(served,'Expected v4.5.1 page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
+      // The page has a legacy release gate from v4.0.0 that can sit above the chat launcher.
+      // Clear it in this isolated smoke test so the test can exercise chat rather than click interception.
+      await page.evaluate(()=>{
+        const ok=document.getElementById('outlastV4000GotIt');
+        if(ok)ok.click();
+        const legacy=document.getElementById('outlastV4000UpdatePopup');
+        if(legacy&&getComputedStyle(legacy).display!=='none')legacy.remove();
+      });
+      await page.waitForTimeout(100);
       const routing=await page.evaluate(()=>{
         const f=window.OUTLAST_CHAT_BACKEND_FOR_HOST;
         return {active:window.OUTLAST_CHAT_HTTP_BASE,prod:f('outlastofficial.github.io').http,test:f('outlast-test.onrender.com').http,

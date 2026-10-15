@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.13">
-<meta name="build-version" content="4.5.13">
-<title>OUTLAST v4.5.13</title>
+<meta name="outlast-build" content="4.5.14">
+<meta name="build-version" content="4.5.14">
+<title>OUTLAST v4.5.14</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3900,8 +3900,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.5.13';
-const CURRENT_UPDATE_INFO={title:'v4.5.13 — Boss Spawn Guarantee',summary:'Fixed the case where the countdown reaches zero and says BOSS INCOMING but no boss appears. The game now validates boss health and creates a safe replacement if the normal spawn function fails.',items:['The main boss scheduler now checks for a valid live boss entity, not just a success return value.','A recovery spawn creates a valid boss with finite health and a visible world position.','An independent 500 ms safety check retries if a boss is still missing.','Login, saved-game systems, the GAMEVERSE shortcut, and the scheduled temporary chat pause are preserved.']};
+const CURRENT_UPDATE_VERSION='4.5.14';
+const CURRENT_UPDATE_INFO={title:'v4.5.14 — Global Chat Restored',summary:'Restored the Global Chat controls by removing the temporary hide rule. Existing server-backed chat code and saved data were preserved.',items:['Global Chat button and panel are visible again.','Removed the temporary CSS rule that hid chat until a timer expired.','Kept existing chat API, login, usernames, and role-tag code unchanged.','Updated How To and release notes.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6368,7 +6368,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
- const BUILD='4.5.13',ACK='outlast_update_ack_v4.5.13',POP='outlastMandatoryUpdateV4513';
+ const BUILD='4.5.14',ACK='outlast_update_ack_v4514',POP='outlastMandatoryUpdateV4514';
  function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
  function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
  function show(newer,remote){
@@ -6447,7 +6447,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.5.3"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1-test-test"></script>
 <script id="outlast-v445-final-version-marker">(function(){'use strict';
-var V='4.5.13';
+var V='4.5.14';
 function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
 function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
 function syncVersion(){try{
@@ -6457,7 +6457,7 @@ if(document.title!=='OUTLAST v'+V)document.title='OUTLAST v'+V;
 ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){setAttr(document.querySelector(sel),'content',V);});
 document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){setText(e,'v'+V);});
 document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • SURVIVOR HUB');});
-setText(document.getElementById('updatePopupVersion'),'v'+V+' — Boss Spawn Guarantee');
+setText(document.getElementById('updatePopupVersion'),'v'+V+' — Global Chat Restored');
 }catch(e){console.error('OUTLAST version marker sync failed',e);}}
 function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
@@ -6478,7 +6478,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();</script>
 <script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
 <script id="outlast-v451-survivor-hub-event-cleanup">(function(){'use strict';
-var CHIP='v4.5.13 • SURVIVOR HUB';
+var CHIP='v4.5.14 • SURVIVOR HUB';
 var selectors=['#outlastEventLiveNow','#eventLiveNow','#event-live-now','.event-live-now','.event-live-banner','.live-event-banner','.event-live-pill','.live-now-event-badge','[data-event-live="true"]','[aria-label="Event live now"]'];
 function clean(){try{selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(el&&el.id!=='worldEventsPanel'&&el.id!=='worldBtn')el.remove();});});if(!document.body)return;document.body.querySelectorAll('*').forEach(function(el){if(!el||el.children.length!==0)return;var txt=String(el.textContent||'').replace(/[🎉⚡🔥✨]/g,'').replace(/[.!:]+$/,'').trim().replace(/\s+/g,' ');if(/^event\s+live\s+now$/i.test(txt)){var p=el.parentElement;if(p&&p!==document.body&&p.children.length===1&&String(p.textContent||'').trim().replace(/\s+/g,' ').toLowerCase()===txt.toLowerCase())p.remove();else el.remove();}});}catch(e){console.error('OUTLAST event notice cleanup failed',e);}}
 function sync(){try{document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){if(el.textContent!==CHIP)el.textContent=CHIP;});clean();}catch(e){console.error('OUTLAST Survivor Hub marker failed',e);}}
@@ -6538,7 +6538,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Boss Timer Retry Fix')===0}))updates.unshift(['v4.5.11 — Boss Timer Retry Fix','Fixed the boss countdown getting stuck at 00:01 after a failed spawn attempt. The timer reaches zero and safely retries spawning about once per second until a boss appears.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='Why does the boss timer stop at 00:01?'}))helpArticles.unshift(['Why does the boss timer stop at 00:01?','Bosses & Runs','In v4.5.11, failed boss spawns no longer rewind the timer to 00:01. It reaches zero, shows BOSS INCOMING, and retries spawning about once per second until a boss appears. The first boss is scheduled after about 15 seconds; later bosses after the previous boss is defeated and about 30 seconds pass.']);
 }catch(e){console.error('OUTLAST boss timer fix notes failed',e);}})();</script>
-<script id="outlast-v4512-temporary-chat-pause">(function(){'use strict';var expiresAt=1792087380000;if(Date.now()>=expiresAt)return;try{var style=document.getElementById('outlast-v4512-temporary-chat-pause-style');if(!style){style=document.createElement('style');style.id='outlast-v4512-temporary-chat-pause-style';style.textContent='#outlastEverywhereChat,#outlastChat,#outlastChatToggle{display:none!important;visibility:hidden!important;pointer-events:none!important}';(document.head||document.documentElement).appendChild(style);}var remaining=Math.max(0,expiresAt-Date.now());window.setTimeout(function(){try{var node=document.getElementById('outlast-v4512-temporary-chat-pause-style');if(node)node.remove();}catch(e){console.error('OUTLAST temporary chat pause expiry failed',e);}},remaining);}catch(e){console.error('OUTLAST temporary chat pause failed',e);}})();</script><script id="outlast-v4512-temporary-chat-pause-notes">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.12 — Temporary Chat Pause')===0}))updates.unshift(['v4.5.12 — Temporary Chat Pause','Global Chat is temporarily hidden for one hour; its UI automatically returns at 2:03 PM Eastern on October 15, 2026. No chat repair is being attempted during the pause.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='When will Global Chat return?'}))helpArticles.unshift(['When will Global Chat return?','Menus & Chat','Global Chat is intentionally unavailable until 2:03 PM Eastern on October 15, 2026. The chat controls return automatically after the pause; login, saved progress, and chat backend code are unchanged.']);}catch(e){console.error('OUTLAST temporary chat pause notes failed',e);}})();</script><script id="outlast-v4513-boss-spawn-guarantee">(function(){'use strict';
+<script id="outlast-v4513-boss-spawn-guarantee">(function(){'use strict';
 var state={lastAttempt:0,lastRun:null};
 function activeBoss(g){
  var a=Array.isArray(g&&g.enemies)?g.enemies:[];
@@ -6604,5 +6604,13 @@ window.OUTLAST_BOSS_SPAWN_GUARANTEE_AUDIT=function(){var g=typeof game!=='undefi
 setInterval(tick,500);
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.13 — Boss Spawn Guarantee')===0;}))updates.unshift(['v4.5.13 — Boss Spawn Guarantee','Added a recovery path that creates a valid boss entity when the normal boss-spawn function fails or creates an invalid one. The safety scheduler retries until an active boss is visible.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='Why does it say BOSS INCOMING without a boss?';}))helpArticles.unshift(['Why does it say BOSS INCOMING without a boss?','Bosses & Runs','OUTLAST v4.5.13 validates the spawned boss entity and creates a safe replacement if the normal spawn function fails. If a boss is pending, the safety scheduler retries until a live boss with valid health values appears. Bosses remain disabled in 1v1 Arena and practice mode.']);
-})();</script></body>
+})();</script><script id="outlast-v4514-chat-restored-notes">(function(){try{
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.14 — Global Chat Restored')===0}))updates.unshift(['v4.5.14 — Global Chat Restored','Removed the temporary chat-hiding rule and restored the Global Chat controls. Existing server-backed chat code was preserved.']);
+if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){
+var item=helpArticles.find(function(x){return x&&x[0]==='When will Global Chat return?';});
+if(item){item[2]='Global Chat controls are restored in v4.5.14. Open the CHAT button from the main menu or during a run. If the status remains Offline or Connecting, that is a connection issue rather than a hidden panel.';}
+else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat','Global Chat controls are restored. Open the CHAT button from the main menu or during a run. If it remains Offline or Connecting, the panel is visible and the remaining issue is the server connection.']);
+}
+}catch(e){console.error('OUTLAST chat restoration notes failed',e);}})();</script>
+</body>
 </html>

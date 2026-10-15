@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.0">
-<meta name="build-version" content="4.5.0">
-<title>OUTLAST v4.5.0</title>
+<meta name="outlast-build" content="4.5.1">
+<meta name="build-version" content="4.5.1">
+<title>OUTLAST v4.5.1</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -912,7 +912,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.5.0 • SURVIVOR HUB</div>
+          <div class="menu-chip">v4.5.1 • SURVIVOR HUB</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3900,8 +3900,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.5.0';
-const CURRENT_UPDATE_INFO={title:'v4.5.0 — The Survival Overhaul',summary:'The Survival Overhaul is rolling out in verified stages. This build includes synchronized version/update checks and a searchable map picker; the full gameplay overhaul is not complete yet.',items:['Version and update-check metadata are synchronized.','Map picker search helps locate maps faster.','Next stages target Start Run, saving, skills, upgrades, bosses, chat, mobile controls, and new content.','Login flow is unchanged.']};
+const CURRENT_UPDATE_VERSION='4.5.1';
+const CURRENT_UPDATE_INFO={title:'v4.5.1 — Global Chat Repair',summary:'Global Chat is restored to the working server-backed implementation. Message history, sending, real usernames, and OWNER/TESTER tags are repaired, and tester chat uses the separate tester backend.',items:['Replaced the broken DOM bridge that pointed at nonexistent chat message/input elements.','Restored direct server-backed history refresh and message sending.','Preserved message roles so OWNER and TESTER badges render in both chat panels.','Production and tester chat/WebSocket endpoints are selected separately by site host.','Start Run and login logic are unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -4717,8 +4717,7 @@ if(!save.coinPurchases)save.coinPurchases={};
 /* OUTLAST ONLINE SERVER + ROOMS */
 setTimeout(()=>{if(typeof syncFeedbackToServer==='function')syncFeedbackToServer();},1500);
 
-const OUTLAST_SERVER_URL='wss://outlast-server.onrender.com';
-const OUTLAST_HTTP_URL='https://outlast-server.onrender.com';
+function outlastChatBackendForHost(hostname){return String(hostname||'').toLowerCase().indexOf('outlast-test')!==-1?{http:'https://outlast-test-server.onrender.com',ws:'wss://outlast-test-server.onrender.com'}:{http:'https://outlast-server.onrender.com',ws:'wss://outlast-server.onrender.com'};} const OUTLAST_CHAT_BACKEND=outlastChatBackendForHost(window.location&&window.location.hostname); const OUTLAST_SERVER_URL=OUTLAST_CHAT_BACKEND.ws; const OUTLAST_HTTP_URL=OUTLAST_CHAT_BACKEND.http; window.OUTLAST_CHAT_HTTP_BASE=OUTLAST_HTTP_URL; window.OUTLAST_CHAT_SERVER_URL=OUTLAST_SERVER_URL; window.OUTLAST_CHAT_BACKEND_FOR_HOST=outlastChatBackendForHost;
 let outlastChatMessages=[];
 let outlastChatOpen=false;
 let outlastChatUnread=0;
@@ -4735,14 +4734,14 @@ function pushOutlastChatMessage(entry){
  if(!entry||!entry.message)return;
  const id=String(entry.id||'');
  if(id&&outlastChatMessages.some(m=>String(m.id||'')===id))return;
- outlastChatMessages.push({id:id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),username:String(entry.username||'Player'),message:String(entry.message||'').slice(0,180),at:Number(entry.at)||Date.now()});
+ outlastChatMessages.push({id:id||Date.now().toString(36)+Math.random().toString(36).slice(2,6),username:String(entry.username||'Player'),role:String(entry.role||''),message:String(entry.message||'').slice(0,180),at:Number(entry.at)||Date.now()});
  if(outlastChatMessages.length>200)outlastChatMessages.splice(0,outlastChatMessages.length-200);
  if(!outlastChatOpen&&game?.running)outlastChatUnread++;
  renderOutlastChat();
  if(typeof renderOwnerChatBox==='function')renderOwnerChatBox();
 }
 function mergeOutlastChatMessages(messages){if(!Array.isArray(messages))return;messages.forEach(pushOutlastChatMessage);renderOutlastChat();}
-function isOutlastOwnerChatMessage(m){const name=String(m?.username||'').trim().toLowerCase();return name==='bestgamer'||name==='landon'||name==='phone landon';}
+function isOutlastOwnerChatMessage(m){const name=String(m?.username||'').trim().toLowerCase();return ['bestgamer','landon','phone landon','poke','billybimbo'].includes(name);}
 function normalizeOutlastChatBadgeName(v){return String(v??'').trim().toLowerCase().replace(/[^a-z0-9]/g,'');}
 function isOutlastTesterChatMessage(m){const name=normalizeOutlastChatBadgeName(m?.username);return name==='max'||name==='ss';}
 function outlastDisplayChatUsername(v){const raw=String(v??'').trim()||'Player';const normalized=normalizeOutlastChatBadgeName(raw);if(normalized==='max')return 'Max';if(normalized==='ss')return 'SS';return raw;}
@@ -4754,10 +4753,15 @@ function renderOutlastChat(){
  if(!msgs.length){const empty=document.createElement('div');empty.className='chat-empty';empty.textContent='No messages yet.';box.appendChild(empty);}
  else msgs.forEach(m=>{
    const row=document.createElement('div');row.className='chat-msg';
-   const name=document.createElement('span');name.className='name';name.textContent=String(m.username||'Player');
+   const rawName=String(m.username||'Player').trim()||'Player';
+   const name=document.createElement('span');name.className='name';name.textContent=outlastDisplayChatUsername(rawName);
+   const normalized=normalizeOutlastChatBadgeName(rawName),role=String(m.role||'').toLowerCase();
+   const owner=role==='owner'||isOutlastOwnerChatMessage(m),tester=role==='tester'||isOutlastTesterChatMessage(m);
    const tm=document.createElement('span');tm.className='time';tm.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
    const body=document.createElement('span');body.textContent=': '+String(m.message||'');
-   row.append(name,tm,body);box.appendChild(row);
+   row.appendChild(name);
+   if(owner||tester){const badge=document.createElement('span');badge.className=owner?'owner-chat-tag':'tester-chat-tag';badge.textContent=owner?' 👑 OWNER':' 🧪 TESTER';badge.style.cssText='display:inline-block;margin-left:5px;padding:1px 5px;border-radius:5px;font-size:9px;font-weight:900;color:#101820;background:'+(owner?'#f4ca68':'#8bd4ff');row.appendChild(badge);}
+   row.append(tm,body);box.appendChild(row);
  });
  box.scrollTop=box.scrollHeight;
  if(toggle)toggle.textContent=outlastChatUnread>0?'💬 CHAT • '+Math.min(99,outlastChatUnread):'💬 CHAT';
@@ -6037,35 +6041,79 @@ window.OUTLAST_QUALITY_V324={version:VERSION,openQuality:qualityHub,openBugRepor
 </div>
 <script>
 (function(){
- function init(){
-  const root=document.getElementById('outlastEverywhereChat');if(!root||root.dataset.ready)return;if(root.parentElement!==document.body)document.body.appendChild(root);root.dataset.ready='1';
-  const panel=root.querySelector('.gec-panel'),msgs=document.getElementById('gecMessages'),input=document.getElementById('gecInput');
-  let chatOpen=false;
-  function setChatOpen(open){
-   chatOpen=!!open;
-   panel.style.display=chatOpen?'block':'none';
-   root.classList.toggle('chat-open',chatOpen);
-  }
-  document.getElementById('gecToggle').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(!chatOpen);};
-  document.getElementById('gecClose').onclick=(e)=>{e.preventDefault();e.stopPropagation();setChatOpen(false);};
-  setChatOpen(false);
-  function render(){
-   const source=document.getElementById('globalChatMessages')||document.getElementById('chatMessages');
-   if(source&&source!==msgs) msgs.innerHTML=source.innerHTML;
-  }
-  document.getElementById('gecSend').onclick=()=>{
-   const text=input.value.trim();if(!text)return;
-   const candidates=[document.getElementById('globalChatInput'),document.getElementById('chatInput')];
-   const target=candidates.find(x=>x);
-   if(target){target.value=text;target.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true}));}
-   else if(typeof window.sendGlobalChatMessage==='function')window.sendGlobalChatMessage(text);
-   input.value='';setTimeout(render,120);
-  };
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('gecSend').click();}});
-  setInterval(()=>{render();if(document.body&&getComputedStyle(root).display==='none')root.style.display='block';},500);
-  root.style.display='block';
+'use strict';
+function init(){
+ const root=document.getElementById('outlastEverywhereChat');
+ if(!root||root.dataset.ready)return;
+ if(root.parentElement!==document.body)document.body.appendChild(root);
+ root.dataset.ready='1';
+ const panel=root.querySelector('.gec-panel');
+ const msgs=document.getElementById('gecMessages');
+ const input=document.getElementById('gecInput');
+ const send=document.getElementById('gecSend');
+ const close=document.getElementById('gecClose');
+ const toggle=document.getElementById('gecToggle');
+ const apiBase=String(window.OUTLAST_CHAT_HTTP_BASE|| (String(window.location&&window.location.hostname||'').toLowerCase().indexOf('outlast-test')!==-1?'https://outlast-test-server.onrender.com':'https://outlast-server.onrender.com'));
+ const api=apiBase+'/api/chat';
+ let open=false, busy=false, lastSignature='';
+ function status(text,online){
+  const head=panel.querySelector('.gec-head .gec-title');
+  if(head)head.textContent='💬 Global Chat '+(online?'🟢 Online':'🔴 Offline');
+  if(text){const notice=document.createElement('div');notice.className='small';notice.textContent=text;msgs.replaceChildren(notice);}
  }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ function setOpen(v){open=!!v;panel.style.display=open?'block':'none';root.classList.toggle('chat-open',open);}
+ function render(messages){
+  const list=Array.isArray(messages)?messages:[];
+  const sig=list.map(m=>String(m.id||'')+':'+String(m.message||'')).join('|');
+  if(sig===lastSignature)return;
+  lastSignature=sig;msgs.replaceChildren();
+  if(!list.length){const empty=document.createElement('div');empty.className='small';empty.textContent='No messages yet.';msgs.appendChild(empty);return;}
+  list.slice(-80).forEach(m=>{
+   const row=document.createElement('div');row.style.cssText='padding:4px 0;overflow-wrap:anywhere';
+   const rawName=String(m.username||'Player').trim()||'Player';
+   const normalized=rawName.toLowerCase().replace(/[^a-z0-9]/g,'');
+   const name=document.createElement('b');name.textContent=rawName;
+   row.appendChild(name);
+   let badgeText='',badgeColor='';
+   if(String(m.role||'').toLowerCase()==='owner'||['bestgamer','landon','phonelandon','poke','billybimbo'].includes(normalized)){badgeText=' 👑 OWNER';badgeColor='#f4ca68';}
+   else if(String(m.role||'').toLowerCase()==='tester'||['max','ss'].includes(normalized)){badgeText=' 🧪 TESTER';badgeColor='#8bd4ff';}
+   if(badgeText){const badge=document.createElement('span');badge.textContent=badgeText;badge.style.cssText='display:inline-block;margin-left:5px;padding:1px 5px;border-radius:5px;font-size:9px;font-weight:900;color:#101820;background:'+badgeColor;row.appendChild(badge);}
+   const body=document.createElement('span');body.textContent=': '+String(m.message||'');
+   const time=document.createElement('small');time.style.cssText='display:block;color:#8da1b0;font-size:10px';time.textContent=new Date(Number(m.at)||Date.now()).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+   row.append(body,time);msgs.appendChild(row);
+  });
+  msgs.scrollTop=msgs.scrollHeight;
+ }
+ async function refresh(){
+  try{
+   const res=await fetch(api+'?limit=80&_='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});
+   if(!res.ok)throw new Error('HTTP '+res.status);
+   const data=await res.json();if(!data||data.ok!==true||!Array.isArray(data.messages))throw new Error('Invalid chat response');
+   render(data.messages);status('',true);
+  }catch(err){status('Chat server unavailable — retrying…',false);root.dataset.chatError=String(err&&err.message||err);}
+ }
+ async function sendMessage(){
+  const message=String(input.value||'').trim().slice(0,180);if(!message||busy)return;
+  let savedUsername='';try{savedUsername=localStorage.getItem('outlastUsername')||'';}catch(_){};
+  let activeUsername='';try{activeUsername=typeof currentUsername!=='undefined'?currentUsername:'';}catch(_){};
+  const username=String(activeUsername||window.currentUsername||savedUsername||'Player').trim().slice(0,18)||'Player';
+  busy=true;send.disabled=true;send.textContent='Sending…';
+  try{
+   const res=await fetch(api,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json','Cache-Control':'no-cache'},body:JSON.stringify({username,message})});
+   const data=await res.json().catch(()=>({}));
+   if(!res.ok||!data.ok)throw new Error(data.error||('HTTP '+res.status));
+   input.value='';await refresh();
+  }catch(err){status('Could not send: '+String(err&&err.message||err),false);}
+  finally{busy=false;send.disabled=false;send.textContent='Send';}
+ }
+ toggle.onclick=e=>{e.preventDefault();e.stopPropagation();setOpen(!open);if(open){refresh();input.focus();}};
+ close.onclick=e=>{e.preventDefault();e.stopPropagation();setOpen(false);};
+ send.onclick=sendMessage;
+ input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendMessage();}});
+ setOpen(false);root.style.display='block';
+ refresh();setInterval(refresh,3000);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
 <script src="outlast-v32797-dash-spawn-hardening.js?v=3.29.1"></script>
@@ -6320,7 +6368,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
-const BUILD='4.5.0',ACK='outlast_update_ack_v4.5.0',POP='outlastMandatoryUpdateV443',STYLE='outlastMandatoryUpdateV443Style';
+const BUILD='4.5.1',ACK='outlast_update_ack_v4.5.1',POP='outlastMandatoryUpdateV443',STYLE='outlastMandatoryUpdateV443Style';
 function versionParts(v){return String(v||'0').replace(/^v/i,'').split('.').map(x=>{const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
 function cmp(a,b){const x=versionParts(a),y=versionParts(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
 function show(newer,remote){
@@ -6399,7 +6447,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.4.5-r1-test-test"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1-test-test"></script>
 <script id="outlast-v445-final-version-marker">(function(){'use strict';
-var V='4.5.0';
+var V='4.5.1';
 function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
 function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
 function syncVersion(){try{
@@ -6409,34 +6457,46 @@ if(document.title!=='OUTLAST v'+V)document.title='OUTLAST v'+V;
 ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){setAttr(document.querySelector(sel),'content',V);});
 document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){setText(e,'v'+V);});
 document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • SURVIVOR HUB');});
-setText(document.getElementById('updatePopupVersion'),'v'+V+' — The Survival Overhaul');
+setText(document.getElementById('updatePopupVersion'),'v'+V+' — Global Chat Repair');
 }catch(e){console.error('OUTLAST version marker sync failed',e);}}
 function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();</script>
 <script id="outlast-v445-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles))helpArticles.unshift(['What changed in v4.5.0?','Updates & Reliability','The build marker and update checks are synchronized. The map picker now includes a search field to find maps faster. This is the first verified slice of the Survival Overhaul; additional gameplay systems still need implementation and testing. This is a reliability patch; the larger Survival Overhaul is still being implemented and is not represented as complete.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'});if(h)h[2]='The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.']);}</script>
-<script id="outlast-v450-release-popup-hotfix">(function(){'use strict';
-var KEY='outlast_v450_release_popup_ack';
-function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(document.getElementById('outlastV450ReleasePopup'))return;
+<script id="outlast-v451-release-popup-hotfix">(function(){'use strict';
+var KEY='outlast_v451_release_popup_ack';
+function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(document.getElementById('outlastV451ReleasePopup'))return;
 if(!document.body){setTimeout(show,100);return;}
-var shade=document.createElement('div');shade.id='outlastV450ReleasePopup';
+var shade=document.createElement('div');shade.id='outlastV451ReleasePopup';
 shade.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,6,10,.96);font-family:Arial,sans-serif;color:#fff;pointer-events:auto';
-shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV450Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV450Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.0</h2><p style="color:#dce8f2;line-height:1.5">The Survival Overhaul update is rolling out.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Version and update-check synchronization</li><li>Searchable map selection</li><li>Stability and gameplay improvements are still in progress</li></ul><button id="outlastV450Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
-document.body.appendChild(shade);document.getElementById('outlastV450Continue').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(_){}shade.remove();};
+shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV451Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV451Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.1</h2><p style="color:#dce8f2;line-height:1.5">Global Chat is back on the server-backed path. Usernames and OWNER/TESTER tags are restored, with tester chat kept separate from production.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Restored server-backed Global Chat history and sending</li><li>Restored real usernames and OWNER/TESTER badges</li><li>Separated production and tester chat connections</li></ul><button id="outlastV451Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
+document.body.appendChild(shade);document.getElementById('outlastV451Continue').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(_){}shade.remove();};
 }
 function ready(){setTimeout(show,500);setTimeout(show,1800);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();</script>
 <script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
-<script id="outlast-v450-survivor-hub-event-cleanup">(function(){'use strict';
-var CHIP='v4.5.0 • SURVIVOR HUB';
+<script id="outlast-v451-survivor-hub-event-cleanup">(function(){'use strict';
+var CHIP='v4.5.1 • SURVIVOR HUB';
 var selectors=['#outlastEventLiveNow','#eventLiveNow','#event-live-now','.event-live-now','.event-live-banner','.live-event-banner','.event-live-pill','.live-now-event-badge','[data-event-live="true"]','[aria-label="Event live now"]'];
 function clean(){try{selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(el&&el.id!=='worldEventsPanel'&&el.id!=='worldBtn')el.remove();});});if(!document.body)return;document.body.querySelectorAll('*').forEach(function(el){if(!el||el.children.length!==0)return;var txt=String(el.textContent||'').replace(/[🎉⚡🔥✨]/g,'').replace(/[.!:]+$/,'').trim().replace(/\s+/g,' ');if(/^event\s+live\s+now$/i.test(txt)){var p=el.parentElement;if(p&&p!==document.body&&p.children.length===1&&String(p.textContent||'').trim().replace(/\s+/g,' ').toLowerCase()===txt.toLowerCase())p.remove();else el.remove();}});}catch(e){console.error('OUTLAST event notice cleanup failed',e);}}
 function sync(){try{document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){if(el.textContent!==CHIP)el.textContent=CHIP;});clean();}catch(e){console.error('OUTLAST Survivor Hub marker failed',e);}}
 function ready(){sync();try{new MutationObserver(sync).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();</script>
-<script id="outlast-v450-survivor-hub-howto">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('Survivor Hub Label & Event Notice Cleanup');}))updates.unshift(['v4.5.0 — Survivor Hub Label & Event Notice Cleanup','The main-menu version chip now consistently reads v4.5.0 • SURVIVOR HUB. Removed the stale “Event Live Now” notice/badge only; World Events systems and login behavior remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?';});if(h)h[2]='The main-menu chip should read v4.5.0 • SURVIVOR HUB and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip should read v4.5.0 • SURVIVOR HUB and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.']);}}catch(e){console.error('OUTLAST Survivor Hub help update failed',e);}})();</script>
+<script id="outlast-v451-survivor-hub-howto">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('Survivor Hub Label & Event Notice Cleanup');}))updates.unshift(['v4.5.0 — Survivor Hub Label & Event Notice Cleanup','The main-menu version chip now consistently reads v4.5.1 • SURVIVOR HUB. Removed the stale “Event Live Now” notice/badge only; World Events systems and login behavior remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?';});if(h)h[2]='The main-menu chip should read v4.5.1 • SURVIVOR HUB and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip should read v4.5.1 • SURVIVOR HUB and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.']);}}catch(e){console.error('OUTLAST Survivor Hub help update failed',e);}})();</script>
+<script id="outlast-v451-chat-release-docs">(function(){try{
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.1 — Global Chat Repair')===0;}))
+updates.unshift(['v4.5.1 — Global Chat Repair','Restored the server-backed Global Chat panel, fixed its nonexistent DOM targets, preserved OWNER/TESTER role data, and separated chat/WebSocket endpoints between production and tester. Login and Start Run logic were not changed.']);
+if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){
+var connect=helpArticles.find(function(a){return a&&a[0]==='How does Global Chat connect?';});
+var tags=helpArticles.find(function(a){return a&&a[0]==='Where did the Global Chat tags go?';});
+var detail='Global Chat loads messages and sends through the server chat API. The game preserves the logged-in username and role on each message, displays OWNER/TESTER badges beside the real username, and uses the tester backend only on the tester site.';
+if(connect)connect[2]=detail;else helpArticles.unshift(['How does Global Chat connect?','Menus & Chat',detail]);
+if(tags)tags[2]='OWNER and TESTER badges appear beside the actual username. Badges use the server-provided role where available and known role names as a fallback.';
+else helpArticles.unshift(['Where did the Global Chat tags go?','Menus & Chat','OWNER and TESTER badges appear beside the actual username. Badges use the server-provided role where available and known role names as a fallback.']);
+}
+}catch(e){console.error('OUTLAST chat release notes failed',e);}})();</script>
 </body>
 </html>

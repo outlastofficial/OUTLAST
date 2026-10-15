@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.15">
-<meta name="build-version" content="4.5.15">
-<title>OUTLAST v4.5.15</title>
+<meta name="outlast-build" content="4.5.16">
+<meta name="build-version" content="4.5.16">
+<title>OUTLAST v4.5.16</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -6596,13 +6596,13 @@ function tick(){
   if(state.lastRun!==g){state.lastRun=g;state.lastAttempt=0;}
   if(activeBoss(g))return;
   var count=Number(g.bossCount)||0,target=count===0?15:30,clock=Number(g.bossClock)||0,runTime=Number(g.time)||0;
-  if(clock<target&&!(count===0&&runTime>=15))return;
+  var elapsedTarget=count===0?15:15+count*30;if(clock<target&&runTime<elapsedTarget)return;
   var now=Date.now();if(now-state.lastAttempt<900)return;state.lastAttempt=now;
   try{if(typeof spawnBoss==='function')spawnBoss();}catch(err){window.OUTLAST_BOSS_SPAWN_ERROR=String(err&&err.message||err);}
   if(!activeBoss(g))forceBoss('independent-safety-net');
  }catch(err){window.OUTLAST_BOSS_FORCE_TICK_ERROR=String(err&&err.message||err);}
 }
-window.OUTLAST_BOSS_SPAWN_GUARANTEE_AUDIT=function(){var g=typeof game!=='undefined'?game:null;return {version:'4.5.13',installed:typeof window.OUTLAST_FORCE_BOSS_SPAWN==='function',running:!!(g&&g.running),paused:!!(g&&g.paused),mode:typeof save!=='undefined'?save.mode:null,bossCount:Number(g&&g.bossCount)||0,activeBoss:!!activeBoss(g||{}),forcedSpawns:Number(window.OUTLAST_BOSS_FORCE_SPAWN_COUNT)||0,lastForceReason:window.OUTLAST_BOSS_FORCE_SPAWN_REASON||null,lastSpawnError:window.OUTLAST_BOSS_SPAWN_ERROR||null,lastForceError:window.OUTLAST_BOSS_FORCE_SPAWN_ERROR||null};};
+window.OUTLAST_BOSS_SPAWN_GUARANTEE_AUDIT=function(){var g=typeof game!=='undefined'?game:null;return {version:'4.5.16',installed:typeof window.OUTLAST_FORCE_BOSS_SPAWN==='function',running:!!(g&&g.running),paused:!!(g&&g.paused),mode:typeof save!=='undefined'?save.mode:null,bossCount:Number(g&&g.bossCount)||0,activeBoss:!!activeBoss(g||{}),forcedSpawns:Number(window.OUTLAST_BOSS_FORCE_SPAWN_COUNT)||0,lastForceReason:window.OUTLAST_BOSS_FORCE_SPAWN_REASON||null,lastSpawnError:window.OUTLAST_BOSS_SPAWN_ERROR||null,lastForceError:window.OUTLAST_BOSS_FORCE_SPAWN_ERROR||null};};
 setInterval(tick,500);
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.13 — Boss Spawn Guarantee')===0;}))updates.unshift(['v4.5.13 — Boss Spawn Guarantee','Added a recovery path that creates a valid boss entity when the normal boss-spawn function fails or creates an invalid one. The safety scheduler retries until an active boss is visible.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='Why does it say BOSS INCOMING without a boss?';}))helpArticles.unshift(['Why does it say BOSS INCOMING without a boss?','Bosses & Runs','OUTLAST v4.5.13 validates the spawned boss entity and creates a safe replacement if the normal spawn function fails. If a boss is pending, the safety scheduler retries until a live boss with valid health values appears. Bosses remain disabled in 1v1 Arena and practice mode.']);

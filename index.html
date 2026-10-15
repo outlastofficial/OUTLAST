@@ -3753,7 +3753,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.5.0 — The Survival Overhaul','Survival Overhaul release foundation: synchronized build metadata and update checks, added searchable map selection, and improved menu discovery. Remaining gameplay systems are being rolled out in verified stages.'],
+const updates=[ ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -3901,7 +3901,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.5.0';
-const CURRENT_UPDATE_INFO={title:'v4.4.5 — Reload Freeze Fix',summary:'Fixed a version-label observer loop that could make reload hang.',items:['Version labels are only rewritten when they actually differ.','The version monitor no longer creates a continuous mutation loop.','Login flow is unchanged.']};
+const CURRENT_UPDATE_INFO={title:'v4.5.0 — The Survival Overhaul',summary:'The Survival Overhaul is rolling out in verified stages. This build includes synchronized version/update checks and a searchable map picker; the full gameplay overhaul is not complete yet.',items:['Version and update-check metadata are synchronized.','Map picker search helps locate maps faster.','Next stages target Start Run, saving, skills, upgrades, bosses, chat, mobile controls, and new content.','Login flow is unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6412,7 +6412,7 @@ if(document.title!=='OUTLAST v'+V)document.title='OUTLAST v'+V;
 ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){setAttr(document.querySelector(sel),'content',V);});
 document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){setText(e,'v'+V);});
 document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • SURVIVOR HUB');});
-setText(document.getElementById('updatePopupVersion'),'v'+V+' — Version Sync + Reload Reliability');
+setText(document.getElementById('updatePopupVersion'),'v'+V+' — The Survival Overhaul');
 }catch(e){console.error('OUTLAST version marker sync failed',e);}}
 function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
@@ -6431,5 +6431,6 @@ document.body.appendChild(shade);document.getElementById('outlastV450Continue').
 function ready(){setTimeout(show,500);setTimeout(show,1800);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();</script>
+<script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
 </body>
 </html>

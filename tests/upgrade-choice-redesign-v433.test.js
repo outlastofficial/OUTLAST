@@ -1,8 +1,8 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),design=fs.readFileSync(path.join(root,'outlast-v435-upgrade-gear-redesign.js'),'utf8');
 new vm.Script(design,{filename:'outlast-v435-upgrade-gear-redesign.js'});
-assert(html.includes('<meta name="outlast-build" content="4.3.6">')&&html.includes('<title>OUTLAST v4.3.6</title>'),'redesign is tied to the current visible build');
-assert(html.includes("const BUILD='4.3.6',ACK='outlast_update_ack_v4.3.6'"),'mandatory update check follows the visible version');
+assert(html.includes('<meta name="outlast-build" content="4.5.25">')&&html.includes('<title>OUTLAST v4.5.25</title>'),'redesign is tied to the current visible build');
+assert(html.includes("const BUILD='4.5.25',ACK='outlast_update_ack_v4525',POP='outlastMandatoryUpdateV4525'"),'mandatory update check follows the visible version');
 assert(html.includes('outlast-v435-upgrade-gear-redesign.js?v=4.3.6'),'current redesign is cache-busted and loaded');
 assert(html.indexOf('outlast-v435-upgrade-gear-redesign.js?v=4.3.6')>html.indexOf('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'card redraw runs after the legacy renderer');
 assert(design.includes('function drawCard')&&design.includes('function rollingFX'),'redesigned card painter and tier animations are present');

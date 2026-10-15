@@ -1,0 +1,40 @@
+name: OUTLAST Global Chat regression
+on:
+  push:
+    branches: [main, testing]
+    paths:
+      - "index.html"
+      - "tests/global-chat-repair-v451.test.js"
+      - "tests/global-chat-runtime-v451.e2e.cjs"
+      - ".github/workflows/outlast-chat-regression.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  global-chat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Verify chat source regression guards
+        run: node tests/global-chat-repair-v451.test.js
+      - name: Select the isolated site for this branch
+        id: target
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_NAME" == "testing" ]]; then
+            echo "url=https://outlast-test.onrender.com/" >> "$GITHUB_OUTPUT"
+          else
+            echo "url=https://outlastofficial.github.io/OUTLAST/" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Verify Global Chat API, usernames, tags, and backend isolation
+        env:
+          OUTLAST_CHAT_TEST_URL: ${{ steps.target.outputs.url }}
+        run: node tests/global-chat-runtime-v451.e2e.cjs

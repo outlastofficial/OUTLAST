@@ -1,9 +1,9 @@
 /* OUTLAST v4.4.1 — Skills, Rarity, Balance and UI Reliability */
 (function(){
 'use strict';
-const VERSION='4.5.24';
+const VERSION='4.5.25';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
-const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
+const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8};
 const WEIGHTS={Common:52,Uncommon:25,Rare:13,Epic:6.5,Legendary:2.5,Mythic:.5,Divine:.22,Celestial:.12,Transcendent:.065,Eternal:.035,Omega:.018};
 const COLORS={Common:'#a4b2bf',Uncommon:'#65df92',Rare:'#6bcaff',Epic:'#c49aff',Legendary:'#ffdb72',Mythic:'#ff7cdd',Divine:'#fff0a8',Celestial:'#86efff',Transcendent:'#b3a2ff',Eternal:'#ffd2ef',Omega:'#ff9f6d'};
 const $=s=>document.querySelector(s);
@@ -329,8 +329,8 @@ function addStyles(){
  }
 }
 function installUpgradeChoiceVisualRedesign(){
- if(document.getElementById('outlast-v4524-upgrade-visuals'))return;
- const st=document.createElement('style');st.id='outlast-v4524-upgrade-visuals';
+ if(document.getElementById('outlast-v4525-upgrade-visuals'))return;
+ const st=document.createElement('style');st.id='outlast-v4525-upgrade-visuals';
  st.textContent=`
  #outlast-v441-upgrade-overlay{background:radial-gradient(ellipse at 50% 8%,#203d59f5 0%,#080d17fa 58%,#020409 100%)!important;backdrop-filter:blur(9px)!important;padding:clamp(12px,3vw,36px)!important}
  .outlast-v441-upgrade-inner{width:min(1260px,100%)!important;max-height:96vh!important;padding:clamp(16px,2.7vw,34px)!important;border:1px solid #43627d!important;border-radius:28px!important;background:linear-gradient(145deg,#111f31 0%,#080e18 60%,#101927 100%)!important;box-shadow:0 28px 100px #000c,0 0 0 1px #ffffff08 inset!important}
@@ -451,7 +451,7 @@ function addReleaseNotes(){
   if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){
    const items={
     'How do I change my active skill?':'Open Loadout → Manage Skills. Choose an unlocked skill to equip it immediately; the choice saves to your account. Locked skills show their coin cost. Press Q on PC or tap SKILL on mobile.',
-    'How do higher rarity upgrades scale?':'Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 4.8×, Transcendent 5.6×, Eternal 6.8×, Omega 8×. Open Progress → Upgrade & Boss Audit to inspect loaded cards.',
+    'How do higher rarity upgrades scale?':'Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, Omega 8×. Open Progress → Upgrade & Boss Audit to inspect loaded cards.',
     'What does the Upgrade & Boss Audit show?':'Open Progress → Upgrade & Boss Audit to search every in-run upgrade, permanent node, run modifier/debuff and raid boss. Each upgrade lists its tier, description, scale and handler status.',
     'How do run debuffs work?':'Modifiers affect incoming damage, enemy damage, power-up drops, elite appearances, coin earnings, boss timing, enemy size and healing. Review all entries in Progress → Upgrade & Boss Audit.',
     'How do raid bosses differ?':'Grave Titan uses shockwaves; Plague Doctor fires poison volleys; Mutant Brute charges; Undead Commander summons zombies; The Abomination creates poison zones; Storm Colossus calls lightning; Void Tyrant teleports; Eternal Warden guards between attacks.'

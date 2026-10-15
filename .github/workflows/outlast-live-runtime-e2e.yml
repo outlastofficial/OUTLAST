@@ -8,6 +8,7 @@ on:
       - "*.js"
       - ".github/workflows/outlast-live-runtime-e2e.yml"
       - "tests/live-runtime-v3361.e2e.cjs"
+      - "tests/upgrade-rarity-monotonicity-v453.test.js"
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +20,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Verify upgrade rarity monotonicity
+        run: node tests/upgrade-rarity-monotonicity-v453.test.js
       - name: Install Playwright
         run: |
           npm init -y >/dev/null 2>&1

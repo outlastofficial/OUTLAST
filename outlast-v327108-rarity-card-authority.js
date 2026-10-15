@@ -45,7 +45,7 @@
     return out;
   }
   window.makeChoices=authoritativeMakeChoices;
-  const sanitizeChoices=()=>{if(!Array.isArray(game?.upgradeChoices))return;for(const u of game.upgradeChoices){if(!u||!u[0])continue;const real=BY_NAME[u[0]];if(real){u[3]=real;const item=typeof tempUp!=='undefined'&&tempUp.find(x=>x&&x[0]===u[0]);if(item&&typeof upgradeRarities!=='undefined'&&upgradeRarities[real]&&typeof item[1]==='function')u[1]=item[1](Number(upgradeRarities[real].mult||1));}}};
+  const sanitizeChoices=()=>{if(!Array.isArray(game?.upgradeChoices))return;for(const u of game.upgradeChoices){if(!u||!u[0])continue;const real=BY_NAME[u[0]];if(real){u[3]=real;const authoritative=!!(u[4]&&u[4].rarity===real&&Number.isFinite(Number(u[4].multiplier)));const item=typeof tempUp!=='undefined'&&tempUp.find(x=>x&&x[0]===u[0]);if(!authoritative&&item&&typeof upgradeRarities!=='undefined'&&upgradeRarities[real]&&typeof item[1]==='function')u[1]=item[1](Number(upgradeRarities[real].mult||1));}}};
   const oldDraw=window.draw;
   if(typeof oldDraw==='function'&&!window.__outlastRarityDrawGuard327108){window.__outlastRarityDrawGuard327108=true;window.draw=function(){try{sanitizeChoices();}catch(_){}return oldDraw.apply(this,arguments);};}
   try{

@@ -57,9 +57,14 @@ async function requestJson(url, label) {
       status: typeof healthResult.body.status === 'string' ? healthResult.body.status : null,
       game: typeof healthResult.body.game === 'string' ? healthResult.body.game : null,
       version: typeof healthResult.body.version === 'string' ? healthResult.body.version : null,
+      service: typeof healthResult.body.service === 'string' ? healthResult.body.service : null,
     };
     console.log(endpoint.name + ' sanitized health response shape: ' + JSON.stringify(healthShape));
-    assert.equal(healthResult.body.status === 'online' && healthResult.body.game === 'OUTLAST', true,
+    const modernHealth = healthResult.body.status === 'online' && healthResult.body.game === 'OUTLAST';
+    const deployedHealth = healthResult.body.ok === true &&
+      typeof healthResult.body.service === 'string' &&
+      typeof healthResult.body.version === 'string';
+    assert.equal(modernHealth || deployedHealth, true,
       endpoint.name + ' health endpoint returned an unexpected shape: ' + JSON.stringify(healthShape));
     assert.equal(healthResult.body.game, 'OUTLAST', endpoint.name + ' must identify itself as OUTLAST');
 

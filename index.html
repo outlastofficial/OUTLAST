@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.18">
-<meta name="build-version" content="4.5.18">
-<title>OUTLAST v4.5.18</title>
+<meta name="outlast-build" content="4.5.19">
+<meta name="build-version" content="4.5.19">
+<title>OUTLAST v4.5.19</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3902,7 +3902,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.5.18';
-const CURRENT_UPDATE_INFO={title:'v4.5.18 — Reload & Version Sync Fix',summary:'Restored Global Chat visibility by removing the temporary hide rule. Existing chat transport and saved data are preserved.',items:['Global Chat panel and toggle are visible again.','Removed the temporary CSS hide rule.','Existing chat connection, usernames, and role-tag code are preserved.','Login and saved progress are unchanged.']};
+const CURRENT_UPDATE_INFO={title:'v4.5.19 — Reload Loop Conflict Fix',summary:'Restored Global Chat visibility by removing the temporary hide rule. Existing chat transport and saved data are preserved.',items:['Global Chat panel and toggle are visible again.','Removed the temporary CSS hide rule.','Existing chat connection, usernames, and role-tag code are preserved.','Login and saved progress are unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6369,7 +6369,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
- const BUILD='4.5.18',ACK='outlast_update_ack_v4518',POP='outlastMandatoryUpdateV4518';
+ const BUILD='4.5.19',ACK='outlast_update_ack_v4519',POP='outlastMandatoryUpdateV4519';
  function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
  function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
  function show(newer,remote){
@@ -6385,21 +6385,14 @@ setInterval(syncBossBar,100);
  }
  async function check(){
   let remote=BUILD;
-  try{const response=await fetch('./index.html?update-check='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});if(response.ok){const txt=await response.text();const m=txt.match(/name=["']build-version["']\\s+content=["']([^"']+)["']/i);if(m)remote=m[1]||BUILD}}catch(_){}
+  try{const response=await fetch('./index.html?update-check='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});if(response.ok){const txt=await response.text();const m=txt.match(/<meta[^>]+name=["\']build-version["\'][^>]+content=["\']([^"\']+)["\']/i);if(m)remote=m[1]||BUILD}}catch(_){}
   let acknowledged=false;try{acknowledged=localStorage.getItem(ACK)==='1'}catch(_){}
   if(cmp(remote,BUILD)>0){if(!acknowledged)show(true,remote);return}
   if(!acknowledged)setTimeout(function(){show(false,remote)},350);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check,{once:true});else check();
  window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,ackKey:ACK,check:check,automaticNavigation:false};
- })();</script><script id="outlast-v3377-final-marker">(function(){try{
-window.OUTLAST_BUILD='3.37.15';window.OUTLAST_VERSION='v3.37.15';document.title='OUTLAST v3.37.15';
-document.querySelectorAll('[data-outlast-version]').forEach(function(e){e.textContent='v3.37.15';});
-var a=document.querySelector('meta[name="outlast-build"]');if(a)a.content='3.37.15';
-var b=document.querySelector('meta[name="build-version"]');if(b)b.content='3.37.15';
-if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.8')}))updates.unshift(['v3.36.1 — Accurate Rarity + Shield Reliability','Normalized rarity power, fixed cards applying a different multiplier than their displayed rarity, made Omega Shield block all normal incoming damage paths, and added visible shield charge/recharge feedback.']);
-if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the mandatory update check work?'}))helpArticles.unshift(['How does the mandatory update check work?','Updates & Reliability','Every new OUTLAST build performs a no-cache version check. The current release requires an acknowledgement before play, while a detected newer server build requires a reload.']);
-}catch(_){}})();</script><script id="outlast-v3360-systems">(function(){
+ })();</script><script id="outlast-v3377-final-marker">(function(){/* Disabled stale v3.37.15 writer: it overwrote current metadata. */})();</script><script id="outlast-v3360-systems">(function(){
 'use strict';
 const CORE36={combat:'Combat',enemies:'Enemies',bosses:'Bosses',world:'World',events:'Events',progression:'Progression',cosmetics:'Cosmetics',objectives:'Objectives',economy:'Economy / Rewards',modes:'Game Modes',support:'Support Systems',generation:'Content Generation'};
 const E36=function(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');};
@@ -6447,22 +6440,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v440-skill-upgrade-menu-rework.js?v=4.4.0"></script>
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.5.3"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1"></script>
-<script id="outlast-v445-final-version-marker">(function(){'use strict';
-var V='4.5.15';
-function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
-function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
-function syncVersion(){try{
-if(window.OUTLAST_BUILD!==V)window.OUTLAST_BUILD=V;
-if(window.OUTLAST_VERSION!=='v'+V)window.OUTLAST_VERSION='v'+V;
-if(document.title!=='OUTLAST v'+V)document.title='OUTLAST v'+V;
-['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){setAttr(document.querySelector(sel),'content',V);});
-document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){setText(e,'v'+V);});
-document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • SURVIVOR HUB');});
-setText(document.getElementById('updatePopupVersion'),'v'+V+' — Global Chat Restored');
-}catch(e){console.error('OUTLAST version marker sync failed',e);}}
-function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-})();</script>
+<script id="outlast-v445-final-version-marker">(function(){/* Disabled stale v4.5.15 interval/observer writer: it conflicted with current release metadata. */})();</script>
 <script id="outlast-v445-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles))helpArticles.unshift(['What changed in v4.5.0?','Updates & Reliability','The build marker and update checks are synchronized. The map picker now includes a search field to find maps faster. This is the first verified slice of the Survival Overhaul; additional gameplay systems still need implementation and testing. This is a reliability patch; the larger Survival Overhaul is still being implemented and is not represented as complete.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'});if(h)h[2]='The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.']);}</script>
 <script id="outlast-v451-release-popup-hotfix">(function(){'use strict';
@@ -6471,7 +6449,7 @@ function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(docu
 if(!document.body){setTimeout(show,100);return;}
 var shade=document.createElement('div');shade.id='outlastV454ReleasePopup';
 shade.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,6,10,.96);font-family:Arial,sans-serif;color:#fff;pointer-events:auto';
-shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV454Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV454Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.18</h2><p style="color:#dce8f2;line-height:1.5">Fixed conflicting legacy version markers that could make the page report an older build after loading. The update checker never reloads automatically; use browser refresh only when you choose. World Events remain available, and Omega difficulty remains 2.00× from level 60 onward.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Level 60–and every level after it–uses 2.00× difficulty scaling</li><li>Levels below 60 keep their existing progression</li><li>Player damage no longer decreases on its own</li></ul><button id="outlastV454Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
+shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV454Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV454Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.19</h2><p style="color:#dce8f2;line-height:1.5">Fixed conflicting legacy version markers that could make the page report an older build after loading. The update checker never reloads automatically; use browser refresh only when you choose. World Events remain available, and Omega difficulty remains 2.00× from level 60 onward.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Level 60–and every level after it–uses 2.00× difficulty scaling</li><li>Levels below 60 keep their existing progression</li><li>Player damage no longer decreases on its own</li></ul><button id="outlastV454Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
 document.body.appendChild(shade);document.getElementById('outlastV454Continue').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(_){}shade.remove();};
 }
 function ready(){setTimeout(show,500);setTimeout(show,1800);}
@@ -6630,5 +6608,16 @@ document.title='OUTLAST v'+V;
 document.querySelectorAll('[data-outlast-version]').forEach(function(el){if(el.textContent!=='v'+V)el.textContent='v'+V;});
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.18 — Reload & Version Sync Fix')===0;}))updates.unshift(['v4.5.18 — Reload & Version Sync Fix','Neutralized stale release metadata at the end of page startup so older embedded scripts cannot leave the title and version metadata disagreeing. The update checker does not perform automatic page reloads.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='What should I do if OUTLAST gets stuck reloading?'}))helpArticles.unshift(['What should I do if OUTLAST gets stuck reloading?','Updates & Reliability','The update checker will not reload the page automatically. Version metadata is synchronized after startup to prevent older embedded release markers from leaving the page on a stale version. If the browser itself keeps refreshing, check extensions and the browser console; this release does not clear login or saved progress.']);
+}catch(e){console.error('OUTLAST final version lock failed',e);}
+})();</script>
+<script id="outlast-v4519-final-version-lock">(function(){'use strict';
+try{
+var V='4.5.19';
+window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;
+['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var el=document.querySelector(sel);if(el&&el.getAttribute('content')!==V)el.setAttribute('content',V);});
+document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(el){var t='v'+V;if(el.textContent!==t)el.textContent=t;});
+document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){var t='v'+V+' • SURVIVOR HUB';if(el.textContent!==t)el.textContent=t;});
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.19 — Reload Loop Conflict Fix')===0;}))updates.unshift(['v4.5.19 — Reload Loop Conflict Fix','Disabled two stale version writers (v3.37.15 and v4.5.15) that overwrote the current build metadata; repaired the update checker version parser. The checker performs no automatic navigation.']);
+if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I fix OUTLAST refreshing in a loop?'}))helpArticles.unshift(['How do I fix OUTLAST refreshing in a loop?','Updates & Reliability','v4.5.19 disables legacy scripts that overwrote the current build version and repairs version parsing. The update checker does not reload or redirect automatically. If the entire browser tab continues to refresh after this release, check the browser console and Network panel to identify any external refresh source.']);
 }catch(e){console.error('OUTLAST final version lock failed',e);}
 })();</script>

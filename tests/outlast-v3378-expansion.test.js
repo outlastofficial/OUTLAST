@@ -66,9 +66,9 @@ assert(!newMapNames.some(n=>['Seizure','Ribhouse','Forest','Desert','Snow','Lava
 assert(worldMaps.includes('window.OUTLAST_MAP_CATALOG_COUNT=window.OUTLAST_MAP_CATALOG.length')&&worldMaps.includes('window.__OUTLAST_V430_START_GUARD=true'),'new map registry and run-start guard exist');
 assert(ownerPanel.includes('Owner Control Center')&&ownerPanel.includes("['maps','100-Map Lab']")&&ownerPanel.includes("['diag','Diagnostics']"),'expanded owner panel tabs exist');
 assert(ownerPanel.includes('/api/owner/gift-coins')&&ownerPanel.includes('/api/owner/global-event')&&ownerPanel.includes('/api/owner/announcement'),'owner panel server controls are wired');
-assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.2.4'),'current repair module is loaded');
+assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'current repair module is loaded with the active cache key');
 assert(major.includes("const VERSION = '4.0.0'")&&major.includes('window.OUTLAST_MANDATORY_UPDATE_CHECK = true'),'v4.0.0 includes its own version-aware release gate');
-assert(html.includes('outlast-v3378-expansion.js?v=4.1.0'),'existing expansion script is loaded');
+assert(html.includes('outlast-v3378-expansion.js?v=4.4.0'),'existing expansion script is loaded with the active cache key');
 assert(html.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0'),'major expansion script is loaded');
 assert(!html.includes('v3.14.1 — Menu Organization</b>'),'stray release-note block removed from bottom of the page');
 assert(html.includes('#outlastEverywhereChat .gec-toggle{position:fixed;right:18px;top:118px;bottom:auto;border-radius:999px;font-weight:800;pointer-events:auto!important;z-index:2147483001!important}'),'chat launcher is touchable and moved above overlays');

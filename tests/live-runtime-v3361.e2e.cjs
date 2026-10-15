@@ -14,9 +14,12 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.6','1');
+    localStorage.setItem('outlast_update_ack_v4.5.1','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.0');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
+    localStorage.setItem('outlast_update_ack_v4.5.1','1');
+    localStorage.setItem('outlast_v451_release_popup_ack','1');
+    localStorage.setItem('outlastSeenUpdateVersion','4.5.1');
   });
 
   const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
@@ -29,10 +32,10 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(500);
     servedTitle=await page.title();
     servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-    if(servedTitle.includes('v4.3.6')&&servedBuild==='4.3.6')break;
+    if(servedTitle.includes('v4.5.1')&&servedBuild==='4.5.1')break;
     if(attempt<19)await page.waitForTimeout(3000);
   }
-  if(!servedTitle.includes('v4.3.6')||servedBuild!=='4.3.6'){
+  if(!servedTitle.includes('v4.5.1')||servedBuild!=='4.5.1'){
     throw new Error('Latest build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
   }
 
@@ -62,8 +65,8 @@ const { chromium } = require('playwright');
     const visualAudit=typeof window.OUTLAST_MAP_VISUAL_AUDIT_V434==='function'?window.OUTLAST_MAP_VISUAL_AUDIT_V434():null;
     return {build:window.OUTLAST_BUILD||null,title:document.title,uiHotfix:window.OUTLAST_UI_HOTFIX_V432===true,upgradeCardRedesign:!!window.OUTLAST_UPGRADE_CARD_DESIGN_V435?.ready,gearRoom:!!window.OUTLAST_GEAR_ROOM_V435?.ready,ownerPanelEntrypoint:typeof window.openOwnerPanel==='function',visualAudit,visualReady:window.OUTLAST_MAP_VISUAL_READY_V434===true,audit};
   });
-  if(worldAndUiAudit.build!=='4.3.6'||!worldAndUiAudit.title.includes('v4.3.6')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
-    throw new Error('v4.3.6 UI, owner and map renderer modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
+  if(worldAndUiAudit.build!=='4.5.1'||!worldAndUiAudit.title.includes('v4.5.1')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
+    throw new Error('v4.5.1 UI, owner and map renderer modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
   }
   if(!worldAndUiAudit.visualAudit||worldAndUiAudit.visualAudit.added!==82||worldAndUiAudit.visualAudit.distinctPalettes!==82||worldAndUiAudit.visualAudit.distinctLayouts!==82){
     throw new Error('Distinct visual map audit failed: '+JSON.stringify(worldAndUiAudit.visualAudit));
@@ -84,12 +87,12 @@ const { chromium } = require('playwright');
   }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
   if(!expansionAudit||expansionAudit.version!=='4.2.4'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
-    throw new Error('v4.3.6 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
+    throw new Error('v4.5.1 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(80);
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.3.6')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  if(pickerBuild!=='4.5.1')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<100)throw new Error('100-map picker did not render all selectable tiles: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{
@@ -141,7 +144,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.3.6')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!=='4.5.1')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skillPrep=await page.evaluate(()=>{save.coins=Math.max(Number(save.coins)||0,10000);persist();return {coins:save.coins};});
   if(skillPrep.coins<900)throw new Error('Skill test could not fund Blink: '+JSON.stringify(skillPrep));
@@ -312,7 +315,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
-    localStorage.setItem('outlast_update_ack_v4.3.6','1');
+    localStorage.setItem('outlast_update_ack_v4.5.1','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion','3.37.16');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
@@ -377,7 +380,7 @@ const { chromium } = require('playwright');
         error:audit?.error||window.OUTLAST_V435_CARD_ERROR||null,visibleTitle,visibleFooter,visibleInteractionHint,build:window.OUTLAST_BUILD,renderedText:renderedText.slice(-45)};
     } finally {if(ctx&&baseFill)ctx.fillText=baseFill;game.running=before.running;game.paused=before.paused;game.over=before.over;game.upgradeOpen=before.open;game.upgradeChoices=before.choices;game.__upgradeRollActive=before.rolling;draw();}
   });
-  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('v4.3.6 redesigned upgrade cards failed the long-title/text rendering check: '+JSON.stringify(cardRendererAudit));
+  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('v4.5.1 redesigned upgrade cards failed the long-title/text rendering check: '+JSON.stringify(cardRendererAudit));
   await mobilePage.evaluate(()=>{if(game.upgradeOpen){if(typeof chooseUpgrade!=='function')throw new Error('Upgrade choice function missing');chooseUpgrade(0)}if(game.paused&&!game.upgradeOpen)game.paused=false;});
   await mobilePage.waitForTimeout(250);
   if(!await mobilePage.locator('#mobileControls').isVisible())throw new Error('Mobile movement/actions did not appear during gameplay.');

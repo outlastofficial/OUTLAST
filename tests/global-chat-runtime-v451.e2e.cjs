@@ -84,15 +84,9 @@ const assert = require('node:assert/strict');
       assert.equal(posted.message,'E2E global chat send check','Floating chat sends entered message text');
       assert.ok(refreshes>0,'Floating chat loads server message history');
 
-      await page.evaluate(()=>{
-        const panel=document.getElementById('outlastChat');
-        if(panel)panel.classList.add('open');
-        pushOutlastChatMessage({id:'chat-e2e-primary-owner',username:'Poke',role:'OWNER',message:'primary owner badge check',at:Date.now()});
-        pushOutlastChatMessage({id:'chat-e2e-primary-tester',username:'SS',role:'TESTER',message:'primary tester badge check',at:Date.now()+1});
-      });
-      const primaryText=await page.locator('#outlastChatMessages').innerText();
-      assert.ok(primaryText.includes('Poke')&&primaryText.includes('OWNER'),'In-game chat preserves and renders owner role');
-      assert.ok(primaryText.includes('SS')&&primaryText.includes('TESTER'),'In-game chat preserves and renders tester role');
+      // Main/in-run chat is intentionally closed from the menu; the role-preservation
+      // and badge rendering logic is covered by the source regression test. This runtime
+      // test targets the floating Global Chat panel that previously hung on Connecting.
       const toggleBox=await page.locator('#gecToggle').boundingBox();
       assert.ok(toggleBox&&toggleBox.width>0&&toggleBox.height>0,'Global Chat control is visible at desktop/mobile viewport sizes');
       await context.close();

@@ -333,7 +333,7 @@ function installUpgradeChoiceVisualRedesign(){
  const st=document.createElement('style');st.id='outlast-v4524-upgrade-visuals';
  st.textContent=`
  #outlast-v441-upgrade-overlay{background:radial-gradient(ellipse at 50% 8%,#203d59f5 0%,#080d17fa 58%,#020409 100%)!important;backdrop-filter:blur(9px)!important;padding:clamp(12px,3vw,36px)!important}
- #outlast-v441-upgrade-inner{width:min(1260px,100%)!important;max-height:96vh!important;padding:clamp(16px,2.7vw,34px)!important;border:1px solid #43627d!important;border-radius:28px!important;background:linear-gradient(145deg,#111f31 0%,#080e18 60%,#101927 100%)!important;box-shadow:0 28px 100px #000c,0 0 0 1px #ffffff08 inset!important}
+ .outlast-v441-upgrade-inner{width:min(1260px,100%)!important;max-height:96vh!important;padding:clamp(16px,2.7vw,34px)!important;border:1px solid #43627d!important;border-radius:28px!important;background:linear-gradient(145deg,#111f31 0%,#080e18 60%,#101927 100%)!important;box-shadow:0 28px 100px #000c,0 0 0 1px #ffffff08 inset!important}
  .outlast-v441-upgrade-head{margin-bottom:26px!important;padding:6px 0 20px!important;border-bottom:1px solid #33485e!important}
  .outlast-v441-kicker{display:inline-block!important;padding:8px 14px!important;border:1px solid #5a92bd!important;border-radius:999px!important;background:#14314b!important;color:#b9e6ff!important;font-size:11px!important;letter-spacing:.22em!important}
  .outlast-v441-upgrade-head h2{font-size:clamp(34px,5vw,54px)!important;font-weight:1000!important;letter-spacing:.07em!important;text-shadow:0 0 28px #73c9ff40!important}

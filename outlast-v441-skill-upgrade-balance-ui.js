@@ -1,7 +1,7 @@
 /* OUTLAST v4.4.1 — Skills, Rarity, Balance and UI Reliability */
 (function(){
 'use strict';
-const VERSION='4.4.1';
+const VERSION='4.5.24';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};
 const WEIGHTS={Common:52,Uncommon:25,Rare:13,Epic:6.5,Legendary:2.5,Mythic:.5,Divine:.22,Celestial:.12,Transcendent:.065,Eternal:.035,Omega:.018};
@@ -328,6 +328,37 @@ function addStyles(){
   document.head.appendChild(st);
  }
 }
+function installUpgradeChoiceVisualRedesign(){
+ if(document.getElementById('outlast-v4524-upgrade-visuals'))return;
+ const st=document.createElement('style');st.id='outlast-v4524-upgrade-visuals';
+ st.textContent=`
+ #outlast-v441-upgrade-overlay{background:radial-gradient(ellipse at 50% 8%,#203d59f5 0%,#080d17fa 58%,#020409 100%)!important;backdrop-filter:blur(9px)!important;padding:clamp(12px,3vw,36px)!important}
+ #outlast-v441-upgrade-inner{width:min(1260px,100%)!important;max-height:96vh!important;padding:clamp(16px,2.7vw,34px)!important;border:1px solid #43627d!important;border-radius:28px!important;background:linear-gradient(145deg,#111f31 0%,#080e18 60%,#101927 100%)!important;box-shadow:0 28px 100px #000c,0 0 0 1px #ffffff08 inset!important}
+ .outlast-v441-upgrade-head{margin-bottom:26px!important;padding:6px 0 20px!important;border-bottom:1px solid #33485e!important}
+ .outlast-v441-kicker{display:inline-block!important;padding:8px 14px!important;border:1px solid #5a92bd!important;border-radius:999px!important;background:#14314b!important;color:#b9e6ff!important;font-size:11px!important;letter-spacing:.22em!important}
+ .outlast-v441-upgrade-head h2{font-size:clamp(34px,5vw,54px)!important;font-weight:1000!important;letter-spacing:.07em!important;text-shadow:0 0 28px #73c9ff40!important}
+ .outlast-v441-upgrade-head p{font-size:14px!important;color:#d0e0f0!important}
+ .outlast-v441-upgrade-grid{gap:18px!important;align-items:stretch!important}
+ .outlast-v441-upgrade-card{position:relative!important;isolation:isolate!important;overflow:hidden!important;min-height:370px!important;gap:18px!important;padding:24px 22px 20px 27px!important;border:2px solid var(--tier)!important;border-radius:23px!important;background:linear-gradient(150deg,color-mix(in srgb,var(--tier) 18%,#142133) 0%,#101927 42%,#070d16 100%)!important;box-shadow:0 12px 30px #0008,0 0 22px color-mix(in srgb,var(--tier) 22%,transparent),inset 0 1px #ffffff14!important;text-align:left!important;transition:transform .18s ease,box-shadow .18s ease,border-width .18s ease!important}
+ .outlast-v441-upgrade-card:before{content:""!important;position:absolute!important;z-index:-1!important;inset:0 auto 0 0!important;width:9px!important;background:var(--tier)!important;box-shadow:0 0 26px var(--tier)!important}
+ .outlast-v441-upgrade-card:after{content:""!important;position:absolute!important;z-index:-1!important;right:-60px!important;top:-70px!important;width:180px!important;height:180px!important;border-radius:50%!important;border:1px solid color-mix(in srgb,var(--tier) 50%,transparent)!important;box-shadow:0 0 0 18px color-mix(in srgb,var(--tier) 5%,transparent),0 0 0 38px color-mix(in srgb,var(--tier) 4%,transparent)!important;pointer-events:none!important}
+ .outlast-v441-upgrade-card:hover:not(:disabled){transform:translateY(-7px) scale(1.015)!important;border-width:3px!important;box-shadow:0 22px 42px #000b,0 0 34px color-mix(in srgb,var(--tier) 42%,transparent)!important}
+ .outlast-v441-upgrade-top{align-items:center!important;gap:10px!important;color:#fff!important;font-size:11px!important;letter-spacing:.08em!important}
+ .outlast-v441-upgrade-top span:first-child{padding:8px 10px!important;border:1px solid color-mix(in srgb,var(--tier) 65%,transparent)!important;border-radius:9px!important;background:color-mix(in srgb,var(--tier) 15%,#07101c)!important;color:var(--tier)!important}
+ .outlast-v441-upgrade-top span:last-child{padding:7px 10px!important;border:1px solid #a7bfd6!important;border-radius:9px!important;background:#e9f5ff!important;color:#142538!important;font-size:11px!important;font-weight:1000!important}
+ .outlast-v441-upgrade-title{align-items:center!important;gap:14px!important;min-height:68px!important}
+ .outlast-v441-upgrade-icon{flex-basis:58px!important;width:58px!important;height:58px!important;border-radius:17px!important;background:color-mix(in srgb,var(--tier) 18%,#09111d)!important;border:2px solid var(--tier)!important;box-shadow:0 0 22px color-mix(in srgb,var(--tier) 30%,transparent),inset 0 1px #ffffff20!important;font-size:30px!important}
+ .outlast-v441-upgrade-title b{font-size:clamp(20px,2vw,26px)!important;line-height:1.18!important;color:#fff!important;text-shadow:0 2px 10px #000a!important}
+ .outlast-v441-upgrade-desc{padding:15px 0!important;border-top:1px solid color-mix(in srgb,var(--tier) 42%,#28384a)!important;border-bottom:1px solid #293b4e!important;flex:1!important;color:#e0eaf5!important;font-size:15px!important;line-height:1.65!important}
+ .outlast-v441-upgrade-footer{margin-top:auto!important;padding-top:14px!important;border-top:0!important;align-items:center!important;color:#c1d2e3!important;font-size:11px!important;letter-spacing:.05em!important}
+ .outlast-v441-upgrade-footer b{padding:9px 11px!important;border-radius:10px!important;border:1px solid color-mix(in srgb,var(--tier) 65%,transparent)!important;background:color-mix(in srgb,var(--tier) 16%,#0a1320)!important;color:var(--tier)!important;font-size:13px!important}
+ .outlast-v441-upgrade-lock{margin-top:20px!important;padding:13px!important;border:1px solid #344b62!important;border-radius:12px!important;background:#0c1623!important;color:#e2effc!important;font-size:13px!important}
+ .outlast-v441-common{animation:none!important}.outlast-v441-uncommon{animation:none!important}.outlast-v441-rare{animation:none!important}.outlast-v441-epic{animation:none!important}.outlast-v441-legendary{animation:none!important}.outlast-v441-mythic{animation:none!important}.outlast-v441-divine{animation:none!important}.outlast-v441-celestial{animation:none!important}.outlast-v441-transcendent{animation:none!important}.outlast-v441-eternal{animation:none!important}.outlast-v441-omega{animation:none!important}
+ @media(max-width:760px){.outlast-v441-upgrade-grid{grid-template-columns:1fr!important;gap:12px!important}.outlast-v441-upgrade-card{min-height:0!important;padding:18px 16px 16px 22px!important;gap:12px!important}.outlast-v441-upgrade-title b{font-size:21px!important}.outlast-v441-upgrade-desc{font-size:14px!important}}
+ @media(prefers-reduced-motion:reduce){.outlast-v441-upgrade-card,.outlast-v441-upgrade-card:hover:not(:disabled){transition:none!important;transform:none!important}}
+ `;
+ document.head.appendChild(st);
+}
 function renderUpgradeOverlay(){
  const g=currentGame();let root=$('#outlast-v441-upgrade-overlay');
  if(!root){
@@ -439,7 +470,7 @@ function setVersion(){
 }
 function install(){
  try{
-  addStyles();addAuditStyles();installRarity();installModifierDefs();normalizeBosses();installCombat();installSkills();fixChoiceEffects();addReleaseNotes();addAuditCard();setVersion();
+  addStyles();installUpgradeChoiceVisualRedesign();addAuditStyles();installRarity();installModifierDefs();normalizeBosses();installCombat();installSkills();fixChoiceEffects();addReleaseNotes();addAuditCard();setVersion();
   window.OUTLAST_BALANCE_AUDIT_V441=buildAudit;window.OUTLAST_OPEN_BALANCE_AUDIT_V441=openAudit;
   window.OUTLAST_SKILL_AUDIT_V441=function(){return{selected:currentSave()?.activeSkill||'Nova',player:currentPlayer()?.activeSkill||'none',tree:Object.assign({},currentSave()?.skillTree||{}),cast:window.OUTLAST_ACTIVE_SKILL_CAST_V441||null}};
   renderUpgradeOverlay();prepareRunEffects();

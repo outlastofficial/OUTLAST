@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.14">
-<meta name="build-version" content="4.5.14">
-<title>OUTLAST v4.5.14</title>
+<meta name="outlast-build" content="4.5.11">
+<meta name="build-version" content="4.5.11">
+<title>OUTLAST v4.5.11</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -801,8 +801,8 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 @media(max-width:560px){#gameverseHubBtn.gameverse-hub-link{min-height:64px;padding:11px 12px;gap:10px}#gameverseHubBtn .gameverse-hub-icon{width:35px;height:35px;flex-basis:35px;font-size:20px}#gameverseHubBtn .gameverse-hub-copy strong{font-size:13px}#gameverseHubBtn .gameverse-hub-copy small{font-size:10px}}
 @media(prefers-reduced-motion:reduce){#gameverseHubBtn.gameverse-hub-link:before{animation:none}}
 </style>
-<style id="outlast-temporary-chat-removal-20261015">#outlastChat,#outlastChatToggle{display:none!important;visibility:hidden!important;pointer-events:none!important}</style>
-</head>
+
+<style id="outlast-chat-restore-v4511">#outlastChat{visibility:visible!important;pointer-events:auto!important}#outlastChat.open{display:block!important}#outlastChatToggle.chat-visible{display:block!important;visibility:visible!important;pointer-events:auto!important}</style></head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
 <div id="outlastPinkToy" aria-hidden="true">
@@ -3901,8 +3901,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.5.14';
-const CURRENT_UPDATE_INFO={title:'v4.5.14 — Global Chat Restored',summary:'Restored the Global Chat controls by removing the temporary hide rule. Existing server-backed chat code and saved data were preserved.',items:['Global Chat button and panel are visible again.','Removed the temporary CSS rule that hid chat until a timer expired.','Kept existing chat API, login, usernames, and role-tag code unchanged.','Updated How To and release notes.']};
+const CURRENT_UPDATE_VERSION='4.5.11';
+const CURRENT_UPDATE_INFO={title:'v4.5.11 — Global Chat Restored',summary:'Restored the Global Chat panel and its chat toggle after a temporary hide rule accidentally left them invisible.',items:['Global Chat panel and toggle are visible again.','The existing chat connection, message rendering, and chat tags were preserved.','Login and saved-game systems were not changed.','The retired GAMEVERSE link remains replaced with the current hub.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6369,7 +6369,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
- const BUILD='4.5.14',ACK='outlast_update_ack_v4514',POP='outlastMandatoryUpdateV4514';
+ const BUILD='4.5.11',ACK='outlast_update_ack_v4.5.11',POP='outlastMandatoryUpdateV4511';
  function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
  function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
  function show(newer,remote){
@@ -6448,7 +6448,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.5.3"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1"></script>
 <script id="outlast-v445-final-version-marker">(function(){'use strict';
-var V='4.5.14';
+var V='4.5.11';
 function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
 function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
 function syncVersion(){try{
@@ -6471,7 +6471,7 @@ function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(docu
 if(!document.body){setTimeout(show,100);return;}
 var shade=document.createElement('div');shade.id='outlastV454ReleasePopup';
 shade.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,6,10,.96);font-family:Arial,sans-serif;color:#fff;pointer-events:auto';
-shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV454Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV454Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.10</h2><p style="color:#dce8f2;line-height:1.5">Omega level scaling is now 2.00× from level 60 onward.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Level 60–and every level after it–uses 2.00× difficulty scaling</li><li>Levels below 60 keep their existing progression</li><li>Player damage no longer decreases on its own</li></ul><button id="outlastV454Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
+shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV454Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV454Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.11</h2><p style="color:#dce8f2;line-height:1.5">Omega level scaling is now 2.00× from level 60 onward.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Level 60–and every level after it–uses 2.00× difficulty scaling</li><li>Levels below 60 keep their existing progression</li><li>Player damage no longer decreases on its own</li></ul><button id="outlastV454Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
 document.body.appendChild(shade);document.getElementById('outlastV454Continue').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(_){}shade.remove();};
 }
 function ready(){setTimeout(show,500);setTimeout(show,1800);}
@@ -6479,7 +6479,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();</script>
 <script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
 <script id="outlast-v451-survivor-hub-event-cleanup">(function(){'use strict';
-var CHIP='v4.5.14 • SURVIVOR HUB';
+var CHIP='v4.5.11 • SURVIVOR HUB';
 var selectors=['#outlastEventLiveNow','#eventLiveNow','#event-live-now','.event-live-now','.event-live-banner','.live-event-banner','.event-live-pill','.live-now-event-badge','[data-event-live="true"]','[aria-label="Event live now"]'];
 function clean(){try{selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(el&&el.id!=='worldEventsPanel'&&el.id!=='worldBtn')el.remove();});});if(!document.body)return;document.body.querySelectorAll('*').forEach(function(el){if(!el||el.children.length!==0)return;var txt=String(el.textContent||'').replace(/[🎉⚡🔥✨]/g,'').replace(/[.!:]+$/,'').trim().replace(/\s+/g,' ');if(/^event\s+live\s+now$/i.test(txt)){var p=el.parentElement;if(p&&p!==document.body&&p.children.length===1&&String(p.textContent||'').trim().replace(/\s+/g,' ').toLowerCase()===txt.toLowerCase())p.remove();else el.remove();}});}catch(e){console.error('OUTLAST event notice cleanup failed',e);}}
 function sync(){try{document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){if(el.textContent!==CHIP)el.textContent=CHIP;});clean();}catch(e){console.error('OUTLAST Survivor Hub marker failed',e);}}
@@ -6614,6 +6614,9 @@ if(item){item[2]='Global Chat controls are restored in v4.5.14. Open the CHAT bu
 else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat','Global Chat controls are restored. Open the CHAT button from the main menu or during a run. If it remains Offline or Connecting, the panel is visible and the remaining issue is the server connection.']);
 }
 }catch(e){console.error('OUTLAST chat restoration notes failed',e);}})();</script>
-</body>
+<script id="outlast-v4511-chat-restore-notes">(function(){try{
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
+if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
+}catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script></body>
 </html>
 

@@ -3,8 +3,8 @@
 const assert = require('node:assert/strict');
 
 const endpoints = [
-  { name: 'production', base: 'https://outlast-server.onrender.com', service: 'outlast-server' },
-  { name: 'tester', base: 'https://outlast-test-server.onrender.com', service: 'outlast-test-server' },
+  { name: 'production', base: 'https://outlast-server.onrender.com' },
+  { name: 'tester', base: 'https://outlast-test-server.onrender.com' },
 ];
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -61,8 +61,11 @@ async function requestJson(url, label) {
     };
     console.log(endpoint.name + ' sanitized health response shape: ' + JSON.stringify(healthShape));
     const modernHealth = healthResult.body.status === 'online' && healthResult.body.game === 'OUTLAST';
+    // Both isolated Render services run the same server package, whose health
+    // response uses a generic service label. Verify the deployed health schema,
+    // and verify host-specific endpoint selection in the browser regression test.
     const deployedHealth = healthResult.body.ok === true &&
-      healthResult.body.service === endpoint.service &&
+      typeof healthResult.body.service === 'string' &&
       typeof healthResult.body.version === 'string';
     assert.equal(modernHealth || deployedHealth, true,
       endpoint.name + ' health endpoint returned an unexpected shape: ' + JSON.stringify(healthShape));

@@ -3,9 +3,10 @@ const index=fs.readFileSync('index.html','utf8');
 const core=fs.readFileSync('outlast-v33500-core-content-engine.js','utf8');
 const expansion=fs.readFileSync('outlast-v4000-ultimate-expansion.js','utf8');
 
-assert(index.includes('<meta name="outlast-build" content="4.5.1">')&&index.includes('<meta name="build-version" content="4.5.1">')&&index.includes('<title>OUTLAST v4.5.1</title>'),'current release metadata must match v4.5.1');
+const currentBuild=(index.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+assert(currentBuild&&index.includes('<meta name="build-version" content="'+currentBuild+'">')&&index.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current release metadata stays synchronized');
 assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, map expansion and owner modules are loaded');
-assert(index.includes("const BUILD='4.5.1',ACK='outlast_update_ack_v4.5.1'"),'mandatory update acknowledgement matches the current version');
+assert(index.includes("const BUILD='4.5.24',ACK='outlast_update_ack_v4524',POP='outlastMandatoryUpdateV4524'"),'mandatory update acknowledgement matches the current version');
 assert(expansion.includes("window.OUTLAST_BUILD = VERSION;")&&expansion.includes("document.title = 'OUTLAST v' + VERSION;"),'the final module publishes the global build and title');
 assert(core.includes("window.OUTLAST_CORE_CONTENT"),'12-core engine must still install its content container');
 assert(core.includes("window.OUTLAST_CORE_CONTENT_VERSION=VERSION"),'12-core engine should expose its own version without changing global build state');

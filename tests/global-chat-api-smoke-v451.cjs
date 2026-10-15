@@ -1,0 +1,73 @@
+'use strict';
+
+const assert = require('node:assert/strict');
+
+const endpoints = [
+  { name: 'production', base: 'https://outlast-server.onrender.com' },
+  { name: 'tester', base: 'https://outlast-test-server.onrender.com' },
+];
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function requestJson(url, label) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= 4; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'Origin': 'https://outlastofficial.github.io',
+        },
+        signal: controller.signal,
+      });
+      const bodyText = await response.text();
+      let body;
+      try { body = JSON.parse(bodyText); }
+      catch (_) { throw new Error(label + ' returned non-JSON HTTP ' + response.status); }
+
+      assert.equal(response.ok, true, label + ' returned HTTP ' + response.status + ': ' + String(body.error || body.status || 'request failed'));
+      assert.equal(body.ok === true || body.status === 'online', true, label + ' did not report a healthy OUTLAST response');
+      if (attempt > 1) console.log(label + ' recovered after retry ' + attempt);
+      return { response, body };
+    } catch (error) {
+      lastError = error;
+      if (attempt < 4) {
+        console.log(label + ' attempt ' + attempt + ' failed (' + String(error.message || error) + '); retrying.');
+        await sleep(2000 * attempt);
+      }
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw new Error(label + ' failed after four attempts: ' + String(lastError && lastError.message || lastError));
+}
+
+(async () => {
+  for (const endpoint of endpoints) {
+    const healthResult = await requestJson(endpoint.base + '/api/health?chatSmoke=' + Date.now(), endpoint.name + ' health');
+    assert.equal(healthResult.body.status, 'online', endpoint.name + ' health status must be online');
+    assert.equal(healthResult.body.game, 'OUTLAST', endpoint.name + ' must identify itself as OUTLAST');
+
+    const chatResult = await requestJson(endpoint.base + '/api/chat?limit=1&chatSmoke=' + Date.now(), endpoint.name + ' chat history');
+    assert.equal(chatResult.body.ok, true, endpoint.name + ' chat-history endpoint must return ok:true');
+    assert.equal(Array.isArray(chatResult.body.messages), true, endpoint.name + ' chat history must be an array');
+    assert.ok(String(chatResult.body.serverVersion || '').length > 0, endpoint.name + ' chat API must include its server version');
+
+    const allowOrigin = chatResult.response.headers.get('access-control-allow-origin');
+    assert.ok(allowOrigin === '*' || allowOrigin === 'https://outlastofficial.github.io' || allowOrigin === 'https://outlast-test.onrender.com',
+      endpoint.name + ' chat API must permit browser access via CORS');
+
+    // Never print user messages or usernames from real chat history.
+    console.log(endpoint.name + ' API is reachable; server=' + chatResult.body.serverVersion +
+      '; messages returned=' + chatResult.body.messages.length + '; CORS=' + allowOrigin);
+  }
+  console.log('OUTLAST production and tester chat API smoke test passed (read-only).');
+})().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

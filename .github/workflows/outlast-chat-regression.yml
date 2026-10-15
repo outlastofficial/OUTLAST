@@ -6,6 +6,7 @@ on:
       - "index.html"
       - "tests/global-chat-repair-v451.test.js"
       - "tests/global-chat-runtime-v451.e2e.cjs"
+      - "tests/global-chat-api-smoke-v451.cjs"
       - ".github/workflows/outlast-chat-regression.yml"
   workflow_dispatch:
 permissions:
@@ -25,6 +26,8 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Verify chat source regression guards
         run: node tests/global-chat-repair-v451.test.js
+      - name: Smoke-test production and tester chat APIs (read-only)
+        run: node tests/global-chat-api-smoke-v451.cjs
       - name: Select the isolated site for this branch
         id: target
         shell: bash

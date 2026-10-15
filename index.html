@@ -6551,10 +6551,8 @@ function clamp(n,lo,hi){return Math.max(lo,Math.min(hi,n));}
 function forceBoss(reason){
  var g=typeof game!=='undefined'?game:null,sv=typeof save!=='undefined'?save:null;
  if(!g||!g.running||g.paused||g.over||!g.player||!sv||sv.mode==='1v1 Arena'||g.practiceMode||sv.practiceMode)return false;
- if(activeBoss(g))return true;
- if(typeof outlastBossIsAlive==='function'){try{if(outlastBossIsAlive()&&activeBoss(g))return true;}catch(_){}}
  if(!Array.isArray(g.enemies))g.enemies=[];
- // Clear malformed boss ghosts that would otherwise hold the boss lock without being drawable.
+ // Remove malformed boss ghosts without running the normal kill/reward path.
  for(var i=g.enemies.length-1;i>=0;i--){var old=g.enemies[i];if(old&&old.boss&&(!Number.isFinite(Number(old.hp))||Number(old.hp)<=0||!Number.isFinite(Number(old.max))||Number(old.max)<=0)){old.__dead=true;g.enemies.splice(i,1);}}
  if(activeBoss(g))return true;
  var p=g.player,level=Math.max(1,Number(g.level)||1);

@@ -50,7 +50,17 @@ async function requestJson(url, label) {
 (async () => {
   for (const endpoint of endpoints) {
     const healthResult = await requestJson(endpoint.base + '/api/health?chatSmoke=' + Date.now(), endpoint.name + ' health');
-    assert.equal(healthResult.body.status, 'online', endpoint.name + ' health status must be online');
+    const healthShape = {
+      httpStatus: healthResult.response.status,
+      keys: Object.keys(healthResult.body).sort(),
+      ok: healthResult.body.ok === true,
+      status: typeof healthResult.body.status === 'string' ? healthResult.body.status : null,
+      game: typeof healthResult.body.game === 'string' ? healthResult.body.game : null,
+      version: typeof healthResult.body.version === 'string' ? healthResult.body.version : null,
+    };
+    console.log(endpoint.name + ' sanitized health response shape: ' + JSON.stringify(healthShape));
+    assert.equal(healthResult.body.status === 'online' && healthResult.body.game === 'OUTLAST', true,
+      endpoint.name + ' health endpoint returned an unexpected shape: ' + JSON.stringify(healthShape));
     assert.equal(healthResult.body.game, 'OUTLAST', endpoint.name + ' must identify itself as OUTLAST');
 
     const chatResult = await requestJson(endpoint.base + '/api/chat?limit=1&chatSmoke=' + Date.now(), endpoint.name + ' chat history');

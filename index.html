@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.19">
-<meta name="build-version" content="4.5.19">
-<title>OUTLAST v4.5.19</title>
+<meta name="outlast-build" content="4.5.20">
+<meta name="build-version" content="4.5.20">
+<title>OUTLAST v4.5.20</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -1177,7 +1177,7 @@ c.addEventListener('click',e=>{
   if(game.upgradeOpen){
     const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
     const x=(e.clientX-r.left)*sx,y=(e.clientY-r.top)*sy;
-    if(y>=180&&y<=465){for(let i=0;i<3;i++){const bx=45+i*350;if(x>=bx&&x<=bx+325){chooseUpgrade(i);break}}}
+    if(y>=174&&y<=465){for(let i=0;i<3;i++){const bx=45+i*350;if(x>=bx&&x<=bx+325){chooseUpgrade(i);break}}}
   }
 });
 
@@ -2920,7 +2920,7 @@ const p=game.player;if(p){
   // player/world can never render over the choice screen.
   ctx.save();
   ctx.setTransform(1,0,0,1,0,0);
-  ctx.fillStyle='#071018';ctx.fillRect(0,0,CW,CH);
+  const bg=ctx.createLinearGradient(0,0,CW,CH);bg.addColorStop(0,'#07111b');bg.addColorStop(.55,'#0b1723');bg.addColorStop(1,'#10101e');ctx.fillStyle=bg;ctx.fillRect(0,0,CW,CH);ctx.save();ctx.globalAlpha=.14;ctx.strokeStyle='#4c7592';ctx.lineWidth=1;for(let gx=0;gx<CW;gx+=36){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,CH);ctx.stroke()}for(let gy=0;gy<CH;gy+=36){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(CW,gy);ctx.stroke()}ctx.restore();
   const now=performance.now()/1000;
   const fx={Common:{c:'#9aa5ad',r:0},Uncommon:{c:'#71d68a',r:1},Rare:{c:'#72a8ff',r:2},Epic:{c:'#d28cff',r:3},Legendary:{c:'#ffd84d',r:4},Mythic:{c:'#ff65e8',r:5},Divine:{c:'#ffffff',r:6},Celestial:{c:'#7ce7ff',r:7},Transcendent:{c:'#ff9cf2',r:8},Eternal:{c:'#b8a7ff',r:9},Omega:{c:'#ff6b6b',r:10}};
   const choiceKey=game.upgradeChoices.map(u=>String(u[0])+'|'+String(u[3]||'Common')).join('||');
@@ -2936,11 +2936,11 @@ const p=game.player;if(p){
   const hasRollingRarity=game.upgradeChoices.some(u=>u&&u[3]&&['Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(u[3]));
   const rollProgress=hasRollingRarity&&rollDuration>0?Math.min(1,Math.max(0,(now-rollStart)/rollDuration)):1;
   game.__upgradeRollActive=hasRollingRarity&&rollProgress<1;
-  ctx.textAlign='center';ctx.fillStyle='#fff';ctx.font='40px Arial';ctx.fillText('LEVEL UP!',CW/2,76);
-  ctx.font='20px Arial';ctx.fillStyle='#dbe9f5';ctx.fillText('Choose 1, 2, or 3',CW/2,110);
+  ctx.textAlign='center';ctx.fillStyle='#68d7ff';ctx.font='900 12px Arial';ctx.fillText('SURVIVOR PROTOCOL  /  BUILD YOUR RUN',CW/2,31);ctx.fillStyle='#fff';ctx.font='900 38px Arial';ctx.fillText('CHOOSE YOUR UPGRADE',CW/2,75);
+  ctx.font='bold 17px Arial';ctx.fillStyle='#dbe9f5';ctx.fillText('Select one upgrade to continue • Press 1, 2, or 3',CW/2,108);
   ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0)+' • '+((window.OUTLAST_UPGRADE_LIBRARY_COUNT||298))+' upgrade choices',CW/2,140);
   game.upgradeChoices.forEach((u,i)=>{
-    const x=45+i*350,y=180,w=325,h=285,cx=x+w/2,cy=y+h/2;
+    const x=45+i*350,y=174,w=325,h=291,cx=x+w/2,cy=y+h/2;
     const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r,rarityScale=Number(upgradeRarities[u[3]]?.mult||1);
     const cardRolling=rank>=1&&rollProgress<1;
     const eased=1-Math.pow(1-Math.min(1,rollProgress),3);
@@ -2951,7 +2951,7 @@ const p=game.player;if(p){
     if(cardRolling){ctx.translate(cx,cy+rollLift);ctx.rotate(spin);ctx.scale(reelSquash,1);ctx.translate(-cx,-cy);}
     // Lightweight glow: translucent fills/strokes instead of blur filters,
     // large shadow buffers, and many animated particles.
-    ctx.globalAlpha=.10+rank*.025;ctx.fillStyle=glow;ctx.beginPath();ctx.roundRect(x-5,y-5,w+10,h+10,18);ctx.fill();
+    ctx.globalAlpha=.08+rank*.022;ctx.fillStyle=glow;ctx.beginPath();ctx.roundRect(x-6,y-6,w+12,h+12,20);ctx.fill();
     if(rank>=4){
       ctx.globalAlpha=.28;ctx.strokeStyle=glow;ctx.lineWidth=2;
       const ring=72+Math.sin(now*2+i)*4;
@@ -2961,7 +2961,7 @@ const p=game.player;if(p){
         for(let k=0;k<2;k++){const a=now*.55+k*Math.PI,px=cx+Math.cos(a)*105,py=cy+Math.sin(a)*78;ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);ctx.fill();}
       }
     }
-    ctx.globalAlpha=1;ctx.fillStyle='#0f1821';ctx.beginPath();ctx.roundRect(x,y,w,h,18);ctx.fill();
+    ctx.globalAlpha=1;const panel=ctx.createLinearGradient(x,y,x+w,y+h);panel.addColorStop(0,'#142535');panel.addColorStop(.55,'#0d1925');panel.addColorStop(1,'#101522');ctx.fillStyle=panel;ctx.beginPath();ctx.roundRect(x,y,w,h,18);ctx.fill();
     ctx.globalAlpha=.12+rank*.02;ctx.fillStyle=glow;ctx.beginPath();ctx.roundRect(x+3,y+3,w-6,h-6,15);ctx.fill();
     ctx.globalAlpha=1;ctx.strokeStyle=glow;ctx.lineWidth=3+rank*.25;ctx.beginPath();ctx.roundRect(x,y,w,h,18);ctx.stroke();
     if(cardRolling){
@@ -2980,7 +2980,7 @@ const p=game.player;if(p){
     }
     const badgeW=rank>=4?185:rank>=2?155:138;ctx.fillStyle=glow;ctx.globalAlpha=.16;ctx.beginPath();ctx.roundRect(cx-badgeW/2,y+18,badgeW,30,15);ctx.fill();
     ctx.globalAlpha=1;ctx.fillStyle=glow;ctx.font='bold 15px Arial';ctx.fillText((rank===5?'✦ ':rank===4?'★ ':rank>=3?'◆ ':'')+(cardRolling?'RISING '+u[3].toUpperCase():u[3].toUpperCase()),cx,y+39);
-    ctx.fillStyle='#ffe56d';ctx.font='bold 30px Arial';ctx.fillText(String(i+1),cx,y+82);
+    ctx.fillStyle='#ffe56d';ctx.font='900 25px Arial';ctx.fillText('0'+String(i+1),cx,y+78);
     if(cardRolling){
       const reels={1:['READY','BOOST','UP'],2:['AIM','POWER','RARE'],3:['BURST','SURGE','EPIC'],4:['POWER','BOOST','ROLL'],5:['???','MYTHIC','???'],6:['HALO','DIVINE','HALO'],7:['STAR','ORBIT','STAR'],8:['SHIFT','GLITCH','SHIFT'],9:['TIME','WARP','TIME'],10:['OMEGA','SURGE','OMEGA']};
       const reel=reels[rank]||['???','POWER','ROLLING'];
@@ -2992,16 +2992,16 @@ const p=game.player;if(p){
       ctx.restore();
       ctx.globalAlpha=.9;ctx.fillStyle=glow;ctx.font='bold 14px Arial';ctx.fillText(({1:'UNCOMMON BOUNCE',2:'RARE PULSE',3:'EPIC RISE',4:'LEGENDARY ROLL',5:'MYTHIC ORBIT',6:'DIVINE HALO',7:'CELESTIAL STARS',8:'TRANSCENDENT GLITCH',9:'ETERNAL WARP',10:'OMEGA BURST'})[rank]||'RARITY REVEAL',cx,y+216);
     }else{
-      ctx.fillStyle='#fff';ctx.font='bold 21px Arial';ctx.fillText(u[0],cx,y+126);
+      ctx.fillStyle='#fff';ctx.font='900 20px Arial';ctx.fillText(String(u[0]).toUpperCase(),cx,y+128);
       const words=String(u[1]).split(' '),lines=[];let line='';ctx.font='16px Arial';
       for(const word of words){const test=(line+' '+word).trim();if(line&&ctx.measureText(test).width>275){lines.push(line);line=word}else line=test}if(line)lines.push(line);
-      ctx.fillStyle='#cbd7e2';lines.slice(0,3).forEach((txt,j)=>ctx.fillText(txt,cx,y+160+j*23));
+      ctx.fillStyle='#d5e2ed';lines.slice(0,3).forEach((txt,j)=>ctx.fillText(txt,cx,y+158+j*22));
     }
-    ctx.fillStyle=glow;ctx.font='bold 13px Arial';ctx.fillText(rank===10?'OMEGA POWER • EXTREMELY RARE':rank===9?'ETERNAL POWER • EXTREMELY RARE':rank===8?'TRANSCENDENT POWER • VERY RARE':rank===7?'CELESTIAL POWER • VERY RARE':rank===6?'DIVINE POWER • RARE':rank===5?'MYTHIC POWER • EXTREMELY RARE':rank===4?'LEGENDARY POWER • VERY RARE':rank===3?'EPIC POWER • POWER SURGE':rank===2?'RARE POWER • ENHANCED':rank===1?'UNCOMMON POWER • BOOSTED':'COMMON POWER • BASE',cx,y+244);
-   ctx.globalAlpha=.9;ctx.font='bold 11px Arial';ctx.fillText('RARITY SCALE ×'+rarityScale.toFixed(2)+' • EFFECT SCALED TO RARITY',cx,y+258);
-   ctx.globalAlpha=.82;ctx.font='10px Arial';ctx.fillText('EXACT BOOST • SCALE ×'+rarityScale.toFixed(2),cx,y+270);
+    const nm=(String(u[0])+' '+String(u[1])).toLowerCase();const cat=/damage|attack|projectile|fire rate|pierce|laser|weapon|crit/.test(nm)?'OFFENSE':/health|hp|shield|armor|heal|regen|revive|surviv/.test(nm)?'SURVIVAL':/speed|dash|move|range|magnet|vacuum|pickup/.test(nm)?'MOBILITY':/coin|xp|luck|loot|treasure|drop|reward/.test(nm)?'SCAVENGER':/boss|elite|enemy|spawn|freeze|burn|poison|slow|stun/.test(nm)?'CONTROL':'UTILITY';ctx.globalAlpha=1;ctx.fillStyle='#09121b';ctx.beginPath();ctx.roundRect(cx-62,y+91,124,22,11);ctx.fill();ctx.strokeStyle=glow;ctx.globalAlpha=.75;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1;ctx.fillStyle=glow;ctx.font='900 10px Arial';ctx.fillText(cat,cx,y+106);ctx.fillStyle=glow;ctx.font='bold 12px Arial';ctx.fillText(rank===10?'OMEGA • PEAK TIER':rank===9?'ETERNAL • ASCENDED':rank===8?'TRANSCENDENT • REALITY':rank===7?'CELESTIAL • COSMIC':rank===6?'DIVINE • RADIANT':rank===5?'MYTHIC • EXOTIC':rank===4?'LEGENDARY • ELITE':rank===3?'EPIC • ADVANCED':rank===2?'RARE • ENHANCED':rank===1?'UNCOMMON • IMPROVED':'COMMON • STANDARD',cx,y+242);
+   ctx.globalAlpha=.9;ctx.font='bold 11px Arial';ctx.fillText('RARITY MULTIPLIER ×'+rarityScale.toFixed(2),cx,y+258);
+   ctx.globalAlpha=.82;ctx.font='10px Arial';ctx.fillText('EFFECT VALUE IS RARITY-SCALED',cx,y+272);
     ctx.globalAlpha=.8;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+52,y+258);ctx.lineTo(x+w-52,y+258);ctx.stroke();
-    ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='11px Arial';ctx.fillText(cardRolling?'ROLLING… WAIT':'SELECT TO CLAIM',cx,y+274);
+    ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='900 11px Arial';ctx.fillText(cardRolling?'REVEAL IN PROGRESS…':'CLICK CARD TO SELECT',cx,y+286);
     ctx.restore();
   });
   ctx.textAlign='left';
@@ -3902,7 +3902,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.5.18';
-const CURRENT_UPDATE_INFO={title:'v4.5.19 — Reload Loop Conflict Fix',summary:'Restored Global Chat visibility by removing the temporary hide rule. Existing chat transport and saved data are preserved.',items:['Global Chat panel and toggle are visible again.','Removed the temporary CSS hide rule.','Existing chat connection, usernames, and role-tag code are preserved.','Login and saved progress are unchanged.']};
+const CURRENT_UPDATE_INFO={title:'v4.5.20 — Upgrade Choice Redesign',summary:'Restored Global Chat visibility by removing the temporary hide rule. Existing chat transport and saved data are preserved.',items:['Global Chat panel and toggle are visible again.','Removed the temporary CSS hide rule.','Existing chat connection, usernames, and role-tag code are preserved.','Login and saved progress are unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6369,7 +6369,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
- const BUILD='4.5.19',ACK='outlast_update_ack_v4519',POP='outlastMandatoryUpdateV4519';
+ const BUILD='4.5.20',ACK='outlast_update_ack_v4520',POP='outlastMandatoryUpdateV4520';
  function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
  function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
  function show(newer,remote){
@@ -6449,7 +6449,7 @@ function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(docu
 if(!document.body){setTimeout(show,100);return;}
 var shade=document.createElement('div');shade.id='outlastV454ReleasePopup';
 shade.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,6,10,.96);font-family:Arial,sans-serif;color:#fff;pointer-events:auto';
-shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV454Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV454Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.19</h2><p style="color:#dce8f2;line-height:1.5">Fixed conflicting legacy version markers that could make the page report an older build after loading. The update checker never reloads automatically; use browser refresh only when you choose. World Events remain available, and Omega difficulty remains 2.00× from level 60 onward.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Level 60–and every level after it–uses 2.00× difficulty scaling</li><li>Levels below 60 keep their existing progression</li><li>Player damage no longer decreases on its own</li></ul><button id="outlastV454Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
+shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV454Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV454Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.20</h2><p style="color:#dce8f2;line-height:1.5">Fixed conflicting legacy version markers that could make the page report an older build after loading. The update checker never reloads automatically; use browser refresh only when you choose. World Events remain available, and Omega difficulty remains 2.00× from level 60 onward.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Level 60–and every level after it–uses 2.00× difficulty scaling</li><li>Levels below 60 keep their existing progression</li><li>Player damage no longer decreases on its own</li></ul><button id="outlastV454Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
 document.body.appendChild(shade);document.getElementById('outlastV454Continue').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(_){}shade.remove();};
 }
 function ready(){setTimeout(show,500);setTimeout(show,1800);}
@@ -6621,3 +6621,4 @@ if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I fix OUTLAST refreshing in a loop?'}))helpArticles.unshift(['How do I fix OUTLAST refreshing in a loop?','Updates & Reliability','v4.5.19 disables legacy scripts that overwrote the current build version and repairs version parsing. The update checker does not reload or redirect automatically. If the entire browser tab continues to refresh after this release, check the browser console and Network panel to identify any external refresh source.']);
 }catch(e){console.error('OUTLAST final version lock failed',e);}
 })();</script>
+<script id="outlast-v4520-final-version-lock">(function(){'use strict';try{var V='4.5.20';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){var t='v'+V+' • SURVIVOR HUB';if(e.textContent!==t)e.textContent=t});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.20 — Upgrade Choice Redesign')===0;}))updates.unshift(['v4.5.20 — Upgrade Choice Redesign','Redesigned the level-up screen with a cleaner dark tactical interface, clearer selection prompts, category labels, improved contrast, and stronger card hierarchy. Upgrade application and saved progression remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I choose a level-up upgrade?'}))helpArticles.unshift(['How do I choose a level-up upgrade?','Upgrades','Level up to open three upgrade cards. Each card shows its rarity, a broad category, effect description, and rarity multiplier. Wait for the rarity reveal to finish, then click a card or press 1, 2, or 3. The card selection applies the existing upgrade effect.']);}catch(e){console.error('OUTLAST upgrade redesign version lock failed',e)}})();</script>

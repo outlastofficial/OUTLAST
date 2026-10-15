@@ -3,8 +3,8 @@
 const assert = require('node:assert/strict');
 
 const endpoints = [
-  { name: 'production', base: 'https://outlast-server.onrender.com' },
-  { name: 'tester', base: 'https://outlast-test-server.onrender.com' },
+  { name: 'production', base: 'https://outlast-server.onrender.com', service: 'outlast-server' },
+  { name: 'tester', base: 'https://outlast-test-server.onrender.com', service: 'outlast-test-server' },
 ];
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -62,16 +62,16 @@ async function requestJson(url, label) {
     console.log(endpoint.name + ' sanitized health response shape: ' + JSON.stringify(healthShape));
     const modernHealth = healthResult.body.status === 'online' && healthResult.body.game === 'OUTLAST';
     const deployedHealth = healthResult.body.ok === true &&
-      typeof healthResult.body.service === 'string' &&
+      healthResult.body.service === endpoint.service &&
       typeof healthResult.body.version === 'string';
     assert.equal(modernHealth || deployedHealth, true,
       endpoint.name + ' health endpoint returned an unexpected shape: ' + JSON.stringify(healthShape));
-    assert.equal(healthResult.body.game, 'OUTLAST', endpoint.name + ' must identify itself as OUTLAST');
 
     const chatResult = await requestJson(endpoint.base + '/api/chat?limit=1&chatSmoke=' + Date.now(), endpoint.name + ' chat history');
     assert.equal(chatResult.body.ok, true, endpoint.name + ' chat-history endpoint must return ok:true');
     assert.equal(Array.isArray(chatResult.body.messages), true, endpoint.name + ' chat history must be an array');
-    assert.ok(String(chatResult.body.serverVersion || '').length > 0, endpoint.name + ' chat API must include its server version');
+    const chatVersion = chatResult.body.serverVersion || chatResult.body.version;
+    assert.ok(String(chatVersion || '').length > 0, endpoint.name + ' chat API must include its server version');
 
     const allowOrigin = chatResult.response.headers.get('access-control-allow-origin');
     assert.ok(allowOrigin === '*' || allowOrigin === 'https://outlastofficial.github.io' || allowOrigin === 'https://outlast-test.onrender.com',

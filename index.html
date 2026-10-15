@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.22">
-<meta name="build-version" content="4.5.22">
-<title>OUTLAST v4.5.22</title>
+<meta name="outlast-build" content="4.5.23">
+<meta name="build-version" content="4.5.23">
+<title>OUTLAST v4.5.23</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3902,7 +3902,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.5.18';
-const CURRENT_UPDATE_INFO={title:'v4.5.22 — Bold Upgrade Screen Redesign',summary:'A stronger upgrade screen with taller cards, brighter rarity frames, large option numbers, more room for descriptions, and a clear footer. Existing upgrade effects and keyboard selection are preserved.',items:['Taller cards with brighter rarity-colored outlines and panels.','Larger option numbers and upgrade names.','More room for effect descriptions and rarity information.','Click targets match the redesigned card layout.']};
+const CURRENT_UPDATE_INFO={title:'v4.5.23 — High-Contrast Upgrade Cards',summary:'The actual level-up renderer now uses brighter rarity borders, a clear rarity bar, larger option numbers, and stronger text contrast.',items:['High-contrast rarity-colored borders and top accent bars.','Larger numbered choices and upgrade titles.','Higher-contrast descriptions while preserving existing effects.','Mouse clicks and 1/2/3 selection remain supported.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6436,7 +6436,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v432-upgrade-ui-hotfix.js?v=4.4.0"></script>
 <script src="outlast-v433-upgrade-choice-redesign.js?v=4.4.0"></script>
 <script src="outlast-v434-distinct-map-renderer.js?v=4.3.4"></script>
-<script src="outlast-v435-upgrade-gear-redesign.js?v=4.4.5-r1"></script>
+<script src="outlast-v435-upgrade-gear-redesign.js?v=4.5.23"></script>
 <script src="outlast-v440-skill-upgrade-menu-rework.js?v=4.4.0"></script>
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.5.3"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1"></script>
@@ -6621,4 +6621,4 @@ if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I fix OUTLAST refreshing in a loop?'}))helpArticles.unshift(['How do I fix OUTLAST refreshing in a loop?','Updates & Reliability','v4.5.19 disables legacy scripts that overwrote the current build version and repairs version parsing. The update checker does not reload or redirect automatically. If the entire browser tab continues to refresh after this release, check the browser console and Network panel to identify any external refresh source.']);
 }catch(e){console.error('OUTLAST final version lock failed',e);}
 })();</script>
-<script id="outlast-v4522-final-version-lock">(function(){'use strict';try{var V='4.5.22';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){var t='v'+V+' • SURVIVOR HUB';if(e.textContent!==t)e.textContent=t});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.22 — Bold Upgrade Screen Redesign')===0;}))updates.unshift(['v4.5.22 — Bold Upgrade Screen Redesign','Redesigned the upgrade cards with taller panels, brighter rarity colors, larger option numbers and names, and more room for descriptions and rarity details. Upgrade application and saved progression remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I choose a level-up upgrade?'}))helpArticles.unshift(['How do I choose a level-up upgrade?','Upgrades','Level up to open three taller upgrade cards. Each has a bright rarity frame, larger option number and title, category, effect description, and rarity multiplier. Wait for the reveal to finish, then click a card or press 1, 2, or 3. The existing upgrade effect is applied.']);}catch(e){console.error('OUTLAST upgrade redesign version lock failed',e)}})();</script>
+<script id="outlast-v4523-final-version-lock">(function(){'use strict';try{var V='4.5.23';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){var t='v'+V+' • SURVIVOR HUB';if(e.textContent!==t)e.textContent=t});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.23 — High-Contrast Upgrade Cards')===0;}))updates.unshift(['v4.5.23 — High-Contrast Upgrade Cards','Updated the active upgrade renderer itself with stronger rarity borders, a visible accent bar, larger option numbers, and improved text contrast. Existing upgrade effects and selection controls remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I choose a level-up upgrade?'}))helpArticles.unshift(['How do I choose a level-up upgrade?','Upgrades','Level up to open three high-contrast upgrade cards. Each has a bright rarity frame, accent bar, larger option number and title, effect description, and rarity multiplier. Wait for the reveal to finish, then click a card or press 1, 2, or 3. The existing upgrade effect is applied.']);}catch(e){console.error('OUTLAST upgrade redesign version lock failed',e)}})();</script>

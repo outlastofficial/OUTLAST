@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.2">
-<meta name="build-version" content="4.5.2">
-<title>OUTLAST v4.5.2</title>
+<meta name="outlast-build" content="4.5.3">
+<meta name="build-version" content="4.5.3">
+<title>OUTLAST v4.5.3</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3900,8 +3900,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.5.2';
-const CURRENT_UPDATE_INFO={title:'v4.5.2 — Damage Stability Fix',summary:'Player damage no longer decays just because a Siren enemy is alive. Damage stays at its current value unless a valid upgrade or explicitly temporary effect changes it.',items:['Removed the Siren ability that silently cut player damage by 3% every three seconds.','Damage upgrades continue to increase damage normally.','Start Run, login, and chat logic are unchanged.']};
+const CURRENT_UPDATE_VERSION='4.5.3';
+const CURRENT_UPDATE_INFO={title:'v4.5.3 — Upgrade Rarity Integrity Fix',summary:'Fixed a rarity-scale mismatch that made Celestial, Transcendent and Eternal integer-stat upgrades fall back to Common-sized effects. This release also retains the v4.5.2 damage-stability fix.',items:['Synchronized gameplay, menu, and upgrade-library rarity multipliers.','Pierce and projectile upgrades now increase through all 11 rarity tiers.','Preserved authoritative rarity-scaled descriptions.','The Siren damage-drain fix, Start Run, and login remain unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6124,7 +6124,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script src="outlast-v327101-all-upgrade-balance.js?v=3.29.1"></script>
 <script src="outlast-v327102-bouncing-bullets.js?v=3.29.1"></script>
 <script src="outlast-v327103-coin-farm-hardening.js?v=3.29.1"></script>
-<script src="outlast-v327108-rarity-card-authority.js?v=3.29.1"></script>
+<script src="outlast-v327108-rarity-card-authority.js?v=4.5.3"></script>
 
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
 <script id="outlast-upgrade-restoration-v3-30-12">
@@ -6368,7 +6368,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
-const BUILD='4.5.2',ACK='outlast_update_ack_v4.5.2',POP='outlastMandatoryUpdate';
+const BUILD='4.5.3',ACK='outlast_update_ack_v4.5.3',POP='outlastMandatoryUpdate';
 function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
 function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
 function show(newer,remote){
@@ -6434,7 +6434,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.37.5')}))updates.unshift(['v3.37.5 — Strict Rarity Ladder + Boss Spawn Reliability','Normalized older overlapping upgrades to shared tier baselines so Common is the floor and matching effects rise through every rarity. Fixed stale boss locks, kept a single boss active at a time, and set scheduled bosses to arrive after about 20 seconds initially and about 40 seconds after each defeat.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('How is each upgrade rarity stronger?')}))helpArticles.unshift(['How is each upgrade rarity stronger?','Upgrades & Rarities','Common is the baseline and weakest rarity. Matching upgrades increase in order: Uncommon, Rare, Epic, Legendary, Mythic, Divine, Celestial, Transcendent, Eternal, then Omega. Legacy upgrades share the same baseline stats as equivalent library upgrades; descriptions and applied effects use matching rarity scaling. Whole-number stats step up instead of tying due to rounding. Multipliers: Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, Omega 8×.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('Why are bosses not spawning consistently?')}))helpArticles.unshift(['Why are bosses not spawning consistently?','Bosses & Runs','The first scheduled boss appears after about 20 seconds. Later bosses wait for the current boss to be defeated, then appear after about 40 seconds. Only one boss can be active at once. If a boss entity disappears but its ID remains stuck, the stale lock is cleared so the scheduler can retry.']);
-})();</script><script src="outlast-v3360-focused-systems.js?v=4.4.0"></script><script src="outlast-v3370-game-systems.js?v=4.4.0"></script>
+})();</script><script src="outlast-v3360-focused-systems.js?v=4.4.0"></script><script src="outlast-v3370-game-systems.js?v=4.5.3"></script>
 <script src="outlast-v3376-interaction-fixes.js?v=3.37.6"></script>
 <script src="outlast-v3377-map-boss-rebuild.js?v=4.3.6"></script>
 <script src="outlast-v3378-expansion.js?v=4.4.0"></script>
@@ -6447,10 +6447,10 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v434-distinct-map-renderer.js?v=4.3.4"></script>
 <script src="outlast-v435-upgrade-gear-redesign.js?v=4.4.5-r1"></script>
 <script src="outlast-v440-skill-upgrade-menu-rework.js?v=4.4.0"></script>
-<script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.4.5-r1"></script>
+<script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.5.3"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1"></script>
 <script id="outlast-v445-final-version-marker">(function(){'use strict';
-var V='4.5.2';
+var V='4.5.3';
 function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
 function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
 function syncVersion(){try{
@@ -6460,7 +6460,7 @@ if(document.title!=='OUTLAST v'+V)document.title='OUTLAST v'+V;
 ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){setAttr(document.querySelector(sel),'content',V);});
 document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){setText(e,'v'+V);});
 document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • SURVIVOR HUB');});
-setText(document.getElementById('updatePopupVersion'),'v'+V+' — Damage Stability Fix');
+setText(document.getElementById('updatePopupVersion'),'v'+V+' — Upgrade Rarity Integrity Fix');
 }catch(e){console.error('OUTLAST version marker sync failed',e);}}
 function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
@@ -6468,13 +6468,13 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="outlast-v445-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles))helpArticles.unshift(['What changed in v4.5.0?','Updates & Reliability','The build marker and update checks are synchronized. The map picker now includes a search field to find maps faster. This is the first verified slice of the Survival Overhaul; additional gameplay systems still need implementation and testing. This is a reliability patch; the larger Survival Overhaul is still being implemented and is not represented as complete.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'});if(h)h[2]='The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.']);}</script>
 <script id="outlast-v451-release-popup-hotfix">(function(){'use strict';
-var KEY='outlast_v452_release_popup_ack';
-function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(document.getElementById('outlastV451ReleasePopup'))return;
+var KEY='outlast_v453_release_popup_ack';
+function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(document.getElementById('outlastV453ReleasePopup'))return;
 if(!document.body){setTimeout(show,100);return;}
-var shade=document.createElement('div');shade.id='outlastV451ReleasePopup';
+var shade=document.createElement('div');shade.id='outlastV453ReleasePopup';
 shade.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,6,10,.96);font-family:Arial,sans-serif;color:#fff;pointer-events:auto';
-shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV451Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV451Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.2</h2><p style="color:#dce8f2;line-height:1.5">Damage now stays stable instead of silently dropping over time.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Removed the Siren's permanent 3% damage drain every three seconds</li><li>Damage increases normally when you gain upgrades and power-ups</li><li>Existing gameplay and login logic remain unchanged</li></ul><button id="outlastV451Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
-document.body.appendChild(shade);document.getElementById('outlastV451Continue').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(_){}shade.remove();};
+shade.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="outlastV453Title" style="width:min(680px,94vw);max-height:86vh;overflow:auto;background:#101e2b;border:3px solid #58b4f5;border-radius:20px;padding:26px;box-sizing:border-box;box-shadow:0 30px 100px #000"><div style="font-size:12px;font-weight:900;letter-spacing:.1em;color:#8fd1ff">MANDATORY UPDATE</div><h2 id="outlastV453Title" style="margin:12px 0 8px;font-size:30px">OUTLAST v4.5.3</h2><p style="color:#dce8f2;line-height:1.5">Rarity-based upgrades now use the same scale for displayed numbers and applied effects; high-tier pierce and projectile upgrades no longer fall back to Common values.</p><ul style="padding-left:22px;line-height:1.6;color:#dce8f2"><li>Synchronized gameplay, menu and library rarity multipliers</li><li>Fixed strict pierce and projectile progression through every tier</li><li>Retained the Siren damage-stability fix</li></ul><button id="outlastV453Continue" style="margin-top:14px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer">CONTINUE</button></section>';
+document.body.appendChild(shade);document.getElementById('outlastV453Continue').onclick=function(){try{localStorage.setItem(KEY,'1')}catch(_){}shade.remove();};
 }
 function ready(){setTimeout(show,500);setTimeout(show,1800);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
@@ -6502,6 +6502,7 @@ else helpArticles.unshift(['Where did the Global Chat tags go?','Menus & Chat','
 }
 }catch(e){console.error('OUTLAST chat release notes failed',e);}})();</script>
 <script id="outlast-v452-damage-stability-release">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.2 — Damage Stability Fix')===0;}))updates.unshift(['v4.5.2 — Damage Stability Fix','Removed the Siren ability that permanently reduced player damage by 3% every three seconds. Player damage now stays stable unless an upgrade, power-up, or explicitly temporary effect changes it.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&/damage|power.?up/i.test(String(x[0]||''))&&/damage|power.?up/i.test(String(x[2]||''));});var note='Damage should not decrease on its own. Siren enemies no longer permanently reduce player damage. Damage changes only through upgrades, power-ups, and explicitly temporary effects.';if(h)h[2]=note;else helpArticles.unshift(['Why does my damage change?','Combat & Upgrades',note]);}}catch(e){console.error('OUTLAST damage stability release notes failed',e);}})();</script>
+<script id="outlast-v453-rarity-monotonicity-release">(function(){'use strict';var T=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'],E={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8};window.OUTLAST_RARITY_MONOTONICITY_AUDIT_V453=function(){var a=window.OUTLAST_UPGRADE_RARITY_SCALING37||{},b=window.OUTLAST_UPGRADE_RARITY_SCALING_V441||{},errors=[];T.forEach(function(t,i){if(Number(a[t])!==E[t])errors.push('game-scale:'+t);if(Number(b[t])!==E[t])errors.push('ui-scale:'+t);if(i&&!(E[t]>E[T[i-1]]))errors.push('non-monotonic:'+t)});return{version:'4.5.3',ok:!errors.length,errors:errors,multipliers:T.map(function(t){return{rarity:t,multiplier:E[t]}}),familyCards:Number(window.OUTLAST_UPGRADE_LIBRARY_COUNT||0)}};try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.3 — Upgrade Rarity Integrity Fix')===0;}))updates.unshift(['v4.5.3 — Upgrade Rarity Integrity Fix','Synchronized gameplay, menu and library rarity multipliers. Celestial, Transcendent and Eternal integer-stat upgrades no longer fall back to Common-sized effects. The release regression test exercises all 220 rarity-family cards.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles))helpArticles.unshift(['How is upgrade rarity scaling kept consistent?','Upgrades & Rarities','Every rarity uses a shared scale: Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 4.8×, Transcendent 5.6×, Eternal 6.8×, and Omega 8×. Integer stats like pierce and projectiles increase through all tiers. Use Progress → Upgrade & Boss Audit to inspect loaded upgrades.'])}catch(e){console.error('OUTLAST rarity guide failed',e)}})();</script>
 </body>
 </html>
 

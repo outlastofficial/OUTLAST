@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 function fmtPct(base,mult){return Number((Number(base)*Number(mult)).toFixed(1)).toString()}
-const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:4.8,Transcendent:5.6,Eternal:6.8,Omega:8});
+const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8});
 const TIER_ORDER=Object.keys(TIER_SCALE);
 function tierInteger(base,mult){
   let index=TIER_ORDER.findIndex(r=>Math.abs(TIER_SCALE[r]-Number(mult))<1e-6);
@@ -245,9 +245,9 @@ function install(){
   }
   if(typeof upgradeRarities!=='undefined'){
     upgradeRarities.Divine={mult:4,label:'DIVINE',weight:.9,glow:'#ffffff'};
-    upgradeRarities.Celestial={mult:4.8,label:'CELESTIAL',weight:.55,glow:'#7ce7ff'};
-    upgradeRarities.Transcendent={mult:5.6,label:'TRANSCENDENT',weight:.25,glow:'#ff9cf2'};
-    upgradeRarities.Eternal={mult:6.8,label:'ETERNAL',weight:.12,glow:'#b8a7ff'};
+    upgradeRarities.Celestial={mult:5,label:'CELESTIAL',weight:.55,glow:'#7ce7ff'};
+    upgradeRarities.Transcendent={mult:6,label:'TRANSCENDENT',weight:.25,glow:'#ff9cf2'};
+    upgradeRarities.Eternal={mult:7,label:'ETERNAL',weight:.12,glow:'#b8a7ff'};
     upgradeRarities.Omega={mult:8,label:'OMEGA',weight:.05,glow:'#ff6b6b'};
   }
   const pools=window.OUTLAST_UPGRADE_RARITY_POOLS||{};

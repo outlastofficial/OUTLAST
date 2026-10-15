@@ -1,7 +1,7 @@
 /* OUTLAST v4.3.6 — Upgrade text-fit + overlay spacing */
 (function(){
 'use strict';
-const VERSION='4.4.1';
+const VERSION='4.5.23';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const COLORS={Common:'#93a6b5',Uncommon:'#63d98b',Rare:'#61c7ff',Epic:'#bc8cff',Legendary:'#ffd66e',Mythic:'#ff70d7',Divine:'#fff0a0',Celestial:'#85ebff',Transcendent:'#b0a0ff',Eternal:'#ffd2ed',Omega:'#ff9f65'};
 const num=v=>Number.isFinite(Number(v))?Number(v):0, txt=v=>String(v==null?'':v).replace(/\s+/g,' ').trim();
@@ -39,31 +39,32 @@ function drawCard(c,u,i,t){
  let rolling=false;try{rolling=!!game.__upgradeRollActive&&rank>0}catch(_){}
  const pulse=.5+.5*Math.sin(t*2.3+i*.8),title=titleFor(u&&u[0],rarity),desc=txt(u&&u[1]);
  c.save();c.globalAlpha=1;c.shadowBlur=0;c.shadowColor='transparent';
- const bg=c.createLinearGradient(x,y,x+w,y+h);bg.addColorStop(0,'#172735');bg.addColorStop(.56,'#0b141d');bg.addColorStop(1,'#101925');
- c.fillStyle='#04090e';rr(c,x-5,y-5,w+10,h+10,21);c.fill();c.fillStyle=bg;rr(c,x,y,w,h,18);c.fill();
- c.globalAlpha=rank>=4?.76+.18*pulse:.98;c.strokeStyle=col;c.lineWidth=rank>=4?2.2+1.0*pulse:2.1;rr(c,x+1,y+1,w-2,h-2,17);c.stroke();c.globalAlpha=1;
- c.fillStyle=col;c.globalAlpha=.1;rr(c,x+4,y+4,w-8,50,14);c.fill();c.globalAlpha=1;
- const badgeText=(rolling?'✧ REVEALING ':'✦ ')+rarity.toUpperCase(),badgeW=Math.min(218,Math.max(130,c.measureText(badgeText).width+36));
- c.fillStyle=col;c.globalAlpha=.14;rr(c,cx-badgeW/2,y+13,badgeW,25,12);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.55;c.lineWidth=1;rr(c,cx-badgeW/2,y+13,badgeW,25,12);c.stroke();c.globalAlpha=1;
- c.textAlign='center';c.textBaseline='alphabetic';c.fillStyle=col;c.font='bold 12px Arial';c.fillText(badgeText,cx,y+30);
- c.fillStyle='#09121a';c.beginPath();c.arc(x+w-27,y+26,14,0,Math.PI*2);c.fill();c.strokeStyle=col;c.globalAlpha=.8;c.lineWidth=1.5;c.stroke();c.globalAlpha=1;c.fillStyle='#ffe16b';c.font='bold 16px Arial';c.fillText(String(i+1),x+w-27,y+31);
- const iy=y+78;c.fillStyle=col;c.globalAlpha=.11;c.beginPath();c.arc(cx,iy,30,0,Math.PI*2);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.65;c.lineWidth=1.4;c.beginPath();c.arc(cx,iy,30,0,Math.PI*2);c.stroke();c.globalAlpha=1;
- if(rolling){rollingFX(c,cx,iy,col,rank,t,i);c.fillStyle='#fff';c.font='bold 13px Arial';c.fillText('ROLLING…',cx,iy+4)}else{c.fillStyle=col;c.font='bold 32px "Segoe UI Symbol",Arial';c.fillText(glyphFor(title,desc),cx,iy+11)}
- c.fillStyle='#f4f7fb';let titleSize=17,tl=[];
- for(;titleSize>=12;titleSize--){c.font='bold '+titleSize+'px Arial';tl=wrap(c,title,w-42,3);if(tl.every(line=>c.measureText(line).width<=w-42)&&tl.length<=3&&!tl.some(line=>line.endsWith('…')))break}
+ const bg=c.createLinearGradient(x,y,x+w,y+h);bg.addColorStop(0,'#203849');bg.addColorStop(.48,'#0d1824');bg.addColorStop(1,'#111b2b');
+ c.shadowColor=col;c.shadowBlur=rank>=4?24:12;c.fillStyle='#02060b';rr(c,x-6,y-6,w+12,h+12,23);c.fill();c.shadowBlur=0;
+ c.fillStyle=bg;rr(c,x,y,w,h,18);c.fill();
+ c.globalAlpha=rank>=4?.92+.08*pulse:1;c.strokeStyle=col;c.lineWidth=rank>=4?3.5+1.2*pulse:3;rr(c,x+1,y+1,w-2,h-2,17);c.stroke();c.globalAlpha=1;
+ c.fillStyle=col;rr(c,x+8,y+7,w-16,5,3);c.fill();
+ c.fillStyle=col;c.globalAlpha=.16;rr(c,x+4,y+4,w-8,50,14);c.fill();c.globalAlpha=1;
+ const badgeText=(rolling?'✧ REVEALING ':'✦ ')+rarity.toUpperCase(),badgeW=Math.min(240,Math.max(148,c.measureText(badgeText).width+44));
+ c.fillStyle=col;c.globalAlpha=.2;rr(c,cx-badgeW/2,y+13,badgeW,29,14);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.85;c.lineWidth=1.5;rr(c,cx-badgeW/2,y+13,badgeW,29,14);c.stroke();c.globalAlpha=1;
+ c.textAlign='center';c.textBaseline='alphabetic';c.fillStyle=col;c.font='900 13px Arial';c.fillText(badgeText,cx,y+32);
+ c.fillStyle=col;c.globalAlpha=.22;c.beginPath();c.arc(x+28,y+28,18,0,Math.PI*2);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.lineWidth=2.2;c.beginPath();c.arc(x+28,y+28,18,0,Math.PI*2);c.stroke();c.fillStyle='#ffffff';c.font='900 21px Arial';c.fillText(String(i+1),x+28,y+35);
+ const iy=y+78;c.fillStyle=col;c.globalAlpha=.18;c.beginPath();c.arc(cx,iy,32,0,Math.PI*2);c.fill();c.globalAlpha=1;c.strokeStyle=col;c.globalAlpha=.9;c.lineWidth=2;c.beginPath();c.arc(cx,iy,32,0,Math.PI*2);c.stroke();c.globalAlpha=1;
+ if(rolling){rollingFX(c,cx,iy,col,rank,t,i);c.fillStyle='#fff';c.font='bold 13px Arial';c.fillText('ROLLING…',cx,iy+4)}else{c.fillStyle=col;c.font='bold 34px "Segoe UI Symbol",Arial';c.fillText(glyphFor(title,desc),cx,iy+11)}
+ c.fillStyle='#ffffff';let titleSize=20,tl=[];
+ for(;titleSize>=12;titleSize--){c.font='900 '+titleSize+'px Arial';tl=wrap(c,title,w-42,3);if(tl.every(line=>c.measureText(line).width<=w-42)&&tl.length<=3&&!tl.some(line=>line.endsWith('…')))break}
  const titleStep=tl.length>=3?14:16,titleY=tl.length===1?y+132:tl.length===2?y+124:y+120;tl.forEach((line,j)=>c.fillText(line,cx,titleY+j*titleStep));
  const descTop=y+(tl.length>=3?164:tl.length===2?158:153);
- c.save();c.beginPath();c.rect(x+16,y+146,w-32,67);c.clip();c.fillStyle='#cfdae5';c.font='13px Arial';
+ c.save();c.beginPath();c.rect(x+16,y+146,w-32,67);c.clip();c.fillStyle='#f0f5fb';c.font='bold 14px Arial';
  const dl=wrap(c,desc,w-44,3);dl.forEach((line,j)=>c.fillText(line,cx,descTop+j*15));c.restore();
- c.globalAlpha=.38;c.strokeStyle=col;c.lineWidth=1;c.beginPath();c.moveTo(x+22,y+221);c.lineTo(x+w-22,y+221);c.stroke();c.globalAlpha=1;
- c.fillStyle=col;c.font='bold 11px Arial';c.fillText(rarity==='Common'?'BASE TIER':rarity.toUpperCase()+' TIER',cx,y+239);
- c.fillStyle='#b9c8d5';c.font='11px Arial';c.fillText('RARITY MULTIPLIER  ×'+mult.toFixed(2),cx,y+256);
- c.fillStyle=rolling?'#f4d67a':'#8fa5b6';c.font='bold 10px Arial';c.fillText(rolling?'WAIT FOR REVEAL':'PRESS '+(i+1)+'  OR  CLICK CARD',cx,y+278);
+ c.globalAlpha=.7;c.strokeStyle=col;c.lineWidth=1.4;c.beginPath();c.moveTo(x+22,y+221);c.lineTo(x+w-22,y+221);c.stroke();c.globalAlpha=1;
+ c.fillStyle=col;c.font='900 12px Arial';c.fillText(rarity==='Common'?'BASE TIER':rarity.toUpperCase()+' TIER',cx,y+239);
+ c.fillStyle='#e2eaf2';c.font='bold 12px Arial';c.fillText('RARITY MULTIPLIER  ×'+mult.toFixed(2),cx,y+256);
+ c.fillStyle=rolling?'#f4d67a':'#ffffff';c.font='900 10px Arial';c.fillText(rolling?'WAIT FOR REVEAL':'PRESS '+(i+1)+'  OR  CLICK CARD',cx,y+278);
  c.restore();
 }
-
 function redraw(c){if(!active())return;let choices;try{choices=game.upgradeChoices}catch(_){return}if(!Array.isArray(choices)||choices.length!==3)return;const t=(typeof performance!=='undefined'&&performance.now?performance.now():Date.now())/1000;c.save();c.globalAlpha=1;c.textAlign='center';choices.forEach((u,i)=>drawCard(c,u,i,t));c.restore();c.textAlign='left'}
-function notes(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.3.6')))updates.unshift(['v4.3.6 — Upgrade Text Fit Fix','Fixed cut-off upgrade text: names support measured wrapping across up to three lines, long words are split to fit card width, descriptions stay in their own clipped box, and the footer has extra bottom clearance. The October event, threat and AFK badges are independently detected and hidden while choosing. Rarity animations and 1/2/3 selection remain.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('Why were some upgrade words cut off?')))helpArticles.unshift(['Why were some upgrade words cut off?','Upgrades & Rarities','Upgrade names use measured wrapping and can span up to three lines. Long words are split to fit the card width, descriptions are clipped to a dedicated text area, and the footer has extra spacing. The event, threat and AFK overlays hide while choosing. Click a card or press 1, 2, or 3.'])}catch(_){}}
+function notes(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>Array.isArray(x)&&String(x[0]).includes('v4.5.23 — High-Contrast Upgrade Cards')))updates.unshift(['v4.5.23 — High-Contrast Upgrade Cards','Fixed cut-off upgrade text: names support measured wrapping across up to three lines, long words are split to fit card width, descriptions stay in their own clipped box, and the footer has extra bottom clearance. The October event, threat and AFK badges are independently detected and hidden while choosing. Rarity animations and 1/2/3 selection remain.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]).includes('Why were some upgrade words cut off?')))helpArticles.unshift(['How are the new upgrade cards different?','Upgrades & Rarities','Upgrade cards now use brighter rarity borders, a clear color bar, larger option numbers, and stronger text contrast. Click a card or press 1, 2, or 3.'])}catch(_){}}
 function version(){const current=String(window.OUTLAST_BUILD||document.querySelector('meta[name="outlast-build"]')?.content||VERSION),cur=current.split('.').map(x=>Number(x)||0),next=VERSION.split('.').map(x=>Number(x)||0);for(let i=0;i<Math.max(cur.length,next.length);i++){if((cur[i]||0)>(next[i]||0))break;if((cur[i]||0)<(next[i]||0)){window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;document.title='OUTLAST v'+VERSION;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(q=>{const e=document.querySelector(q);if(e)e.content=VERSION});break}}const shown=String(window.OUTLAST_BUILD||VERSION);document.querySelectorAll('.menu-chip').forEach(e=>{if(/SURVIVOR HUB/i.test(e.textContent||''))e.textContent='v'+shown+' • SURVIVOR HUB'})}
 
 function gearEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}

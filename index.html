@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.20">
-<meta name="build-version" content="4.5.20">
-<title>OUTLAST v4.5.20</title>
+<meta name="outlast-build" content="4.5.21">
+<meta name="build-version" content="4.5.21">
+<title>OUTLAST v4.5.21</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -1177,7 +1177,7 @@ c.addEventListener('click',e=>{
   if(game.upgradeOpen){
     const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
     const x=(e.clientX-r.left)*sx,y=(e.clientY-r.top)*sy;
-    if(y>=174&&y<=465){for(let i=0;i<3;i++){const bx=45+i*350;if(x>=bx&&x<=bx+325){chooseUpgrade(i);break}}}
+    if(y>=174&&y<=465){const w=Math.min(325,Math.max(180,(c.width-96)/3)),gap=(c.width-w*3)/4;for(let i=0;i<3;i++){const bx=gap+i*(w+gap);if(x>=bx&&x<=bx+w){chooseUpgrade(i);break}}}
   }
 });
 
@@ -2940,7 +2940,7 @@ const p=game.player;if(p){
   ctx.font='bold 17px Arial';ctx.fillStyle='#dbe9f5';ctx.fillText('Select one upgrade to continue • Press 1, 2, or 3',CW/2,108);
   ctx.font='14px Arial';ctx.fillStyle='#a7bfd0';ctx.fillText('Upgrade Luck '+Math.floor(game.player?.upgradeLuck||0)+' • Loot Luck '+Math.floor(game.player?.lootLuck||0)+' • Treasure Luck '+Math.floor(game.player?.treasureLuck||0)+' • '+((window.OUTLAST_UPGRADE_LIBRARY_COUNT||298))+' upgrade choices',CW/2,140);
   game.upgradeChoices.forEach((u,i)=>{
-    const x=45+i*350,y=174,w=325,h=291,cx=x+w/2,cy=y+h/2;
+    const w=Math.min(325,Math.max(180,(CW-96)/3)),gap=(CW-w*3)/4,x=gap+i*(w+gap),y=174,h=291,cx=x+w/2,cy=y+h/2;
     const q=fx[u[3]]||fx.Common,glow=q.c,rank=q.r,rarityScale=Number(upgradeRarities[u[3]]?.mult||1);
     const cardRolling=rank>=1&&rollProgress<1;
     const eased=1-Math.pow(1-Math.min(1,rollProgress),3);
@@ -2978,7 +2978,7 @@ const p=game.player;if(p){
       else if(rank===10){for(let z=0;z<7;z++){const a=now*3+z*Math.PI*2/7;ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*58,cy+Math.sin(a)*58);ctx.lineTo(cx+Math.cos(a+.12)*82,cy+Math.sin(a+.12)*82);ctx.lineTo(cx+Math.cos(a+.24)*60,cy+Math.sin(a+.24)*60);ctx.stroke();}}
       ctx.restore();
     }
-    const badgeW=rank>=4?185:rank>=2?155:138;ctx.fillStyle=glow;ctx.globalAlpha=.16;ctx.beginPath();ctx.roundRect(cx-badgeW/2,y+18,badgeW,30,15);ctx.fill();
+    const badgeW=Math.min(w-24,rank>=4?185:rank>=2?155:138);ctx.fillStyle=glow;ctx.globalAlpha=.16;ctx.beginPath();ctx.roundRect(cx-badgeW/2,y+18,badgeW,30,15);ctx.fill();
     ctx.globalAlpha=1;ctx.fillStyle=glow;ctx.font='bold 15px Arial';ctx.fillText((rank===5?'✦ ':rank===4?'★ ':rank>=3?'◆ ':'')+(cardRolling?'RISING '+u[3].toUpperCase():u[3].toUpperCase()),cx,y+39);
     ctx.fillStyle='#ffe56d';ctx.font='900 25px Arial';ctx.fillText('0'+String(i+1),cx,y+78);
     if(cardRolling){
@@ -2994,14 +2994,14 @@ const p=game.player;if(p){
     }else{
       ctx.fillStyle='#fff';ctx.font='900 20px Arial';ctx.fillText(String(u[0]).toUpperCase(),cx,y+128);
       const words=String(u[1]).split(' '),lines=[];let line='';ctx.font='16px Arial';
-      for(const word of words){const test=(line+' '+word).trim();if(line&&ctx.measureText(test).width>275){lines.push(line);line=word}else line=test}if(line)lines.push(line);
+      for(const word of words){const test=(line+' '+word).trim();if(line&&ctx.measureText(test).width>Math.min(275,w-40)){lines.push(line);line=word}else line=test}if(line)lines.push(line);
       ctx.fillStyle='#d5e2ed';lines.slice(0,3).forEach((txt,j)=>ctx.fillText(txt,cx,y+158+j*22));
     }
-    const nm=(String(u[0])+' '+String(u[1])).toLowerCase();const cat=/damage|attack|projectile|fire rate|pierce|laser|weapon|crit/.test(nm)?'OFFENSE':/health|hp|shield|armor|heal|regen|revive|surviv/.test(nm)?'SURVIVAL':/speed|dash|move|range|magnet|vacuum|pickup/.test(nm)?'MOBILITY':/coin|xp|luck|loot|treasure|drop|reward/.test(nm)?'SCAVENGER':/boss|elite|enemy|spawn|freeze|burn|poison|slow|stun/.test(nm)?'CONTROL':'UTILITY';ctx.globalAlpha=1;ctx.fillStyle='#09121b';ctx.beginPath();ctx.roundRect(cx-62,y+91,124,22,11);ctx.fill();ctx.strokeStyle=glow;ctx.globalAlpha=.75;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1;ctx.fillStyle=glow;ctx.font='900 10px Arial';ctx.fillText(cat,cx,y+106);ctx.fillStyle=glow;ctx.font='bold 12px Arial';ctx.fillText(rank===10?'OMEGA • PEAK TIER':rank===9?'ETERNAL • ASCENDED':rank===8?'TRANSCENDENT • REALITY':rank===7?'CELESTIAL • COSMIC':rank===6?'DIVINE • RADIANT':rank===5?'MYTHIC • EXOTIC':rank===4?'LEGENDARY • ELITE':rank===3?'EPIC • ADVANCED':rank===2?'RARE • ENHANCED':rank===1?'UNCOMMON • IMPROVED':'COMMON • STANDARD',cx,y+242);
-   ctx.globalAlpha=.9;ctx.font='bold 11px Arial';ctx.fillText('RARITY MULTIPLIER ×'+rarityScale.toFixed(2),cx,y+258);
-   ctx.globalAlpha=.82;ctx.font='10px Arial';ctx.fillText('EFFECT VALUE IS RARITY-SCALED',cx,y+272);
-    ctx.globalAlpha=.8;ctx.strokeStyle=glow;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+52,y+258);ctx.lineTo(x+w-52,y+258);ctx.stroke();
-    ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='900 11px Arial';ctx.fillText(cardRolling?'REVEAL IN PROGRESS…':'CLICK CARD TO SELECT',cx,y+286);
+    const nm=(String(u[0])+' '+String(u[1])).toLowerCase();const cat=/damage|attack|projectile|fire rate|pierce|laser|weapon|crit/.test(nm)?'OFFENSE':/health|hp|shield|armor|heal|regen|revive|surviv/.test(nm)?'SURVIVAL':/speed|dash|move|range|magnet|vacuum|pickup/.test(nm)?'MOBILITY':/coin|xp|luck|loot|treasure|drop|reward/.test(nm)?'SCAVENGER':/boss|elite|enemy|spawn|freeze|burn|poison|slow|stun/.test(nm)?'CONTROL':'UTILITY';ctx.globalAlpha=1;ctx.fillStyle='#09121b';ctx.beginPath();ctx.roundRect(cx-62,y+91,124,22,11);ctx.fill();ctx.strokeStyle=glow;ctx.globalAlpha=.75;ctx.lineWidth=1;ctx.stroke();ctx.globalAlpha=1;ctx.fillStyle=glow;ctx.font='900 10px Arial';ctx.fillText(cat,cx,y+106);ctx.fillStyle=glow;ctx.font='bold 12px Arial';ctx.fillText(rank===10?'OMEGA • PEAK TIER':rank===9?'ETERNAL • ASCENDED':rank===8?'TRANSCENDENT • REALITY':rank===7?'CELESTIAL • COSMIC':rank===6?'DIVINE • RADIANT':rank===5?'MYTHIC • EXOTIC':rank===4?'LEGENDARY • ELITE':rank===3?'EPIC • ADVANCED':rank===2?'RARE • ENHANCED':rank===1?'UNCOMMON • IMPROVED':'COMMON • STANDARD',cx,y+230);
+   ctx.globalAlpha=.9;ctx.font='bold 11px Arial';ctx.fillText('RARITY MULTIPLIER ×'+rarityScale.toFixed(2),cx,y+249);
+   ctx.globalAlpha=.86;ctx.font='10px Arial';ctx.fillText('RARITY-SCALED EFFECT',cx,y+265);
+    ctx.globalAlpha=.8;ctx.strokeStyle=glow;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+24,y+257);ctx.lineTo(x+w-24,y+257);ctx.stroke();
+    ctx.globalAlpha=1;ctx.fillStyle=cardRolling?'#ffd84d':'#8ea4b5';ctx.font='900 10px Arial';ctx.fillText(cardRolling?'REVEAL IN PROGRESS…':'SELECT • '+(i+1),cx,y+282);
     ctx.restore();
   });
   ctx.textAlign='left';
@@ -3902,7 +3902,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.5.18';
-const CURRENT_UPDATE_INFO={title:'v4.5.20 — Upgrade Choice Redesign',summary:'Restored Global Chat visibility by removing the temporary hide rule. Existing chat transport and saved data are preserved.',items:['Global Chat panel and toggle are visible again.','Removed the temporary CSS hide rule.','Existing chat connection, usernames, and role-tag code are preserved.','Login and saved progress are unchanged.']};
+const CURRENT_UPDATE_INFO={title:'v4.5.21 — Upgrade Card Rework',summary:'Reworked the level-up cards for cleaner spacing, readable rarity details, and responsive placement while preserving upgrade effects and selection controls.',items:['Three upgrade cards are centered using the actual game canvas width.','Card rarity and effect details have clearer spacing.','Click targets follow the responsive card positions.','Keyboard selection and saved progress remain unchanged.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6621,4 +6621,4 @@ if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I fix OUTLAST refreshing in a loop?'}))helpArticles.unshift(['How do I fix OUTLAST refreshing in a loop?','Updates & Reliability','v4.5.19 disables legacy scripts that overwrote the current build version and repairs version parsing. The update checker does not reload or redirect automatically. If the entire browser tab continues to refresh after this release, check the browser console and Network panel to identify any external refresh source.']);
 }catch(e){console.error('OUTLAST final version lock failed',e);}
 })();</script>
-<script id="outlast-v4520-final-version-lock">(function(){'use strict';try{var V='4.5.20';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){var t='v'+V+' • SURVIVOR HUB';if(e.textContent!==t)e.textContent=t});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.20 — Upgrade Choice Redesign')===0;}))updates.unshift(['v4.5.20 — Upgrade Choice Redesign','Redesigned the level-up screen with a cleaner dark tactical interface, clearer selection prompts, category labels, improved contrast, and stronger card hierarchy. Upgrade application and saved progression remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I choose a level-up upgrade?'}))helpArticles.unshift(['How do I choose a level-up upgrade?','Upgrades','Level up to open three upgrade cards. Each card shows its rarity, a broad category, effect description, and rarity multiplier. Wait for the rarity reveal to finish, then click a card or press 1, 2, or 3. The card selection applies the existing upgrade effect.']);}catch(e){console.error('OUTLAST upgrade redesign version lock failed',e)}})();</script>
+<script id="outlast-v4521-final-version-lock">(function(){'use strict';try{var V='4.5.21';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){var t='v'+V+' • SURVIVOR HUB';if(e.textContent!==t)e.textContent=t});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.21 — Upgrade Card Rework')===0;}))updates.unshift(['v4.5.21 — Upgrade Card Rework','Reworked upgrade cards with responsive centering, clearer rarity/effect spacing, and click zones aligned to the displayed cards. Upgrade application and saved progression remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I choose a level-up upgrade?'}))helpArticles.unshift(['How do I choose a level-up upgrade?','Upgrades','Level up to open three centered upgrade cards. Each shows its rarity, category, effect description, and rarity multiplier. Wait for the rarity reveal to finish, then click the matching card or press 1, 2, or 3. The card selection applies the existing upgrade effect.']);}catch(e){console.error('OUTLAST upgrade redesign version lock failed',e)}})();</script>

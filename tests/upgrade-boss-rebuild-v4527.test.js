@@ -1,8 +1,9 @@
-const fs=require('fs'),assert=require('assert'),path=require('path');
+const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..');
 const library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
 const boss=fs.readFileSync(path.join(root,'outlast-v4527-upgrade-boss-rebuild.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+new vm.Script(boss,{filename:'outlast-v4527-upgrade-boss-rebuild.js'});
 assert(library.includes("const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8})"),'canonical rarity ladder must be present');
 assert(library.includes("pierce:[1,1,2,2,3,4,5,6,7,8,8]"),'pierce steps should scale gradually and cap at eight');
 assert(library.includes("projectiles:[1,1,1,2,2,3,3,4,4,5,5]"),'projectile steps should scale gradually and cap at five');

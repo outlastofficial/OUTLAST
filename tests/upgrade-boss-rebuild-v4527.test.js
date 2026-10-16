@@ -1,0 +1,18 @@
+const fs=require('fs'),assert=require('assert'),path=require('path');
+const root=path.join(__dirname,'..');
+const library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
+const boss=fs.readFileSync(path.join(root,'outlast-v4527-upgrade-boss-rebuild.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+assert(library.includes("const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8})"),'canonical rarity ladder must be present');
+assert(library.includes("pierce:[1,1,2,2,3,4,5,6,7,8,8]"),'pierce steps should scale gradually and cap at eight');
+assert(library.includes("projectiles:[1,1,1,2,2,3,3,4,4,5,5]"),'projectile steps should scale gradually and cap at five');
+assert((library.match(/\{name:"(?:Common|Uncommon|Rare|Epic|Legendary|Mythic|Divine|Celestial|Transcendent|Eternal|Omega) /g)||[]).length===220,'all 220 tier-family upgrade cards must remain');
+const names=[...boss.matchAll(/name:'([^']+)'/g)].map(m=>m[1]).filter(n=>['Grave Titan','Plague Doctor','Mutant Brute','Undead Commander','The Abomination','Storm Colossus','Void Tyrant','Eternal Warden'].includes(n));
+assert.strictEqual(new Set(names).size,8,'all eight boss profiles must be unique');
+for(const name of ['Grave Titan','Plague Doctor','Mutant Brute','Undead Commander','The Abomination','Storm Colossus','Void Tyrant','Eternal Warden'])assert(boss.includes("name:'"+name+"'"),'missing boss profile '+name);
+assert(boss.includes("Date.now()-state.lastDefeatAt>=30000"),'later boss schedule must be tied to previous boss defeat');
+assert(boss.includes("window.OUTLAST_FORCE_BOSS_SPAWN('v4.5.27-unique-boss-safety-net')"),'failed normal spawns must use the safety-net spawn');
+assert(boss.includes('state.retries++'),'failed spawns must be counted and retried');
+assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.27'),'new boss/upgrade system must be loaded');
+assert(html.includes('4.5.27'),'release version must be present in index');
+console.log('OUTLAST v4.5.27 source regression passed: 220 tier cards, gradual capped discrete bonuses, eight unique boss profiles, and post-defeat spawn retries.');

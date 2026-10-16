@@ -1,7 +1,7 @@
-/* OUTLAST v4.4.1 — Skills, Rarity, Balance and UI Reliability */
+/* OUTLAST v4.6.0 — Rarity-aligned Upgrade Rebalance and UI Reliability */
 (function(){
 'use strict';
-const VERSION='4.5.26';
+const VERSION='4.6.0';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const MULT={Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8};
 const WEIGHTS={Common:52,Uncommon:25,Rare:13,Epic:6.5,Legendary:2.5,Mythic:.5,Divine:.22,Celestial:.12,Transcendent:.065,Eternal:.035,Omega:.018};

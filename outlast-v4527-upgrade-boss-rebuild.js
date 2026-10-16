@@ -33,7 +33,6 @@ function tagBoss(g,b){
  }
  if(Number.isFinite(Number(b.speed))&&Number(b.speed)>0&&!b.__outlastBossProfileSpeedApplied){b.speed*=profile.speed;b.__outlastBossProfileSpeedApplied=true}
  if(Number.isFinite(Number(b.r))&&Number(b.r)>0)b.r=Math.max(34,Math.min(54,Number(b.r)+(profile.name==='Eternal Warden'?5:profile.name==='Plague Doctor'?-5:0)));
- if(defs[profile.name])g.raidBoss=profile.name;
  state.spawns++;
  window.OUTLAST_LAST_BOSS={name:profile.name,title:profile.title,ability:profile.ability,hp:num(b.hp),max:num(b.max),spawnNumber:state.spawns};
  return b;

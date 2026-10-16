@@ -1,7 +1,8 @@
-const fs=require('fs'),assert=require('assert'),path=require('path');
+const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..');
 const boss=fs.readFileSync(path.join(root,'outlast-v4527-upgrade-boss-rebuild.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+new vm.Script(boss,{filename:'outlast-v4527-upgrade-boss-rebuild.js'});
 for(const name of ['Grave Titan','Plague Doctor','Mutant Brute','Undead Commander','The Abomination','Storm Colossus','Void Tyrant','Eternal Warden'])assert(boss.includes("name:'"+name+"'"),'missing boss '+name);
 for(const behavior of ['runUniqueBossAbility','case \'Grave Titan\':','case \'Plague Doctor\':','case \'Mutant Brute\':','case \'Undead Commander\':','case \'The Abomination\':','case \'Storm Colossus\':','case \'Void Tyrant\':','case \'Eternal Warden\':'])assert(boss.includes(behavior),'boss needs a real unique mechanic: '+behavior);
 assert(boss.includes('BOSS_INTERMISSION_MS=30000'),'must enforce 30-second boss intermission');

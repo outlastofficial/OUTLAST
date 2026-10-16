@@ -43,7 +43,7 @@ function upgradeBase37(name,desc,apply,rarity){
  const mult=SCALE[rarity]||1,pct=(base,m)=>Number((Number(base)*Number(m)).toFixed(1)).toString(),player=()=>G()?.player;
  // Align overlapping legacy cards to the same baseline as the tier-family library.
  const nv=b=>Number((Number(b)*mult).toFixed(2)).toString(),np=b=>pct(b,mult),ni=b=>scaledInteger37(b,mult),p=()=>G()?.player;
- const add=(k,v)=>{const q=p();if(q)q[k]=(Number(q[k])||0)+v;},ratio=(k,b)=>{const q=p();if(q)q[k]=(Number(q[k])||1)*(1+b*mult/100);};
+ const add=(k,v)=>{const q=p();if(q)q[k]=(Number(q[k])||0)+v;},ratio=(k,b)=>{const q=p();if(q){const current=Number(q[k])||1,delta=b*mult/100;q[k]=['coinMult','xpBonus','bossMult','ultDamage','healMult'].includes(k)?current+delta:current*(1+delta);}};
  const faster=b=>{const q=p();if(q)q.fireRate=Math.max(.045,(Number(q.fireRate)||.45)*(1-b*mult/100));},heal=h=>{const q=p();if(q){q.max=(Number(q.max)||0)+h;q.hp=Math.min(q.max,(Number(q.hp)||0)+h);}};
  const shield=s=>{if(typeof outlastGrantTempShield==='function')return outlastGrantTempShield(s);const q=p();if(q)q.shield=Math.max(Number(q.shield)||0,s);};
  const luck=()=>{const q=p();if(q)q.luck=(Number(q.upgradeLuck)||0)+(Number(q.lootLuck)||0)+(Number(q.treasureLuck)||0);};
@@ -74,7 +74,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Stun Rounds'){const chance=Math.min(.60,.05*mult),duration=.75+.25*mult;return {desc:pct(Math.min(60,5*mult),1)+'% chance to stun for '+Number(duration.toFixed(2))+'s',apply:()=>{const q=p();if(q){q.stun=true;q.stunChance=chance;q.stunDuration=duration;}}};}
  if(name==='Double Tap'){const chance=Math.min(.40,.04*mult);return {desc:'+'+pct(Math.min(40,4*mult),1)+'% chance to fire an extra shot',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=chance;}}};}
  if(name==='Lucky Barrage'){const chance=.03*mult;return {desc:'+'+np(3)+'% extra-shot chance',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=Math.min(.45,(Number(q.doubleTapChance)||0)+chance);q.doubleTapBonus=(Number(q.doubleTapBonus)||0)+chance;}}};}
- if(name==='Treasure Radar'){const dropMultiplier=1+.25*mult;return {desc:'+'+np(25)+'% power-up drop chance',apply:()=>{const q=p();if(q){q.treasure=true;q.treasureDropMultiplier=dropMultiplier;}}};}
+ if(name==='Treasure Radar'){return {desc:'+'+np(25)+'% power-up drop chance',apply:()=>{const q=p();if(q){q.treasure=true;q.treasureDropMultiplier=(Number(q.treasureDropMultiplier)||1)+.25*mult;}}};}
  if(name==='Shockwave'){const rank=Math.max(0,TIER_ORDER.indexOf(rarity)),every=Math.max(2,12-rank),radius=130*Math.sqrt(mult),dmg=.45*mult;return {desc:'Every '+every+' kills, blast '+Math.round(radius)+' radius for '+np(45)+'% damage',apply:()=>{const q=p();if(q){q.shockwave=true;q.shockwaveEvery=every;q.shockwaveRadius=radius;q.shockwaveDamageMultiplier=dmg;}}};}
  if(name==='Frost Aura'||name==='Cryo Burst')return {desc:'+'+ni(12)+' aura radius, +'+np(5)+'% slow strength',apply:()=>{const q=p();if(q){q.frost=true;q.frostAuraRadius=(Number(q.frostAuraRadius)||130)+ni(12);q.frostSlow=(Number(q.frostSlow)||.5)+.05*mult;q.frostAuraDps=(Number(q.frostAuraDps)||.12)+.04*mult;}}};
  if(name==='Cryo Core')return {desc:'+'+np(6)+'% enemy-slowing aura strength',apply:()=>{const q=p();if(q){q.frost=true;q.slowPower=(Number(q.slowPower)||1)+.06*mult;}}};
@@ -99,7 +99,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Shield Nova')return {desc:'Gain '+nv(.65)+'s shield and +'+np(8)+'% shield efficiency',apply:()=>{shield(.65*mult);const q=p(),g=G();if(q)q.shieldEfficiency=(Number(q.shieldEfficiency)||1)*(1+.08*mult);if(g&&Array.isArray(g.effects)&&q)g.effects.push({x:q.x,y:q.y,t:.45,r:145*Math.sqrt(mult),color:'#72a8ff',fill:false});}};
  if(name==='Overclock')return {desc:'+'+np(2.2)+'% attack speed and +'+nv(3)+' damage',apply:()=>{faster(2.2);add('damage',3*mult);}};
  if(name==='Last Stand')return {desc:'+'+np(10)+'% damage below 25% HP',apply:()=>{const q=p();if(q){q.lastStand=true;q.lastStandBonus=(Number(q.lastStandBonus)||0)+.1*mult;}}};
- if(name==='Treasure Engine')return {desc:'+'+nv(2)+' Treasure Luck and +'+np(25)+'% power-up drop chance',apply:()=>{const q=p();if(q){q.treasureLuck=(Number(q.treasureLuck)||0)+2*mult;q.treasure=true;q.treasureDropMultiplier=1+.25*mult;luck();}}};
+ if(name==='Treasure Engine')return {desc:'+'+nv(2)+' Treasure Luck and +'+np(25)+'% power-up drop chance',apply:()=>{const q=p();if(q){q.treasureLuck=(Number(q.treasureLuck)||0)+2*mult;q.treasure=true;q.treasureDropMultiplier=(Number(q.treasureDropMultiplier)||1)+.25*mult;luck();}}};
  if(name==='Deadly Precision')return {desc:'+'+np(1)+'% crit chance and +'+np(2)+'% crit damage',apply:()=>{const q=p();if(q){q.crit=Math.min(.99,(Number(q.crit)||0)+.01*mult);q.critMult=(Number(q.critMult)||1.8)+.02*mult;}}};
  if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledDiscrete37('pierce',mult);return {desc:'+'+amount+(name==='Piercing'?' pierce':' projectile pierce'),apply:function(){const p=player();if(p)p.pierce=(Number(p.pierce)||0)+amount;}};}
  if(name==='Multi-Shot'||name==='Ammo Surge'){const amount=scaledDiscrete37('projectiles',mult);return {desc:'+'+amount+(name==='Multi-Shot'?' projectiles':' extra projectiles'),apply:function(){const p=player();if(p)p.multiShot=(Number(p.multiShot)||0)+amount;}};}

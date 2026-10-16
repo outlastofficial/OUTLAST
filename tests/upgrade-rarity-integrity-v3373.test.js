@@ -24,6 +24,9 @@ assert.strictEqual(apply('Multi-Shot','Omega').p.multiShot,5,'Omega Multi-Shot i
 assert.strictEqual(apply('Piercing','Omega').p.pierce,8,'Omega Piercing is capped at eight pierce');
 assert(Math.abs(apply('Shield Core','Omega').shield-5.2)<1e-9,'Omega Shield Core duration matches its 8x multiplier');
 assert(Math.abs(apply('Emergency Shield','Omega').shield-5.2)<1e-9,'Omega Emergency Shield duration matches its 8x multiplier');
+s.game.player=p();let stack=upgrade('Lucky Coins','',()=>{},'Common');stack.apply();stack=upgrade('Lucky Coins','',()=>{},'Omega');stack.apply();assert(Math.abs(s.game.player.coinMult-1.27)<1e-9,'legacy coin bonuses stack additively rather than exponentially');
+s.game.player=p();let libraryCoin=s.tempUp.find(x=>x&&x[0]==='Common Fortune 11');libraryCoin[2](1);libraryCoin=s.tempUp.find(x=>x&&x[0]==='Omega Fortune 11');libraryCoin[2](8);assert(Math.abs(s.game.player.coinMult-1.27)<1e-9,'rarity-family coin bonuses stack additively');
+s.game.player=p();let libraryShield=s.tempUp.find(x=>x&&x[0]==='Common Aegis 20');libraryShield[2](1);libraryShield=s.tempUp.find(x=>x&&x[0]==='Omega Aegis 20');libraryShield[2](8);assert(Math.abs(s.game.player.shield-5.85)<1e-9,'shield duration bonuses stack instead of silently overwriting each other');
 const commonXP=apply('XP Boost','Common').p.xpBonus-1;
 const mythicXP=apply('XP Hunter','Mythic').p.xpBonus-1;
 assert(mythicXP>commonXP,'Mythic XP must be stronger than Common XP for the same effect');

@@ -19,6 +19,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
     localStorage.setItem('outlast_update_ack_v4.5.3','1');
     localStorage.setItem('outlast_v453_release_popup_ack','1');
+    localStorage.setItem('outlast_v457_release_popup_ack','1');
     localStorage.setItem('outlast_update_ack_v4526','1');
     localStorage.setItem('outlastSeenUpdateVersion','4.5.26');
   });

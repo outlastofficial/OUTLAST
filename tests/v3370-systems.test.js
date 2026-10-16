@@ -7,7 +7,7 @@ const expansion=fs.readFileSync(path.join(root,'outlast-v410-map-upgrade-expansi
 new vm.Script(expansion,{filename:'outlast-v410-map-upgrade-expansion.js'});
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
-assert.match(html,/outlast-v3370-game-systems\\.js\\?v=4\\.5\\.28/,'current v3.37 systems module is loaded with a cache-busting version');
+assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.5\.28/,'current v3.37 systems module is loaded with a cache-busting version');
 assert(html.includes('<title>OUTLAST v4.5.28</title>'),'visible game version marker must match the current build');
 assert(html.includes("const BUILD='4.5.28'"),'mandatory update check must target v4.2.4');
 assert(html.includes("outlast_update_ack_v4528"),'mandatory update acknowledgement must be versioned');

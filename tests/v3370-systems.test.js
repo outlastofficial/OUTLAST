@@ -7,10 +7,10 @@ const expansion=fs.readFileSync(path.join(root,'outlast-v410-map-upgrade-expansi
 new vm.Script(expansion,{filename:'outlast-v410-map-upgrade-expansion.js'});
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
-assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.5\.25/,'current v3.37 systems module is loaded with a cache-busting version');
-assert(html.includes('<title>OUTLAST v4.5.25</title>'),'visible game version marker must match the current build');
-assert(html.includes("const BUILD='4.5.25'"),'mandatory update check must target v4.2.4');
-assert(html.includes("outlast_update_ack_v4525"),'mandatory update acknowledgement must be versioned');
+assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.5\.26/,'current v3.37 systems module is loaded with a cache-busting version');
+assert(html.includes('<title>OUTLAST v4.5.26</title>'),'visible game version marker must match the current build');
+assert(html.includes("const BUILD='4.5.26'"),'mandatory update check must target v4.2.4');
+assert(html.includes("outlast_update_ack_v4526"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'active repair module is cache-busted');
 assert(expansion.includes("const VERSION = '4.2.4'"),'module version matches the page');
 assert(/const map=\{map:\(\)=>selectMap\(v\),[^\n]*skill:/.test(html),'global router dispatches skill selections');
@@ -26,7 +26,7 @@ assert(mod.includes('function authoritativeUpgradeChoice37'), 'authoritative upg
 assert(mod.includes('window.OUTLAST_UPGRADE_RARITY_SCALING37'), 'authoritative rarity scale must be published');
 assert(mod.includes('Common:1') && mod.includes('Mythic:2.25'), 'legacy low-tier scaling remains intact');
 assert(library.includes('const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8})'), 'current high-rarity ladder must match the active upgrade library');
-assert(mod.includes("if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(8)+'% XP'") && mod.includes("if(name==='XP Burst')return {desc:'+'+np(12)+'% XP") && mod.includes("if(name==='XP Reactor')return {desc:'+'+np(8)+'% XP"), 'XP upgrades must use a shared, rarity-scaled baseline');
+assert(mod.includes("if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(4)+'% XP'") && mod.includes("if(name==='XP Burst')return {desc:'+'+np(6)+'% XP") && mod.includes("if(name==='XP Reactor')return {desc:'+'+np(4)+'% XP"), 'XP upgrades must use a shared, rarity-scaled baseline');
 assert(!mod.includes("if(name==='XP Boost')return {desc:'+'+Math.round(8*mult)"), 'duplicate unreachable XP Boost implementation was removed');
 
 assert(mod.includes('function zombieAI37'), 'zombie AI controller must exist');
@@ -55,4 +55,4 @@ assert(mod.includes('syncOwnerLauncher37'),'owner launcher must be owner-only');
 assert(mod.includes("card.style.display=ok?'':'none'")||mod.includes("card.style.display=(typeof isOwner==='function'&&isOwner())?'':'none'"),'non-owners must not see the Owner Panel card');
 assert(!mod.match(/ownerPassword|OWNER_PASSWORD/i),'owner panel must not use a password');
 
-console.log('OUTLAST v4.3.6 systems regression checks passed');
+console.log('OUTLAST v4.5.26 systems regression checks passed');

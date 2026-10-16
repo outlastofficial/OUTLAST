@@ -92,7 +92,7 @@ const { chromium } = require('playwright');
     throw new Error('v4.5.26 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
   await page.locator('#mapBtn').click();
-  await page.waitForTimeout(80);
+  await page.waitForTimeout(1250); // allow the legacy version guards to settle after the map overlay opens
   const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
   if(pickerBuild!=='4.5.26')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});

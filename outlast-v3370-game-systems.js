@@ -1,7 +1,7 @@
 /* OUTLAST v3.37.16 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
 (function(){
 'use strict';
-const VERSION='3.37.16';
+const VERSION='4.6.0';
 const SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8});
 const TIER_ORDER=Object.keys(SCALE);
 const E=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
@@ -53,7 +53,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Second Heart')return {desc:'+'+ni(15)+' max HP and +'+np(5)+'% healing',apply:()=>{heal(ni(15));ratio('healMult',5);}};
  if(name==='Swift Feet')return {desc:'+'+np(2)+'% move speed',apply:()=>{const q=p();if(q)q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+2*mult/100));}};
  if(name==='Magnet')return {desc:'+'+ni(12)+' pickup radius',apply:()=>add('magnet',ni(12))};
- if(name==='Regeneration'||name==='Second Wind')return {desc:'+'+nv(.3)+' HP/s',apply:()=>add('regen',.3*mult)};
+ if(name==='Regeneration')return {desc:'+'+nv(.3)+' HP/s',apply:()=>add('regen',.3*mult)};
  if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledDiscrete37('pierce',mult);return {desc:'+'+amount+' pierce',apply:()=>add('pierce',amount)};}
  if(name==='Multi-Shot'||name==='Ammo Surge'){const amount=scaledDiscrete37('projectiles',mult);return {desc:'+'+amount+' projectiles',apply:()=>add('multiShot',amount)};}
  if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(4)+'% XP',apply:()=>ratio('xpBonus',4)};
@@ -116,6 +116,20 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Treasure Radar'){const dropMultiplier=1+.25*mult;return {desc:'+'+pct(25,mult)+'% power-up drop chance',apply:function(){const p=player();if(p){p.treasure=true;p.treasureDropMultiplier=dropMultiplier;}}};}
  if(name==='Shockwave'){const ti=Math.max(0,TIER_ORDER.indexOf(rarity)),every=Math.max(2,12-ti),radius=130*Math.sqrt(mult),damageMultiplier=.45*mult;return {desc:'Every '+every+' kill'+(every===1?'':'s')+', blast '+Math.round(radius)+' radius for '+pct(45,mult)+'% damage',apply:function(){const p=player();if(p){p.shockwave=true;p.shockwaveEvery=every;p.shockwaveRadius=radius;p.shockwaveDamageMultiplier=damageMultiplier;}}};}
  if(name==='Cryo Core')return {desc:'+'+pct(10,mult)+'% enemy-slowing aura strength',apply:function(){const p=player();if(p){p.frost=true;p.slowPower=(Number(p.slowPower)||1)+.10*mult;}}};
+
+ // Explicit legacy profiles: every effect and its card text use the same rarity-scaled values.
+ if(name==='Big Bullets')return {desc:'+'+np(5)+'% projectile size',apply:()=>ratio('bulletSize',5)};
+ if(name==='Projectile Speed')return {desc:'+'+np(4)+'% projectile speed',apply:()=>{const q=p();if(q)q.projectileSpeed=(Number(q.projectileSpeed)||1)*(1+.04*mult);}};
+ if(name==='Second Wind')return {desc:'+'+nv(1)+' HP/s',apply:()=>add('regen',1*mult)};
+ if(name==='Elite Hunter')return {desc:'+'+np(6)+'% damage against elites, +'+np(1.5)+'% crit chance and +'+np(2)+'% move speed',apply:()=>{const q=p();if(q){q.executioner=(Number(q.executioner)||0)+.06*mult;q.crit=Math.min(.99,(Number(q.crit)||0)+.015*mult);q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+.02*mult));}}};
+ if(name==='Void Arsenal')return {desc:'+'+scaledDiscrete37('projectiles',mult)+' projectile, +'+np(6)+'% damage, +'+np(4)+'% projectile speed and +1 pierce',apply:()=>{const q=p();if(q){q.multiShot=(Number(q.multiShot)||0)+scaledDiscrete37('projectiles',mult);q.damage=(Number(q.damage)||0)*(1+.06*mult);q.projectileSpeed=(Number(q.projectileSpeed)||1)*(1+.04*mult);q.pierce=(Number(q.pierce)||0)+1;}}};
+ if(name==='Abyssal Core')return {desc:'+'+np(12)+'% damage, +'+np(4)+'% attack speed, +1 pierce and +'+np(4)+'% boss damage',apply:()=>{const q=p();if(q){q.damage=(Number(q.damage)||0)*(1+.12*mult);faster(4);q.pierce=(Number(q.pierce)||0)+1;q.bossMult=(Number(q.bossMult)||1)+.04*mult;}}};
+ if(name==='Divine Aegis')return {desc:'+'+ni(15)+' max HP, '+nv(.65)+'s shield and '+np(3)+'% damage reduction',apply:()=>{const q=p();if(q){heal(ni(15));shield(.65*mult);q.damageTakenMult=(Number(q.damageTakenMult)||1)*(1-.03*mult);}}};
+ if(name==='Celestial Barrage')return {desc:'+'+scaledDiscrete37('projectiles',mult)+' projectiles, +'+np(4)+'% damage, +'+np(3)+'% projectile speed, +'+np(2)+'% crit and +2 pierce',apply:()=>{const q=p();if(q){q.multiShot=(Number(q.multiShot)||0)+scaledDiscrete37('projectiles',mult);q.damage=(Number(q.damage)||0)*(1+.04*mult);q.projectileSpeed=(Number(q.projectileSpeed)||1)*(1+.03*mult);q.crit=Math.min(.99,(Number(q.crit)||0)+.02*mult);q.pierce=(Number(q.pierce)||0)+2;}}};
+ if(name==='Transcendent Fury')return {desc:'+'+np(10)+'% damage, +'+np(4)+'% attack speed, +'+np(2)+'% crit, +2 pierce, +'+np(2)+'% boss damage and +'+np(2.5)+'% ultimate damage',apply:()=>{const q=p();if(q){q.damage=(Number(q.damage)||0)*(1+.10*mult);faster(4);q.crit=Math.min(.99,(Number(q.crit)||0)+.02*mult);q.pierce=(Number(q.pierce)||0)+2;q.bossDamageBonus=(Number(q.bossDamageBonus)||0)+.02*mult;q.ultDamage=(Number(q.ultDamage)||1)*(1+.025*mult);}}};
+ if(name==='Eternal Rebirth')return {desc:'+'+ni(25)+' max HP, +'+nv(.6)+' HP/s, +'+np(7)+'% damage, '+np(2.5)+'% damage reduction and +1 Phoenix revive',apply:()=>{const q=p();if(q){heal(ni(25));q.regen=(Number(q.regen)||0)+.6*mult;q.damage=(Number(q.damage)||0)*(1+.07*mult);q.damageTakenMult=(Number(q.damageTakenMult)||1)*(1-.025*mult);q.phoenixRevives=(Number(q.phoenixRevives)||0)+1;}}};
+ if(name==='Omega Ascension')return {desc:'+'+np(12)+'% damage, +'+np(5)+'% attack speed, +'+np(2)+'% crit, +4 projectiles, +4 pierce, +'+np(7)+'% ultimate damage, +'+np(3)+'% boss damage, +'+np(2.5)+'% chain and a kill-triggered shockwave',apply:()=>{const q=p();if(q){q.damage=(Number(q.damage)||0)*(1+.12*mult);faster(5);q.crit=Math.min(.99,(Number(q.crit)||0)+.02*mult);q.multiShot=(Number(q.multiShot)||0)+4;q.pierce=(Number(q.pierce)||0)+4;q.ultDamage=(Number(q.ultDamage)||1)*(1+.07*mult);q.bossDamageBonus=(Number(q.bossDamageBonus)||0)+.03*mult;q.chain=(Number(q.chain)||1)*(1+.025*mult);q.shockwave=true;q.shockwaveEvery=7;q.shockwaveRadius=190;q.shockwaveDamageMultiplier=.9;}}};
+
  const d=typeof desc==='function'?desc(mult):String(desc||''),a=typeof apply==='function'?apply:()=>{};
  return {desc:d,apply:()=>{const result=a(mult);if(typeof result==='function')return result();return result;}};
 }
@@ -457,9 +471,9 @@ function installEventDelegates37(){
 }
 function installRuntimeFlags37(){
  window.OUTLAST_BUILD=VERSION;window.OUTLAST_VERSION='v'+VERSION;window.OUTLAST_CORE_CONTENT_MODE='LIVE';window.OUTLAST_UI_SYSTEM_VERSION=VERSION;
- const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v3.37.16 • SURVIVOR HUB';
- document.title='OUTLAST v3.37.16';
- document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.16');
+ const chip=document.querySelector('#menu .menu-chip');if(chip)chip.textContent='v4.6.0 • SURVIVOR HUB';
+ document.title='OUTLAST v4.6.0';
+ document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v4.6.0');
  const a=document.querySelector('meta[name="outlast-build"]');if(a)a.content=VERSION;
  const b=document.querySelector('meta[name="build-version"]');if(b)b.content=VERSION;
  const s=S();if(s){s.records=s.records||{};s.records.legendaryPlusOwned=Object.keys(s.skins||{}).filter(k=>s.skins[k]&&skins[k]&&['Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(skins[k].rarity)).length;persist?.();}

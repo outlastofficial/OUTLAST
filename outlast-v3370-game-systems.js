@@ -36,7 +36,7 @@ function scaledInteger37(base,mult){
 }
 function scaledDiscrete37(kind,mult){
  const index=Math.max(0,TIER_ORDER.findIndex(r=>Math.abs(SCALE[r]-Number(mult))<1e-6));
- const values={pierce:[1,1,2,2,3,3,4,5,6,7,8],projectiles:[1,1,1,1,2,2,2,3,3,4,5],shield3:[3,3,4,4,5,6,8,10,12,14,16],shield5:[5,5,6,7,8,9,10,12,14,16,18]};
+ const values={pierce:[1,1,2,2,3,3,4,5,6,7,8],projectiles:[1,1,1,1,2,2,2,3,3,4,5]};
  return (values[kind]||values.pierce)[index];
 }
 function upgradeBase37(name,desc,apply,rarity){
@@ -54,8 +54,8 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Swift Feet')return {desc:'+'+np(2)+'% move speed',apply:()=>{const q=p();if(q)q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+2*mult/100));}};
  if(name==='Magnet')return {desc:'+'+ni(12)+' pickup radius',apply:()=>add('magnet',ni(12))};
  if(name==='Regeneration'||name==='Second Wind')return {desc:'+'+nv(.3)+' HP/s',apply:()=>add('regen',.3*mult)};
- if(name==='Piercing'||name==='Rift Pierce')return {desc:'+'+ni(name==='Piercing'?1:2)+' pierce',apply:()=>add('pierce',ni(name==='Piercing'?1:2))};
- if(name==='Multi-Shot'||name==='Ammo Surge')return {desc:'+'+ni(1)+' projectiles',apply:()=>add('multiShot',ni(1))};
+ if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledDiscrete37('pierce',mult);return {desc:'+'+amount+' pierce',apply:()=>add('pierce',amount)};}
+ if(name==='Multi-Shot'||name==='Ammo Surge'){const amount=scaledDiscrete37('projectiles',mult);return {desc:'+'+amount+' projectiles',apply:()=>add('multiShot',amount)};}
  if(name==='XP Boost'||name==='XP Hunter')return {desc:'+'+np(4)+'% XP',apply:()=>ratio('xpBonus',4)};
  if(name==='XP Burst')return {desc:'+'+np(6)+'% XP and +'+ni(20)+' pickup radius',apply:()=>{ratio('xpBonus',6);add('magnet',ni(20));}};
  if(name==='Overcharge')return {desc:'+'+np(4)+'% ultimate damage',apply:()=>ratio('ultDamage',4)};
@@ -67,16 +67,17 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Adrenaline')return {desc:'+'+np(2)+'% speed below 50% HP',apply:()=>{const q=p();if(q){q.adrenaline=true;q.adrenalineSpeedBonus=(Number(q.adrenalineSpeedBonus)||0)+.02*mult;}}};
  if(name==='Shield Core'||name==='Emergency Shield')return {desc:'Gain '+nv(.65)+'s shield',apply:()=>shield(.65*mult)};
  if(name==='Rapid Recovery')return {desc:'+'+np(5)+'% pickup healing',apply:()=>ratio('healMult',5)};
- if(name==='Berserker'||name==='Bloodrush')return {desc:'+'+np(10)+'% damage below 50% HP',apply:()=>{const q=p();if(q){q.berserk=true;if(name==='Bloodrush')q.bloodrush=true;q.berserkDamageBonus=(Number(q.berserkDamageBonus)||0)+.1*mult;}}};
- if(name==='Lucky Hunter')return {desc:np(10)+'% chance for double XP',apply:()=>{const q=p();if(q){q.lucky=true;q.luckyXpChance=.1*mult;}}};
- if(name==='Poison Rounds')return {desc:'Poison deals '+np(11)+'% weapon damage per second for '+nv(3)+'s',apply:()=>{const q=p();if(q){q.poison=true;q.poisonDpsMultiplier=.11*mult;q.poisonDuration=3*mult;}}};
- if(name==='Stun Rounds')return {desc:'+'+np(12)+'% chance to stun for '+nv(1.5)+'s',apply:()=>{const q=p();if(q){q.stun=true;q.stunChance=Math.min(.95,.12*mult);q.stunDuration=1.5*mult;}}};
- if(name==='Double Tap')return {desc:'+'+np(12)+'% chance to fire an extra shot',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=Math.min(.95,.12*mult);}}};
- if(name==='Lucky Barrage')return {desc:'+'+np(8)+'% extra-shot chance',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=Math.min(.95,(Number(q.doubleTapChance)||0)+.08*mult);q.doubleTapBonus=(Number(q.doubleTapBonus)||0)+.08*mult;}}};
- if(name==='Treasure Radar')return {desc:nv(3)+'x power-up drop chance',apply:()=>{const q=p();if(q){q.treasure=true;q.treasureDropMultiplier=3*mult;}}};
- if(name==='Shockwave'){const rank=Math.max(0,TIER_ORDER.indexOf(rarity)),every=Math.max(2,12-rank),radius=150*Math.sqrt(mult),dmg=.8*mult;return {desc:'Every '+every+' kills, blast '+Math.round(radius)+' radius for '+np(80)+'% damage',apply:()=>{const q=p();if(q){q.shockwave=true;q.shockwaveEvery=every;q.shockwaveRadius=radius;q.shockwaveDamageMultiplier=dmg;}}};}
- if(name==='Frost Aura'||name==='Cryo Burst')return {desc:'+'+ni(18)+' aura radius, +'+np(8)+'% slow strength',apply:()=>{const q=p();if(q){q.frost=true;q.frostAuraRadius=(Number(q.frostAuraRadius)||130)+ni(18);q.frostSlow=(Number(q.frostSlow)||.5)+.08*mult;q.frostAuraDps=(Number(q.frostAuraDps)||.12)+.1*mult;}}};
- if(name==='Cryo Core')return {desc:'+'+np(8)+'% enemy-slowing aura strength',apply:()=>{const q=p();if(q){q.frost=true;q.slowPower=(Number(q.slowPower)||1)+.08*mult;}}};
+ if(name==='Berserker')return {desc:'+'+np(12)+'% damage below 50% HP',apply:()=>{const q=p();if(q){q.berserk=true;q.berserkDamageBonus=(Number(q.berserkDamageBonus)||0)+.12*mult;}}};
+ if(name==='Bloodrush')return {desc:'+'+np(8)+'% damage below 50% HP',apply:()=>{const q=p();if(q){q.bloodrush=true;q.berserk=true;q.berserkDamageBonus=(Number(q.berserkDamageBonus)||0)+.08*mult;}}};
+ if(name==='Lucky Hunter'){const chance=Math.min(.50,.06*mult);return {desc:pct(Math.min(50,6*mult),1)+'% chance for double XP',apply:()=>{const q=p();if(q){q.lucky=true;q.luckyXpChance=chance;}}};}
+ if(name==='Poison Rounds'){const dps=.04*mult,duration=2+.25*mult;return {desc:'Poison deals '+np(4)+'% weapon damage per second for '+Number(duration.toFixed(2))+'s',apply:()=>{const q=p();if(q){q.poison=true;q.poisonDpsMultiplier=dps;q.poisonDuration=duration;}}};}
+ if(name==='Stun Rounds'){const chance=Math.min(.60,.05*mult),duration=.75+.25*mult;return {desc:pct(Math.min(60,5*mult),1)+'% chance to stun for '+Number(duration.toFixed(2))+'s',apply:()=>{const q=p();if(q){q.stun=true;q.stunChance=chance;q.stunDuration=duration;}}};}
+ if(name==='Double Tap'){const chance=Math.min(.40,.04*mult);return {desc:'+'+pct(Math.min(40,4*mult),1)+'% chance to fire an extra shot',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=chance;}}};}
+ if(name==='Lucky Barrage'){const chance=.03*mult;return {desc:'+'+np(3)+'% extra-shot chance',apply:()=>{const q=p();if(q){q.doubleTap=true;q.doubleTapChance=Math.min(.45,(Number(q.doubleTapChance)||0)+chance);q.doubleTapBonus=(Number(q.doubleTapBonus)||0)+chance;}}};}
+ if(name==='Treasure Radar'){const dropMultiplier=1+.25*mult;return {desc:'+'+np(25)+'% power-up drop chance',apply:()=>{const q=p();if(q){q.treasure=true;q.treasureDropMultiplier=dropMultiplier;}}};}
+ if(name==='Shockwave'){const rank=Math.max(0,TIER_ORDER.indexOf(rarity)),every=Math.max(2,12-rank),radius=130*Math.sqrt(mult),dmg=.45*mult;return {desc:'Every '+every+' kills, blast '+Math.round(radius)+' radius for '+np(45)+'% damage',apply:()=>{const q=p();if(q){q.shockwave=true;q.shockwaveEvery=every;q.shockwaveRadius=radius;q.shockwaveDamageMultiplier=dmg;}}};}
+ if(name==='Frost Aura'||name==='Cryo Burst')return {desc:'+'+ni(12)+' aura radius, +'+np(5)+'% slow strength',apply:()=>{const q=p();if(q){q.frost=true;q.frostAuraRadius=(Number(q.frostAuraRadius)||130)+ni(12);q.frostSlow=(Number(q.frostSlow)||.5)+.05*mult;q.frostAuraDps=(Number(q.frostAuraDps)||.12)+.04*mult;}}};
+ if(name==='Cryo Core')return {desc:'+'+np(6)+'% enemy-slowing aura strength',apply:()=>{const q=p();if(q){q.frost=true;q.slowPower=(Number(q.slowPower)||1)+.06*mult;}}};
  if(name==='Armor Pierce')return {desc:'+'+np(2)+'% enemy defense ignored',apply:()=>add('armorPierce',.02*mult)};
  if(name==='Upgrade Luck'||name==='Lucky Charm')return {desc:'+'+nv(2)+' Upgrade Luck',apply:()=>{add('upgradeLuck',2*mult);luck();}};
  if(name==='Fortune'||name==='Scavenger Luck')return {desc:'+'+nv(2)+' Loot Luck',apply:()=>{add('lootLuck',2*mult);luck();}};
@@ -89,7 +90,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Fortress')return {desc:'+'+ni(15)+' max HP and +'+np(2)+'% armor',apply:()=>{heal(ni(15));const q=p();if(q)q.armor=Math.max(.1,(Number(q.armor)||1)-.02*mult);}};
  if(name==='Adrenal Core')return {desc:'+'+np(2)+'% speed and +'+np(2.2)+'% attack speed',apply:()=>{const q=p();if(q)q.speed=Math.min(Number(q.speedCap)||Infinity,(Number(q.speed)||0)*(1+2*mult/100));faster(2.2);}};
  if(name==='Salvager')return {desc:'+'+np(3)+'% coins and +'+ni(12)+' pickup range',apply:()=>{ratio('coinMult',3);add('magnet',ni(12));}};
- if(name==='XP Reactor')return {desc:'+'+np(8)+'% XP and +'+nv(2)+' Upgrade Luck',apply:()=>{ratio('xpBonus',8);add('upgradeLuck',2*mult);luck();}};
+ if(name==='XP Reactor')return {desc:'+'+np(4)+'% XP and +'+nv(2)+' Upgrade Luck',apply:()=>{ratio('xpBonus',4);add('upgradeLuck',2*mult);luck();}};
  if(name==='Ricochet')return {desc:'+'+ni(1)+' pierce and +'+np(3)+'% projectile size',apply:()=>{add('pierce',ni(1));ratio('bulletSize',3);}};
  if(name==='Executioner')return {desc:'+'+np(3)+'% damage to elites',apply:()=>add('executioner',.03*mult)};
  if(name==='Bossbreaker')return {desc:'+'+np(3)+'% damage to bosses',apply:()=>add('bossDamageBonus',.03*mult)};
@@ -103,7 +104,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledDiscrete37('pierce',mult);return {desc:'+'+amount+(name==='Piercing'?' pierce':' projectile pierce'),apply:function(){const p=player();if(p)p.pierce=(Number(p.pierce)||0)+amount;}};}
  if(name==='Multi-Shot'||name==='Ammo Surge'){const amount=scaledDiscrete37('projectiles',mult);return {desc:'+'+amount+(name==='Multi-Shot'?' projectiles':' extra projectiles'),apply:function(){const p=player();if(p)p.multiShot=(Number(p.multiShot)||0)+amount;}};}
  if(name==='Second Wind'){const amount=scaledInteger37(2,mult);return {desc:'+'+amount+' HP/s',apply:function(){const p=player();if(p)p.regen=(Number(p.regen)||0)+amount;}};}
- if(name==='Shield Core'||name==='Emergency Shield'){const seconds=scaledDiscrete37(name==='Shield Core'?'shield3':'shield5',mult);return {desc:'Gain '+seconds+'s shield',apply:function(){if(typeof outlastGrantTempShield==='function')return outlastGrantTempShield(seconds);}};}
+ if(name==='Shield Core'||name==='Emergency Shield')return {desc:'Gain '+nv(.65)+'s shield',apply:()=>shield(.65*mult)};
  if(name==='Berserker'){const bonus=.12*mult;return {desc:'+'+pct(12,mult)+'% damage below 50% HP',apply:function(){const p=player();if(p){p.berserk=true;p.berserkDamageBonus=(Number(p.berserkDamageBonus)||0)+bonus;}}};}
  if(name==='Bloodrush'){const bonus=.08*mult;return {desc:'+'+pct(8,mult)+'% damage below 50% HP',apply:function(){const p=player();if(p){p.bloodrush=true;p.berserk=true;p.berserkDamageBonus=(Number(p.berserkDamageBonus)||0)+bonus;}}};}
  if(name==='Lucky Hunter'){const chance=Math.min(.50,.06*mult);return {desc:pct(Math.min(50,6*mult),1)+'% chance for double XP',apply:function(){const p=player();if(p){p.lucky=true;p.luckyXpChance=chance;}}};}

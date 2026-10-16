@@ -4,15 +4,16 @@
 function fmtPct(base,mult){return Number((Number(base)*Number(mult)).toFixed(1)).toString()}
 const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8});
 const TIER_ORDER=Object.keys(TIER_SCALE);
-function tierInteger(base,mult){
-  let index=TIER_ORDER.findIndex(r=>Math.abs(TIER_SCALE[r]-Number(mult))<1e-6);
-  if(index<0)index=0;
-  let amount=Math.round(Number(base)*TIER_SCALE.Common);
+function tierInteger(base,mult,kind){
+  const index=Math.max(0,TIER_ORDER.findIndex(r=>Math.abs(TIER_SCALE[r]-Number(mult))<1e-6));
+  const bounded={pierce:[1,1,2,2,3,3,4,5,6,7,8],projectiles:[1,1,1,1,2,2,2,3,3,4,5]};
+  if(bounded[kind])return bounded[kind][index];
+  let amount=Math.max(0,Math.round(Number(base)||0));
   for(let i=1;i<=index;i++)amount=Math.max(Math.round(Number(base)*TIER_SCALE[TIER_ORDER[i]]),amount+1);
   return amount;
 }
 window.OUTLAST_UPGRADE_TIER_INTEGER=tierInteger;
-const V='3.37.16';
+const V='4.5.26';
 const LIBRARY=[
   {name:"Common Might 01",rarity:"Common",mult:1,desc:v=>`+${fmtPct(3,v)} damage`,apply:v=>game.player.damage+=3*v},
   {name:"Common Haste 02",rarity:"Common",mult:1,desc:v=>`+${fmtPct(2.2,v)}% attack speed`,apply:v=>game.player.fireRate=Math.max(.045,(game.player.fireRate||.45)*(1-.022*v))},
@@ -20,12 +21,12 @@ const LIBRARY=[
   {name:"Common Fleet 04",rarity:"Common",mult:1,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Common Magnet 05",rarity:"Common",mult:1,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Common Renewal 06",rarity:"Common",mult:1,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Common Breach 07",rarity:"Common",mult:1,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Common Volley 08",rarity:"Common",mult:1,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Common Breach 07",rarity:"Common",mult:1,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Common Volley 08",rarity:"Common",mult:1,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Common Velocity 09",rarity:"Common",mult:1,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Common Deadeye 10",rarity:"Common",mult:1,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Common Fortune 11",rarity:"Common",mult:1,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Common Scholar 12",rarity:"Common",mult:1,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Common Scholar 12",rarity:"Common",mult:1,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Common Piercer 13",rarity:"Common",mult:1,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Common Bossbane 14",rarity:"Common",mult:1,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Common Arcane 15",rarity:"Common",mult:1,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -40,12 +41,12 @@ const LIBRARY=[
   {name:"Uncommon Fleet 04",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Uncommon Magnet 05",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Uncommon Renewal 06",rarity:"Uncommon",mult:1.15,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Uncommon Breach 07",rarity:"Uncommon",mult:1.15,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Uncommon Volley 08",rarity:"Uncommon",mult:1.15,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Uncommon Breach 07",rarity:"Uncommon",mult:1.15,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Uncommon Volley 08",rarity:"Uncommon",mult:1.15,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Uncommon Velocity 09",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Uncommon Deadeye 10",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Uncommon Fortune 11",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Uncommon Scholar 12",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Uncommon Scholar 12",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Uncommon Piercer 13",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Uncommon Bossbane 14",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Uncommon Arcane 15",rarity:"Uncommon",mult:1.15,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -60,12 +61,12 @@ const LIBRARY=[
   {name:"Rare Fleet 04",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Rare Magnet 05",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Rare Renewal 06",rarity:"Rare",mult:1.35,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Rare Breach 07",rarity:"Rare",mult:1.35,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Rare Volley 08",rarity:"Rare",mult:1.35,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Rare Breach 07",rarity:"Rare",mult:1.35,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Rare Volley 08",rarity:"Rare",mult:1.35,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Rare Velocity 09",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Rare Deadeye 10",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Rare Fortune 11",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Rare Scholar 12",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Rare Scholar 12",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Rare Piercer 13",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Rare Bossbane 14",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Rare Arcane 15",rarity:"Rare",mult:1.35,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -80,12 +81,12 @@ const LIBRARY=[
   {name:"Epic Fleet 04",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Epic Magnet 05",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Epic Renewal 06",rarity:"Epic",mult:1.6,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Epic Breach 07",rarity:"Epic",mult:1.6,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Epic Volley 08",rarity:"Epic",mult:1.6,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Epic Breach 07",rarity:"Epic",mult:1.6,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Epic Volley 08",rarity:"Epic",mult:1.6,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Epic Velocity 09",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Epic Deadeye 10",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Epic Fortune 11",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Epic Scholar 12",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Epic Scholar 12",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Epic Piercer 13",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Epic Bossbane 14",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Epic Arcane 15",rarity:"Epic",mult:1.6,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -100,12 +101,12 @@ const LIBRARY=[
   {name:"Legendary Fleet 04",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Legendary Magnet 05",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Legendary Renewal 06",rarity:"Legendary",mult:1.9,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Legendary Breach 07",rarity:"Legendary",mult:1.9,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Legendary Volley 08",rarity:"Legendary",mult:1.9,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Legendary Breach 07",rarity:"Legendary",mult:1.9,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Legendary Volley 08",rarity:"Legendary",mult:1.9,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Legendary Velocity 09",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Legendary Deadeye 10",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Legendary Fortune 11",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Legendary Scholar 12",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Legendary Scholar 12",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Legendary Piercer 13",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Legendary Bossbane 14",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Legendary Arcane 15",rarity:"Legendary",mult:1.9,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -120,12 +121,12 @@ const LIBRARY=[
   {name:"Mythic Fleet 04",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Mythic Magnet 05",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Mythic Renewal 06",rarity:"Mythic",mult:2.25,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Mythic Breach 07",rarity:"Mythic",mult:2.25,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Mythic Volley 08",rarity:"Mythic",mult:2.25,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Mythic Breach 07",rarity:"Mythic",mult:2.25,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Mythic Volley 08",rarity:"Mythic",mult:2.25,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Mythic Velocity 09",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Mythic Deadeye 10",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Mythic Fortune 11",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Mythic Scholar 12",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Mythic Scholar 12",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Mythic Piercer 13",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Mythic Bossbane 14",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Mythic Arcane 15",rarity:"Mythic",mult:2.25,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -140,12 +141,12 @@ const LIBRARY=[
   {name:"Divine Fleet 04",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Divine Magnet 05",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Divine Renewal 06",rarity:"Divine",mult:4,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Divine Breach 07",rarity:"Divine",mult:4,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Divine Volley 08",rarity:"Divine",mult:4,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Divine Breach 07",rarity:"Divine",mult:4,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Divine Volley 08",rarity:"Divine",mult:4,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Divine Velocity 09",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Divine Deadeye 10",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Divine Fortune 11",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Divine Scholar 12",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Divine Scholar 12",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Divine Piercer 13",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Divine Bossbane 14",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Divine Arcane 15",rarity:"Divine",mult:4,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -160,12 +161,12 @@ const LIBRARY=[
   {name:"Celestial Fleet 04",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Celestial Magnet 05",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Celestial Renewal 06",rarity:"Celestial",mult:5,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Celestial Breach 07",rarity:"Celestial",mult:5,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Celestial Volley 08",rarity:"Celestial",mult:5,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Celestial Breach 07",rarity:"Celestial",mult:5,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Celestial Volley 08",rarity:"Celestial",mult:5,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Celestial Velocity 09",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Celestial Deadeye 10",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Celestial Fortune 11",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Celestial Scholar 12",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Celestial Scholar 12",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Celestial Piercer 13",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Celestial Bossbane 14",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Celestial Arcane 15",rarity:"Celestial",mult:5,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -180,12 +181,12 @@ const LIBRARY=[
   {name:"Transcendent Fleet 04",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Transcendent Magnet 05",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Transcendent Renewal 06",rarity:"Transcendent",mult:6,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Transcendent Breach 07",rarity:"Transcendent",mult:6,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Transcendent Volley 08",rarity:"Transcendent",mult:6,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Transcendent Breach 07",rarity:"Transcendent",mult:6,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Transcendent Volley 08",rarity:"Transcendent",mult:6,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Transcendent Velocity 09",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Transcendent Deadeye 10",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Transcendent Fortune 11",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Transcendent Scholar 12",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Transcendent Scholar 12",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Transcendent Piercer 13",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Transcendent Bossbane 14",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Transcendent Arcane 15",rarity:"Transcendent",mult:6,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -200,12 +201,12 @@ const LIBRARY=[
   {name:"Eternal Fleet 04",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Eternal Magnet 05",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Eternal Renewal 06",rarity:"Eternal",mult:7,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Eternal Breach 07",rarity:"Eternal",mult:7,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Eternal Volley 08",rarity:"Eternal",mult:7,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Eternal Breach 07",rarity:"Eternal",mult:7,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Eternal Volley 08",rarity:"Eternal",mult:7,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Eternal Velocity 09",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Eternal Deadeye 10",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Eternal Fortune 11",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Eternal Scholar 12",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Eternal Scholar 12",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Eternal Piercer 13",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Eternal Bossbane 14",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Eternal Arcane 15",rarity:"Eternal",mult:7,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -220,12 +221,12 @@ const LIBRARY=[
   {name:"Omega Fleet 04",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(2,v)}% move speed`,apply:v=>{const p=game.player;p.speed=Math.min(p.speedCap,p.speed*(1+.02*v))}},
   {name:"Omega Magnet 05",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(12,v)} pickup range`,apply:v=>game.player.magnet+=12*v},
   {name:"Omega Renewal 06",rarity:"Omega",mult:8,desc:v=>`+${(.30*v).toFixed(2)} HP/s`,apply:v=>game.player.regen+=.3*v},
-  {name:"Omega Breach 07",rarity:"Omega",mult:8,desc:v=>`+${tierInteger(1,v)} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v)},
-  {name:"Omega Volley 08",rarity:"Omega",mult:8,desc:v=>`+${tierInteger(1,v)} projectile${tierInteger(1,v)>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v))},
+  {name:"Omega Breach 07",rarity:"Omega",mult:8,desc:v=>`+${tierInteger(1,v,'pierce')} pierce`,apply:v=>game.player.pierce=(game.player.pierce||0)+tierInteger(1,v,'pierce')},
+  {name:"Omega Volley 08",rarity:"Omega",mult:8,desc:v=>`+${tierInteger(1,v,'projectiles')} projectile${tierInteger(1,v,'projectiles')>1?"s":""}`,apply:v=>game.player.multiShot=(game.player.multiShot||0)+(tierInteger(1,v,'projectiles'))},
   {name:"Omega Velocity 09",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(3,v)}% projectile speed`,apply:v=>game.player.projectileSpeed=(game.player.projectileSpeed||1)*(1+.03*v)},
   {name:"Omega Deadeye 10",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(1,v)}% crit chance`,apply:v=>game.player.crit=Math.min(.99,(game.player.crit||0)+.01*v)},
   {name:"Omega Fortune 11",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(3,v)}% coins`,apply:v=>game.player.coinMult*=1+.03*v},
-  {name:"Omega Scholar 12",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(8,v)}% XP`,apply:v=>game.player.xpBonus*=1+.08*v},
+  {name:"Omega Scholar 12",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(4,v)}% XP`,apply:v=>game.player.xpBonus*=1+.04*v},
   {name:"Omega Piercer 13",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(2,v)}% armor pierce`,apply:v=>game.player.armorPierce=(game.player.armorPierce||0)+.02*v},
   {name:"Omega Bossbane 14",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(3,v)}% boss damage`,apply:v=>game.player.bossMult=(game.player.bossMult||1)*(1+.03*v)},
   {name:"Omega Arcane 15",rarity:"Omega",mult:8,desc:v=>`+${fmtPct(4,v)}% ultimate damage`,apply:v=>game.player.ultDamage=(game.player.ultDamage||1)*(1+.04*v)},
@@ -273,14 +274,14 @@ function installRoll(){
 function hook(){
   install();installRoll();
   try{
-    document.title='OUTLAST v3.37.16';
-    window.OUTLAST_BUILD='3.37.16';window.OUTLAST_VERSION='v3.37.16';
-    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v3.37.16');
+    document.title='OUTLAST v4.5.26';
+    window.OUTLAST_BUILD='4.5.26';window.OUTLAST_VERSION='v4.5.26';
+    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v4.5.26');
     if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='How many upgrade choices are there?')){
       helpArticles.unshift(['How many upgrade choices are there?','Upgrades & Luck','OUTLAST now has more than 200 distinct level-up upgrade cards across every rarity tier.']);
     }
     if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='How do discrete upgrade bonuses scale?')){
-      helpArticles.unshift(['How do discrete upgrade bonuses scale?','Upgrades & Luck','Projectile count and pierce are whole-number stats, so their values step up at every rarity tier instead of rounding several rarities to the same bonus. Other upgrade values scale with their rarity multiplier and the card displays the same value it applies.']);
+      helpArticles.unshift(['How do discrete upgrade bonuses scale?','Upgrades & Luck','Projectile count and pierce use bounded whole-number steps so high rarities do not flood the screen with projectiles or pierce. Other bonuses scale with their rarity multiplier, and card text matches the effect applied.']);
     }
   }catch(_){}
 }

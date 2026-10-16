@@ -17,4 +17,5 @@ assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.28'),'new boss
 assert(html.includes('OUTLAST v4.5.28'),'release version must be present in index');
 for(const behavior of ['runUniqueBossAbility','case \'Grave Titan\':','case \'Plague Doctor\':','case \'Mutant Brute\':','case \'Undead Commander\':','case \'The Abomination\':','case \'Storm Colossus\':','case \'Void Tyrant\':','case \'Eternal Warden\':'])assert(boss.includes(behavior),'missing real unique boss mechanic '+behavior);
 assert(boss.includes('Date.now()-state.lastDefeatAt<BOSS_INTERMISSION_MS'),'normal scheduler must not bypass the intermission');
+assert(boss.includes("args[1]=Math.max(0,num(args[1])*.35)"),'warden shield must reduce incoming damage while active');
 console.log('OUTLAST v4.5.28 source regression passed: 220 tier cards, gradual capped discrete bonuses, eight unique boss profiles, and post-defeat spawn retries.');

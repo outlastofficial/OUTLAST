@@ -20,7 +20,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlast_update_ack_v4.5.3','1');
     localStorage.setItem('outlast_v453_release_popup_ack','1');
     localStorage.setItem('outlast_update_ack_v4526','1');
-    localStorage.setItem('outlastSeenUpdateVersion','4.5.3');
+    localStorage.setItem('outlastSeenUpdateVersion','4.5.26');
   });
 
   const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';

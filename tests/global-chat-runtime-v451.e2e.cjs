@@ -17,9 +17,9 @@ const assert = require('node:assert/strict');
         localStorage.setItem('outlastUsername','E2EPlayer');
         localStorage.setItem('outlastDeviceMode','pc');
         localStorage.setItem('outlastJoystickMode','off');
-        localStorage.setItem('outlast_update_ack_v4.5.1','1');
+        localStorage.setItem('outlast_update_ack_v4.5.26','1');
         localStorage.setItem('outlast_v451_release_popup_ack','1');
-        localStorage.setItem('outlastSeenUpdateVersion','4.5.1');
+        localStorage.setItem('outlastSeenUpdateVersion','4.5.26');
         localStorage.setItem('outlast_update_ack_v4.0.0','1');
         localStorage.setItem('outlastNewPlayerTutorialV317','1');
       });
@@ -45,10 +45,10 @@ const assert = require('node:assert/strict');
         await page.waitForTimeout(350);
         lastBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
         lastTitle=await page.title().catch(()=> '');
-        if(lastBuild==='4.5.1'&&lastTitle.includes('v4.5.1')){served=true;break;}
+        if(lastBuild==='4.5.26'&&lastTitle.includes('v4.5.26')){served=true;break;}
         if(attempt<19)await page.waitForTimeout(2500);
       }
-      assert.ok(served,'Expected v4.5.1 page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
+      assert.ok(served,'Expected v4.5.26 page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
       // The page has a legacy release gate from v4.0.0 that can sit above the chat launcher.
       // Clear it in this isolated smoke test so the test can exercise chat rather than click interception.
       await page.evaluate(()=>{

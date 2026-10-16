@@ -19,6 +19,7 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
     localStorage.setItem('outlast_update_ack_v4.5.3','1');
     localStorage.setItem('outlast_v453_release_popup_ack','1');
+    localStorage.setItem('outlast_update_ack_v4526','1');
     localStorage.setItem('outlastSeenUpdateVersion','4.5.3');
   });
 
@@ -32,11 +33,11 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(500);
     servedTitle=await page.title();
     servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-    if(servedTitle.includes('v4.5.3')&&servedBuild==='4.5.3')break;
+    if(servedTitle.includes('v4.5.26')&&servedBuild==='4.5.26')break;
     if(attempt<19)await page.waitForTimeout(3000);
   }
-  if(!servedTitle.includes('v4.5.3')||servedBuild!=='4.5.3'){
-    throw new Error('Latest build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
+  if(!servedTitle.includes('v4.5.26')||servedBuild!=='4.5.26'){
+    throw new Error('Expected v4.5.26 was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
   }
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});

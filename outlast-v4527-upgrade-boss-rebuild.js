@@ -45,6 +45,18 @@ function canSchedule(g,sv){
  return true;
 }
 
+function installWardenDamageGuard(){
+ const original=typeof damageEnemy==='function'?damageEnemy:(typeof window.damageEnemy==='function'?window.damageEnemy:null);
+ if(!original||original.__outlastWardenGuard4528)return;
+ const guarded=function(e,dmg){
+  const args=Array.from(arguments);
+  if(e&&e.boss&&e.raidName==='Eternal Warden'&&Date.now()<Number(e.__wardenShieldUntil))args[1]=Math.max(0,num(args[1])*.35);
+  return original.apply(this,args);
+ };
+ guarded.__outlastWardenGuard4528=true;
+ try{damageEnemy=guarded}catch(_){}
+ try{window.damageEnemy=guarded}catch(_){}
+}
 function runUniqueBossAbility(g,b){
  const p=g&&g.player;if(!g||!b||!p)return;
  const profile=BOSSES.find(x=>x.name===b.raidName);if(!profile)return;
@@ -172,6 +184,7 @@ if(Array.isArray(window.helpArticles)){
  if(!window.helpArticles.some(x=>x&&x[0]==='How do bosses rotate now?'))window.helpArticles.unshift(['How do bosses rotate now?','Bosses & Runs','Boss fights rotate through eight distinct bosses without repeats until the roster is exhausted. Each boss has a unique signature attack. The first boss appears after about 15 seconds; after a boss is defeated, the next is scheduled about 30 seconds later. If a spawn fails, OUTLAST retries instead of leaving the run without a boss.']);
  if(!window.helpArticles.some(x=>x&&x[0]==='How are upgrade rarities balanced?'))window.helpArticles.unshift(['How are upgrade rarities balanced?','Upgrades & Luck','Upgrade effects scale by a single rarity ladder: Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, Omega 8×. Whole-number projectile and pierce bonuses use capped steps to avoid screen-filling projectiles or unlimited pierce.']);
 }
+installWardenDamageGuard();
 setInterval(tick,500);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tick,{once:true});else tick();
 })();

@@ -6,14 +6,14 @@ const TIER_SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legend
 const TIER_ORDER=Object.keys(TIER_SCALE);
 function tierInteger(base,mult,kind){
   const index=Math.max(0,TIER_ORDER.findIndex(r=>Math.abs(TIER_SCALE[r]-Number(mult))<1e-6));
-  const bounded={pierce:[1,1,2,2,3,3,4,5,6,7,8],projectiles:[1,1,1,1,2,2,2,3,3,4,5]};
+  const bounded={pierce:[1,1,2,2,3,4,5,6,7,8,8],projectiles:[1,1,1,2,2,3,3,4,4,5,5]};
   if(bounded[kind])return bounded[kind][index];
   let amount=Math.max(0,Math.round(Number(base)||0));
   for(let i=1;i<=index;i++)amount=Math.max(Math.round(Number(base)*TIER_SCALE[TIER_ORDER[i]]),amount+1);
   return amount;
 }
 window.OUTLAST_UPGRADE_TIER_INTEGER=tierInteger;
-const V='4.5.26';
+const V='4.5.27';
 const LIBRARY=[
   {name:"Common Might 01",rarity:"Common",mult:1,desc:v=>`+${fmtPct(3,v)} damage`,apply:v=>game.player.damage+=3*v},
   {name:"Common Haste 02",rarity:"Common",mult:1,desc:v=>`+${fmtPct(2.2,v)}% attack speed`,apply:v=>game.player.fireRate=Math.max(.045,(game.player.fireRate||.45)*(1-.022*v))},
@@ -274,9 +274,9 @@ function installRoll(){
 function hook(){
   install();installRoll();
   try{
-    document.title='OUTLAST v4.5.26';
-    window.OUTLAST_BUILD='4.5.26';window.OUTLAST_VERSION='v4.5.26';
-    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v4.5.26');
+    document.title='OUTLAST v4.5.27';
+    window.OUTLAST_BUILD='4.5.27';window.OUTLAST_VERSION='v4.5.27';
+    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v4.5.27');
     if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='How many upgrade choices are there?')){
       helpArticles.unshift(['How many upgrade choices are there?','Upgrades & Luck','OUTLAST now has more than 200 distinct level-up upgrade cards across every rarity tier.']);
     }

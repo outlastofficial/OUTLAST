@@ -1,4 +1,4 @@
-/* OUTLAST v3.37.16 — 220 functional upgrade cards with approved rarity scaling */
+/* OUTLAST v4.6.0 — 220 rarity-family cards with aligned, bounded effects */
 (function(){
 'use strict';
 function fmtPct(base,mult){return Number((Number(base)*Number(mult)).toFixed(1)).toString()}
@@ -13,7 +13,7 @@ function tierInteger(base,mult,kind){
   return amount;
 }
 window.OUTLAST_UPGRADE_TIER_INTEGER=tierInteger;
-const V='4.5.26';
+const V='4.6.0';
 const LIBRARY=[
   {name:"Common Might 01",rarity:"Common",mult:1,desc:v=>`+${fmtPct(3,v)} damage`,apply:v=>game.player.damage+=3*v},
   {name:"Common Haste 02",rarity:"Common",mult:1,desc:v=>`+${fmtPct(2.2,v)}% attack speed`,apply:v=>game.player.fireRate=Math.max(.045,(game.player.fireRate||.45)*(1-.022*v))},
@@ -274,9 +274,9 @@ function installRoll(){
 function hook(){
   install();installRoll();
   try{
-    document.title='OUTLAST v4.5.26';
-    window.OUTLAST_BUILD='4.5.26';window.OUTLAST_VERSION='v4.5.26';
-    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v4.5.26');
+    document.title='OUTLAST v4.6.0';
+    window.OUTLAST_BUILD='4.6.0';window.OUTLAST_VERSION='v4.6.0';
+    document.querySelectorAll('[data-outlast-version]').forEach(e=>e.textContent='v4.6.0');
     if(Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&x[0]==='How many upgrade choices are there?')){
       helpArticles.unshift(['How many upgrade choices are there?','Upgrades & Luck','OUTLAST now has more than 200 distinct level-up upgrade cards across every rarity tier.']);
     }

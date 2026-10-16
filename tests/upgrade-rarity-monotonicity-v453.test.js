@@ -18,4 +18,32 @@ s.game.player=makePlayer();let legacy=game.upgradeBase37('Multi-Shot','',()=>{},
 s.game.player=makePlayer();legacy=game.upgradeBase37('Piercing','',()=>{},'Omega');legacy.apply();assert.strictEqual(s.game.player.pierce,8,'Omega pierce must cap at eight');
 s.game.player=makePlayer();legacy=game.upgradeBase37('Treasure Radar','',()=>{},'Omega');legacy.apply();assert.strictEqual(s.game.player.treasureDropMultiplier,3,'Omega treasure drop multiplier must cap at 3x');assert(legacy.desc.includes('+200%'),'Treasure Radar description matches its applied effect');
 s.game.player=makePlayer();legacy=game.upgradeBase37('XP Boost','',()=>{},'Omega');legacy.apply();assert(Math.abs(s.game.player.xpBonus-1.32)<1e-9,'Omega XP boost must apply 32%, not 64%');
-s.window.rollUpgradeRarity=()=> 'Celestial';const choices=game.authoritativeUpgradeChoice37();assert.strictEqual(choices.length,3,'picker returns three choices');assert(choices.every(x=>x[3]==='Celestial'&&x[4]&&x[4].rarity==='Celestial'&&x[4].multiplier===5),'rarity metadata and multiplier agree');console.log('OUTLAST v4.5.26 rarity regression passed: 220 cards across 11 tiers, monotonic bounded discrete bonuses, and matching descriptions.');
+s.window.rollUpgradeRarity=()=> 'Celestial';const choices=game.authoritativeUpgradeChoice37();assert.strictEqual(choices.length,3,'picker returns three choices');assert(choices.every(x=>x[3]==='Celestial'&&x[4]&&x[4].rarity==='Celestial'&&x[4].multiplier===5),'rarity metadata and multiplier agree');
+const signatureProfiles=[
+ ['Big Bullets','Uncommon',p=>p.bulletSize>1&&p.bulletSize<1.2,d=>/projectile size/i.test(d)],
+ ['Projectile Speed','Uncommon',p=>p.projectileSpeed>1&&p.projectileSpeed<1.2,d=>/projectile speed/i.test(d)],
+ ['Elite Hunter','Epic',p=>p.executioner>0&&p.crit>0&&p.speed>300,d=>/elite damage/i.test(d)],
+ ['Void Arsenal','Epic',p=>p.multiShot>0&&p.pierce>0&&p.damage>0&&p.projectileSpeed>1,d=>/projectiles/i.test(d)],
+ ['Abyssal Core','Mythic',p=>p.damage>0&&p.fireRate<.45&&p.pierce>0&&p.bossMult>1,d=>/damage/i.test(d)],
+ ['Divine Aegis','Divine',p=>p.max>100&&p.shield>0&&p.damageTakenMult<1,d=>/damage reduction/i.test(d)],
+ ['Celestial Barrage','Celestial',p=>p.multiShot>0&&p.pierce>0&&p.damage>0&&p.projectileSpeed>1&&p.crit>0,d=>/projectiles/i.test(d)],
+ ['Transcendent Fury','Transcendent',p=>p.damage>0&&p.fireRate<.45&&p.crit>0&&p.pierce>0&&p.bossDamageBonus>0&&p.ultDamage>1,d=>/ultimate damage/i.test(d)],
+ ['Eternal Rebirth','Eternal',p=>p.max>100&&p.regen>0&&p.damage>0&&p.damageTakenMult<1&&p.phoenixRevives>0,d=>/revive/i.test(d)],
+ ['Omega Ascension','Omega',p=>p.damage>0&&p.fireRate<.45&&p.crit>0&&p.multiShot>0&&p.pierce>0&&p.ultDamage>1&&p.bossDamageBonus>0&&p.shockwave===true,d=>/shockwave/i.test(d)]
+];
+for(const [name,tier,metric,descCheck] of signatureProfiles){
+ s.game.player=makePlayer();s.game.player.damage=20;s.game.player.executioner=0;s.game.player.bossDamageBonus=0;s.game.player.phoenixRevives=0;s.game.player.shield=0;
+ let fallbackCalled=false;
+ const fx=game.upgradeBase37(name,'',()=>{fallbackCalled=true;},tier);
+ assert(descCheck(String(fx.desc)),name+' has a rarity-matched, accurate description');
+ fx.apply();
+ assert(!fallbackCalled,name+' must use its explicit balance profile rather than the raw legacy handler');
+ assert(metric(s.game.player),name+' applies its described rarity-tier effect');
+}
+const activeLegacy=read('outlast-v327101-all-upgrade-balance.js');
+const legacyNames=[...activeLegacy.matchAll(/^\s*'([^']+)'\s*:\s*\[/gm)].map(m=>m[1]);
+for(const name of legacyNames)assert(system.includes("name==='"+name+"'"),name+' must have an explicit rarity-scaled profile');
+assert(html.includes('<meta name="outlast-build" content="4.6.0">'),'visible release version must be v4.6.0');
+assert(html.includes('outlast-v3370-game-systems.js?v=4.6.0')&&html.includes('outlast-v441-skill-upgrade-balance-ui.js?v=4.6.0'),'balanced runtime scripts must use the release cache key');
+
+console.log('OUTLAST v4.6.0 rarity regression passed: 220 family cards, every legacy signature profile, rarity monotonicity, and matching descriptions.');

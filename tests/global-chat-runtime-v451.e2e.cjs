@@ -18,6 +18,7 @@ const assert = require('node:assert/strict');
         localStorage.setItem('outlastDeviceMode','pc');
         localStorage.setItem('outlastJoystickMode','off');
         localStorage.setItem('outlast_update_ack_v4.5.26','1');
+        localStorage.setItem('outlast_update_ack_v4526','1');
         localStorage.setItem('outlast_v451_release_popup_ack','1');
         localStorage.setItem('outlast_v457_release_popup_ack','1');
         localStorage.setItem('outlastSeenUpdateVersion','4.5.26');

@@ -1,7 +1,7 @@
 /* OUTLAST v4.3.6 — Upgrade text-fit + overlay spacing */
 (function(){
 'use strict';
-const VERSION='4.5.23';
+const VERSION='4.5.26';
 const TIERS=['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
 const COLORS={Common:'#93a6b5',Uncommon:'#63d98b',Rare:'#61c7ff',Epic:'#bc8cff',Legendary:'#ffd66e',Mythic:'#ff70d7',Divine:'#fff0a0',Celestial:'#85ebff',Transcendent:'#b0a0ff',Eternal:'#ffd2ed',Omega:'#ff9f65'};
 const num=v=>Number.isFinite(Number(v))?Number(v):0, txt=v=>String(v==null?'':v).replace(/\s+/g,' ').trim();

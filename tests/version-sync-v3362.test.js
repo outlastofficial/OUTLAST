@@ -2,6 +2,7 @@ const fs=require('fs'),assert=require('assert');
 const index=fs.readFileSync('index.html','utf8');
 const core=fs.readFileSync('outlast-v33500-core-content-engine.js','utf8');
 const expansion=fs.readFileSync('outlast-v4000-ultimate-expansion.js','utf8');
+const gear=fs.readFileSync('outlast-v435-upgrade-gear-redesign.js','utf8');
 
 const currentBuild=(index.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
 assert(currentBuild&&index.includes('<meta name="build-version" content="'+currentBuild+'">')&&index.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current release metadata stays synchronized');
@@ -24,5 +25,5 @@ const declIndex=index.indexOf("let fatalGameError='',fatalErrorShown=false;");
 assert(startIndex>0 && declIndex>=0 && declIndex<startIndex,'fatalGameError must be declared before startGame; Start Run uses it before the loop begins');
 assert(!index.includes("document.getElementById('progressionBtn').onclick=renderProgression"),'progression button binding must be null-safe');
 assert(!index.includes("document.getElementById('questBtn').onclick=renderQuestBoard"),'quest button binding must be null-safe');
-assert(/<script src="outlast-v435-upgrade-gear-redesign\.js\?v=[^"]+"><\/script>/.test(index),'level-up and Gear Room layer is loaded after the renderer');
+assert(/<script src="outlast-v435-upgrade-gear-redesign\.js\?v=4\.5\.26"><\/script>/.test(index)&&gear.includes("const VERSION='4.5.26';"),'latest upgrade overlay must use the current build and cannot rewrite the version marker backwards');
 console.log('v4.3.6 version synchronization regression test passed');

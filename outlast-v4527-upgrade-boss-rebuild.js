@@ -45,7 +45,7 @@ function canSchedule(g,sv){
 }
 function tick(){
  const g=game(),sv=save();
- if(!canSchedule(g,sv)){state.run=null;return}
+ if(!canSchedule(g,sv)){if(!g||!g.running||g.over||sv?.mode==='1v1 Arena'||g.practiceMode||sv?.practiceMode)state.run=null;return}
  if(state.run!==g){state.run=g;state.deck=[];state.index=0;state.hadBoss=false;state.lastDefeatAt=0;state.lastAttemptAt=0;state.firstSpawnDone=false;state.retries=0;shuffleDeck()}
  const boss=ensureBossIdentity(g);
  if(boss){state.hadBoss=true;state.firstSpawnDone=true;state.lastDefeatAt=0;return}

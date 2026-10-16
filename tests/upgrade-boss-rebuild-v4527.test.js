@@ -10,9 +10,11 @@ assert((library.match(/\{name:"(?:Common|Uncommon|Rare|Epic|Legendary|Mythic|Div
 const names=[...boss.matchAll(/name:'([^']+)'/g)].map(m=>m[1]).filter(n=>['Grave Titan','Plague Doctor','Mutant Brute','Undead Commander','The Abomination','Storm Colossus','Void Tyrant','Eternal Warden'].includes(n));
 assert.strictEqual(new Set(names).size,8,'all eight boss profiles must be unique');
 for(const name of ['Grave Titan','Plague Doctor','Mutant Brute','Undead Commander','The Abomination','Storm Colossus','Void Tyrant','Eternal Warden'])assert(boss.includes("name:'"+name+"'"),'missing boss profile '+name);
-assert(boss.includes("Date.now()-state.lastDefeatAt>=30000"),'later boss schedule must be tied to previous boss defeat');
-assert(boss.includes("window.OUTLAST_FORCE_BOSS_SPAWN('v4.5.27-unique-boss-safety-net')"),'failed normal spawns must use the safety-net spawn');
+assert(boss.includes("Date.now()-state.lastDefeatAt>=BOSS_INTERMISSION_MS"),'later boss schedule must be tied to previous boss defeat');
+assert(boss.includes("window.OUTLAST_FORCE_BOSS_SPAWN('v4.5.28-unique-boss-safety-net')"),'failed normal spawns must use the safety-net spawn');
 assert(boss.includes('state.retries++'),'failed spawns must be counted and retried');
-assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.27'),'new boss/upgrade system must be loaded');
-assert(html.includes('4.5.27'),'release version must be present in index');
-console.log('OUTLAST v4.5.27 source regression passed: 220 tier cards, gradual capped discrete bonuses, eight unique boss profiles, and post-defeat spawn retries.');
+assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.28'),'new boss/upgrade system must be loaded');
+assert(html.includes('OUTLAST v4.5.28'),'release version must be present in index');
+for(const behavior of ['runUniqueBossAbility','shockwave','poisonVolley','charge','summonMinions','poisonZone','lightningStrike','riftTeleport','wardenShield'])assert(boss.includes(behavior),'missing real unique boss mechanic '+behavior);
+assert(boss.includes('Date.now()-state.lastDefeatAt<BOSS_INTERMISSION_MS'),'normal scheduler must not bypass the intermission');
+console.log('OUTLAST v4.5.28 source regression passed: 220 tier cards, gradual capped discrete bonuses, eight unique boss profiles, and post-defeat spawn retries.');

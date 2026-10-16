@@ -82,7 +82,7 @@ function runUniqueBossAbility(g,b){
   case 'Mutant Brute': {
    const dx=p.x-b.x,dy=p.y-b.y,d=Math.hypot(dx,dy)||1,step=Math.min(125,Math.max(45,d-40));
    const nx=Math.max(30,Math.min(typeof W==='number'?W-30:2000,b.x+dx/d*step));
-   const ny=Math.max(30,Math.min(typeof H==='number'?H-30,b.y+dy/d*step));
+   const ny=Math.max(30,Math.min(typeof H==='number'?H-30:2000,b.y+dy/d*step));
    fx(b.x,b.y,70,'#ff8b4a',.35);
    try{if(typeof tryMoveEntity==='function')tryMoveEntity(b,nx,ny);else{b.x=nx;b.y=ny}}catch(_){b.x=nx;b.y=ny}
    if(Math.hypot(p.x-b.x,p.y-b.y)<Number(p.r||18)+Number(b.r||42)+22)damage(Math.max(9,Number(b.damage||25)*.58),'Mutant Brute charge');
@@ -92,7 +92,7 @@ function runUniqueBossAbility(g,b){
   case 'Undead Commander': {
    if(typeof spawnEnemy==='function'){
     for(let i=0;i<3;i++){const angle=(Math.PI*2*i/3)+Math.random()*.25;const before=g.enemies.length;try{spawnEnemy(i===0?'elite':(i===1?'runner':'ranged'))}catch(_){}
-     const m=g.enemies[before];if(m&&!m.boss){m.x=Math.max(25,Math.min(typeof W==='number'?W-25:2000,b.x+Math.cos(angle)*70));m.y=Math.max(25,Math.min(typeof H==='number'?H-25,b.y+Math.sin(angle)*70));m.summoned=true;m.__bossCommanderMinion=true;}
+     const m=g.enemies[before];if(m&&!m.boss){m.x=Math.max(25,Math.min(typeof W==='number'?W-25:2000,b.x+Math.cos(angle)*70));m.y=Math.max(25,Math.min(typeof H==='number'?H-25:2000,b.y+Math.sin(angle)*70));m.summoned=true;m.__bossCommanderMinion=true;}
     }
    }
    fx(b.x,b.y,100,'#c6a2ff',.55);setNext(8500);break;
@@ -112,7 +112,7 @@ function runUniqueBossAbility(g,b){
   case 'Void Tyrant': {
    const ang=Math.atan2(p.y-b.y,p.x-b.x)+Math.PI,dist=175;
    const nx=Math.max(35,Math.min(typeof W==='number'?W-35:2000,p.x+Math.cos(ang)*dist));
-   const ny=Math.max(35,Math.min(typeof H==='number'?H-35,p.y+Math.sin(ang)*dist));
+   const ny=Math.max(35,Math.min(typeof H==='number'?H-35:2000,p.y+Math.sin(ang)*dist));
    fx(b.x,b.y,60,'#a86bff',.35);b.x=nx;b.y=ny;fx(b.x,b.y,72,'#a86bff',.55);
    if(typeof burst==='function')burst(b.x,b.y,'#a86bff',14,100);
    setNext(6200);break;

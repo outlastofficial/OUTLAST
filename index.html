@@ -3908,7 +3908,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.6.0';
-const CURRENT_UPDATE_INFO={title:'v4.6.0 — Abyss Expedition',summary:'A new permanent Expedition Board adds three milestone missions with claim-once rewards, plus a new collection entry point from More → New Content / Collection.',items:['Added the Abyss Expedition Board with three persistent milestone contracts.','Earn bonus coins and World Keys for lifetime survival milestones; each reward can be claimed once per player save.','Added progress indicators and locked/claimable/claimed states to every contract.','Updated the in-game version marker, Update Log, and How-To guide.','Preserved existing login, saved stats, map selection, upgrades, and boss scheduling code.']};
+const CURRENT_UPDATE_INFO={title:'v4.6.0 — Abyss Expedition',summary:'Added the Abyss Expedition Board, a new set of milestone contracts with rewards.',items:['New Abyss Expedition Board with three milestone contracts.','Earn bonus coins and World Keys by reaching survival milestones.','Track contract progress and claim each reward once per save.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

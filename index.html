@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlast-game.onrender.com/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.29">
-<meta name="build-version" content="4.5.29">
-<title>OUTLAST v4.5.29</title>
+<meta name="outlast-build" content="4.6.0">
+<meta name="build-version" content="4.6.0">
+<title>OUTLAST v4.6.0</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -918,7 +918,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.5.29 • SURVIVOR HUB</div>
+          <div class="menu-chip">v4.6.0 • ABYSS EXPEDITION</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3671,6 +3671,7 @@ document.getElementById('progressionBtn')?.addEventListener('click',renderProgre
 document.getElementById('questBtn')?.addEventListener('click',renderQuestBoard);
 
 const helpArticles=[
+  ['How does Abyss Expedition work?','Progression','Open More → New Content / Collection → Abyss Expedition. Complete the listed lifetime milestones to claim permanent one-time coin and World Key rewards. Your existing save is preserved.'],
   ['How do I open GAMEVERSE from OUTLAST?','GAMEVERSE','From the OUTLAST main menu, open the Play tab and select the bright GAMEVERSE — MORE GAMES button. It opens the current GAMEVERSE hub at https://gameverse-hub.hatchable.site/ in a new browser tab, so your OUTLAST game stays open.'],
   ['What do the minimap symbols mean?','Maps','Blue arrow = player, red dot = enemy, gold star = boss, orange diamond = elite, cyan diamond = XP, yellow dollar = coin, colored square = power-up, purple diamond = shrine, gray block = object.'],
   ['How are upgrades balanced by rarity?','Upgrades','Rarity power now rises gradually from Common to Omega. Mythic Breach scales to +3 pierce instead of the old +1 bug.'],
@@ -3759,7 +3760,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -3906,8 +3907,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.5.29';
-const CURRENT_UPDATE_INFO={title:'v4.5.29 — Boss Identity & Intermission Fix',summary:'Every boss has a named signature ability and distinct identity. A race-condition fix starts the 30-second intermission as soon as a defeat is detected, preventing instant back-to-back bosses.',items:['Rebalanced capped pierce and projectile steps across the full 220-card upgrade library.','Kept the approved rarity ladder: Mythic 2.25×, Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, Omega 8×.','Eight boss profiles rotate without repeats until the roster is exhausted, with unique shockwaves, poison volleys, charges, summons, poison zones, lightning, teleports, or shields.','The first boss is scheduled around 15 seconds; every later boss waits at least 30 seconds after the previous defeat, even if the normal scheduler tries early.','Failed boss spawns retry without skipping the intermission or creating duplicate living bosses.']};
+const CURRENT_UPDATE_VERSION='4.6.0';
+const CURRENT_UPDATE_INFO={title:'v4.6.0 — Abyss Expedition',summary:'A new permanent Expedition Board adds three milestone missions with claim-once rewards, plus a new collection entry point from More → New Content / Collection.',items:['Added the Abyss Expedition Board with three persistent milestone contracts.','Earn bonus coins and World Keys for lifetime survival milestones; each reward can be claimed once per player save.','Added progress indicators and locked/claimable/claimed states to every contract.','Updated the in-game version marker, Update Log, and How-To guide.','Preserved existing login, saved stats, map selection, upgrades, and boss scheduling code.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3961,6 +3962,20 @@ document.getElementById('worldBtn').onclick=renderWorld;document.getElementById(
 document.getElementById('recordsBtn').onclick=renderRecords;
 
 
+function renderAbyssExpedition(){
+ save.abyssClaims=save.abyssClaims||{};
+ const missions=[
+  {id:'first100',name:'Into the Unknown',desc:'Reach 100 lifetime eliminations.',progress:Math.min(100,Number(save.stats?.kills)||0),goal:100,rewardCoins:250,rewardKeys:0},
+  {id:'boss3',name:'Prove Your Resolve',desc:'Defeat 3 bosses across your runs.',progress:Math.min(3,Number(save.stats?.bosses)||0),goal:3,rewardCoins:0,rewardKeys:5},
+  {id:'level25',name:'Deep Descent',desc:'Reach Best Level 25.',progress:Math.min(25,Number(save.stats?.bestLevel)||1),goal:25,rewardCoins:500,rewardKeys:3}
+ ];
+ const rows=missions.map(m=>{
+  const claimed=!!save.abyssClaims[m.id],ready=m.progress>=m.goal;
+  const reward=[m.rewardCoins?('🪙 '+m.rewardCoins+' coins'):'',m.rewardKeys?('🔑 '+m.rewardKeys+' World Keys'):''].filter(Boolean).join(' + ');
+  return '<div class="option '+(claimed?'selected':'')+'"><b>'+(claimed?'✓ ':ready?'✦ ':'□ ')+m.name+'</b><div class="small">'+m.desc+'</div><div class="small">Progress: '+m.progress+'/'+m.goal+'</div><div class="small">Reward: '+reward+'</div><button class="gold" data-action="claimAbyss" data-value="'+m.id+'" '+(claimed||!ready?'disabled':'')+'>'+(claimed?'CLAIMED':ready?'CLAIM REWARD':'LOCKED')+'</button></div>';
+ }).join('');
+ openSub('🌌 Abyss Expedition', '<p class="note">Permanent milestones for this player save. Rewards can only be claimed once, and your existing progress is preserved.</p><div class="grid">'+rows+'</div>');
+}
 function renderExtras(){
  const codex=Object.keys(save.codex||{}).length;
  const evol=Object.keys(save.weaponEvolutions||{}).length;
@@ -3976,6 +3991,7 @@ function renderExtras(){
  <div class="option"><b>▣ Secret Rooms</b><div class="small">Discover hidden vaults during runs.</div><button data-action="rooms">VIEW ROOMS</button></div>
  <div class="option"><b>♛ World Bosses</b><div class="small">${Object.keys(save.worldBosses||{}).length}/${worldBosses.length} defeated</div><button data-action="worldBosses">VIEW BOSSES</button></div>
  <div class="option"><b>✦ Rarity Ascension</b><div class="small">11 tiers, including 5 above Mythic.</div><button data-action="rarities">VIEW RARITIES</button></div>
+ <div class="option"><b>🌌 Abyss Expedition</b><div class="small">Three permanent milestone contracts with one-time coin and World Key rewards.</div><button data-action="abyssExpedition">OPEN EXPEDITION</button></div>
  <div class="option"><b>⚡ Run Intensity</b><div class="small">Dynamic threat intensity is shown during combat.</div></div>
  </div>`)
 }
@@ -4021,6 +4037,23 @@ document.getElementById('subContent').addEventListener('click',e=>{
  if(a==='presetLoad'){const bp=save.buildPresets&&save.buildPresets[v];if(!bp)return toast('Build preset is empty');save.selectedChar=bp.char||save.selectedChar;save.selectedWeapon=bp.weapon||save.selectedWeapon;save.selectedSkin=bp.skin||save.selectedSkin;save.selectedPet=bp.pet||save.selectedPet;save.selectedRelic=bp.relic||save.selectedRelic;save.selectedCharm=bp.charm||save.selectedCharm;save.element=bp.element||save.element;save.activeSkill=bp.skill||save.activeSkill;persist();renderWorld2();toast('✅ Build '+v+' equipped!');}
  if(a==='endgameDifficulty'){if(diffDefs[v]){save.difficulty=v;persist();renderWorld2();toast('☠ Difficulty set to '+v);}}
  if(false){openSub('⚔ Survival Season '+(save.survivalSeason||1),`<div class="grid"><div class="option"><b>Wins</b><div>${save.survivalStats?.p1Wins||0}</div></div><div class="option"><b>Rounds</b><div>${save.survivalStats?.rounds||0}</div></div><div class="option"><b>Best Streak</b><div>${save.survivalStats?.bestStreak||0}</div></div><div class="option"><b>Current Streak</b><div>${save.survivalStats?.currentStreak||0}</div></div></div><p class="note">Ranked 1v1 stats are separate from the survival leaderboard.</p>`)}
+ if(a==='abyssExpedition')renderAbyssExpedition();
+ if(a==='claimAbyss'){
+  save.abyssClaims=save.abyssClaims||{};
+  const mission={
+   first100:{progress:Number(save.stats?.kills)||0,goal:100,coins:250,keys:0},
+   boss3:{progress:Number(save.stats?.bosses)||0,goal:3,coins:0,keys:5},
+   level25:{progress:Number(save.stats?.bestLevel)||1,goal:25,coins:500,keys:3}
+  }[v];
+  if(!mission||save.abyssClaims[v])return;
+  if(mission.progress<mission.goal){toast('Expedition milestone not complete yet');return;}
+  save.abyssClaims[v]=true;
+  save.coins=(Number(save.coins)||0)+mission.coins;
+  save.worldKeys=(Number(save.worldKeys)||0)+mission.keys;
+  persist();
+  toast('🌌 Expedition reward claimed!');
+  renderAbyssExpedition();
+ }
  if(a==='codex')renderCodex();
  if(a==='weaponTree')renderWeaponTree();
  if(a==='petTree')renderPetTree();

@@ -6727,3 +6727,36 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 })();
 </script>
+
+
+<script id="outlast-v460-absolute-final-version-marker">
+(function(){
+  'use strict';
+  var VERSION='4.6.0';
+  var LABEL='v4.6.0 • ABYSS EXPEDITION';
+  function enforce(){
+    try{
+      window.OUTLAST_BUILD=VERSION;
+      window.OUTLAST_VERSION='v'+VERSION;
+      if(document.title!=='OUTLAST v'+VERSION)document.title='OUTLAST v'+VERSION;
+      ['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){
+        var el=document.querySelector(sel);
+        if(el&&el.getAttribute('content')!==VERSION)el.setAttribute('content',VERSION);
+      });
+      document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){
+        if(el.textContent!==LABEL)el.textContent=LABEL;
+      });
+      document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(el){
+        if(el.textContent!=='v'+VERSION)el.textContent='v'+VERSION;
+      });
+    }catch(e){console.error('OUTLAST version marker sync failed',e);}
+  }
+  enforce();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',enforce,{once:true});
+  window.addEventListener('pageshow',enforce);
+  setTimeout(enforce,0);
+  setTimeout(enforce,250);
+  setTimeout(enforce,1000);
+  setTimeout(enforce,3000);
+})();
+</script>

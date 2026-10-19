@@ -7,6 +7,6 @@ for(const name of ['Grave Titan','Plague Doctor','Mutant Brute','Undead Commande
 for(const behavior of ['runUniqueBossAbility','case \'Grave Titan\':','case \'Plague Doctor\':','case \'Mutant Brute\':','case \'Undead Commander\':','case \'The Abomination\':','case \'Storm Colossus\':','case \'Void Tyrant\':','case \'Eternal Warden\':'])assert(boss.includes(behavior),'boss needs a real unique mechanic: '+behavior);
 assert(boss.includes('BOSS_INTERMISSION_MS=30000'),'must enforce 30-second boss intermission');
 assert(boss.includes('Date.now()-state.lastDefeatAt<BOSS_INTERMISSION_MS'),'normal scheduler must not bypass boss intermission');
-assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.28'),'v4.5.28 boss script must be cache-busted');
-assert(html.includes('OUTLAST v4.5.28'),'visible build version must be synchronized');
-console.log('OUTLAST v4.5.28 unique boss + intermission regression passed.');
+assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.29'),'v4.5.28 boss script must be cache-busted');
+assert(html.includes('OUTLAST v4.5.29'),'visible build version must be synchronized');
+console.log('OUTLAST v4.5.29 unique boss + intermission regression passed.');

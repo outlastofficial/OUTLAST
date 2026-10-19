@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.5.15">
-<meta name="build-version" content="4.5.15">
-<title>OUTLAST v4.5.15</title>
+<meta name="outlast-build" content="4.6.0">
+<meta name="build-version" content="4.6.0">
+<title>OUTLAST v4.6.0</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -912,7 +912,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.5.2 • SURVIVOR HUB</div>
+          <div class="menu-chip">v4.6.0 • ABYSS EXPEDITION</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3665,6 +3665,7 @@ document.getElementById('progressionBtn')?.addEventListener('click',renderProgre
 document.getElementById('questBtn')?.addEventListener('click',renderQuestBoard);
 
 const helpArticles=[
+ ['How does Abyss Expedition work?','Progression','Open More → New Content / Collection → Abyss Expedition. Complete the listed lifetime milestones to claim permanent one-time coin and World Key rewards. Your existing save is preserved.'],
   ['How do I open GAMEVERSE from OUTLAST?','GAMEVERSE','From the OUTLAST main menu, open the Play tab and select the bright GAMEVERSE — MORE GAMES button. It opens the current GAMEVERSE hub at https://chatgpt-12b70mc0.webondemand.com/Games/ in a new browser tab, so your OUTLAST game stays open.'],
   ['What do the minimap symbols mean?','Maps','Blue arrow = player, red dot = enemy, gold star = boss, orange diamond = elite, cyan diamond = XP, yellow dollar = coin, colored square = power-up, purple diamond = shrine, gray block = object.'],
   ['How are upgrades balanced by rarity?','Upgrades','Rarity power now rises gradually from Common to Omega. Mythic Breach scales to +3 pierce instead of the old +1 bug.'],
@@ -3753,7 +3754,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -3900,8 +3901,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.5.15';
-const CURRENT_UPDATE_INFO={title:'v4.5.15 — Global Chat Restored',summary:'Restored Global Chat visibility by removing the temporary hide rule. Existing chat transport and saved data are preserved.',items:['Global Chat panel and toggle are visible again.','Removed the temporary CSS hide rule.','Existing chat connection, usernames, and role-tag code are preserved.','Login and saved progress are unchanged.']};
+const CURRENT_UPDATE_VERSION='4.6.0';
+const CURRENT_UPDATE_INFO={title:'v4.6.0 — Abyss Expedition',summary:'A permanent Expedition Board adds three milestone missions with claim-once rewards.',items:['Added the Abyss Expedition Board with three persistent milestone contracts.','Earn bonus coins and World Keys for lifetime survival milestones; each reward can be claimed once per player save.','Added progress indicators and locked, claimable, and claimed states.','Updated the in-game version marker, Update Log, and How-To guide.','Preserved existing login and saved progress.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -3955,6 +3956,12 @@ document.getElementById('worldBtn').onclick=renderWorld;document.getElementById(
 document.getElementById('recordsBtn').onclick=renderRecords;
 
 
+function renderAbyssExpedition(){
+ save.abyssClaims=save.abyssClaims||{};
+ const missions=[{id:'first100',name:'Into the Unknown',desc:'Reach 100 lifetime eliminations.',progress:Math.min(100,Number(save.stats?.kills)||0),goal:100,rewardCoins:250,rewardKeys:0},{id:'boss3',name:'Prove Your Resolve',desc:'Defeat 3 bosses across your runs.',progress:Math.min(3,Number(save.stats?.bosses)||0),goal:3,rewardCoins:0,rewardKeys:5},{id:'level25',name:'Deep Descent',desc:'Reach Best Level 25.',progress:Math.min(25,Number(save.stats?.bestLevel)||1),goal:25,rewardCoins:500,rewardKeys:3}];
+ const rows=missions.map(m=>{const claimed=!!save.abyssClaims[m.id],ready=m.progress>=m.goal;const reward=[m.rewardCoins?('🪙 '+m.rewardCoins+' coins'):'',m.rewardKeys?('🔑 '+m.rewardKeys+' World Keys'):''].filter(Boolean).join(' + ');return '<div class="option '+(claimed?'selected':'')+'"><b>'+(claimed?'✓ ':ready?'✦ ':'□ ')+m.name+'</b><div class="small">'+m.desc+'</div><div class="small">Progress: '+m.progress+'/'+m.goal+'</div><div class="small">Reward: '+reward+'</div><button class="gold" data-action="claimAbyss" data-value="'+m.id+'" '+(claimed||!ready?'disabled':'')+'>'+(claimed?'CLAIMED':ready?'CLAIM REWARD':'LOCKED')+'</button></div>';}).join('');
+ openSub('🌌 Abyss Expedition','<p class="note">Permanent milestones for this player save. Rewards can only be claimed once, and your existing progress is preserved.</p><div class="grid">'+rows+'</div>');
+}
 function renderExtras(){
  const codex=Object.keys(save.codex||{}).length;
  const evol=Object.keys(save.weaponEvolutions||{}).length;
@@ -3970,7 +3977,8 @@ function renderExtras(){
  <div class="option"><b>▣ Secret Rooms</b><div class="small">Discover hidden vaults during runs.</div><button data-action="rooms">VIEW ROOMS</button></div>
  <div class="option"><b>♛ World Bosses</b><div class="small">${Object.keys(save.worldBosses||{}).length}/${worldBosses.length} defeated</div><button data-action="worldBosses">VIEW BOSSES</button></div>
  <div class="option"><b>✦ Rarity Ascension</b><div class="small">11 tiers, including 5 above Mythic.</div><button data-action="rarities">VIEW RARITIES</button></div>
- <div class="option"><b>⚡ Run Intensity</b><div class="small">Dynamic threat intensity is shown during combat.</div></div>
+ <div class="option"><b>🌌 Abyss Expedition</b><div class="small">Three permanent milestone contracts with one-time coin and World Key rewards.</div><button data-action="abyssExpedition">OPEN EXPEDITION</button></div>
+<div class="option"><b>⚡ Run Intensity</b><div class="small">Dynamic threat intensity is shown during combat.</div></div>
  </div>`)
 }
 function renderCodex(){
@@ -4015,6 +4023,8 @@ document.getElementById('subContent').addEventListener('click',e=>{
  if(a==='presetLoad'){const bp=save.buildPresets&&save.buildPresets[v];if(!bp)return toast('Build preset is empty');save.selectedChar=bp.char||save.selectedChar;save.selectedWeapon=bp.weapon||save.selectedWeapon;save.selectedSkin=bp.skin||save.selectedSkin;save.selectedPet=bp.pet||save.selectedPet;save.selectedRelic=bp.relic||save.selectedRelic;save.selectedCharm=bp.charm||save.selectedCharm;save.element=bp.element||save.element;save.activeSkill=bp.skill||save.activeSkill;persist();renderWorld2();toast('✅ Build '+v+' equipped!');}
  if(a==='endgameDifficulty'){if(diffDefs[v]){save.difficulty=v;persist();renderWorld2();toast('☠ Difficulty set to '+v);}}
  if(false){openSub('⚔ Survival Season '+(save.survivalSeason||1),`<div class="grid"><div class="option"><b>Wins</b><div>${save.survivalStats?.p1Wins||0}</div></div><div class="option"><b>Rounds</b><div>${save.survivalStats?.rounds||0}</div></div><div class="option"><b>Best Streak</b><div>${save.survivalStats?.bestStreak||0}</div></div><div class="option"><b>Current Streak</b><div>${save.survivalStats?.currentStreak||0}</div></div></div><p class="note">Ranked 1v1 stats are separate from the survival leaderboard.</p>`)}
+ if(a==='abyssExpedition')renderAbyssExpedition();
+ if(a==='claimAbyss'){save.abyssClaims=save.abyssClaims||{};const mission={first100:{progress:Number(save.stats?.kills)||0,goal:100,coins:250,keys:0},boss3:{progress:Number(save.stats?.bosses)||0,goal:3,coins:0,keys:5},level25:{progress:Number(save.stats?.bestLevel)||1,goal:25,coins:500,keys:3}}[v];if(!mission||save.abyssClaims[v])return;if(mission.progress<mission.goal){toast('Expedition milestone not complete yet');return;}save.abyssClaims[v]=true;save.coins=(Number(save.coins)||0)+mission.coins;save.worldKeys=(Number(save.worldKeys)||0)+mission.keys;persist();toast('🌌 Expedition reward claimed!');renderAbyssExpedition();}
  if(a==='codex')renderCodex();
  if(a==='weaponTree')renderWeaponTree();
  if(a==='petTree')renderPetTree();
@@ -6368,7 +6378,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
- const BUILD='4.5.15',ACK='outlast_update_ack_v4515',POP='outlastMandatoryUpdateV4515';
+ const BUILD='4.6.0',ACK='outlast_update_ack_v460',POP='outlastMandatoryUpdateV460';
  function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
  function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
  function show(newer,remote){
@@ -6447,7 +6457,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.5.3"></script>
 <script src="outlast-v443-reliability-afk.js?v=4.4.5-r1-test-test"></script>
 <script id="outlast-v445-final-version-marker">(function(){'use strict';
-var V='4.5.15';
+var V='4.6.0';
 function setText(e,t){if(e&&e.textContent!==t)e.textContent=t;}
 function setAttr(e,a,v){if(e&&e.getAttribute(a)!==v)e.setAttribute(a,v);}
 function syncVersion(){try{
@@ -6456,8 +6466,8 @@ if(window.OUTLAST_VERSION!=='v'+V)window.OUTLAST_VERSION='v'+V;
 if(document.title!=='OUTLAST v'+V)document.title='OUTLAST v'+V;
 ['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(sel){setAttr(document.querySelector(sel),'content',V);});
 document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){setText(e,'v'+V);});
-document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • SURVIVOR HUB');});
-setText(document.getElementById('updatePopupVersion'),'v'+V+' — Global Chat Restored');
+document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){setText(e,'v'+V+' • ABYSS EXPEDITION');});
+setText(document.getElementById('updatePopupVersion'),'v'+V+' — Abyss Expedition');
 }catch(e){console.error('OUTLAST version marker sync failed',e);}}
 function install(){syncVersion();if(!window.__OUTLAST_V445_VERSION_GUARD){window.__OUTLAST_V445_VERSION_GUARD=true;window.setInterval(syncVersion,1000);try{new MutationObserver(function(){syncVersion();}).observe(document.documentElement,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['content']});}catch(_){}}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
@@ -6478,14 +6488,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();</script>
 <script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
 <script id="outlast-v451-survivor-hub-event-cleanup">(function(){'use strict';
-var CHIP='v4.5.15 • SURVIVOR HUB';
+var CHIP='v4.6.0 • ABYSS EXPEDITION';
 var selectors=['#outlastEventLiveNow','#eventLiveNow','#event-live-now','.event-live-now','.event-live-banner','.live-event-banner','.event-live-pill','.live-now-event-badge','[data-event-live="true"]','[aria-label="Event live now"]'];
 function clean(){try{selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(el&&el.id!=='worldEventsPanel'&&el.id!=='worldBtn')el.remove();});});if(!document.body)return;document.body.querySelectorAll('*').forEach(function(el){if(!el||el.children.length!==0)return;var txt=String(el.textContent||'').replace(/[🎉⚡🔥✨]/g,'').replace(/[.!:]+$/,'').trim().replace(/\s+/g,' ');if(/^event\s+live\s+now$/i.test(txt)){var p=el.parentElement;if(p&&p!==document.body&&p.children.length===1&&String(p.textContent||'').trim().replace(/\s+/g,' ').toLowerCase()===txt.toLowerCase())p.remove();else el.remove();}});}catch(e){console.error('OUTLAST event notice cleanup failed',e);}}
 function sync(){try{document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){if(el.textContent!==CHIP)el.textContent=CHIP;});clean();}catch(e){console.error('OUTLAST Survivor Hub marker failed',e);}}
 function ready(){sync();try{new MutationObserver(sync).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();</script>
-<script id="outlast-v451-survivor-hub-howto">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('Survivor Hub Label & Event Notice Cleanup');}))updates.unshift(['v4.5.0 — Survivor Hub Label & Event Notice Cleanup','The main-menu version chip now consistently reads v4.5.2 • SURVIVOR HUB. Removed the stale “Event Live Now” notice/badge only; World Events systems and login behavior remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?';});if(h)h[2]='The main-menu chip should read v4.5.2 • SURVIVOR HUB and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip should read v4.5.2 • SURVIVOR HUB and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.']);}}catch(e){console.error('OUTLAST Survivor Hub help update failed',e);}})();</script>
+<script id="outlast-v451-survivor-hub-howto">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('Survivor Hub Label & Event Notice Cleanup');}))updates.unshift(['v4.5.0 — Survivor Hub Label & Event Notice Cleanup','The main-menu version chip now consistently reads v4.6.0 • ABYSS EXPEDITION. Removed the stale “Event Live Now” notice/badge only; World Events systems and login behavior remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?';});if(h)h[2]='The main-menu chip should read v4.6.0 • ABYSS EXPEDITION and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip should read v4.6.0 • ABYSS EXPEDITION and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.']);}}catch(e){console.error('OUTLAST Survivor Hub help update failed',e);}})();</script>
 <script id="outlast-v451-chat-release-docs">(function(){try{
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.1 — Global Chat Repair')===0;}))
 updates.unshift(['v4.5.1 — Global Chat Repair','Restored the server-backed Global Chat panel, fixed its nonexistent DOM targets, preserved OWNER/TESTER role data, and separated chat/WebSocket endpoints between production and tester. Login and Start Run logic were not changed.']);

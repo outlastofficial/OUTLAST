@@ -6407,7 +6407,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setInterval(syncBossBar,100);
 })();
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">(function(){'use strict';
- const BUILD='4.6.0',ACK='outlast_update_ack_v460',POP='outlastMandatoryUpdateV460';
+ const BUILD=(document.querySelector('meta[name="build-version"]')||{}).content||'4.6.0',ACK='outlast_update_ack',POP='outlastMandatoryUpdateCheck';
  function ver(v){return String(v||'0').replace(/^v/,'').split('.').map(function(x){const n=parseInt(x,10);return Number.isFinite(n)?n:0}).concat([0,0,0]).slice(0,3)}
  function cmp(a,b){const x=ver(a),y=ver(b);for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]-y[i]}return 0}
  function show(newer,remote){
@@ -6419,12 +6419,12 @@ setInterval(syncBossBar,100);
   const body=newer?'A newer build was detected, but automatic navigation is disabled to prevent page-refresh loops. Close this notice and refresh manually only when you choose.':'Please acknowledge this release to continue.';
   box.innerHTML='<div class="card"><span class="tag">UPDATE SAFETY</span><h2>'+title+'</h2><div class="ver">v'+(newer?remote:BUILD)+'</div><p>'+body+'</p><ul><li>This checker will never reload or redirect the page automatically.</li><li>Your login and saved progress are not reset by this check.</li><li>Difficulty scaling remains 2× from level 60 onward.</li></ul><button id="outlastMandatoryUpdateBtn">CONTINUE</button></div>';
   document.head.appendChild(style);document.body.appendChild(box);
-  document.getElementById('outlastMandatoryUpdateBtn').onclick=function(){try{localStorage.setItem(ACK,'1')}catch(_){}box.remove();style.remove()};
+  document.getElementById('outlastMandatoryUpdateBtn').onclick=function(){try{localStorage.setItem(ACK,BUILD)}catch(_){}box.remove();style.remove()};
  }
  async function check(){
   let remote=BUILD;
   try{const response=await fetch('./index.html?update-check='+Date.now(),{cache:'no-store',headers:{'Cache-Control':'no-cache'}});if(response.ok){const txt=await response.text();const m=txt.match(/<meta[^>]+name=["\']build-version["\'][^>]+content=["\']([^"\']+)["\']/i);if(m)remote=m[1]||BUILD}}catch(_){}
-  let acknowledged=false;try{acknowledged=localStorage.getItem(ACK)==='1'}catch(_){}
+  let acknowledged=false;try{acknowledged=localStorage.getItem(ACK)===BUILD}catch(_){}
   if(cmp(remote,BUILD)>0){if(!acknowledged)show(true,remote);return}
   if(!acknowledged)setTimeout(function(){show(false,remote)},350);
  }

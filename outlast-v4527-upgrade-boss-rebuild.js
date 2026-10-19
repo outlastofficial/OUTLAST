@@ -1,17 +1,17 @@
-/* OUTLAST v4.5.28 — Unique Boss Combat + Enforced Intermission */
+/* OUTLAST v4.5.29 — Unique Boss Combat + Reliable Intermission */
 (function(){
 'use strict';
-const VERSION='4.5.28';
+const VERSION='4.5.29';
 const BOSS_INTERMISSION_MS=30000;
 const BOSSES=[
- {name:'Grave Titan',emoji:'♜',title:'Shockwave Colossus',hp:1.04,speed:.88,ability:'Ground shockwave'},
- {name:'Plague Doctor',emoji:'☠',title:'Toxic Marksman',hp:.94,speed:1.04,ability:'Three-shot poison volley'},
- {name:'Mutant Brute',emoji:'♟',title:'Ramming Behemoth',hp:1.02,speed:.96,ability:'Heavy charge'},
- {name:'Undead Commander',emoji:'♛',title:'Horde Commander',hp:1.08,speed:.92,ability:'Summons reinforcements'},
- {name:'The Abomination',emoji:'☣',title:'Blight Spreader',hp:1.05,speed:.90,ability:'Lingering poison zone'},
- {name:'Storm Colossus',emoji:'ϟ',title:'Tempest Engine',hp:1.10,speed:.94,ability:'Targeted lightning strike'},
- {name:'Void Tyrant',emoji:'◈',title:'Rift Stalker',hp:1.12,speed:1.12,ability:'Short-range teleport'},
- {name:'Eternal Warden',emoji:'⬡',title:'Aegis Sovereign',hp:1.18,speed:.86,ability:'Timed defensive guard'}
+ {name:'Grave Titan',color:'#f3c969',emoji:'♜',title:'Shockwave Colossus',hp:1.04,speed:.88,ability:'Ground shockwave'},
+ {name:'Plague Doctor',color:'#a5e65b',emoji:'☠',title:'Toxic Marksman',hp:.94,speed:1.04,ability:'Three-shot poison volley'},
+ {name:'Mutant Brute',color:'#ff8b4a',emoji:'♟',title:'Ramming Behemoth',hp:1.02,speed:.96,ability:'Heavy charge'},
+ {name:'Undead Commander',color:'#c6a2ff',emoji:'♛',title:'Horde Commander',hp:1.08,speed:.92,ability:'Summons reinforcements'},
+ {name:'The Abomination',color:'#78d94f',emoji:'☣',title:'Blight Spreader',hp:1.05,speed:.90,ability:'Lingering poison zone'},
+ {name:'Storm Colossus',color:'#65d8ff',emoji:'ϟ',title:'Tempest Engine',hp:1.10,speed:.94,ability:'Targeted lightning strike'},
+ {name:'Void Tyrant',color:'#a86bff',emoji:'◈',title:'Rift Stalker',hp:1.12,speed:1.12,ability:'Short-range teleport'},
+ {name:'Eternal Warden',color:'#8ee7ff',emoji:'⬡',title:'Aegis Sovereign',hp:1.18,speed:.86,ability:'Timed defensive guard'}
 ];
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
 function game(){try{return typeof window.game!=='undefined'&&window.game?window.game:(typeof game!=='undefined'?game:null)}catch(_){return window.game||null}}
@@ -25,7 +25,7 @@ function tagBoss(g,b){
  if(b.__outlastUniqueBoss4527)return b;
  const profile=nextProfile();
  let defs={};try{defs=typeof raidBossDefs!=='undefined'?raidBossDefs:(window.raidBossDefs||{})}catch(_){}
- b.raidName=profile.name;b.bossTitle=profile.title;b.bossAbilityLabel=profile.ability;b.bossEmoji=profile.emoji;
+ b.raidName=profile.name;b.bossTitle=profile.title;b.bossAbilityLabel=profile.ability;b.bossEmoji=profile.emoji;b.bossColor=profile.color;b.bossSignature=profile.ability;
  b.__outlastUniqueBoss4527=true;b.__outlastUniqueBossProfile=profile.name;
  b.raidAbilityTimer=1.8+Math.random()*.6;b.raidZoneTick=.65;
  const hpFactor=Math.max(.7,Math.min(1.35,profile.hp));
@@ -35,6 +35,7 @@ function tagBoss(g,b){
  if(Number.isFinite(Number(b.speed))&&Number(b.speed)>0&&!b.__outlastBossProfileSpeedApplied){b.speed*=profile.speed;b.__outlastBossProfileSpeedApplied=true}
  if(Number.isFinite(Number(b.r))&&Number(b.r)>0)b.r=Math.max(34,Math.min(54,Number(b.r)+(profile.name==='Eternal Warden'?5:profile.name==='Plague Doctor'?-5:0)));
  state.spawns++;
+ try{if(typeof toast==='function')toast(profile.emoji+' '+profile.name+' — '+profile.ability)}catch(_){}
  window.OUTLAST_LAST_BOSS={name:profile.name,title:profile.title,ability:profile.ability,hp:num(b.hp),max:num(b.max),spawnNumber:state.spawns};
  return b;
 }
@@ -150,7 +151,7 @@ function tick(){
  const boss=ensureBossIdentity(g);
  processUniqueBossHazards(g);
  if(boss){runUniqueBossAbility(g,boss);state.hadBoss=true;state.firstSpawnDone=true;state.lastDefeatAt=0;return}
- if(state.hadBoss){state.hadBoss=false;state.lastDefeatAt=Date.now();g.bossClock=0;g.bossSpawnRetryTimer=0}
+ if(state.hadBoss){state.hadBoss=false;if(!state.lastDefeatAt)state.lastDefeatAt=Date.now();g.bossClock=0;g.bossSpawnRetryTimer=0}
  const elapsed=num(g.time);
  const due=state.firstSpawnDone ? (state.lastDefeatAt>0&&Date.now()-state.lastDefeatAt>=BOSS_INTERMISSION_MS) : elapsed>=15;
  if(!due)return;
@@ -159,7 +160,7 @@ function tick(){
  try{if(typeof window.spawnBoss==='function')result=window.spawnBoss()}catch(err){window.OUTLAST_UNIQUE_BOSS_SPAWN_ERROR=String(err&&err.message||err)}
  let after=ensureBossIdentity(g);
  if(!after&&typeof window.OUTLAST_FORCE_BOSS_SPAWN==='function'&&now-state.lastAttemptAt>=0){
-   try{result=window.OUTLAST_FORCE_BOSS_SPAWN('v4.5.28-unique-boss-safety-net')}catch(err){window.OUTLAST_UNIQUE_BOSS_FORCE_ERROR=String(err&&err.message||err)}
+   try{result=window.OUTLAST_FORCE_BOSS_SPAWN('v4.5.29-unique-boss-safety-net')}catch(err){window.OUTLAST_UNIQUE_BOSS_FORCE_ERROR=String(err&&err.message||err)}
    after=ensureBossIdentity(g);
  }
  if(after){state.hadBoss=true;state.firstSpawnDone=true;state.lastDefeatAt=0;g.bossClock=0;g.bossSpawnRetryTimer=0}
@@ -167,7 +168,21 @@ function tick(){
 }
 const oldSpawn=window.spawnBoss;
 if(typeof oldSpawn==='function'&&!oldSpawn.__outlastUniqueBoss4527){
- const wrapped=function(){const g=game();if(g&&state.run===g&&state.firstSpawnDone&&state.lastDefeatAt>0&&Date.now()-state.lastDefeatAt<BOSS_INTERMISSION_MS)return false;const before=new Set(Array.isArray(g&&g.enemies)?g.enemies:[]),result=oldSpawn.apply(this,arguments);if(g&&Array.isArray(g.enemies)){const b=g.enemies.find(e=>e&&e.boss&&!before.has(e)&&num(e.hp)>0);if(b)tagBoss(g,b)}return result};
+ const wrapped=function(){
+  const g=game(),now=Date.now();
+  // Catch the gap between a boss dying and the 500ms controller tick.
+  if(g&&state.run===g&&state.firstSpawnDone&&state.hadBoss&&!activeBoss(g)){
+   if(!state.lastDefeatAt){state.lastDefeatAt=now;g.bossClock=0;g.bossSpawnRetryTimer=0}
+   if(now-state.lastDefeatAt<BOSS_INTERMISSION_MS)return false;
+  }
+  if(g&&state.run===g&&state.firstSpawnDone&&state.lastDefeatAt>0&&now-state.lastDefeatAt<BOSS_INTERMISSION_MS)return false;
+  const before=new Set(Array.isArray(g&&g.enemies)?g.enemies:[]),result=oldSpawn.apply(this,arguments);
+  if(g&&Array.isArray(g.enemies)){
+   const b=g.enemies.find(e=>e&&e.boss&&!before.has(e)&&num(e.hp)>0);
+   if(b){tagBoss(g,b);state.run=g;state.hadBoss=true;state.firstSpawnDone=true;state.lastDefeatAt=0}
+  }
+  return result;
+ };
  wrapped.__outlastUniqueBoss4527=true;window.spawnBoss=wrapped;try{spawnBoss=wrapped}catch(_){}
 }
 window.OUTLAST_BOSS_UNIQUE_PROFILES=BOSSES.map(x=>({name:x.name,title:x.title,ability:x.ability}));
@@ -179,7 +194,7 @@ window.OUTLAST_UPGRADE_BALANCE_AUDIT_V4527=function(){
  const cards=Array.isArray(window.OUTLAST_UPGRADE_LIBRARY)?window.OUTLAST_UPGRADE_LIBRARY:[];
  return{version:VERSION,tiers:tiers.map(t=>({rarity:t,multiplier:expected[t],poolCount:(pools[t]||[]).length})),strictLadder:tiers.every((t,i)=>!i||expected[t]>expected[tiers[i-1]]),mappedNames:Object.keys(by).length,libraryCards:cards.length,postMythic:[expected.Divine,expected.Celestial,expected.Transcendent,expected.Eternal,expected.Omega]};
 };
-if(Array.isArray(window.updates)&&!window.updates.some(x=>x&&String(x[0]).startsWith('v4.5.28 — Unique Boss Combat')))window.updates.unshift(['v4.5.27 — Upgrade & Boss Rebuild','Rebalanced capped upgrade steps and gave all eight rotating bosses distinct combat abilities. A hard 30-second intermission blocks the normal scheduler from starting the next boss early; failed spawns are retried.']);
+if(Array.isArray(window.updates)&&!window.updates.some(x=>x&&String(x[0]).startsWith('v4.5.29 — Unique Boss Combat')))window.updates.unshift(['v4.5.27 — Upgrade & Boss Rebuild','Rebalanced capped upgrade steps and gave all eight rotating bosses distinct combat abilities. A hard 30-second intermission blocks both the normal scheduler and same-frame boss spawns; failed spawns are retried.']);
 if(Array.isArray(window.helpArticles)){
  if(!window.helpArticles.some(x=>x&&x[0]==='How do bosses rotate now?'))window.helpArticles.unshift(['How do bosses rotate now?','Bosses & Runs','Boss fights rotate through eight distinct bosses without repeats until the roster is exhausted. Each boss has a unique signature attack. The first boss appears after about 15 seconds; after a boss is defeated, the next is scheduled about 30 seconds later. If a spawn fails, OUTLAST retries instead of leaving the run without a boss.']);
  if(!window.helpArticles.some(x=>x&&x[0]==='How are upgrade rarities balanced?'))window.helpArticles.unshift(['How are upgrade rarities balanced?','Upgrades & Luck','Upgrade effects scale by a single rarity ladder: Common 1×, Uncommon 1.15×, Rare 1.35×, Epic 1.6×, Legendary 1.9×, Mythic 2.25×, Divine 4×, Celestial 5×, Transcendent 6×, Eternal 7×, Omega 8×. Whole-number projectile and pierce bonuses use capped steps to avoid screen-filling projectiles or unlimited pierce.']);

@@ -8,7 +8,7 @@ const currentBuild=(index.match(/<meta name="outlast-build" content="([^"]+)"/)|
 assert(currentBuild&&index.includes('<meta name="build-version" content="'+currentBuild+'">')&&index.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current release metadata stays synchronized');
 assert(index.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'"),'mandatory update popup follows the current build marker');
 assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, map expansion and owner modules are loaded');
-assert(index.includes("const BUILD='"+currentBuild+"',ACK='outlast_update_ack_v4528',POP='outlastMandatoryUpdateV4528'"),'mandatory update acknowledgement matches the current version');
+assert(index.includes("const BUILD='"+currentBuild+"',ACK='outlast_update_ack_v4529',POP='outlastMandatoryUpdateV4529'"),'mandatory update acknowledgement matches the current version');
 assert(expansion.includes("window.OUTLAST_BUILD = VERSION;")&&expansion.includes("document.title = 'OUTLAST v' + VERSION;"),'the final module publishes the global build and title');
 assert(core.includes("window.OUTLAST_CORE_CONTENT"),'12-core engine must still install its content container');
 assert(core.includes("window.OUTLAST_CORE_CONTENT_VERSION=VERSION"),'12-core engine should expose its own version without changing global build state');

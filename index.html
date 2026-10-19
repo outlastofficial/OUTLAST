@@ -6629,3 +6629,68 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script id="outlast-v4525-final-version-lock">(function(){'use strict';try{var V='4.5.25';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){var t='v'+V+' • SURVIVOR HUB';if(e.textContent!==t)e.textContent=t});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.26 — Complete Upgrade Balance Pass')===0;}))updates.unshift(['v4.5.26 — Complete Upgrade Balance Pass','Rebalanced the complete 220-card rarity-family library using one canonical multiplier table. Divine, Celestial, Transcendent, Eternal, and Omega now scale at 4×, 5×, 6×, 7×, and 8×. Gameplay scaling, rarity labels, and visible descriptions share the same values.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I choose a level-up upgrade?'}))helpArticles.unshift(['How do I choose a level-up upgrade?','Upgrades','Level up to open three redesigned upgrade cards with a rarity-colored side rail, bright tier badge, larger icon and title, readable effect description, and rarity multiplier. Click a card or press 1, 2, or 3 to select it.']);}catch(e){console.error('OUTLAST upgrade redesign version lock failed',e)}})();</script>
 <script src="outlast-v4527-upgrade-boss-rebuild.js?v=4.5.29"></script>
 <script id="outlast-v4529-final-version-lock">(function(){'use strict';try{var V='4.5.29';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v'+V+' • SURVIVOR HUB'});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.29 — Boss Identity & Intermission Fix')===0;}))updates.unshift(['v4.5.28 — Unique Boss Combat','Every boss has a visible identity and signature ability. The intermission timer now starts immediately on the first detected defeat, blocking early same-frame spawn attempts; failed spawns still retry safely.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do bosses rotate now?'}))helpArticles.unshift(['How do bosses rotate now?','Bosses & Runs','Eight distinct bosses rotate without repeats until the roster is exhausted. Each boss uses a different ability: shockwave, poison volley, charge, minion summons, poison zone, targeted lightning, teleport, or a defensive shield. The first boss appears after about 15 seconds; each later boss waits at least 30 seconds after the previous boss is defeated. Failed spawn attempts are retried.']);}catch(e){console.error('OUTLAST v4.5.28 version lock failed',e)}})();</script>
+
+
+<script id="outlast-announcement-delivery-fix">
+(function(){
+'use strict';
+if(window.__OUTLAST_ANNOUNCEMENT_DELIVERY_FIX__)return;
+window.__OUTLAST_ANNOUNCEMENT_DELIVERY_FIX__=true;
+var API='https://outlast-server.onrender.com/api/announcements?limit=20';
+var seeded=false,lastKey='',queue=[],showing=false,pollTimer=null,overlay=null;
+function keyOf(a){return String(a&&a.id||'')+'|'+String(Number(a&&a.at)||0)+'|'+String(a&&a.message||'');}
+function safeText(el,value){el.textContent=String(value==null?'':value);}
+function build(){
+ if(overlay&&overlay.isConnected)return overlay;
+ overlay=document.createElement('div');
+ overlay.id='outlastAnnouncementOverlay';
+ overlay.style.cssText='position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,7,12,.78);backdrop-filter:blur(5px)';
+ var card=document.createElement('section');
+ card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-labelledby','outlastAnnouncementTitle');
+ card.style.cssText='width:min(560px,94vw);max-height:82vh;overflow:auto;box-sizing:border-box;padding:24px;border-radius:20px;border:1px solid #4b7692;background:linear-gradient(145deg,#172635,#0b121a);color:#fff;box-shadow:0 24px 80px rgba(0,0,0,.6);font-family:Arial,sans-serif';
+ var title=document.createElement('h2');title.id='outlastAnnouncementTitle';title.textContent='📣 OUTLAST ANNOUNCEMENT';title.style.cssText='font-size:24px;margin:0 0 8px';
+ var from=document.createElement('div');from.id='outlastAnnouncementFrom';from.style.cssText='font-size:12px;color:#86cfff;margin-bottom:14px';
+ var message=document.createElement('div');message.id='outlastAnnouncementMessage';message.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;font-size:16px;color:#e6edf5';
+ var actions=document.createElement('div');actions.style.cssText='display:flex;justify-content:flex-end;margin-top:20px';
+ var button=document.createElement('button');button.type='button';button.textContent='GOT IT';button.style.cssText='border:0;border-radius:10px;padding:11px 20px;background:#2b6cff;color:#fff;font-weight:800;cursor:pointer';
+ button.addEventListener('click',close);
+ actions.appendChild(button);card.append(title,from,message,actions);overlay.appendChild(card);
+ overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&overlay&&overlay.style.display==='flex')close();});
+ document.body.appendChild(overlay);return overlay;
+}
+function close(){if(overlay)overlay.style.display='none';showing=false;setTimeout(showNext,80);}
+function showNext(){
+ if(showing||!queue.length)return;
+ var a=queue.shift(),el=build();showing=true;
+ safeText(el.querySelector('#outlastAnnouncementFrom'),'From '+String(a.from||'OUTLAST Team')+(Number(a.at)?' • '+new Date(Number(a.at)).toLocaleString():''));
+ safeText(el.querySelector('#outlastAnnouncementMessage'),a.message||'');
+ el.style.display='flex';
+ var b=el.querySelector('button');if(b)try{b.focus({preventScroll:true});}catch(_){}
+}
+async function poll(){
+ try{
+  var r=await fetch(API,{method:'GET',cache:'no-store',headers:{'Accept':'application/json'}});
+  if(!r.ok)throw new Error('Announcement request failed ('+r.status+')');
+  var d=await r.json(),items=Array.isArray(d.announcements)?d.announcements.filter(function(a){return a&&String(a.message||'').trim();}):[];
+  items.sort(function(a,b){return (Number(a.at)||0)-(Number(b.at)||0);});
+  if(!items.length){seeded=true;return;}
+  if(!seeded){
+   var newest=items[items.length-1];lastKey=keyOf(newest);
+   try{var saved=sessionStorage.getItem('outlast-announcement-last-key');if(saved)lastKey=saved;}catch(_){}
+   seeded=true;return;
+  }
+  var start=lastKey?items.findIndex(function(a){return keyOf(a)===lastKey;}):-1;
+  var fresh=start>=0?items.slice(start+1):items.filter(function(a){return keyOf(a)!==lastKey&&((Number(a.at)||0)>0);});
+  if(fresh.length){
+   fresh.forEach(function(a){var k=keyOf(a);if(k!==lastKey){queue.push(a);lastKey=k;try{sessionStorage.setItem('outlast-announcement-last-key',k);}catch(_){}}});
+   if(queue.length>10)queue=queue.slice(-10);
+   showNext();
+  }
+ }catch(e){window.OUTLAST_ANNOUNCEMENT_LAST_ERROR=String(e&&e.message||e);}
+}
+function start(){if(pollTimer)return;poll();pollTimer=setInterval(poll,12000);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
+})();
+</script>

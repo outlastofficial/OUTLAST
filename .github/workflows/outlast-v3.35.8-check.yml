@@ -30,5 +30,7 @@ jobs:
         run: node tests/upgrade-rarity-integrity-v3373.test.js
       - name: Run current v3.37 critical regressions
         run: node tests/v3370-systems.test.js
+      - name: Verify boss identity and prevent same-frame respawns
+        run: node tests/boss-intermission-race-v4529.test.js
       - name: Run v4.0.0 boss trophy and release gate checks
         run: node tests/outlast-v4000-ultimate-expansion.test.js

@@ -23,7 +23,7 @@ check(scriptOpen>=0&&scriptEnd>scriptStart,'Chat backend helper is inside a vali
 new vm.Script(html.slice(scriptStart,scriptEnd),{filename:'OUTLAST chat backend inline script'});
 check(html.includes("role:String(entry.role||'')"),'Client message state preserves server roles');
 check(html.includes("badge.textContent=owner?' 👑 OWNER':' 🧪 TESTER'"),'In-game chat renders OWNER and TESTER badges');
-check(html.includes("const CURRENT_UPDATE_VERSION='4.5.26'"),'Maintenance update version matches current build');
+check(html.includes("const CURRENT_UPDATE_VERSION='4.5.29'"),'Maintenance update version matches current build');
 check(gear.includes("const VERSION='4.5.26';")&&html.includes('outlast-v435-upgrade-gear-redesign.js?v=4.5.26'),'Visible Survivor Hub marker cannot be rewritten by an older overlay');
 check(html.includes('v4.5.1 — Global Chat Repair'),'Release notes include chat repair');
 const inline=overlay.match(/<script>([\s\S]*?)<\/script>/i);

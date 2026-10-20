@@ -6664,3 +6664,40 @@ if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script></body>
 </html>
+
+<style id="outlast-v460-neon-menu-redesign">
+/* Visual-only reskin: preserves all existing button IDs, data-page routes, event listeners, player records, and leaderboard storage. */
+#menu.panel{background:radial-gradient(ellipse at 72% 45%,rgba(13,78,105,.28),transparent 44%),linear-gradient(135deg,#03080d 0%,#07131d 48%,#03070b 100%)!important;color:#e9f5ff}
+#menu .main-menu-card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(7,17,27,.97),rgba(3,8,14,.98))!important;border:1px solid #24445b!important;box-shadow:0 24px 70px rgba(0,0,0,.62),inset 0 0 50px rgba(28,111,150,.08)!important}
+#menu .main-menu-card:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 80% 80%,rgba(0,153,198,.12),transparent 45%),linear-gradient(110deg,transparent 55%,rgba(37,110,146,.07));}
+#menu .menu-shell{position:relative;z-index:1;gap:22px}
+#menu .menu-side{background:linear-gradient(180deg,rgba(5,15,24,.92),rgba(7,18,27,.7))!important;border:1px solid rgba(53,104,132,.42)!important;border-radius:20px;padding:14px;box-shadow:inset 0 0 25px rgba(0,0,0,.4)}
+#menu .menu-side-title{font-weight:1000;letter-spacing:.12em;color:#f2f8ff;text-shadow:0 0 18px rgba(47,177,255,.35)}
+#menu .menu-nav{gap:12px!important}
+#menu .menu-nav-btn{position:relative;isolation:isolate;min-height:66px!important;padding:15px 18px!important;text-align:left!important;font-size:clamp(15px,1.4vw,19px)!important;font-weight:950!important;letter-spacing:.07em!important;text-transform:uppercase!important;color:#dcecf8!important;background:linear-gradient(110deg,rgba(7,24,40,.98),rgba(6,14,24,.94) 72%,rgba(8,27,42,.98))!important;border:1px solid var(--menu-accent,#19bfff)!important;border-left:5px solid var(--menu-accent,#19bfff)!important;border-radius:10px 20px 10px 20px!important;clip-path:polygon(5% 0,100% 0,100% 78%,94% 100%,0 100%,0 20%)!important;box-shadow:inset 0 0 18px color-mix(in srgb,var(--menu-accent,#19bfff) 12%,transparent),0 0 12px color-mix(in srgb,var(--menu-accent,#19bfff) 22%,transparent)!important;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease!important}
+#menu .menu-nav-btn:nth-child(1){--menu-accent:#20baff}
+#menu .menu-nav-btn:nth-child(2){--menu-accent:#2ee88b}
+#menu .menu-nav-btn:nth-child(3){--menu-accent:#bb54ff}
+#menu .menu-nav-btn:nth-child(4){--menu-accent:#ffd43b}
+#menu .menu-nav-btn:nth-child(5){--menu-accent:#19e2ed}
+#menu .menu-nav-btn:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.18;background:linear-gradient(115deg,var(--menu-accent),transparent 58%);pointer-events:none}
+#menu .menu-nav-btn:hover,#menu .menu-nav-btn:focus-visible{transform:translateX(4px);filter:brightness(1.2);box-shadow:inset 0 0 24px color-mix(in srgb,var(--menu-accent) 22%,transparent),0 0 22px color-mix(in srgb,var(--menu-accent) 34%,transparent)!important;outline:none}
+#menu .menu-nav-btn.active{background:linear-gradient(110deg,color-mix(in srgb,var(--menu-accent) 20%,#071421),rgba(5,13,22,.98) 72%)!important;box-shadow:inset 0 0 24px color-mix(in srgb,var(--menu-accent) 18%,transparent),0 0 18px color-mix(in srgb,var(--menu-accent) 30%,transparent)!important}
+#menu .title{color:#f1f8ff!important;text-shadow:0 0 24px rgba(35,176,255,.22);letter-spacing:.04em}
+#menu .subtitle{color:#9abbd0!important;letter-spacing:.2em!important}
+#menu .menu-chip{color:#83d9ff!important;border-color:#28617c!important;background:rgba(5,21,32,.9)!important;box-shadow:0 0 16px rgba(20,178,255,.1)}
+#menu .menu-page-title{color:#f0f8ff;text-shadow:0 0 14px rgba(48,167,255,.15)}
+#menu .menu-card,#menu .quick-card{background:linear-gradient(145deg,rgba(16,32,46,.95),rgba(6,14,23,.96))!important;border-color:#29465b!important;box-shadow:inset 0 1px rgba(255,255,255,.025),0 8px 24px rgba(0,0,0,.18)}
+#menu .menu-card h3{color:#d9efff!important}
+#menu .menu-btn{border-radius:10px!important;transition:filter .15s ease,transform .15s ease,box-shadow .15s ease}
+#menu .menu-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+#menu .menu-side-bottom{color:#718fa3!important;border-color:#1d394b!important}
+@media(max-width:760px){
+ #menu .menu-side{border-radius:15px!important;padding:10px!important}
+ #menu .menu-nav{gap:8px!important}
+ #menu .menu-nav-btn{min-height:48px!important;padding:11px 14px!important;font-size:12px!important;border-left-width:3px!important}
+ #menu .menu-shell{gap:12px!important}
+}
+@media(prefers-reduced-motion:reduce){#menu .menu-nav-btn,#menu .menu-btn{transition:none!important}}
+</style>
+

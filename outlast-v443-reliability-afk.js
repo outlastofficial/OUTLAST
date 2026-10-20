@@ -72,6 +72,36 @@ function addAFKLounge(){
  const sync=()=>{const g=getGame(),menu=document.getElementById('menu');btn.style.display=(g&&g.running)|| (menu&&getComputedStyle(menu).display!=='none')?'block':'none'};
  setInterval(()=>{try{sync()}catch(_){}},1200);sync();
 }
+
+/* v4.6.1 AFK Lounge rewards: 100 coins per complete minute actively in the lounge. */
+function installAFKCoinRewards(){
+ if(window.__OUTLAST_AFK_COIN_REWARDS_INSTALLED)return;
+ window.__OUTLAST_AFK_COIN_REWARDS_INSTALLED=true;
+ var lastPaidEntry=0,lastMinute=0;
+ function tick(){
+  try{
+   var afk=window.OUTLAST_AFK_LOUNGE;
+   if(!afk||afk.active!==true||!afk.enteredAt)return;
+   if(lastPaidEntry!==afk.enteredAt){lastPaidEntry=afk.enteredAt;lastMinute=0;}
+   var elapsed=Math.max(0,Date.now()-afk.enteredAt);
+   var completed=Math.floor(elapsed/60000);
+   if(completed<=lastMinute)return;
+   var count=completed-lastMinute;
+   var s=getSave();if(!s)return;
+   s.coins=Math.max(0,num(s.coins))+100*count;
+   lastMinute=completed;
+   var saved=persistSafe();
+   try{if(typeof window.updateMenuSummary==='function')window.updateMenuSummary()}catch(_){}
+   try{if(typeof window.renderShop==='function')window.renderShop()}catch(_){}
+   try{if(typeof window.renderProgress==='function')window.renderProgress()}catch(_){}
+   say('AFK reward: +'+(100*count).toLocaleString()+' coins!');
+   window.OUTLAST_AFK_REWARD_AUDIT={active:true,minutesPaid:completed,totalPaid:100*completed,coinsAdded:100*count,saved:saved,at:Date.now()};
+  }catch(e){window.OUTLAST_AFK_REWARD_ERROR=String(e&&e.message||e)}
+ }
+ setInterval(tick,1000);
+ window.OUTLAST_AFK_REWARD_AUDIT={active:false,rate:100,intervalMs:60000,totalPaid:0};
+}
+
 function audit(){
  const s=getSave(),g=getGame(),defs=(()=>{try{return typeof activeSkills!=='undefined'?activeSkills:(window.activeSkills||{})}catch(_){return window.activeSkills||{}}})();
  let mapPicker=null;try{mapPicker=window.OUTLAST_MAP_PICKER_AUDIT?window.OUTLAST_MAP_PICKER_AUDIT():null}catch(_){}
@@ -81,9 +111,9 @@ function audit(){
 function install(){
  if(window.__OUTLAST_V443_INSTALLED)return;
  if(!getSave()||!getGame()||typeof window.startGame!=='function'){window.__OUTLAST_V443_RETRIES=num(window.__OUTLAST_V443_RETRIES)+1;if(window.__OUTLAST_V443_RETRIES<100)setTimeout(install,120);return}
- try{installSkillRoute();installMapRoute();addAFKLounge();window.OUTLAST_V443_AUDIT=audit;window.__OUTLAST_V443_INSTALLED=true;
-  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]||'').includes('v4.4.3')))updates.unshift(['v4.4.3 — Reliability & AFK Lounge','Added runtime checks for equipped skills, map selection, rarity scaling and boss state; reinforced skill click routing and introduced a safe AFK Lounge that does not award idle progress.']);
-  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]||'').includes('How does the AFK Lounge work?')))helpArticles.unshift(['How does the AFK Lounge work?','Controls & Safety','Open AFK Lounge from the lower-right button. It is designed for breaks and does not generate score, coins, XP, or boss progress. The lounge attempts to pause an active run when the game exposes pause state.']);
+ try{installSkillRoute();installMapRoute();addAFKLounge();installAFKCoinRewards();window.OUTLAST_V443_AUDIT=audit;window.__OUTLAST_V443_INSTALLED=true;
+  if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]||'').includes('v4.4.3')))updates.unshift(['v4.4.3 — Reliability & AFK Lounge','Added runtime checks for equipped skills, map selection, rarity scaling and boss state; reinforced skill click routing and introduced a safe AFK Lounge; it grants 100 coins for each complete minute spent in the lounge.']);
+  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]||'').includes('How does the AFK Lounge work?')))helpArticles.unshift(['How does the AFK Lounge work?','Controls & Safety','Open AFK Lounge from the lower-right button. It is designed for breaks and grants 100 coins per complete minute while active. It does not generate score, XP, or boss progress. The lounge attempts to pause an active run when the game exposes pause state.']);
  }catch(e){window.OUTLAST_V443_INSTALL_ERROR=String(e&&e.message||e)}
 }
 window.OUTLAST_V443_AUDIT=audit;

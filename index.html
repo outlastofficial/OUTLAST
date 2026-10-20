@@ -807,7 +807,41 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
 @media(prefers-reduced-motion:reduce){#gameverseHubBtn.gameverse-hub-link:before{animation:none}}
 </style>
 
-<style id="outlast-chat-restore-v4511">#outlastChat{visibility:visible!important;pointer-events:auto!important}#outlastChat.open{display:block!important}#outlastChatToggle.chat-visible{display:block!important;visibility:visible!important;pointer-events:auto!important}</style></head>
+<style id="outlast-chat-restore-v4511">#outlastChat{visibility:visible!important;pointer-events:auto!important}#outlastChat.open{display:block!important}#outlastChatToggle.chat-visible{display:block!important;visibility:visible!important;pointer-events:auto!important}</style><style id="outlast-neon-menu-redesign-v460">
+/* Visual-only menu redesign. Existing button markup, IDs, data-page attributes and handlers are intentionally untouched. */
+#menu{background:radial-gradient(ellipse at 72% 42%,rgba(17,91,125,.38),transparent 35%),radial-gradient(ellipse at 83% 82%,rgba(255,105,35,.16),transparent 28%),linear-gradient(125deg,#03070c 0%,#071521 52%,#020509 100%)!important;backdrop-filter:blur(3px)}
+#menu .main-menu-card{width:min(1320px,97vw)!important;max-width:none!important;max-height:94vh!important;padding:0!important;overflow:auto!important;background:linear-gradient(135deg,rgba(5,12,20,.97),rgba(7,17,27,.94) 58%,rgba(3,8,14,.98))!important;border:1px solid #24465d!important;border-radius:22px!important;box-shadow:0 0 0 1px rgba(55,160,220,.08),0 28px 90px #000!important}
+#menu .menu-shell{grid-template-columns:220px minmax(0,1fr)!important;gap:0!important;min-height:610px}
+#menu .menu-side{border:0!important;border-right:1px solid #19374b!important;border-radius:0!important;padding:24px 17px!important;gap:13px!important;background:linear-gradient(180deg,rgba(8,20,32,.98),rgba(3,9,16,.98))!important}
+#menu .menu-side-title{font-size:15px!important;font-weight:900;letter-spacing:.28em!important;color:#9fc7df!important;text-align:center;padding:10px 4px 18px!important}
+#menu .menu-nav{gap:13px!important}
+#menu .menu-nav-btn{position:relative!important;min-height:66px!important;padding:15px 14px!important;text-align:left!important;text-transform:uppercase!important;letter-spacing:.07em!important;font-size:15px!important;font-weight:900!important;color:#e7f5ff!important;background:linear-gradient(110deg,rgba(8,22,36,.98),rgba(5,13,22,.96))!important;border:1px solid #244b65!important;border-left:4px solid #36baff!important;border-radius:7px 18px 7px 18px!important;box-shadow:inset 0 0 18px rgba(45,163,255,.08),0 0 14px rgba(0,0,0,.3)!important;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease!important}
+#menu .menu-nav-btn:nth-child(1){--neon:#21baff;--glow:rgba(33,186,255,.25)}
+#menu .menu-nav-btn:nth-child(2){--neon:#35ef9b;--glow:rgba(53,239,155,.22)}
+#menu .menu-nav-btn:nth-child(3){--neon:#b75aff;--glow:rgba(183,90,255,.24)}
+#menu .menu-nav-btn:nth-child(4){--neon:#ffc83d;--glow:rgba(255,200,61,.23)}
+#menu .menu-nav-btn:nth-child(5){--neon:#19e3e8;--glow:rgba(25,227,232,.22)}
+#menu .menu-nav-btn{border-color:color-mix(in srgb,var(--neon,#21baff) 55%,#183044)!important;border-left-color:var(--neon,#21baff)!important;box-shadow:inset 0 0 18px var(--glow,rgba(33,186,255,.2)),0 0 10px var(--glow,rgba(33,186,255,.2))!important}
+#menu .menu-nav-btn:hover{transform:translateX(3px)!important;filter:brightness(1.2)!important;box-shadow:inset 0 0 22px var(--glow),0 0 20px var(--glow)!important}
+#menu .menu-nav-btn.active{background:linear-gradient(105deg,color-mix(in srgb,var(--neon,#21baff) 22%,#06111d),rgba(5,13,22,.98))!important;border-color:var(--neon,#21baff)!important;box-shadow:inset 0 0 24px var(--glow),0 0 19px var(--glow)!important}
+#menu .menu-main{padding:24px 28px!important;min-width:0}
+#menu .menu-topbar{align-items:center!important;padding-bottom:17px!important;border-bottom:1px solid #1d3a4d!important;margin-bottom:20px!important}
+#menu .menu-topbar .title{color:#f0f8ff!important;letter-spacing:.12em!important;text-shadow:0 0 24px rgba(46,174,255,.25)!important}
+#menu .menu-topbar .subtitle{color:#8caec4!important}
+#menu .menu-chip{border-color:#31536b!important;background:#07131e!important;color:#83c9ec!important}
+#menu .menu-page-title{color:#eff9ff!important;text-shadow:0 0 16px rgba(43,170,255,.12)}
+#menu .menu-page-sub{color:#91a9bb!important}
+#menu .menu-card,#menu .quick-card{background:linear-gradient(145deg,rgba(16,31,44,.96),rgba(7,16,25,.98))!important;border:1px solid #254359!important;border-radius:12px!important;box-shadow:inset 0 1px rgba(255,255,255,.025)!important}
+#menu .menu-card h3{color:#dff3ff!important}
+#menu .menu-card .menu-btn,#menu .menu-section-body .menu-btn{border:1px solid #32617d!important;border-radius:8px!important;box-shadow:0 0 13px rgba(36,165,255,.1)!important;background:linear-gradient(100deg,#123047,#0b1c2a)!important;color:#e8f7ff!important}
+#menu .menu-card .menu-btn:hover,#menu .menu-section-body .menu-btn:hover{filter:brightness(1.25)!important;box-shadow:0 0 17px rgba(36,165,255,.23)!important}
+#menu .menu-card .menu-btn.green,#menu .menu-section-body .menu-btn.green{background:linear-gradient(100deg,#0d4937,#09291f)!important;border-color:#2bd78c!important}
+#menu .menu-card .menu-btn.gold,#menu .menu-section-body .menu-btn.gold{background:linear-gradient(100deg,#4a3810,#211b0b)!important;border-color:#d7ad39!important}
+#menu .menu-section{border-color:#254359!important;background:#08131d!important}
+#menu .menu-section>summary{background:linear-gradient(100deg,#10283a,#0a1722)!important;color:#e2f4ff!important}
+@media(max-width:760px){#menu .main-menu-card{width:97vw!important;max-height:96vh!important}#menu .menu-shell{grid-template-columns:1fr!important;min-height:0}#menu .menu-side{border-right:0!important;border-bottom:1px solid #19374b!important;padding:12px!important}#menu .menu-nav{flex-direction:row!important;overflow-x:auto!important;min-width:0!important;gap:8px!important}#menu .menu-nav-btn{min-width:105px!important;min-height:48px!important;padding:10px!important;font-size:12px!important;text-align:center!important}#menu .menu-main{padding:16px!important}#menu .menu-topbar .title{font-size:34px!important}}
+</style>
+</head>
 <body>
 <canvas id="game" width="1100" height="700"></canvas>
 <div id="outlastPinkToy" aria-hidden="true">

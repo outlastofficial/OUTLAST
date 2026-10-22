@@ -1,4 +1,4 @@
-/* OUTLAST v4.6.2 — Upgrade Balance Overhaul
+/* OUTLAST v4.6.2 — Rarity Scaling Fix
    Keeps rarity labels/multipliers intact while applying a softer effect curve and run-stat safety caps.
    No account, save, leaderboard, login, or server data is reset. */
 (function () {
@@ -13,19 +13,12 @@
     Common:1, Uncommon:1.1, Rare:1.2, Epic:1.35, Legendary:1.5,
     Mythic:1.7, Divine:2, Celestial:2.2, Transcendent:2.4, Eternal:2.6, Omega:2.8
   };
-  const DISCRETE = /\b(Breach|Volley)\b/i;
   const CAPS = {
     crit:0.75, regen:8, shield:8, multiShot:12, pierce:10,
     xpBonus:3, coinMult:3, bossMult:3, ultDamage:3, healMult:2.5,
     projectileSpeed:3, armorPierce:0.75, upgradeLuck:100, lootLuck:100, treasureLuck:100
   };
   const n = v => Number.isFinite(Number(v)) ? Number(v) : 0;
-  const rarityOf = (name) => {
-    const map = window.OUTLAST_UPGRADE_RARITY_BY_NAME || {};
-    if (map[name] && EFFECT_SCALE[map[name]]) return map[name];
-    const match = String(name || '').match(/^(Common|Uncommon|Rare|Epic|Legendary|Mythic|Divine|Celestial|Transcendent|Eternal|Omega)\b/i);
-    return match ? TIERS.find(t => t.toLowerCase() === match[1].toLowerCase()) || 'Common' : 'Common';
-  };
   // Convert the game's real rarity multiplier into a softer effect multiplier.
   // The original multiplier is supplied by makeChoices(); never infer rarity from the upgrade name.
   const MULTIPLIER_CURVE = [
@@ -98,7 +91,7 @@
       };
     };
     if (Array.isArray(window.updates) && !window.updates.some(x => x && String(x[0]).includes('v4.6.2'))) {
-      window.updates.unshift(['v4.6.2 — Upgrade Balance Overhaul', 'Balanced upgrade effects across all rarity tiers, softened repeated percentage bonuses, and added safety caps for runaway combat, healing, shield, and economy stats. Existing accounts and records are preserved.']);
+      window.updates.unshift(['v4.6.2 — Rarity Scaling Fix', 'Balanced upgrade effects across all rarity tiers, softened repeated percentage bonuses, and added safety caps for runaway combat, healing, shield, and economy stats. Existing accounts and records are preserved.']);
     }
     const help = window.helpArticles;
     if (Array.isArray(help) && !help.some(x => x && x[0] === 'How are upgrades balanced in v4.6.2?')) {

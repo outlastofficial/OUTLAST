@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlast-game.onrender.com/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.2">
-<meta name="build-version" content="4.6.2">
-<title>OUTLAST v4.6.2</title>
+<meta name="outlast-build" content="4.6.3">
+<meta name="build-version" content="4.6.3">
+<title>OUTLAST v4.6.3</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -952,7 +952,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.6.2 • RARITY SCALING FIX</div>
+          <div class="menu-chip">v4.6.3 • EVENT COUNTDOWN REMOVED</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3962,8 +3962,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.6.2';
-const CURRENT_UPDATE_INFO={title:'v4.6.2 — Rarity Scaling Fix',summary:'Rebalanced upgrade effects across rarity tiers and added safeguards against runaway stat stacking.',items:['Rarity labels remain intact while repeated stat bonuses use diminishing effect scaling.','Added caps for critical chance, regeneration, shield duration, projectile count, pierce, XP, coins, and related stats.','Kept existing accounts, saved progress, player lists, and leaderboard records.']};
+const CURRENT_UPDATE_VERSION='4.6.3';
+const CURRENT_UPDATE_INFO={title:'v4.6.3 — Event Countdown Removed',summary:'Removed the obsolete event countdown from the main menu without disabling gameplay events or the Daily Shop timer.',items:['Rarity labels remain intact while repeated stat bonuses use diminishing effect scaling.','Added caps for critical chance, regeneration, shield duration, projectile count, pierce, XP, coins, and related stats.','Kept existing accounts, saved progress, player lists, and leaderboard records.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6464,7 +6464,7 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.6.2', LABEL='v4.6.2 • RARITY SCALING FIX';
+  var BUILD='4.6.3', LABEL='v4.6.3 • EVENT COUNTDOWN REMOVED';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
@@ -6553,7 +6553,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();</script>
 <script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
 <script id="outlast-v451-survivor-hub-event-cleanup">(function(){'use strict';
-var CHIP='v4.6.2 • RARITY SCALING FIX';
+var CHIP='v4.6.3 • EVENT COUNTDOWN REMOVED';
 var selectors=['#outlastEventLiveNow','#eventLiveNow','#event-live-now','.event-live-now','.event-live-banner','.live-event-banner','.event-live-pill','.live-now-event-badge','[data-event-live="true"]','[aria-label="Event live now"]'];
 function clean(){try{selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(el&&el.id!=='worldEventsPanel'&&el.id!=='worldBtn')el.remove();});});if(!document.body)return;document.body.querySelectorAll('*').forEach(function(el){if(!el||el.children.length!==0)return;var txt=String(el.textContent||'').replace(/[🎉⚡🔥✨]/g,'').replace(/[.!:]+$/,'').trim().replace(/\s+/g,' ');if(/^event\s+live\s+now$/i.test(txt)){var p=el.parentElement;if(p&&p!==document.body&&p.children.length===1&&String(p.textContent||'').trim().replace(/\s+/g,' ').toLowerCase()===txt.toLowerCase())p.remove();else el.remove();}});}catch(e){console.error('OUTLAST event notice cleanup failed',e);}}
 function sync(){try{document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){if(el.textContent!==CHIP)el.textContent=CHIP;});clean();}catch(e){console.error('OUTLAST Survivor Hub marker failed',e);}}
@@ -6691,7 +6691,54 @@ else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat
 <script id="outlast-v4511-chat-restore-notes">(function(){try{
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
-}catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script></body>
+}catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script id="outlast-v463-event-countdown-removal">
+(function(){
+  'use strict';
+  var BUILD='4.6.3', LABEL='v4.6.3 • EVENT COUNTDOWN REMOVED';
+  var selectors=[
+    '#outlastEventCountdown','#eventCountdown','#event-countdown','#nightfallCountdown',
+    '#nightfall-countdown','#halloweenCountdown','#halloween-countdown',
+    '#eventLiveNow','#outlastEventLiveNow','#event-live-now',
+    '.event-countdown','.eventCountdown','.nightfall-countdown','.nightfallCountdown',
+    '.halloween-countdown','.halloweenCountdown','.event-pill','.event-bar','.event-live-pill'
+  ];
+  function removeObsoleteCountdown(){
+    try{
+      selectors.forEach(function(sel){
+        document.querySelectorAll(sel).forEach(function(el){
+          if(el && !el.closest('#adminPanel,#ownerPanel,#adminEventPreviewResult,#worldEventsPanel')) el.remove();
+        });
+      });
+      // Also catch older unnamed menu pills by their event-specific text, but leave gameplay HUD,
+      // daily shop refresh timers, event previews, and admin/owner controls alone.
+      var menu=document.getElementById('menu')||document.getElementById('mainMenu')||document.getElementById('menuScreen');
+      if(menu){
+        menu.querySelectorAll('div,section,aside,span,button').forEach(function(el){
+          if(!el || el.children.length>5 || el.closest('#adminPanel,#ownerPanel,#worldEventsPanel')) return;
+          var t=(el.innerText||el.textContent||'').trim();
+          if(!t || t.length>220) return;
+          var hasEvent=/nightfall|halloween|event countdown|countdown to event|event begins/i.test(t);
+          var hasClock=/\b\d{1,3}:\d{2}(?::\d{2})?\b|\b\d+\s*(?:d|days?|h|hours?|m|min|minutes?|s|sec|seconds?)\b/i.test(t);
+          if(hasEvent && (hasClock || /countdown|starts in|begins in|live now/i.test(t))) el.remove();
+        });
+      }
+    }catch(e){console.warn('OUTLAST event countdown cleanup:',e);}
+  }
+  function boot(){
+    removeObsoleteCountdown();
+    // Re-run after legacy menu UI scripts populate the home screen.
+    setTimeout(removeObsoleteCountdown,150);
+    setTimeout(removeObsoleteCountdown,700);
+    setTimeout(removeObsoleteCountdown,1800);
+  }
+  window.OUTLAST_BUILD=BUILD; window.OUTLAST_VERSION='v'+BUILD;
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  if(typeof window.updates!=='undefined'&&Array.isArray(window.updates)&&!window.updates.some(function(x){return x&&String(x[0]).indexOf('v4.6.3')===0;}))
+    window.updates.unshift(['v4.6.3 — Event Countdown Removed','Removed the obsolete event countdown from the main menu. Gameplay events, World Events, admin previews, and Daily Shop refresh timing are unchanged.']);
+  if(typeof window.helpArticles!=='undefined'&&Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){return x&&x[0]==='Where did the event countdown go?';}))
+    window.helpArticles.unshift(['Where did the event countdown go?','Updates & Reliability','The old event countdown was removed from the main menu. Gameplay events and World Events still work; the Daily Shop refresh timer is separate and remains available.']);
+})();
+</script></body>
 </html>
 
 
@@ -6792,7 +6839,7 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 (function(){
   'use strict';
   var VERSION='4.6.2';
-  var LABEL='v4.6.2 • RARITY SCALING FIX';
+  var LABEL='v4.6.3 • EVENT COUNTDOWN REMOVED';
   function enforce(){
     try{
       window.OUTLAST_BUILD=VERSION;

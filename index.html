@@ -3956,8 +3956,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.6.0';
-const CURRENT_UPDATE_INFO={title:'v4.6.0 — Abyss Expedition',summary:'Added the Abyss Expedition Board, a new set of milestone contracts with rewards.',items:['New Abyss Expedition Board with three milestone contracts.','Earn bonus coins and World Keys by reaching survival milestones.','Track contract progress and claim each reward once per save.']};
+const CURRENT_UPDATE_VERSION='4.6.1';
+const CURRENT_UPDATE_INFO={title:'v4.6.1 — Upgrade Balance Overhaul',summary:'Rebalanced upgrade effects across rarity tiers and added safeguards against runaway stat stacking.',items:['Rarity labels remain intact while repeated stat bonuses use diminishing effect scaling.','Added caps for critical chance, regeneration, shield duration, projectile count, pierce, XP, coins, and related stats.','Kept existing accounts, saved progress, player lists, and leaderboard records.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6435,14 +6435,14 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.6.0', LABEL='v4.6.1 • UPGRADE BALANCE OVERHAUL';
+  var BUILD='4.6.1', LABEL='v4.6.1 • UPGRADE BALANCE OVERHAUL';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
     var style=document.createElement('style');
     style.textContent='#'+POP+'{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,10,.92);backdrop-filter:blur(6px);z-index:2147483647;padding:18px;box-sizing:border-box;font-family:Arial,sans-serif}#'+POP+' .card{width:min(720px,94vw);max-height:86vh;overflow:auto;background:linear-gradient(145deg,#142231,#0b121a);border:2px solid #4d9bd0;border-radius:22px;padding:28px;color:#fff;box-shadow:0 30px 100px rgba(0,0,0,.8)}#'+POP+' .tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#193951;color:#8fd1ff;border:1px solid #315f84;font-size:11px;font-weight:900;letter-spacing:.06em}#'+POP+' h2{margin:12px 0 8px;font-size:32px}#'+POP+' .ver{color:#82c8ff;font-weight:900;margin-bottom:16px}#'+POP+' li{margin:10px 0;color:#dce8f2;line-height:1.45}#'+POP+' button{margin:18px 8px 0 0;background:#3da96b;color:white;border:0;border-radius:10px;padding:12px 22px;font-weight:900;cursor:pointer}';
     var box=document.createElement('div');box.id=POP;
-    box.innerHTML='<div class="card"><span class="tag">OUTLAST UPDATE LOG</span><h2>Abyss Expedition</h2><div class="ver">'+LABEL+'</div><p>Here is what changed in this release:</p><ul><li>Added the Abyss Expedition Board with three milestone contracts.</li><li>Earn bonus coins and World Keys by reaching survival milestones.</li><li>Track contract progress and claim each reward once per save.</li><li>Kept the update notice manual: no automatic reloads or redirects.</li><li>Difficulty scaling remains 2× from level 60 onward.</li></ul><button id="outlastUpdateLogClose">CONTINUE</button></div>';
+    box.innerHTML='<div class="card"><span class="tag">OUTLAST UPDATE LOG</span><h2>Upgrade Balance Overhaul</h2><div class="ver">'+LABEL+'</div><p>Here is what changed in this release:</p><ul><li>Upgrade effects now use a softer scaling curve to reduce overpowered rarity jumps.</li><li>Added safeguards for critical chance, regeneration, shields, projectile count, pierce, XP, and coin multipliers.</li><li>Kept existing accounts, saved progress, player lists, and leaderboard records.</li><li>Kept the update notice manual: no automatic reloads or redirects.</li><li>Difficulty scaling remains 2× from level 60 onward.</li></ul><button id="outlastUpdateLogClose">CONTINUE</button></div>';
     document.head.appendChild(style);document.body.appendChild(box);
     document.getElementById('outlastUpdateLogClose').onclick=function(){
       try{localStorage.setItem(ACK,BUILD)}catch(_){}

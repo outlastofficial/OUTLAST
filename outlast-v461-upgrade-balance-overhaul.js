@@ -1,11 +1,11 @@
-/* OUTLAST v4.6.1 — Upgrade Balance Overhaul
+/* OUTLAST v4.6.2 — Upgrade Balance Overhaul
    Keeps rarity labels/multipliers intact while applying a softer effect curve and run-stat safety caps.
    No account, save, leaderboard, login, or server data is reset. */
 (function () {
   'use strict';
-  if (window.__OUTLAST_UPGRADE_BALANCE_461) return;
+  if (window.__OUTLAST_UPGRADE_BALANCE_462) return;
 
-  const VERSION = '4.6.1';
+  const VERSION = '4.6.2';
   const TIERS = ['Common','Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'];
   // Rarity labels still use the established 1× / 1.15× / ... / 8× ladder.
   // Actual repeated stat bonuses use diminishing power so top rarities are exciting without breaking runs.
@@ -26,10 +26,22 @@
     const match = String(name || '').match(/^(Common|Uncommon|Rare|Epic|Legendary|Mythic|Divine|Celestial|Transcendent|Eternal|Omega)\b/i);
     return match ? TIERS.find(t => t.toLowerCase() === match[1].toLowerCase()) || 'Common' : 'Common';
   };
+  // Convert the game's real rarity multiplier into a softer effect multiplier.
+  // The original multiplier is supplied by makeChoices(); never infer rarity from the upgrade name.
+  const MULTIPLIER_CURVE = [
+    [1,1], [1.15,1.1], [1.35,1.2], [1.6,1.35], [1.9,1.5],
+    [2.25,1.7], [4,2], [5,2.2], [6,2.4], [7,2.6], [8,2.8]
+  ];
   function effective(name, mult) {
-    if (DISCRETE.test(name)) return mult; // integer projectile/pierce steps use the exact tier table
-    const tier = rarityOf(name);
-    return EFFECT_SCALE[tier] || 1;
+    const raw = Math.max(1, n(mult));
+    let nearest = MULTIPLIER_CURVE[0];
+    let distance = Infinity;
+    MULTIPLIER_CURVE.forEach(pair => {
+      const d = Math.abs(pair[0] - raw);
+      if (d < distance) { distance = d; nearest = pair; }
+    });
+    if (distance <= 0.06) return nearest[1];
+    return Math.min(2.8, Math.max(1, 1 + Math.log(raw) * 0.8));
   }
   function capRunStats() {
     let g = window.game;
@@ -71,8 +83,8 @@
         wrapped++;
       }
     });
-    window.__OUTLAST_UPGRADE_BALANCE_461 = true;
-    window.OUTLAST_UPGRADE_BALANCE_AUDIT_V461 = function () {
+    window.__OUTLAST_UPGRADE_BALANCE_462 = true;
+    window.OUTLAST_UPGRADE_BALANCE_AUDIT_V462 = function () {
       const counts = {};
       TIERS.forEach(t => counts[t] = 0);
       const map = window.OUTLAST_UPGRADE_RARITY_BY_NAME || {};
@@ -85,12 +97,12 @@
         statCaps: Object.assign({}, CAPS, {fireRateMin:0.09})
       };
     };
-    if (Array.isArray(window.updates) && !window.updates.some(x => x && String(x[0]).includes('v4.6.1'))) {
-      window.updates.unshift(['v4.6.1 — Upgrade Balance Overhaul', 'Balanced upgrade effects across all rarity tiers, softened repeated percentage bonuses, and added safety caps for runaway combat, healing, shield, and economy stats. Existing accounts and records are preserved.']);
+    if (Array.isArray(window.updates) && !window.updates.some(x => x && String(x[0]).includes('v4.6.2'))) {
+      window.updates.unshift(['v4.6.2 — Upgrade Balance Overhaul', 'Balanced upgrade effects across all rarity tiers, softened repeated percentage bonuses, and added safety caps for runaway combat, healing, shield, and economy stats. Existing accounts and records are preserved.']);
     }
     const help = window.helpArticles;
-    if (Array.isArray(help) && !help.some(x => x && x[0] === 'How are upgrades balanced in v4.6.1?')) {
-      help.unshift(['How are upgrades balanced in v4.6.1?', 'Upgrades & Luck', 'Rarity labels retain the established multiplier ladder, while repeated stat bonuses use diminishing effect scaling. Critical chance, regeneration, shield duration, projectile count, pierce, XP, coins, and other runaway stats have safety caps. Existing player accounts, progress, and leaderboard records are preserved.']);
+    if (Array.isArray(help) && !help.some(x => x && x[0] === 'How are upgrades balanced in v4.6.2?')) {
+      help.unshift(['How are upgrades balanced in v4.6.2?', 'Upgrades & Luck', 'Rarity labels retain the established multiplier ladder, while repeated stat bonuses use diminishing effect scaling. Critical chance, regeneration, shield duration, projectile count, pierce, XP, coins, and other runaway stats have safety caps. Existing player accounts, progress, and leaderboard records are preserved.']);
     }
     return true;
   }

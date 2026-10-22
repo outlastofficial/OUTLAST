@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlast-game.onrender.com/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.0">
-<meta name="build-version" content="4.6.0">
-<title>OUTLAST v4.6.0</title>
+<meta name="outlast-build" content="4.6.1">
+<meta name="build-version" content="4.6.1">
+<title>OUTLAST v4.6.1</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -952,7 +952,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.6.0 • ABYSS EXPEDITION</div>
+          <div class="menu-chip">v4.6.1 • UPGRADE BALANCE OVERHAUL</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -6464,14 +6464,14 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.6.0', LABEL='v4.6.0 • ABYSS EXPEDITION';
+  var BUILD='4.6.1', LABEL='v4.6.1 • UPGRADE BALANCE OVERHAUL';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
     var style=document.createElement('style');
     style.textContent='#'+POP+'{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,10,.92);backdrop-filter:blur(6px);z-index:2147483647;padding:18px;box-sizing:border-box;font-family:Arial,sans-serif}#'+POP+' .card{width:min(720px,94vw);max-height:86vh;overflow:auto;background:linear-gradient(145deg,#142231,#0b121a);border:2px solid #4d9bd0;border-radius:22px;padding:28px;color:#fff;box-shadow:0 30px 100px rgba(0,0,0,.8)}#'+POP+' .tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#193951;color:#8fd1ff;border:1px solid #315f84;font-size:11px;font-weight:900;letter-spacing:.06em}#'+POP+' h2{margin:12px 0 8px;font-size:32px}#'+POP+' .ver{color:#82c8ff;font-weight:900;margin-bottom:16px}#'+POP+' li{margin:10px 0;color:#dce8f2;line-height:1.45}#'+POP+' button{margin:18px 8px 0 0;background:#3da96b;color:white;border:0;border-radius:10px;padding:12px 22px;font-weight:900;cursor:pointer}';
     var box=document.createElement('div');box.id=POP;
-    box.innerHTML='<div class="card"><span class="tag">OUTLAST UPDATE LOG</span><h2>Abyss Expedition</h2><div class="ver">'+LABEL+'</div><p>Here is what changed in this release:</p><ul><li>Added the Abyss Expedition Board with three milestone contracts.</li><li>Earn bonus coins and World Keys by reaching survival milestones.</li><li>Track contract progress and claim each reward once per save.</li><li>Kept the update notice manual: no automatic reloads or redirects.</li><li>Difficulty scaling remains 2× from level 60 onward.</li></ul><button id="outlastUpdateLogClose">CONTINUE</button></div>';
+    box.innerHTML='<div class="card"><span class="tag">OUTLAST UPDATE LOG</span><h2>Upgrade Balance Overhaul</h2><div class="ver">'+LABEL+'</div><p>Here is what changed in this release:</p><ul><li>Upgrade effects now use a softer scaling curve to reduce overpowered rarity jumps.</li><li>Added safeguards for critical chance, regeneration, shields, projectile count, pierce, XP, and coin multipliers.</li><li>Kept existing accounts, saved progress, player lists, and leaderboard records.</li><li>No automatic reloads or redirects were added.</li><li>Difficulty scaling remains 2× from level 60 onward.</li></ul><button id="outlastUpdateLogClose">CONTINUE</button></div>';
     document.head.appendChild(style);document.body.appendChild(box);
     document.getElementById('outlastUpdateLogClose').onclick=function(){
       try{localStorage.setItem(ACK,BUILD)}catch(_){}
@@ -6553,7 +6553,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();</script>
 <script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
 <script id="outlast-v451-survivor-hub-event-cleanup">(function(){'use strict';
-var CHIP='v4.6.0 • ABYSS EXPEDITION';
+var CHIP='v4.6.1 • UPGRADE BALANCE OVERHAUL';
 var selectors=['#outlastEventLiveNow','#eventLiveNow','#event-live-now','.event-live-now','.event-live-banner','.live-event-banner','.event-live-pill','.live-now-event-badge','[data-event-live="true"]','[aria-label="Event live now"]'];
 function clean(){try{selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(el&&el.id!=='worldEventsPanel'&&el.id!=='worldBtn')el.remove();});});if(!document.body)return;document.body.querySelectorAll('*').forEach(function(el){if(!el||el.children.length!==0)return;var txt=String(el.textContent||'').replace(/[🎉⚡🔥✨]/g,'').replace(/[.!:]+$/,'').trim().replace(/\s+/g,' ');if(/^event\s+live\s+now$/i.test(txt)){var p=el.parentElement;if(p&&p!==document.body&&p.children.length===1&&String(p.textContent||'').trim().replace(/\s+/g,' ').toLowerCase()===txt.toLowerCase())p.remove();else el.remove();}});}catch(e){console.error('OUTLAST event notice cleanup failed',e);}}
 function sync(){try{document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){if(el.textContent!==CHIP)el.textContent=CHIP;});clean();}catch(e){console.error('OUTLAST Survivor Hub marker failed',e);}}
@@ -6787,11 +6787,12 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 </script>
 
 
+<script src="outlast-v461-upgrade-balance-overhaul.js?v=4.6.1"></script>
 <script id="outlast-v460-absolute-final-version-marker">
 (function(){
   'use strict';
-  var VERSION='4.6.0';
-  var LABEL='v4.6.0 • ABYSS EXPEDITION';
+  var VERSION='4.6.1';
+  var LABEL='v4.6.1 • UPGRADE BALANCE OVERHAUL';
   function enforce(){
     try{
       window.OUTLAST_BUILD=VERSION;

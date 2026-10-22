@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.0">
-<meta name="build-version" content="4.6.0">
-<title>OUTLAST v4.6.0</title>
+<meta name="outlast-build" content="4.6.1">
+<meta name="build-version" content="4.6.1">
+<title>OUTLAST v4.6.1</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -946,7 +946,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.6.0 • ABYSS EXPEDITION</div>
+          <div class="menu-chip">v4.6.1 • UPGRADE BALANCE OVERHAUL</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -6435,7 +6435,7 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.6.0', LABEL='v4.6.0 • ABYSS EXPEDITION';
+  var BUILD='4.6.0', LABEL='v4.6.1 • UPGRADE BALANCE OVERHAUL';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
@@ -6546,14 +6546,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();</script>
 <script id="outlast-v450-roadmap-howto">(function(){try{if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==='v4.5.0 Survival Overhaul Roadmap';})){helpArticles.unshift(['v4.5.0 Survival Overhaul Roadmap','Update Roadmap',"Critical fixes: Start Run, reload loops, version synchronization, map selection, skill selection, upgrade effects, boss spawning, saving, Global Chat, and mobile controls. Combat: unique weapon effects, enemy AI, elite enemies, boss AI, hit effects, shields, ultimate abilities, and weapon synergies. Upgrades: rarity audit, exact descriptions, redesigned cards, permanent upgrades, in-run upgrades, skill tree, Omega upgrades, upgrade combinations, and automated audits. Maps: searchable map picker, unique mechanics, collision fixes, minimap, map-specific bosses, map creator, and exploration rewards. New content: bosses, weapons, pets, relics and charms, challenges, game modes, secrets, and progression milestones. Progression: personal records, mode-specific records, achievements, Daily Shop, economy balance, collections, and reliable rewards. Menus and quality of life: hub redesign, Progress sections, Owner Panel, Admin tools, popup reliability, settings, and performance. Online and release: production/tester isolation, co-op, reconnect handling, PC/mobile testing, regression testing, and release verification."+' This roadmap is the full target scope, not a claim that every feature is complete. Work is being rolled out and verified in stages.']);}}catch(e){console.error('OUTLAST roadmap guide failed',e);}})();</script>
 <script id="outlast-v451-survivor-hub-event-cleanup">(function(){'use strict';
-var CHIP='v4.6.0 • ABYSS EXPEDITION';
+var CHIP='v4.6.1 • UPGRADE BALANCE OVERHAUL';
 var selectors=['#outlastEventLiveNow','#eventLiveNow','#event-live-now','.event-live-now','.event-live-banner','.live-event-banner','.event-live-pill','.live-now-event-badge','[data-event-live="true"]','[aria-label="Event live now"]'];
 function clean(){try{selectors.forEach(function(sel){document.querySelectorAll(sel).forEach(function(el){if(el&&el.id!=='worldEventsPanel'&&el.id!=='worldBtn')el.remove();});});if(!document.body)return;document.body.querySelectorAll('*').forEach(function(el){if(!el||el.children.length!==0)return;var txt=String(el.textContent||'').replace(/[🎉⚡🔥✨]/g,'').replace(/[.!:]+$/,'').trim().replace(/\s+/g,' ');if(/^event\s+live\s+now$/i.test(txt)){var p=el.parentElement;if(p&&p!==document.body&&p.children.length===1&&String(p.textContent||'').trim().replace(/\s+/g,' ').toLowerCase()===txt.toLowerCase())p.remove();else el.remove();}});}catch(e){console.error('OUTLAST event notice cleanup failed',e);}}
 function sync(){try{document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){if(el.textContent!==CHIP)el.textContent=CHIP;});clean();}catch(e){console.error('OUTLAST Survivor Hub marker failed',e);}}
 function ready(){sync();try{new MutationObserver(sync).observe(document.body,{childList:true,subtree:true,characterData:true});}catch(_){}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready,{once:true});else ready();
 })();</script>
-<script id="outlast-v451-survivor-hub-howto">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('Survivor Hub Label & Event Notice Cleanup');}))updates.unshift(['v4.5.0 — Survivor Hub Label & Event Notice Cleanup','The main-menu version chip now consistently reads v4.6.0 • ABYSS EXPEDITION. Removed the stale “Event Live Now” notice/badge only; World Events systems and login behavior remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?';});if(h)h[2]='The main-menu chip should read v4.6.0 • ABYSS EXPEDITION and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip should read v4.6.0 • ABYSS EXPEDITION and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.']);}}catch(e){console.error('OUTLAST Survivor Hub help update failed',e);}})();</script>
+<script id="outlast-v451-survivor-hub-howto">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('Survivor Hub Label & Event Notice Cleanup');}))updates.unshift(['v4.5.0 — Survivor Hub Label & Event Notice Cleanup','The main-menu version chip now consistently reads v4.6.1 • UPGRADE BALANCE OVERHAUL. Removed the stale “Event Live Now” notice/badge only; World Events systems and login behavior remain unchanged.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?';});if(h)h[2]='The main-menu chip should read v4.6.1 • UPGRADE BALANCE OVERHAUL and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip should read v4.6.1 • UPGRADE BALANCE OVERHAUL and match the page title and quality badge. The stale Event Live Now notice is removed from the hub; this does not disable World Events systems. If a page remains stuck, close that tab and open the game again.']);}}catch(e){console.error('OUTLAST Survivor Hub help update failed',e);}})();</script>
 <script id="outlast-v451-chat-release-docs">(function(){try{
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.1 — Global Chat Repair')===0;}))
 updates.unshift(['v4.5.1 — Global Chat Repair','Restored the server-backed Global Chat panel, fixed its nonexistent DOM targets, preserved OWNER/TESTER role data, and separated chat/WebSocket endpoints between production and tester. Login and Start Run logic were not changed.']);
@@ -6683,7 +6683,9 @@ else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat
 <script id="outlast-v4511-chat-restore-notes">(function(){try{
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
-}catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script></body>
+}catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script src="outlast-v461-upgrade-balance-overhaul.js?v=4.6.1"></script>
+<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.6.1',L='v4.6.1 • UPGRADE BALANCE OVERHAUL';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
+</body>
 </html>
 
 <style id="outlast-v460-neon-menu-redesign">

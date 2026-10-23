@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.3">
+<meta name="outlast-build" content="4.7.0">
 <meta name="build-version" content="4.6.3">
-<title>OUTLAST v4.6.3</title>
+<title>OUTLAST v4.7.0</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3956,8 +3956,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.6.3';
-const CURRENT_UPDATE_INFO={title:'v4.6.3 — Event Countdown Removed',summary:'Removed the obsolete event countdown from the main menu without disabling gameplay events or the Daily Shop timer.',items:['Rarity labels remain intact while repeated stat bonuses use diminishing effect scaling.','Added caps for critical chance, regeneration, shield duration, projectile count, pierce, XP, coins, and related stats.','Kept existing accounts, saved progress, player lists, and leaderboard records.']};
+const CURRENT_UPDATE_VERSION='4.7.0';
+const CURRENT_UPDATE_INFO={title:'v4.7.0 — Boss Encounter Overhaul',summary:'The v4.7.0 reliability release begins with five distinct boss encounter profiles. Existing account and leaderboard data is preserved.',items:['Rift Stalker, Iron Colossus, Plague Caller, Storm Warden, and Soul Reaper have different abilities.','The next boss waits until the active boss is defeated.','Start Run, reload, damage, saving, chat, and upgrade balance remain under verification; untested items are not marked complete.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6435,7 +6435,7 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.6.3', LABEL='v4.6.3 • EVENT COUNTDOWN REMOVED';
+  var BUILD='4.7.0', LABEL='v4.7.0 • BOSS ENCOUNTER OVERHAUL';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
@@ -6684,11 +6684,11 @@ else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script src="outlast-v461-upgrade-balance-overhaul.js?v=4.6.2"></script>
-<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.6.3',L='v4.6.3 • EVENT COUNTDOWN REMOVED';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
+<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.7.0',L='v4.7.0 • BOSS ENCOUNTER OVERHAUL';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
 <script id="outlast-v463-event-countdown-removal">
 (function(){
   'use strict';
-  var BUILD='4.6.3', LABEL='v4.6.3 • EVENT COUNTDOWN REMOVED';
+  var BUILD='4.7.0', LABEL='v4.7.0 • BOSS ENCOUNTER OVERHAUL';
   var selectors=[
     '#outlastEventCountdown','#eventCountdown','#event-countdown','#nightfallCountdown',
     '#nightfall-countdown','#halloweenCountdown','#halloween-countdown',
@@ -6770,4 +6770,40 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 }
 @media(prefers-reduced-motion:reduce){#menu .menu-nav-btn,#menu .menu-btn{transition:none!important}}
 </style>
-
+<script id="outlast-v470-boss-profiles">(function(){
+'use strict';
+var profiles=[
+{id:'rift',name:'Rift Stalker',emoji:'🌀',ability:'blink',hp:1,speed:1.3,damage:1},
+{id:'colossus',name:'Iron Colossus',emoji:'🛡️',ability:'slam',hp:1.7,speed:.72,damage:1.25},
+{id:'plague',name:'Plague Caller',emoji:'☣️',ability:'summon',hp:1.2,speed:.92,damage:1},
+{id:'storm',name:'Storm Warden',emoji:'⚡',ability:'pulse',hp:1.1,speed:1.05,damage:1.08},
+{id:'reaper',name:'Soul Reaper',emoji:'💀',ability:'heal',hp:1.35,speed:1.15,damage:1.12}];
+function bossNow(){return typeof game!=='undefined'&&game&&Array.isArray(game.enemies)?game.enemies.find(function(e){return e&&e.boss&&!e.__dead&&Number(e.hp)>0&&Number(e.max)>0;}):null;}
+var originalSpawn=typeof spawnBoss==='function'?spawnBoss:null;
+if(originalSpawn&&!window.__v470SpawnWrapped){window.__v470SpawnWrapped=true;spawnBoss=function(){
+if(bossNow())return false;var result=originalSpawn.apply(this,arguments),e=bossNow(),g=typeof game!=='undefined'?game:null;if(!e||!g)return result;
+var p=profiles[Math.max(0,(Number(g.bossCount)||1)-1)%profiles.length];
+e.bossType=p.id;e.bossName=p.name;e.bossAbility=p.ability;e.bossAbilityClock=5;e.bossEmoji=p.emoji;
+e.max=Math.max(1,Number(e.max)||1)*p.hp;e.hp=e.max;e.speed=Math.max(25,(Number(e.speed)||58)*p.speed);e.damage=Math.max(1,(Number(e.damage)||42)*p.damage);
+try{if(typeof toast==='function')toast(p.emoji+' '+p.name+' has entered the arena!');}catch(_){}
+return result===undefined?true:result;};}
+var originalSpecial=typeof specialEnemyTick==='function'?specialEnemyTick:null;
+if(originalSpecial&&!window.__v470SpecialWrapped){window.__v470SpecialWrapped=true;specialEnemyTick=function(dt){
+originalSpecial.apply(this,arguments);var g=typeof game!=='undefined'?game:null;if(!g||!g.running||g.paused||!g.player)return;
+var p=g.player,delta=Math.max(0,Math.min(.25,Number(dt)||0));
+g.enemies.forEach(function(e){if(!e||!e.boss||e.__dead||!(e.hp>0))return;
+e.bossAbilityClock=(Number(e.bossAbilityClock)||5)-delta;if(e.bossAbilityClock>0)return;
+var d=Math.hypot(p.x-e.x,p.y-e.y),ramp=typeof levelDifficultyRamp==='function'?levelDifficultyRamp(g.level):1;
+if(e.bossAbility==='blink'){var a=Math.atan2(p.y-e.y,p.x-e.x)+(.5-Math.random()),r=190;
+e.x=Math.max(80,Math.min((typeof W==='number'?W:4000)-80,p.x-Math.cos(a)*r));e.y=Math.max(80,Math.min((typeof H==='number'?H:3000)-80,p.y-Math.sin(a)*r));e.bossAbilityClock=7;
+}else if(e.bossAbility==='slam'){if(d<145){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,18*ramp,'Iron Colossus slam',1);else p.hp=Math.max(0,p.hp-18*ramp);}catch(_){}}e.bossAbilityClock=6.5;
+}else if(e.bossAbility==='summon'){if(typeof spawnEnemy==='function'&&g.enemies.length<100){spawnEnemy('fast');var m=g.enemies[g.enemies.length-1];if(m&&!m.boss){m.x=e.x+60;m.y=e.y+40;m.summoned=true;}}e.bossAbilityClock=8;
+}else if(e.bossAbility==='pulse'){if(d<220){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,12*ramp,'Storm Warden pulse',1);else p.hp=Math.max(0,p.hp-12*ramp);}catch(_){}}e.bossAbilityClock=5.5;
+}else if(e.bossAbility==='heal'){if(e.hp<e.max*.72)e.hp=Math.min(e.max,e.hp+e.max*.07);e.bossAbilityClock=7.5;}
+});};}
+window.OUTLAST_BOSS_PROFILE_AUDIT=function(){var e=bossNow();return{version:'4.7.0',installed:!!window.__v470SpawnWrapped&&!!window.__v470SpecialWrapped,profiles:profiles.map(function(p){return{name:p.name,ability:p.ability};}),activeBoss:e?{name:e.bossName,ability:e.bossAbility,hp:e.hp,max:e.max}:null};};
+function applyVersion(){window.OUTLAST_BUILD='4.7.0';window.OUTLAST_VERSION='v4.7.0';document.title='OUTLAST v4.7.0';document.querySelectorAll('meta[name="outlast-build"],meta[name="build-version"]').forEach(function(m){m.setAttribute('content','4.7.0');});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v4.7.0 • BOSS ENCOUNTER OVERHAUL';});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v4.7.0';});}
+applyVersion();window.addEventListener('pageshow',applyVersion);
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.7.0 — Boss Encounter Overhaul')===0}))updates.unshift(['v4.7.0 — Boss Encounter Overhaul','Started the reliability release with five distinct boss profiles: Rift Stalker blink, Iron Colossus slam, Plague Caller reinforcements, Storm Warden pulse, and Soul Reaper recovery. Existing accounts and records are untouched.']);
+if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do the unique bosses work?';}))helpArticles.unshift(['How do the unique bosses work?','Bosses & Runs','Rift Stalker repositions, Iron Colossus slams nearby players, Plague Caller summons reinforcements, Storm Warden pulses nearby players, and Soul Reaper can recover health.']);
+})();</script>

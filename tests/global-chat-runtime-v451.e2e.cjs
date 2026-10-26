@@ -17,9 +17,10 @@ const assert = require('node:assert/strict');
         localStorage.setItem('outlastUsername','E2EPlayer');
         localStorage.setItem('outlastDeviceMode','pc');
         localStorage.setItem('outlastJoystickMode','off');
-        localStorage.setItem('outlast_update_ack_v4.5.1','1');
+        localStorage.setItem('outlast_update_ack_v4.7.0','1');
         localStorage.setItem('outlast_v451_release_popup_ack','1');
-        localStorage.setItem('outlastSeenUpdateVersion','4.5.1');
+        localStorage.setItem('outlastSeenUpdateVersion','4.7.0');
+         localStorage.setItem('outlast_update_log_seen','4.7.0');
         localStorage.setItem('outlast_update_ack_v4.0.0','1');
         localStorage.setItem('outlastNewPlayerTutorialV317','1');
       });
@@ -38,17 +39,29 @@ const assert = require('node:assert/strict');
           await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,messages:fakeMessages.slice(-80)})});
         }
       });
-      let served=false,lastBuild=null,lastTitle='';
+      let served=false,lastBuild=null,lastTitle='',lastNavigationError='',navigationFailures=0;
       for(let attempt=0;attempt<20;attempt++){
         const sep=baseUrl.includes('?')?'&':'?';
-        await page.goto(baseUrl+sep+'chatE2E='+Date.now()+'-'+attempt,{waitUntil:'domcontentloaded',timeout:45000});
+        try {
+          // Don't make DOMContentLoaded wait for every legacy blocking script.
+          // The actual chat selectors and send/read checks below still verify usable runtime behavior.
+          await page.goto(baseUrl+sep+'chatE2E='+Date.now()+'-'+attempt,{waitUntil:'commit',timeout:30000});
+          await page.waitForSelector('meta[name="outlast-build"]',{state:'attached',timeout:15000});
+          navigationFailures=0;
+        } catch(error) {
+          lastNavigationError=String(error&&error.message||error);
+          navigationFailures++;
+          if(navigationFailures>=3)throw new Error('OUTLAST chat page navigation failed after retries: '+JSON.stringify({baseUrl,lastNavigationError}));
+          await page.waitForTimeout(2500);
+          continue;
+        }
         await page.waitForTimeout(350);
-        lastBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
+        lastBuild=await page.evaluate(()=>window.OUTLAST_BUILD||document.querySelector('meta[name="outlast-build"]')?.content||null).catch(()=>null);
         lastTitle=await page.title().catch(()=> '');
-        if(lastBuild==='4.5.1'&&lastTitle.includes('v4.5.1')){served=true;break;}
+        if(lastBuild==='4.7.0'&&lastTitle.includes('v4.7.0')){served=true;break;}
         if(attempt<19)await page.waitForTimeout(2500);
       }
-      assert.ok(served,'Expected v4.5.1 page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
+      assert.ok(served,'Expected v4.7.0 page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
       // The page has a legacy release gate from v4.0.0 that can sit above the chat launcher.
       // Clear it in this isolated smoke test so the test can exercise chat rather than click interception.
       await page.evaluate(()=>{
@@ -91,6 +104,6 @@ const assert = require('node:assert/strict');
       assert.ok(toggleBox&&toggleBox.width>0&&toggleBox.height>0,'Global Chat control is visible at desktop/mobile viewport sizes');
       await context.close();
     }
-    console.log('OUTLAST v4.5.1 Global Chat runtime checks passed on desktop and mobile.');
+    console.log('OUTLAST v4.7.0 Global Chat runtime checks passed on desktop and mobile.');
   }finally{await browser.close();}
 })().catch(err=>{console.error(err);process.exitCode=1;});

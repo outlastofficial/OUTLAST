@@ -3,7 +3,7 @@ const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.
 new vm.Script(design,{filename:'outlast-v435-upgrade-gear-redesign.js'});
 assert(html.includes('<meta name="outlast-build" content="4.7.0">')&&html.includes('<meta name="build-version" content="4.7.0">')&&html.includes('<title>OUTLAST v4.7.0</title>'),'redesign is tied to the current visible build');
 assert(html.includes("const CURRENT_UPDATE_VERSION='4.7.0'")&&html.includes("title:'v4.7.0 — Boss Encounter Overhaul'"),'mandatory update check follows the visible version');
-assert(/<script src="outlast-v435-upgrade-gear-redesign\\.js\\?v=[^"]+"><\\/script>/.test(html),'current redesign is cache-busted and loaded');
+assert(html.includes('<script src="outlast-v435-upgrade-gear-redesign.js?v=4.4.5-r1-test-test"></script>'),'current redesign is cache-busted and loaded');
 assert(html.indexOf('outlast-v435-upgrade-gear-redesign.js')>html.indexOf('outlast-v434-distinct-map-renderer.js'),'card redraw runs after the legacy renderer');
 assert(design.includes('function drawCard')&&design.includes('function rollingFX'),'redesigned card painter and tier animations are present');
 assert(design.includes('const x=45+i*350,y=180,w=325,h=296'),'card positions remain compatible with the 1/2/3 hitboxes and footer has extra clearance');

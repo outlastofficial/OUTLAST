@@ -83,6 +83,14 @@ async function requestJson(url, label) {
     // Never print user messages or usernames from real chat history.
     console.log(endpoint.name + ' API is reachable; server=' + chatResult.body.serverVersion +
       '; messages returned=' + chatResult.body.messages.length + '; CORS=' + allowOrigin);
+
+    // Read-only leaderboard probe: validate the endpoint and response shape without logging player data.
+    const leaderboardResult = await requestJson(endpoint.base + '/api/leaderboard?limit=1&storageSmoke=' + Date.now(), endpoint.name + ' leaderboard');
+    assert.equal(Array.isArray(leaderboardResult.body.entries), true,
+      endpoint.name + ' leaderboard endpoint must return an entries array');
+    console.log(endpoint.name + ' leaderboard endpoint is reachable; sample entries=' +
+      leaderboardResult.body.entries.length + '; storage mode=' +
+      String(leaderboardResult.body.storage || 'not exposed by endpoint'));
   }
   console.log('OUTLAST production and tester chat API smoke test passed (read-only).');
 })().catch(error => {

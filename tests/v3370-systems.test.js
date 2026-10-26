@@ -12,7 +12,7 @@ assert(html.includes('<title>OUTLAST v4.7.0</title>'),'visible game version mark
 assert(html.includes("var BUILD='4.7.0', LABEL='v4.7.0 • BOSS ENCOUNTER OVERHAUL'"),'mandatory update check must target current build v4.7.0');
 assert(html.includes("outlast_update_log_seen"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'active repair module is cache-busted');
-module internal version remains explicit
+assert(expansion.includes("const VERSION = '4.2.4'"),'module internal version remains explicit');
 assert(/const map=\{map:\(\)=>selectMap\(v\),[^\n]*skill:/.test(html),'global router dispatches skill selections');
 assert(html.includes("activeSkill:save.activeSkill||'Nova'"),'saved Active Skill is loaded into gameplay');
 assert(html.includes("button[data-outlast3377-map]"),'new map tiles have a direct click route');

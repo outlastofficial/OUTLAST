@@ -55,4 +55,4 @@ assert(mod.includes('syncOwnerLauncher37'),'owner launcher must be owner-only');
 assert(mod.includes("card.style.display=ok?'':'none'")||mod.includes("card.style.display=(typeof isOwner==='function'&&isOwner())?'':'none'"),'non-owners must not see the Owner Panel card');
 assert(!mod.match(/ownerPassword|OWNER_PASSWORD/i),'owner panel must not use a password');
 
-OUTLAST v4.7.0 systems regression checks passed
+console.log('OUTLAST v4.7.0 systems regression checks passed');

@@ -22,8 +22,8 @@ check(scriptOpen>=0&&scriptEnd>scriptStart,'Chat backend helper is inside a vali
 new vm.Script(html.slice(scriptStart,scriptEnd),{filename:'OUTLAST chat backend inline script'});
 check(html.includes("role:String(entry.role||'')"),'Client message state preserves server roles');
 check(html.includes("badge.textContent=owner?' 👑 OWNER':' 🧪 TESTER'"),'In-game chat renders OWNER and TESTER badges');
-check(html.includes("const CURRENT_UPDATE_VERSION='4.5.1'"),'Maintenance version is incremented');
-check(html.includes('<div class="menu-chip">v4.5.1 • SURVIVOR HUB</div>'),'Visible Survivor Hub marker matches');
+check(html.includes("const CURRENT_UPDATE_VERSION='4.7.0'"),'Maintenance version is incremented');
+check(html.includes("L='v4.7.0 • BOSS ENCOUNTER OVERHAUL'"),'Visible Survivor Hub marker matches');
 check(html.includes('v4.5.1 — Global Chat Repair'),'Release notes include chat repair');
 const inline=overlay.match(/<script>([\s\S]*?)<\/script>/i);
 check(inline&&inline[1],'Floating chat script exists');

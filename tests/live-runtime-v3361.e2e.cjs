@@ -333,7 +333,8 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   });
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();
-  await mobilePage.goto(mobileUrl,{waitUntil:'domcontentloaded',timeout:30000});
+  await mobilePage.goto(mobileUrl,{waitUntil:'commit',timeout:30000});
+  await mobilePage.waitForSelector('meta[name="outlast-build"]',{state:'attached',timeout:15000});
   await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await mobilePage.waitForTimeout(400);
   if (await mobilePage.locator('#outlastV4000GotIt').isVisible().catch(()=>false)) {

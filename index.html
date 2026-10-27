@@ -3963,7 +3963,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.6.4';
-const CURRENT_UPDATE_INFO={title:'v4.6.4 — Upgrade Luck Fix',summary:'Upgrade Luck now more noticeably improves the odds of higher-rarity upgrade choices. Higher rarity remains random, and the effect is capped to keep the system balanced.eplay events or the Daily Shop timer.',items:['Rarity labels remain intact while repeated stat bonuses use diminishing effect scaling.','Added caps for critical chance, regeneration, shield duration, projectile count, pierce, XP, coins, and related stats.','Kept existing accounts, saved progress, player lists, and leaderboard records.']};
+const CURRENT_UPDATE_INFO={title:'v4.6.4 — Upgrade Luck Fix',summary:'Upgrade Luck now more noticeably improves the odds of higher-rarity upgrade choices. Higher rarity remains random, and the effect is capped to keep the system balanced.',items:['Luck shifts probability away from Common and Uncommon and toward Rare, Epic, Legendary, and Mythic choices.','The luck effect is capped to prevent runaway rarity inflation.','Existing accounts, saved progress, player lists, and leaderboard records are preserved.']}
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

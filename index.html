@@ -2302,7 +2302,12 @@ const upgradeRarities={
  Rare:{mult:1.35,label:'RARE',weight:13,glow:'#72a8ff'},
  Epic:{mult:1.6,label:'EPIC',weight:6.5,glow:'#d28cff'},
  Legendary:{mult:1.9,label:'LEGENDARY',weight:2.5,glow:'#ffd84d'},
- Mythic:{mult:2.25,label:'MYTHIC',weight:.5,glow:'#ff6bd6'}
+ Mythic:{mult:2.25,label:'MYTHIC',weight:.5,glow:'#ff6bd6'},
+ Divine:{mult:4,label:'DIVINE',weight:.2,glow:'#ffffff'},
+ Celestial:{mult:5,label:'CELESTIAL',weight:.08,glow:'#7ce7ff'},
+ Transcendent:{mult:6,label:'TRANSCENDENT',weight:.03,glow:'#ff9cf2'},
+ Eternal:{mult:7,label:'ETERNAL',weight:.01,glow:'#b8a7ff'},
+ Omega:{mult:8,label:'OMEGA',weight:.005,glow:'#ff6b6b'}
 };
 function fmtPct(base,mult){return Number((Number(base)*Number(mult)).toFixed(1)).toString()}
 const tempUp=[
@@ -2354,7 +2359,7 @@ const tempUp=[
   ,['Second Heart',v=>'+'+Math.round(55*v)+' max HP and healing',v=>{game.player.max+=55*v;game.player.hp=Math.min(game.player.max,game.player.hp+55*v);game.player.healMult=(game.player.healMult||1)+.15*v}]
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+fmtPct(12,v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
-function rollUpgradeRarity(){const luck=Math.min(100,Math.max(0,Number(game.player?.upgradeLuck||0)));const scale=Math.min(2,luck/20);const weights={Common:52*(1-.45*scale),Uncommon:25*(1-.25*scale),Rare:13*(1+.35*scale),Epic:6.5*(1+.9*scale),Legendary:2.5*(1+2*scale),Mythic:.5*(1+4*scale)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name];if(r<=0)return name}return 'Common'}
+function rollUpgradeRarity(){const luck=Math.min(100,Math.max(0,Number(game.player?.upgradeLuck||0)));const scale=Math.min(2,luck/20);const weights={Common:52*(1-.45*scale),Uncommon:25*(1-.25*scale),Rare:13*(1+.35*scale),Epic:6.5*(1+.9*scale),Legendary:2.5*(1+2*scale),Mythic:.5*(1+4*scale),Divine:.2*(1+5*scale),Celestial:.08*(1+7*scale),Transcendent:.03*(1+9*scale),Eternal:.01*(1+12*scale),Omega:.005*(1+15*scale)};const total=Object.values(weights).reduce((a,r)=>a+r,0);let r=Math.random()*total;for(const name of Object.keys(upgradeRarities)){r-=weights[name]||0;if(r<=0)return name}return 'Common'}
 function makeChoices(){const a=[...tempUp],out=[];while(out.length<3){const i=Math.floor(Math.random()*a.length);if(out.some(u=>u[0]===a[i][0]))continue;const [name,desc,apply]=a.splice(i,1)[0],rarity=game.level===3&&out.length===0?'Legendary':rollUpgradeRarity(),mult=upgradeRarities[rarity].mult;out.push([name,desc(mult),()=>apply(mult),rarity])}return out}
 function chooseUpgrade(i){if(!game.upgradeOpen||!game.upgradeChoices[i])return;const rolling=game.upgradeChoices.some(u=>u&&u[3]&&['Uncommon','Rare','Epic','Legendary','Mythic','Divine','Celestial','Transcendent','Eternal','Omega'].includes(u[3]));if(rolling&&(!game.__upgradeRollKey||performance.now()<Number(game.__upgradeRollUnlockAt||0)))return;game.upgradeChoices[i][2]();game.upgradeOpen=false;game.upgradeChoices=[];game.__upgradeRollKey='';game.__upgradeRollUnlockAt=0;game.__upgradeRollActive=false;game.paused=false;syncMobileControls?.();syncOutlastChatUI?.();}
 function outlastOmegaShieldTick(dt){
@@ -6739,7 +6744,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
   if(typeof window.helpArticles!=='undefined'&&Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){return x&&x[0]==='Where did the event countdown go?';}))
     window.helpArticles.unshift(['Where did the event countdown go?','Updates & Reliability','The old event countdown was removed from the main menu. Gameplay events and World Events still work; the Daily Shop refresh timer is separate and remains available.']);
 })();
-</script><script id="outlast-v464-upgrade-luck-log">if(Array.isArray(window.updates)&&!window.updates.some(function(x){return x&&String(x[0]).indexOf('v4.6.4 — Upgrade Luck Fix')===0;}))window.updates.unshift(['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now noticeably improves the odds of higher-rarity choices. The effect is capped and higher rarities remain random.']);</script></body>
+</script><script id="outlast-v464-upgrade-luck-log">if(Array.isArray(window.updates)&&!window.updates.some(function(x){return x&&String(x[0]).indexOf('v4.6.4 — Upgrade Luck Fix')===0;}))window.updates.unshift(['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now improves odds across the full Rare-to-Omega upgrade ladder. The effect is capped and higher rarities remain random.']);</script></body>
 </html>
 
 <style id="outlast-v460-neon-menu-redesign">

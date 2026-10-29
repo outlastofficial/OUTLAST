@@ -3524,6 +3524,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     return '<div class="option"><b>👑 OWNER CONTROL CENTER</b><div class="small">Owner-access verified tools. Protected actions are checked by the server.</div></div>+'
     '<div class="row" style="justify-content:flex-start;margin:10px 0;overflow:auto">'+
     '<button class="option" data-owner-action="tab" data-value="overview">Overview</button>'+
+    '<button class="option" data-owner-action="tab" data-value="gamestats">📊 Game Diagnostics</button>'+
     '<button class="option" data-owner-action="tab" data-value="status">Server Status</button>'+
     '<button class="option" data-owner-action="tab" data-value="players">Players</button>'+
     '<button class="option" data-owner-action="tab" data-value="events">Global Events</button>'+
@@ -3553,7 +3554,14 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
   async function render(which){
     if(!unlocked||!owner())return;tab=which||tab;const b=document.getElementById('ownerPanelBody');if(!b)return;b.innerHTML='<div class="option">Loading…</div>';
     try{
-      if(tab==='overview'){
+      if(tab==='gamestats'){
+        let health={status:'unavailable',players:0};try{health=await api('/api/health')}catch(_){}
+        const p=game&&game.player?game.player:null;
+        const upLuck=p?Math.floor(Number(p.upgradeLuck)||0):Math.floor(Number(save.permanentLuck||0)+3*Number(save.upgrades?.['Lucky Drops']||0)+2*Number(save.upgrades?.['Upgrade Scanner']||0)+Number(save.nextRunLuck||0));
+        const lootLuck=Math.floor(Number(p?.lootLuck)||0),treasureLuck=Math.floor(Number(p?.treasureLuck)||0);
+        const cards=[['Build','v4.7.1'],['Server',health.status||'unknown'],['Players Online',Number(health.players||0)],['Run State',game?.running?(game.paused?'Paused':'Running'):'Menu'],['Run Level',Number(game?.level||1)],['Enemies Alive',Array.isArray(game?.enemies)?game.enemies.filter(e=>e&&e.hp>0&&!e.__dead).length:0],['Upgrade Luck',upLuck],['Combined Luck',upLuck+lootLuck+treasureLuck],['Loot Luck',lootLuck],['Treasure Luck',treasureLuck],['Saved Coins',Number(save.coins||0)],['Map',String(save.map||'Forest')]];
+        b.innerHTML='<div class="option"><b>📊 Live Game Diagnostics</b><div class="small">Read-only snapshot. Refresh the tab to pull the latest client and server values.</div></div><div class="grid" style="margin-top:10px">'+cards.map(([k,v])=>'<div class="option"><b>'+esc(k)+'</b><div class="small">'+esc(String(v))+'</div></div>').join('')+'</div><button class="option" data-owner-action="tab" data-value="gamestats" style="margin-top:10px">↻ Refresh Diagnostics</button>';
+      }else if(tab==='overview'){
         const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
         b.innerHTML='<div class="grid"><div class="option"><b>👑 Owner</b><div class="small">'+esc(currentUsername)+'</div></div><div class="option"><b>🌐 Server</b><div class="small">'+esc(h.status||'unknown')+'</div></div><div class="option"><b>🟢 Online</b><div class="small">'+Number(h.players||0)+' players</div></div><div class="option"><b>🌎 Event</b><div class="small">'+esc(ev)+'</div></div></div><button class="option" data-owner-action="tab" data-value="overview" style="margin-top:10px">↻ Refresh</button>';
       }else if(tab==='status'){

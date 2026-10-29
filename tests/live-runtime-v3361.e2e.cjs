@@ -96,10 +96,11 @@ if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current
   if(!expansionAudit||expansionAudit.version!=='4.2.4'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
     throw new Error('Current-build map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
+  await page.evaluate(()=>{window.__OUTLAST_VERSION_TRACE=[];let previous='';window.__OUTLAST_VERSION_TRACE_TIMER=setInterval(()=>{const v={build:window.OUTLAST_BUILD||null,title:document.title,meta:document.querySelector('meta[name="outlast-build"]')?.content||null,versionMeta:document.querySelector('meta[name="build-version"]')?.content||null,lockTimer:!!window.__OUTLAST_V469_LOCK_TIMER};const key=JSON.stringify(v);if(key!==previous){window.__OUTLAST_VERSION_TRACE.push({at:Math.round(performance.now()),...v});previous=key;}},20);});
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(1250); // allow the legacy version guards to settle after the map overlay opens
-  const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!==EXPECTED_BUILD)throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  const pickerState=await page.evaluate(()=>({build:window.OUTLAST_BUILD||null,title:document.title,meta:document.querySelector('meta[name="outlast-build"]')?.content||null,versionMeta:document.querySelector('meta[name="build-version"]')?.content||null,lockTimer:window.__OUTLAST_V469_LOCK_TIMER||null,href:location.href,readyState:document.readyState,guard:window.OUTLAST_MAP_PICKER_VERSION_GUARD||null,trace:(window.__OUTLAST_VERSION_TRACE||[]).slice(-25)}));
+  if(pickerState.build!==EXPECTED_BUILD)throw new Error('Opening Choose Map changed the current build marker: '+JSON.stringify(pickerState));
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<100)throw new Error('100-map picker did not render all selectable tiles: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{

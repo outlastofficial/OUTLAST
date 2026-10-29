@@ -11,6 +11,8 @@ const lastScriptOpen=index.lastIndexOf('<script'),lastScriptEnd=index.lastIndexO
 assert(bodyClose>lastScriptEnd&&htmlClose>bodyClose&&index.slice(bodyClose).trim()==='</body>\n</html>','all script blocks, including the final version lock, must run before the document closes');
 assert(lastScriptOpen>=0&&lastScriptEnd>lastScriptOpen&&lastScriptEnd<bodyClose,'the final version-lock script must execute inside the document');
 assert(index.slice(lastScriptOpen,lastScriptEnd).includes(currentBuild),'the final script must enforce the current build marker');
+assert(index.slice(lastScriptOpen,lastScriptEnd).includes('setInterval(enforce,250)'),'the final version lock must reassert the current build after delayed legacy writers');
+assert(index.slice(lastScriptOpen,lastScriptEnd).includes('if(e.textContent!=="v"+V)e.textContent="v"+V;'),'the persistent version lock must avoid unnecessary text mutations');
 assert(currentBuild&&index.includes('<meta name="build-version" content="'+currentBuild+'">')&&index.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current release metadata stays synchronized');
 assert(index.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'"),'mandatory update popup follows the current build marker');
 assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, map expansion and owner modules are loaded');

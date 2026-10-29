@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlastofficial.github.io/OUTLAST/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.5">
-<meta name="build-version" content="4.6.5">
-<title>OUTLAST v4.6.5</title>
+<meta name="outlast-build" content="4.6.6">
+<meta name="build-version" content="4.6.6">
+<title>OUTLAST v4.6.6</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3834,7 +3834,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.6.5 — Upgrade Luck & Owner Diagnostics','Displays Total Upgrade Luck and adds read-only owner diagnostics. Existing progress and gameplay systems are preserved.'], ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'],  ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.6.6 — Version Lock & Regression Test Repair','Displays Total Upgrade Luck and adds read-only owner diagnostics. Existing progress and gameplay systems are preserved.'], ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'],  ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -3982,7 +3982,7 @@ try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
 const CURRENT_UPDATE_VERSION='4.6.5';
-const CURRENT_UPDATE_INFO={title:'v4.6.5 — Upgrade Luck & Owner Diagnostics',summary:'The Upgrade Menu now displays Total Upgrade Luck and the Owner Panel includes read-only game diagnostics. This release does not claim unverified gameplay fixes.',items:['Shows Total Upgrade Luck and the saved baseline in the upgrade menu.','Adds owner-only read-only diagnostics for build, server status, player count, run state, and luck stats.','No account reset or saved-data migration is included.']}
+const CURRENT_UPDATE_INFO={title:'v4.6.6 — Version Lock & Regression Test Repair',summary:'The Upgrade Menu now displays Total Upgrade Luck and the Owner Panel includes read-only game diagnostics. This release does not claim unverified gameplay fixes.',items:['Shows Total Upgrade Luck and the saved baseline in the upgrade menu.','Adds owner-only read-only diagnostics for build, server status, player count, run state, and luck stats.','No account reset or saved-data migration is included.']}
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6713,7 +6713,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script id="outlast-v463-event-countdown-removal">
 (function(){
   'use strict';
-  var BUILD='4.6.3', LABEL='v4.6.3 • EVENT COUNTDOWN REMOVED';
+  var BUILD='4.6.6', LABEL='v4.6.6 • SURVIVOR HUB';
   var selectors=[
     '#outlastEventCountdown','#eventCountdown','#event-countdown','#nightfallCountdown',
     '#nightfall-countdown','#halloweenCountdown','#halloween-countdown',
@@ -6761,7 +6761,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script id="outlast-v465-final-release-marker">
 (function(){
 'use strict';
-const V='4.6.5';
+const V='4.6.6';
 try{
  document.title='OUTLAST v'+V;
  window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;
@@ -6770,12 +6770,12 @@ try{
  }
  document.querySelectorAll('[data-outlast-version]').forEach(el=>{if(el.textContent!=='v'+V)el.textContent='v'+V;});
  document.querySelectorAll('.menu-chip').forEach(el=>{if(/v\d/i.test(el.textContent||''))el.textContent=(el.textContent||'').replace(/v\d+(?:\.\d+){1,3}/i,'v'+V);});
- if(Array.isArray(window.updates)&&!window.updates.some(x=>String(x?.[0]||'').includes('v4.6.5')))window.updates.unshift(['v4.6.5 — Upgrade Luck & Owner Diagnostics','The Permanent Upgrade Menu now displays Total Upgrade Luck, Combined Luck, and the saved baseline. Added an owner-only live Game Diagnostics tab and updated the How-To guide.']);
+ if(Array.isArray(window.updates)&&!window.updates.some(x=>String(x?.[0]||'').includes('v4.6.5')))window.updates.unshift(['v4.6.6 — Version Lock & Regression Test Repair','Fixed conflicting legacy scripts that overwrote the current version marker. Synchronized build metadata and repaired stale boss regression-test version assertions.']);
  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>String(x?.[0]||'').includes('Total Upgrade Luck'))){
   helpArticles.unshift(['Where do I see Total Upgrade Luck?','Upgrades','Open Loadout → Permanent Upgrade Tree. The top card shows Total Upgrade Luck, Combined Luck, and the saved permanent/next-run baseline. During a run, current values reflect the active player.']);
   helpArticles.unshift(['What is the Owner Game Diagnostics tab?','Owner Panel','Open the owner-only Owner Panel and choose Game Diagnostics for a read-only snapshot of server status, run state, level, enemy count, map, saved coins, and luck totals.']);
  }
-}catch(e){console.warn('OUTLAST v4.6.5 release marker:',e);}
+}catch(e){console.warn('OUTLAST v4.6.6 release marker:',e);}
 })();
 </script>
 
@@ -6807,7 +6807,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 })();</script>
 <script id="outlast-v4525-final-version-lock">(function(){'use strict';try{var V='4.5.25';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){var t='v'+V+' • SURVIVOR HUB';if(e.textContent!==t)e.textContent=t});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.26 — Complete Upgrade Balance Pass')===0;}))updates.unshift(['v4.5.26 — Complete Upgrade Balance Pass','Rebalanced the complete 220-card rarity-family library using one canonical multiplier table. Divine, Celestial, Transcendent, Eternal, and Omega now scale at 4×, 5×, 6×, 7×, and 8×. Gameplay scaling, rarity labels, and visible descriptions share the same values.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I choose a level-up upgrade?'}))helpArticles.unshift(['How do I choose a level-up upgrade?','Upgrades','Level up to open three redesigned upgrade cards with a rarity-colored side rail, bright tier badge, larger icon and title, readable effect description, and rarity multiplier. Click a card or press 1, 2, or 3 to select it.']);}catch(e){console.error('OUTLAST upgrade redesign version lock failed',e)}})();</script>
 <script src="outlast-v4527-upgrade-boss-rebuild.js?v=4.5.29"></script>
-<script id="outlast-v460-final-version-lock">(function(){'use strict';try{var V='4.6.3';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v'+V+' • ABYSS EXPEDITION'});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.6.0 — Abyss Expedition')===0;}))updates.unshift(['v4.5.28 — Unique Boss Combat','Every boss has a visible identity and signature ability. The intermission timer now starts immediately on the first detected defeat, blocking early same-frame spawn attempts; failed spawns still retry safely.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do bosses rotate now?'}))helpArticles.unshift(['How do bosses rotate now?','Bosses & Runs','Eight distinct bosses rotate without repeats until the roster is exhausted. Each boss uses a different ability: shockwave, poison volley, charge, minion summons, poison zone, targeted lightning, teleport, or a defensive shield. The first boss appears after about 15 seconds; each later boss waits at least 30 seconds after the previous boss is defeated. Failed spawn attempts are retried.']);}catch(e){console.error('OUTLAST v4.6.2 version lock failed',e)}})();</script>
+<script id="outlast-v460-final-version-lock">(function(){'use strict';try{var V='4.6.6';window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute('content')!==V)e.setAttribute('content',V)});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=='v'+V)e.textContent='v'+V});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v'+V+' • ABYSS EXPEDITION'});if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.6.0 — Abyss Expedition')===0;}))updates.unshift(['v4.5.28 — Unique Boss Combat','Every boss has a visible identity and signature ability. The intermission timer now starts immediately on the first detected defeat, blocking early same-frame spawn attempts; failed spawns still retry safely.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do bosses rotate now?'}))helpArticles.unshift(['How do bosses rotate now?','Bosses & Runs','Eight distinct bosses rotate without repeats until the roster is exhausted. Each boss uses a different ability: shockwave, poison volley, charge, minion summons, poison zone, targeted lightning, teleport, or a defensive shield. The first boss appears after about 15 seconds; each later boss waits at least 30 seconds after the previous boss is defeated. Failed spawn attempts are retried.']);}catch(e){console.error('OUTLAST v4.6.2 version lock failed',e)}})();</script>
 
 
 <script id="outlast-announcement-delivery-fix">
@@ -6879,8 +6879,8 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 <script id="outlast-v460-absolute-final-version-marker">
 (function(){
   'use strict';
-  var VERSION='4.6.3';
-  var LABEL='v4.6.3 • EVENT COUNTDOWN REMOVED';
+  var VERSION='4.6.6';
+  var LABEL='v4.6.6 • SURVIVOR HUB';
   function enforce(){
     try{
       window.OUTLAST_BUILD=VERSION;
@@ -6945,3 +6945,12 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 @media(prefers-reduced-motion:reduce){#menu .menu-nav-btn,#menu .menu-btn{transition:none!important}}
 </style>
 
+
+<script id="outlast-v466-absolute-final-version-lock">
+(function(){
+"use strict";
+var V="4.6.6", LABEL="v4.6.6 • SURVIVOR HUB";
+function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.6 version lock failed",e);}}
+enforce();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
+})();
+</script>

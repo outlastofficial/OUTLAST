@@ -8,5 +8,8 @@ for(const behavior of ['runUniqueBossAbility','case \'Grave Titan\':','case \'Pl
 assert(boss.includes('BOSS_INTERMISSION_MS=30000'),'must enforce 30-second boss intermission');
 assert(boss.includes('Date.now()-state.lastDefeatAt<BOSS_INTERMISSION_MS'),'normal scheduler must not bypass boss intermission');
 assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.29'),'v4.5.28 boss script must be cache-busted');
-assert(html.includes('OUTLAST v4.5.29'),'visible build version must be synchronized');
-console.log('OUTLAST v4.5.29 unique boss + intermission regression passed.');
+assert(html.includes('<title>OUTLAST v4.6.6</title>'),'document title must match current build');
+assert(html.includes('meta name="outlast-build" content="4.6.6"'),'build metadata must match current build');
+assert(html.includes('outlast-v466-absolute-final-version-lock'),'final version lock must be present');
+assert(!html.includes("var VERSION='4.6.3';"),'legacy v4.6.3 writer must be removed');
+console.log('OUTLAST boss uniqueness + intermission regression passed (current build v4.6.6).');

@@ -3208,9 +3208,14 @@ window.selectDiff=(x)=>{save.difficulty=x;persist();closeSub()};
 document.getElementById('modeBtn').onclick=()=>{openSub('▶ Game Mode','<div class="grid">'+Object.keys(modeDefs).map(x=>`<button class="option ${save.mode===x?'selected':''}" data-action="mode" data-value="${x}"><b>${x}</b><div class="small">${x==='Speed Run'?'Survive '+modeDefs[x].timeLimit+' seconds':x==='Endless'?'No time limit':x==='Boss Rush'?'Bosses appear much more often':x==='Global'?'High-score challenge for the leaderboard':x==='1v1 Arena'?'Local 1v1 Survival: P1 WASD • P2 IJKL':'Standard survival'}</div></button>`).join('')+'</div>')};
 window.selectMode=(x)=>{save.mode=x;persist();closeSub()};
 function renderUpgradeTree(){
+ const liveP=game&&game.player?game.player:null;
+ const baseUpgradeLuck=Number(save.permanentLuck||0)+3*Number(save.upgrades?.['Lucky Drops']||0)+2*Number(save.upgrades?.['Upgrade Scanner']||0)+Number(save.nextRunLuck||0);
+ const totalUpgradeLuck=liveP?Math.max(0,Number(liveP.upgradeLuck)||0):Math.max(0,baseUpgradeLuck);
+ const combinedLuck=liveP?Math.max(0,Number(liveP.upgradeLuck)||0)+Math.max(0,Number(liveP.lootLuck)||0)+Math.max(0,Number(liveP.treasureLuck)||0):totalUpgradeLuck;
+ const luckSummary=`<div class="option" style="margin-bottom:12px;border-color:#5b9ed0;background:linear-gradient(135deg,#10283a,#111922)"><b>🍀 TOTAL UPGRADE LUCK: ${Math.floor(totalUpgradeLuck)}</b><div class="small">Combined Luck: ${Math.floor(combinedLuck)} • Permanent / next-run baseline: ${Math.floor(baseUpgradeLuck)}</div><div class="small">Upgrade Luck affects the rarity roll. Combined Luck includes Upgrade, Loot, and Treasure Luck.</div></div>`;
  const cards=permanent.map(([n,d,cost])=>{const lv=save.upgrades[n]||0;const price=(n==='Omega Vacuum'||n==='Omega Shield')?cost:cost*(lv+1);return `<button class="option ${lv?'selected':''}" data-action="upgrade" data-value="${n}" data-base="${cost}"><b>${n}</b><div class="small">${d}</div><div class="small">Level ${lv}/5 • Cost ${lv<5?price:'MAX'} coins</div></button>`}).join('');
  const affordable=permanent.filter(([n,,cost])=>{const lv=save.upgrades[n]||0;const price=(n==='Omega Vacuum'||n==='Omega Shield')?cost:cost*(lv+1);return lv<5&&save.coins>=price}).length;
- openSub('⛭ Permanent Upgrade Tree',`<div class="option"><b>● ${save.coins} coins available</b><div class="small">Buy everything you can currently afford. Upgrades stop at Level 5.</div><button class="gold" data-action="buyAffordable">● BUY ALL AFFORDABLE (${affordable})</button></div><div class="grid">${cards}</div>`);
+ openSub('⛭ Permanent Upgrade Tree',`${luckSummary}<div class="option"><b>● ${save.coins} coins available</b><div class="small">Buy everything you can currently afford. Upgrades stop at Level 5.</div><button class="gold" data-action="buyAffordable">● BUY ALL AFFORDABLE (${affordable})</button></div><div class="grid">${cards}</div>`);
 }
 document.getElementById('petBtn').onclick=openPets;document.getElementById('relicBtn').onclick=openRelics;document.getElementById('charmBtn').onclick=openCharms;document.getElementById('forgeBtn').onclick=forgeOpen;document.getElementById('shopBtn').onclick=shopOpen;document.getElementById('challengeBtn').onclick=challengeOpen;document.getElementById('titleBtn').onclick=titleOpen;document.getElementById('modifierBtn').onclick=modifierOpen;
 document.getElementById('upgradeBtn').onclick=renderUpgradeTree;
@@ -3523,6 +3528,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
     return '<div class="option"><b>👑 OWNER CONTROL CENTER</b><div class="small">Owner-access verified tools. Protected actions are checked by the server.</div></div>+'
     '<div class="row" style="justify-content:flex-start;margin:10px 0;overflow:auto">'+
     '<button class="option" data-owner-action="tab" data-value="overview">Overview</button>'+
+    '<button class="option" data-owner-action="tab" data-value="gamestats">📊 Game Diagnostics</button>'+
     '<button class="option" data-owner-action="tab" data-value="status">Server Status</button>'+
     '<button class="option" data-owner-action="tab" data-value="players">Players</button>'+
     '<button class="option" data-owner-action="tab" data-value="events">Global Events</button>'+
@@ -3552,7 +3558,14 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
   async function render(which){
     if(!unlocked||!owner())return;tab=which||tab;const b=document.getElementById('ownerPanelBody');if(!b)return;b.innerHTML='<div class="option">Loading…</div>';
     try{
-      if(tab==='overview'){
+      if(tab==='gamestats'){
+        let health={status:'unavailable',players:0};try{health=await api('/api/health')}catch(_){}
+        const p=game&&game.player?game.player:null;
+        const upLuck=p?Math.floor(Number(p.upgradeLuck)||0):Math.floor(Number(save.permanentLuck||0)+3*Number(save.upgrades?.['Lucky Drops']||0)+2*Number(save.upgrades?.['Upgrade Scanner']||0)+Number(save.nextRunLuck||0));
+        const lootLuck=Math.floor(Number(p?.lootLuck)||0),treasureLuck=Math.floor(Number(p?.treasureLuck)||0);
+        const cards=[['Build','v4.6.5'],['Server',health.status||'unknown'],['Players Online',Number(health.players||0)],['Run State',game?.running?(game.paused?'Paused':'Running'):'Menu'],['Run Level',Number(game?.level||1)],['Enemies Alive',Array.isArray(game?.enemies)?game.enemies.filter(e=>e&&e.hp>0&&!e.__dead).length:0],['Upgrade Luck',upLuck],['Combined Luck',upLuck+lootLuck+treasureLuck],['Loot Luck',lootLuck],['Treasure Luck',treasureLuck],['Saved Coins',Number(save.coins||0)],['Map',String(save.map||'Forest')]];
+        b.innerHTML='<div class="option"><b>📊 Live Game Diagnostics</b><div class="small">Read-only snapshot. Refresh the tab to pull the latest client and server values.</div></div><div class="grid" style="margin-top:10px">'+cards.map(([k,v])=>'<div class="option"><b>'+esc(k)+'</b><div class="small">'+esc(String(v))+'</div></div>').join('')+'</div><button class="option" data-owner-action="tab" data-value="gamestats" style="margin-top:10px">↻ Refresh Diagnostics</button>';
+      }else if(tab==='overview'){
         const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
         b.innerHTML='<div class="grid"><div class="option"><b>👑 Owner</b><div class="small">'+esc(currentUsername)+'</div></div><div class="option"><b>🌐 Server</b><div class="small">'+esc(h.status||'unknown')+'</div></div><div class="option"><b>🟢 Online</b><div class="small">'+Number(h.players||0)+' players</div></div><div class="option"><b>🌎 Event</b><div class="small">'+esc(ev)+'</div></div></div><button class="option" data-owner-action="tab" data-value="overview" style="margin-top:10px">↻ Refresh</button>';
       }else if(tab==='status'){
@@ -6744,7 +6757,29 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
   if(typeof window.helpArticles!=='undefined'&&Array.isArray(window.helpArticles)&&!window.helpArticles.some(function(x){return x&&x[0]==='Where did the event countdown go?';}))
     window.helpArticles.unshift(['Where did the event countdown go?','Updates & Reliability','The old event countdown was removed from the main menu. Gameplay events and World Events still work; the Daily Shop refresh timer is separate and remains available.']);
 })();
-</script></body>
+</script>
+<script id="outlast-v465-final-release-marker">
+(function(){
+'use strict';
+const V='4.6.5';
+try{
+ document.title='OUTLAST v'+V;
+ window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;
+ for(const sel of ['meta[name="outlast-build"]','meta[name="build-version"]']){
+  const el=document.querySelector(sel);if(el&&el.content!==V)el.content=V;
+ }
+ document.querySelectorAll('[data-outlast-version]').forEach(el=>{if(el.textContent!=='v'+V)el.textContent='v'+V;});
+ document.querySelectorAll('.menu-chip').forEach(el=>{if(/v\d/i.test(el.textContent||''))el.textContent=(el.textContent||'').replace(/v\d+(?:\.\d+){1,3}/i,'v'+V);});
+ if(Array.isArray(window.updates)&&!window.updates.some(x=>String(x?.[0]||'').includes('v4.6.5')))window.updates.unshift(['v4.6.5 — Upgrade Luck & Owner Diagnostics','The Permanent Upgrade Menu now displays Total Upgrade Luck, Combined Luck, and the saved baseline. Added an owner-only live Game Diagnostics tab and updated the How-To guide.']);
+ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>String(x?.[0]||'').includes('Total Upgrade Luck'))){
+  helpArticles.unshift(['Where do I see Total Upgrade Luck?','Upgrades','Open Loadout → Permanent Upgrade Tree. The top card shows Total Upgrade Luck, Combined Luck, and the saved permanent/next-run baseline. During a run, current values reflect the active player.']);
+  helpArticles.unshift(['What is the Owner Game Diagnostics tab?','Owner Panel','Open the owner-only Owner Panel and choose Game Diagnostics for a read-only snapshot of server status, run state, level, enemy count, map, saved coins, and luck totals.']);
+ }
+}catch(e){console.warn('OUTLAST v4.6.5 release marker:',e);}
+})();
+</script>
+
+</body>
 </html>
 
 

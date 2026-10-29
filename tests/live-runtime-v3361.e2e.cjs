@@ -231,6 +231,8 @@ if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current
   if(!(displacement>10))throw new Error('WASD did not move the player after Start Run: '+JSON.stringify({beforeMove,afterMove,layoutAudit}));
   const afkReady=await page.locator('#outlastAFKSpotButton').waitFor({state:'visible',timeout:8000}).then(()=>true).catch(()=>false);
   if(!afkReady)throw new Error('AFK Spot button did not appear during gameplay.');
+  const afkLayout=await page.evaluate(()=>{const spot=document.getElementById('outlastAFKSpotButton'),lounge=document.getElementById('outlastV443AFK');if(!spot||!lounge||getComputedStyle(lounge).display==='none')return {ready:false};const a=spot.getBoundingClientRect(),b=lounge.getBoundingClientRect();return {ready:true,overlap:a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top,spot:{x:a.x,y:a.y,width:a.width,height:a.height},lounge:{x:b.x,y:b.y,width:b.width,height:b.height}};});
+  if(afkLayout.ready&&afkLayout.overlap)throw new Error('AFK Lounge must not cover the AFK Spot button: '+JSON.stringify(afkLayout));
   await page.locator('#outlastAFKSpotButton').click();
   await page.locator('#outlastAFKLounge').waitFor({state:'visible',timeout:3000});
   const afkBefore=await page.evaluate(()=>({paused:game.paused,active:window.OUTLAST_AFK_ACTIVE,time:game.time}));

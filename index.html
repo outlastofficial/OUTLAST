@@ -7,11 +7,11 @@
 <meta property="og:title" content="OUTLAST — Survivor Hub">
 <meta property="og:description" content="Fight escalating enemy waves, defeat unique bosses, choose upgrades, and survive for a higher score in OUTLAST.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://outlast-game.onrender.com/">
+<meta property="og:url" content="https://outlastofficial.github.io/OUTLAST/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.4">
-<meta name="build-version" content="4.6.4">
-<title>OUTLAST v4.6.4</title>
+<meta name="outlast-build" content="4.6.5">
+<meta name="build-version" content="4.6.5">
+<title>OUTLAST v4.6.5</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -952,7 +952,7 @@ body.outlast-in-game.menu-open #mobileControls, body.outlast-in-game.popup-open 
             <h1 class="title" style="text-align:left;margin:0">OUTLAST</h1>
             <div class="subtitle">SURVIVE THE NIGHT • BUILD YOUR LEGEND</div>
           </div>
-          <div class="menu-chip">v4.6.4 • UPGRADE LUCK FIX</div>
+          <div class="menu-chip">v4.6.5 • UPGRADE LUCK & OWNER DIAGNOSTICS</div>
         </div>
         <div id="menuSummary" class="small"></div>
         <div class="row" style="justify-content:flex-start;margin:0 0 10px">
@@ -3834,7 +3834,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'], ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.6.5 — Upgrade Luck & Owner Diagnostics','Displays Total Upgrade Luck and adds read-only owner diagnostics. Existing progress and gameplay systems are preserved.'], ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'],  ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -3981,8 +3981,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.6.4';
-const CURRENT_UPDATE_INFO={title:'v4.6.4 — Upgrade Luck Fix',summary:'Upgrade Luck now more noticeably improves the odds of higher-rarity upgrade choices. Higher rarity remains random, and the effect is capped to keep the system balanced.',items:['Luck shifts probability away from Common and Uncommon and toward the full Rare-to-Omega upgrade ladder.','The luck effect is capped to prevent runaway rarity inflation.','Existing accounts, saved progress, player lists, and leaderboard records are preserved.']}
+const CURRENT_UPDATE_VERSION='4.6.5';
+const CURRENT_UPDATE_INFO={title:'v4.6.5 — Upgrade Luck & Owner Diagnostics',summary:'The Upgrade Menu now displays Total Upgrade Luck and the Owner Panel includes read-only game diagnostics. This release does not claim unverified gameplay fixes.',items:['Shows Total Upgrade Luck and the saved baseline in the upgrade menu.','Adds owner-only read-only diagnostics for build, server status, player count, run state, and luck stats.','No account reset or saved-data migration is included.']}
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }

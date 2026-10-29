@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlastofficial.github.io/OUTLAST/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.6">
-<meta name="build-version" content="4.6.6">
-<title>OUTLAST v4.6.6</title>
+<meta name="outlast-build" content="4.6.7">
+<meta name="build-version" content="4.6.7">
+<title>OUTLAST v4.6.7</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -2331,7 +2331,7 @@ const tempUp=[
  ['Chain Reaction',v=>`+${fmtPct(15,v)}% chain effect`,v=>game.player.chain=(game.player.chain||1)*(1+.15*v)],
  ['Lucky Coins',v=>`+${fmtPct(20,v)}% coins`,v=>game.player.coinMult*=1+.20*v],
  ['Adrenaline',v=>`+${fmtPct(20,v)}% speed below 50% HP`,v=>game.player.adrenaline=true],
- ['Shield Core',v=>`Gain ${Math.round(3*v)}s shield`,v=>outlastGrantTempShield(3*v)],
+ ['Shield Core',v=>`+${Math.round(3*v)}s shield duration`,v=>outlastExtendTempShield(3*v)],
  ['Rapid Recovery',v=>`+${fmtPct(15,v)}% pickup healing`,v=>game.player.healMult=(game.player.healMult||1)*(1+.15*v)],
  ['Poison Rounds',v=>`Shots apply stronger poison`,v=>game.player.poison=true],
  ['Stun Rounds',v=>`Shots have a better stun effect`,v=>game.player.stun=true],
@@ -2355,7 +2355,7 @@ const tempUp=[
   ,['Ammo Surge',v=>'+'+Math.max(2,Math.round(2*v))+' extra projectiles',v=>game.player.multiShot=(game.player.multiShot||0)+Math.max(2,Math.round(2*v))]
   ,['Coin Magnetism',v=>'+'+Math.round(30*v)+' pickup range and coins',v=>{game.player.magnet+=30*v;game.player.coinMult*=1+.12*v}]
   ,['Heavy Impact',v=>'+'+Math.round(18*v)+' damage and larger shots',v=>{game.player.damage+=18*v;game.player.bulletSize=(game.player.bulletSize||1)*(1+.12*v)}]
-  ,['Emergency Shield',v=>'Gain '+Math.round(5*v)+' seconds of shield',v=>outlastGrantTempShield(5*v)]
+  ,['Emergency Shield',v=>'+'+Math.round(5*v)+' seconds of shield duration',v=>outlastExtendTempShield(5*v)]
   ,['Second Heart',v=>'+'+Math.round(55*v)+' max HP and healing',v=>{game.player.max+=55*v;game.player.hp=Math.min(game.player.max,game.player.hp+55*v);game.player.healMult=(game.player.healMult||1)+.15*v}]
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+fmtPct(12,v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
@@ -2414,6 +2414,13 @@ function outlastGrantTempShield(seconds){
   const eff=Math.max(1,Number(p.shieldEfficiency)||1);
   const duration=Math.max(0,Number(seconds))*eff;
   p.shield=Math.max(Number(p.shield)||0,duration);
+  return p.shield;
+}
+function outlastExtendTempShield(seconds){
+  const p=game&&game.player;
+  if(!p||!Number.isFinite(Number(seconds))||Number(seconds)<=0)return 0;
+  const eff=Math.max(1,Number(p.shieldEfficiency)||1);
+  p.shield=Math.max(0,Number(p.shield)||0)+Number(seconds)*eff;
   return p.shield;
 }
 function upg(name){return save.upgrades[name]||0}
@@ -3981,8 +3988,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.6.5';
-const CURRENT_UPDATE_INFO={title:'v4.6.6 — Version Lock & Regression Test Repair',summary:'The Upgrade Menu now displays Total Upgrade Luck and the Owner Panel includes read-only game diagnostics. This release does not claim unverified gameplay fixes.',items:['Shows Total Upgrade Luck and the saved baseline in the upgrade menu.','Adds owner-only read-only diagnostics for build, server status, player count, run state, and luck stats.','No account reset or saved-data migration is included.']}
+const CURRENT_UPDATE_VERSION='4.6.7';
+const CURRENT_UPDATE_INFO={title:'v4.6.7 — Shield Duration Fix',summary:'Shield Core and Emergency Shield now add their awarded duration to any shield time already remaining instead of only replacing it when the new duration is longer.',items:['Shield Core adds its awarded seconds to the current shield timer.','Emergency Shield adds its awarded seconds to the current shield timer.','Existing player saves and other shield sources are preserved.']}
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6949,8 +6956,8 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 <script id="outlast-v466-absolute-final-version-lock">
 (function(){
 "use strict";
-var V="4.6.6", LABEL="v4.6.6 • SURVIVOR HUB";
+var V="4.6.7", LABEL="v4.6.7 • SHIELD DURATION FIX";
 function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.6 version lock failed",e);}}
-enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.6 — Version Lock & Regression Test Repair")===0;}))updates.unshift(["v4.6.6 — Version Lock & Regression Test Repair","Fixed conflicting legacy scripts that overwrote the current version marker. Synchronized build metadata and repaired stale boss regression-test version assertions."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
+enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.7 — Shield Duration Fix")===0;}))updates.unshift(["v4.6.7 — Shield Duration Fix","Shield Core and Emergency Shield now add their awarded duration to the shield time already remaining instead of replacing it."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
 })();
 </script>

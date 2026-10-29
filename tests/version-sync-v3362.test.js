@@ -5,6 +5,12 @@ const expansion=fs.readFileSync('outlast-v4000-ultimate-expansion.js','utf8');
 const gear=fs.readFileSync('outlast-v435-upgrade-gear-redesign.js','utf8');
 
 const currentBuild=(index.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+
+const bodyClose=index.lastIndexOf('</body>'),htmlClose=index.lastIndexOf('</html>');
+const lastScriptOpen=index.lastIndexOf('<script'),lastScriptEnd=index.lastIndexOf('</script>');
+assert(bodyClose>lastScriptEnd&&htmlClose>bodyClose&&/^\\s*<\\/body>\\s*<\\/html>\\s*$/.test(index.slice(bodyClose)),'all script blocks, including the final version lock, must run before the document closes');
+assert(lastScriptOpen>=0&&lastScriptEnd>lastScriptOpen&&lastScriptEnd<bodyClose,'the final version-lock script must execute inside the document');
+assert(index.slice(lastScriptOpen,lastScriptEnd).includes(currentBuild),'the final script must enforce the current build marker');
 assert(currentBuild&&index.includes('<meta name="build-version" content="'+currentBuild+'">')&&index.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current release metadata stays synchronized');
 assert(index.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'"),'mandatory update popup follows the current build marker');
 assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, map expansion and owner modules are loaded');

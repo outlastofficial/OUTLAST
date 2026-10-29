@@ -1,7 +1,7 @@
 name: OUTLAST local runtime smoke test
 on:
   push:
-    branches: [main]
+    branches: ["**"]
     paths:
       - "index.html"
       - "*.js"

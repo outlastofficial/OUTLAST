@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlastofficial.github.io/OUTLAST/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.8">
-<meta name="build-version" content="4.6.8">
-<title>OUTLAST v4.6.8</title>
+<meta name="outlast-build" content="4.6.9">
+<meta name="build-version" content="4.6.9">
+<title>OUTLAST v4.6.9</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3988,8 +3988,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.6.7';
-const CURRENT_UPDATE_INFO={title:'v4.6.7 — Shield Duration Fix',summary:'Shield Core and Emergency Shield now add their awarded duration to any shield time already remaining instead of only replacing it when the new duration is longer.',items:['Shield Core adds its awarded seconds to the current shield timer.','Emergency Shield adds its awarded seconds to the current shield timer.','Existing player saves and other shield sources are preserved.']}
+const CURRENT_UPDATE_VERSION='4.6.9';
+const CURRENT_UPDATE_INFO={title:'v4.6.9 — Regression & Update Popup Fix',summary:'Fixed the upgrade-choice fallback so duplicate entries no longer stop the picker early. Synchronized the update popup and mandatory update notice with the visible build version.',items:['The picker skips duplicate choices and continues searching for three distinct eligible upgrades when available.','The Update News popup and mandatory update notice now match the current release.','Shield duration upgrades continue adding their awarded time to the active timer.','Existing saves, login, and leaderboard records are preserved.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6490,7 +6490,7 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.6.4', LABEL='v4.6.4 • UPGRADE LUCK FIX';
+  var BUILD='4.6.9', LABEL='v4.6.9 • REGRESSION & UPDATE POPUP FIX';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
@@ -6953,11 +6953,11 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 @media(prefers-reduced-motion:reduce){#menu .menu-nav-btn,#menu .menu-btn{transition:none!important}}
 </style>
 
-<script id="outlast-v466-absolute-final-version-lock">
+<script id="outlast-v469-absolute-final-version-lock">
 (function(){
 "use strict";
-var V="4.6.8", LABEL="v4.6.8 • VERSION MARKER FIX";
-function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.7 version lock failed",e);}}
-enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.8 — Version Marker Fix")===0;}))updates.unshift(["v4.6.8 — Version Marker Fix","Fixed the final version marker so it displays the current build after older embedded scripts run. Shield duration stacking remains included."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
+var V="4.6.9", LABEL="v4.6.9 • REGRESSION & UPDATE POPUP FIX";
+function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.9 version lock failed",e);}}
+enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.8 — Version Marker Fix")===0;}))updates.unshift(["v4.6.8 — Version Marker Fix","Fixed the final version marker so it displays the current build after older embedded scripts run. Shield duration stacking remains included."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.9 — Regression & Update Popup Fix")===0;}))updates.unshift(["v4.6.9 — Regression & Update Popup Fix","Fixed upgrade-choice fallback selection so duplicate names no longer stop the picker early. Synchronized the Update News popup and mandatory update notice with the current build. Shield duration stacking remains included; saved progress is preserved."]);if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="What changed in v4.6.9?";}))helpArticles.unshift(["What changed in v4.6.9?","Updates & Reliability","The upgrade picker now skips already-selected names instead of stopping its fallback scan. The Update News popup and mandatory update notice are synchronized with the current build. Shield duration upgrades still add time to the active timer, and saved progress is preserved."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
 })();
 </script>

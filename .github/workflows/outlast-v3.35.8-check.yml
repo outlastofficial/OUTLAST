@@ -20,6 +20,8 @@ jobs:
           node-version: 22
       - name: Parse all inline browser JavaScript
         run: node tests/inline-script-syntax-v3358.test.js
+      - name: Verify Global Chat source regression guards
+        run: node tests/global-chat-repair-v451.test.js
       - name: Run v3.37.8 expansion and combat behavior checks
         run: node tests/outlast-v3378-expansion.test.js
       - name: Verify all 82 added map visuals and layouts

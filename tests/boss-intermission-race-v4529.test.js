@@ -23,4 +23,4 @@ clock.now+=2;
 assert.strictEqual(window.spawnBoss(),true,'a boss may spawn after the full intermission');
 assert.strictEqual(spawnCalls,1,'exactly one spawn attempt is allowed after the intermission');
 assert.strictEqual(game.enemies.filter(e=>e&&e.boss&&e.hp>0).length,1,'the scheduler must not create duplicate living bosses');
-console.log('OUTLAST v4.5.29 boss intermission race regression passed.');
+console.log('OUTLAST boss intermission race regression passed (current build v4.6.6).');

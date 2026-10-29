@@ -6786,6 +6786,14 @@ try{
 })();
 </script>
 
+<script id="outlast-v466-absolute-final-version-lock">
+(function(){
+"use strict";
+var V="4.6.7", LABEL="v4.6.7 • SHIELD DURATION FIX";
+function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.7 version lock failed",e);}}
+enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.7 — Shield Duration Fix")===0;}))updates.unshift(["v4.6.7 — Shield Duration Fix","Shield Core and Emergency Shield now add their awarded duration to the shield time already remaining instead of replacing it."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
+})();
+</script>
 </body>
 </html>
 
@@ -6953,11 +6961,4 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 </style>
 
 
-<script id="outlast-v466-absolute-final-version-lock">
-(function(){
-"use strict";
-var V="4.6.7", LABEL="v4.6.7 • SHIELD DURATION FIX";
-function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.6 version lock failed",e);}}
-enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.7 — Shield Duration Fix")===0;}))updates.unshift(["v4.6.7 — Shield Duration Fix","Shield Core and Emergency Shield now add their awarded duration to the shield time already remaining instead of replacing it."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
-})();
-</script>
+

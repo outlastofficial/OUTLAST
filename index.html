@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.7.0">
-<meta name="build-version" content="4.7.0">
-<title>OUTLAST v4.7.0</title>
+<meta name="outlast-build" content="4.7.1">
+<meta name="build-version" content="4.7.1">
+<title>OUTLAST v4.7.1</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -2332,7 +2332,7 @@ const tempUp=[
  ['Chain Reaction',v=>`+${fmtPct(15,v)}% chain effect`,v=>game.player.chain=(game.player.chain||1)*(1+.15*v)],
  ['Lucky Coins',v=>`+${fmtPct(20,v)}% coins`,v=>game.player.coinMult*=1+.20*v],
  ['Adrenaline',v=>`+${fmtPct(20,v)}% speed below 50% HP`,v=>game.player.adrenaline=true],
- ['Shield Core',v=>`Gain ${Math.round(3*v)}s shield`,v=>outlastGrantTempShield(3*v)],
+ ['Shield Core',v=>`Gain ${Math.round(3*v)}s shield`,v=>outlastExtendTempShield(3*v)],
  ['Rapid Recovery',v=>`+${fmtPct(15,v)}% pickup healing`,v=>game.player.healMult=(game.player.healMult||1)*(1+.15*v)],
  ['Poison Rounds',v=>`Shots apply stronger poison`,v=>game.player.poison=true],
  ['Stun Rounds',v=>`Shots have a better stun effect`,v=>game.player.stun=true],
@@ -2356,7 +2356,7 @@ const tempUp=[
   ,['Ammo Surge',v=>'+'+Math.max(2,Math.round(2*v))+' extra projectiles',v=>game.player.multiShot=(game.player.multiShot||0)+Math.max(2,Math.round(2*v))]
   ,['Coin Magnetism',v=>'+'+Math.round(30*v)+' pickup range and coins',v=>{game.player.magnet+=30*v;game.player.coinMult*=1+.12*v}]
   ,['Heavy Impact',v=>'+'+Math.round(18*v)+' damage and larger shots',v=>{game.player.damage+=18*v;game.player.bulletSize=(game.player.bulletSize||1)*(1+.12*v)}]
-  ,['Emergency Shield',v=>'Gain '+Math.round(5*v)+' seconds of shield',v=>outlastGrantTempShield(5*v)]
+  ,['Emergency Shield',v=>'Gain '+Math.round(5*v)+' seconds of shield',v=>outlastExtendTempShield(5*v)]
   ,['Second Heart',v=>'+'+Math.round(55*v)+' max HP and healing',v=>{game.player.max+=55*v;game.player.hp=Math.min(game.player.max,game.player.hp+55*v);game.player.healMult=(game.player.healMult||1)+.15*v}]
   ,['Fortune Engine',v=>'+'+Math.round(12*v)+' Upgrade Luck and '+fmtPct(12,v)+'% coins',v=>{game.player.upgradeLuck=(game.player.upgradeLuck||0)+12*v;game.player.luck=(game.player.upgradeLuck||0)+(game.player.lootLuck||0)+(game.player.treasureLuck||0);game.player.coinMult*=1+.12*v}]
 ];
@@ -2415,6 +2415,13 @@ function outlastGrantTempShield(seconds){
   const eff=Math.max(1,Number(p.shieldEfficiency)||1);
   const duration=Math.max(0,Number(seconds))*eff;
   p.shield=Math.max(Number(p.shield)||0,duration);
+  return p.shield;
+}
+function outlastExtendTempShield(seconds){
+  const p=game&&game.player;
+  if(!p||!Number.isFinite(Number(seconds))||Number(seconds)<=0)return 0;
+  const eff=Math.max(1,Number(p.shieldEfficiency)||1);
+  p.shield=Math.max(0,Number(p.shield)||0)+Number(seconds)*eff;
   return p.shield;
 }
 function upg(name){return save.upgrades[name]||0}
@@ -3977,8 +3984,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.7.0';
-const CURRENT_UPDATE_INFO={title:'v4.7.0 — Boss Encounter Overhaul',summary:'The v4.7.0 reliability release begins with five distinct boss encounter profiles. Existing account and leaderboard data is preserved.',items:['Rift Stalker, Iron Colossus, Plague Caller, Storm Warden, and Soul Reaper have different abilities.','The next boss waits until the active boss is defeated.','Start Run, reload, damage, saving, chat, and upgrade balance remain under verification; untested items are not marked complete.']};
+const CURRENT_UPDATE_VERSION='4.7.1';
+const CURRENT_UPDATE_INFO={title:'v4.7.1 — Shield Duration Fix',summary:'Shield duration upgrades now add their awarded time to the shield time already remaining, so taking another shield upgrade extends protection instead of replacing it.',items:['Shield Core adds its awarded seconds to the active shield timer.','Emergency Shield adds its awarded seconds to the active shield timer.','Shield Efficiency still scales added duration; ordinary shield grants keep their existing grant behavior.','The upgrade-choice fallback now skips already-picked names instead of stopping its search.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6456,7 +6463,7 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.7.0', LABEL='v4.7.0 • BOSS ENCOUNTER OVERHAUL';
+  var BUILD='4.7.1', LABEL='v4.7.1 • SHIELD DURATION FIX';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
@@ -6822,9 +6829,12 @@ e.x=Math.max(80,Math.min((typeof W==='number'?W:4000)-80,p.x-Math.cos(a)*r));e.y
 }else if(e.bossAbility==='pulse'){if(d<220){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,12*ramp,'Storm Warden pulse',1);else p.hp=Math.max(0,p.hp-12*ramp);}catch(_){}}e.bossAbilityClock=5.5;
 }else if(e.bossAbility==='heal'){if(e.hp<e.max*.72)e.hp=Math.min(e.max,e.hp+e.max*.07);e.bossAbilityClock=7.5;}
 });};}
-window.OUTLAST_BOSS_PROFILE_AUDIT=function(){var e=bossNow();return{version:'4.7.0',installed:!!window.__v470SpawnWrapped&&!!window.__v470SpecialWrapped,profiles:profiles.map(function(p){return{name:p.name,ability:p.ability};}),activeBoss:e?{name:e.bossName,ability:e.bossAbility,hp:e.hp,max:e.max}:null};};
-function applyVersion(){window.OUTLAST_BUILD='4.7.0';window.OUTLAST_VERSION='v4.7.0';document.title='OUTLAST v4.7.0';document.querySelectorAll('meta[name="outlast-build"],meta[name="build-version"]').forEach(function(m){m.setAttribute('content','4.7.0');});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v4.7.0 • BOSS ENCOUNTER OVERHAUL';});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v4.7.0';});}
+window.OUTLAST_BOSS_PROFILE_AUDIT=function(){var e=bossNow();return{version:'4.7.1',installed:!!window.__v470SpawnWrapped&&!!window.__v470SpecialWrapped,profiles:profiles.map(function(p){return{name:p.name,ability:p.ability};}),activeBoss:e?{name:e.bossName,ability:e.bossAbility,hp:e.hp,max:e.max}:null};};
+function applyVersion(){window.OUTLAST_BUILD='4.7.1';window.OUTLAST_VERSION='v4.7.1';document.title='OUTLAST v4.7.1';document.querySelectorAll('meta[name="outlast-build"],meta[name="build-version"]').forEach(function(m){m.setAttribute('content','4.7.1');});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v4.7.1 • SHIELD DURATION FIX';});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v4.7.1';});}
 applyVersion();window.addEventListener('pageshow',applyVersion);
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.7.0 — Boss Encounter Overhaul')===0}))updates.unshift(['v4.7.0 — Boss Encounter Overhaul','Started the reliability release with five distinct boss profiles: Rift Stalker blink, Iron Colossus slam, Plague Caller reinforcements, Storm Warden pulse, and Soul Reaper recovery. Existing accounts and records are untouched.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do the unique bosses work?';}))helpArticles.unshift(['How do the unique bosses work?','Bosses & Runs','Rift Stalker repositions, Iron Colossus slams nearby players, Plague Caller summons reinforcements, Storm Warden pulses nearby players, and Soul Reaper can recover health.']);
+
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.7.1 — Shield Duration Fix')===0}))updates.unshift(['v4.7.1 — Shield Duration Fix','Shield Core and Emergency Shield now add duration to the remaining shield timer. Shield Efficiency is applied to the added seconds, and repeated upgrades stack correctly. The rarity-card fallback also skips already-selected names.']);
+if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do shield duration upgrades stack?';}))helpArticles.unshift(['How do shield duration upgrades stack?','Upgrades & Defense','Shield Core and Emergency Shield add their awarded seconds to the time already remaining on your temporary shield. Shield Efficiency scales the added time. Other shield grants keep their normal grant behavior, so stacking upgrades will not erase time you already earned.']);
 })();</script>

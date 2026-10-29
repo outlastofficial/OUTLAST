@@ -399,6 +399,8 @@ if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current
   if(!await mobilePage.locator('#mobileControls').isVisible())throw new Error('Mobile movement/actions did not appear during gameplay.');
   const mobileUlt=mobilePage.locator('[data-mobile-action="ult"]');
   if(!await mobileUlt.isVisible())throw new Error('Mobile ULT button is not visible during gameplay.');
+  const mobileAFKLayout=await mobilePage.evaluate(()=>{const lounge=document.getElementById('outlastV443AFK'),ult=document.querySelector('[data-mobile-action="ult"]');if(!lounge||!ult||getComputedStyle(lounge).display==='none')return {ready:false};const a=lounge.getBoundingClientRect(),b=ult.getBoundingClientRect();return {ready:true,overlap:a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top,lounge:{x:a.x,y:a.y,width:a.width,height:a.height},ult:{x:b.x,y:b.y,width:b.width,height:b.height}};});
+  if(mobileAFKLayout.ready&&mobileAFKLayout.overlap)throw new Error('AFK Lounge must not cover the mobile ULT control: '+JSON.stringify(mobileAFKLayout));
   const mobileUltimatePrep=await mobilePage.evaluate(()=>{
     const p=game.player,probe={__outlastMobileUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
     game.enemies=[probe];p.ult=100;return {hp:probe.hp,charge:p.ult};

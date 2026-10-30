@@ -432,9 +432,46 @@ if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current
   }
   if(mobileErrors.length||mobile404.length)throw new Error('Mobile browser errors: '+mobileErrors.join(' | ')+' HTTP404='+mobile404.join(' | '));
   await mobilePage.close();
+
+  const noticePage=await browser.newPage({viewport:{width:1280,height:900}});
+  const noticeErrors=[];
+  noticePage.on('console',m=>{if(m.type()==='error')noticeErrors.push(m.text())});
+  noticePage.on('pageerror',e=>noticeErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));
+  await noticePage.addInitScript((expectedBuild)=>{
+    localStorage.setItem('outlastUsername','UpdateNoticeE2E');
+    localStorage.setItem('outlastDeviceMode','pc');
+    localStorage.setItem('outlastJoystickMode','off');
+    localStorage.setItem('outlast_update_ack_v4.0.0','1');
+    localStorage.setItem('outlast_update_ack_v3.37.0','1');
+    localStorage.setItem('outlastSeenUpdateVersion',expectedBuild);
+    localStorage.setItem('outlastNewPlayerTutorialV317','1');
+    localStorage.removeItem('outlast_update_log_seen');
+  },EXPECTED_BUILD);
+  const noticeBase=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
+  await noticePage.goto(noticeBase+'?noticeE2E='+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+  await noticePage.waitForSelector('#outlastMandatoryUpdateCheck #outlastUpdateLogClose',{state:'visible',timeout:10000});
+  const visibleNotice=await noticePage.evaluate(()=>({
+    version:window.OUTLAST_MANDATORY_UPDATE_CHECK?.version||null,
+    mode:window.OUTLAST_MANDATORY_UPDATE_CHECK?.mode||null,
+    text:document.getElementById('outlastMandatoryUpdateCheck')?.innerText||'',
+    visible:getComputedStyle(document.getElementById('outlastMandatoryUpdateCheck')).display!=='none'
+  }));
+  if(visibleNotice.version!==EXPECTED_BUILD||visibleNotice.mode!=='update-log'||!visibleNotice.visible||!visibleNotice.text.includes('Regression & Update Popup Fix')||!visibleNotice.text.includes('three distinct eligible upgrades')){
+    throw new Error('New-player update notice did not show the current release: '+JSON.stringify(visibleNotice));
+  }
+  await noticePage.locator('#outlastUpdateLogClose').click();
+  const closedNotice=await noticePage.evaluate(()=>({
+    popupVisible:!!document.getElementById('outlastMandatoryUpdateCheck'),
+    acknowledged:localStorage.getItem('outlast_update_log_seen')||''
+  }));
+  if(closedNotice.popupVisible||closedNotice.acknowledged!==EXPECTED_BUILD){
+    throw new Error('Current release notice did not close and save its acknowledgement: '+JSON.stringify(closedNotice));
+  }
+  if(noticeErrors.length)throw new Error('Update notice browser errors: '+noticeErrors.join(' | '));
+  await noticePage.close();
   if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | ')+' HTTP404='+http404.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,mobileMenuCheck,mobileMapSelected,mobileUltimatePrep,mobileUltimateResult,consoleErrors,http404,mobileErrors,mobile404}));
+  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,mobileMenuCheck,mobileMapSelected,mobileUltimatePrep,mobileUltimateResult,visibleNotice,closedNotice,consoleErrors,http404,mobileErrors,mobile404,noticeErrors}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});
 

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.7.1">
-<meta name="build-version" content="4.7.1">
-<title>OUTLAST v4.7.1</title>
+<meta name="outlast-build" content="4.7.2">
+<meta name="build-version" content="4.7.2">
+<title>OUTLAST v4.7.2</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3637,7 +3637,7 @@ window.adminReset=()=>{if(!isFullAdmin())return;if(confirm('Reset this account t
         const p=game&&game.player?game.player:null;
         const upLuck=p?Math.floor(Number(p.upgradeLuck)||0):Math.floor(Number(save.permanentLuck||0)+3*Number(save.upgrades?.['Lucky Drops']||0)+2*Number(save.upgrades?.['Upgrade Scanner']||0)+Number(save.nextRunLuck||0));
         const lootLuck=Math.floor(Number(p?.lootLuck)||0),treasureLuck=Math.floor(Number(p?.treasureLuck)||0);
-        const cards=[['Build','v4.7.1'],['Server',health.status||'unknown'],['Players Online',Number(health.players||0)],['Run State',game?.running?(game.paused?'Paused':'Running'):'Menu'],['Run Level',Number(game?.level||1)],['Enemies Alive',Array.isArray(game?.enemies)?game.enemies.filter(e=>e&&e.hp>0&&!e.__dead).length:0],['Upgrade Luck',upLuck],['Combined Luck',upLuck+lootLuck+treasureLuck],['Loot Luck',lootLuck],['Treasure Luck',treasureLuck],['Saved Coins',Number(save.coins||0)],['Map',String(save.map||'Forest')]];
+        const cards=[['Build','v4.7.2'],['Server',health.status||'unknown'],['Players Online',Number(health.players||0)],['Run State',game?.running?(game.paused?'Paused':'Running'):'Menu'],['Run Level',Number(game?.level||1)],['Enemies Alive',Array.isArray(game?.enemies)?game.enemies.filter(e=>e&&e.hp>0&&!e.__dead).length:0],['Upgrade Luck',upLuck],['Combined Luck',upLuck+lootLuck+treasureLuck],['Loot Luck',lootLuck],['Treasure Luck',treasureLuck],['Saved Coins',Number(save.coins||0)],['Map',String(save.map||'Forest')]];
         b.innerHTML='<div class="option"><b>📊 Live Game Diagnostics</b><div class="small">Read-only snapshot. Refresh the tab to pull the latest client and server values.</div></div><div class="grid" style="margin-top:10px">'+cards.map(([k,v])=>'<div class="option"><b>'+esc(k)+'</b><div class="small">'+esc(String(v))+'</div></div>').join('')+'</div><button class="option" data-owner-action="tab" data-value="gamestats" style="margin-top:10px">↻ Refresh Diagnostics</button>';
       }else if(tab==='overview'){
         const h=await api('/api/health');const ev=h.globalEvent?.active?h.globalEvent.label+' • ends '+new Date(Number(h.globalEvent.endsAt)).toLocaleString():'No global event active';
@@ -4055,8 +4055,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.7.1';
-const CURRENT_UPDATE_INFO={title:'v4.7.1 — Shield Duration Fix',summary:'Shield duration upgrades now add their awarded time to the shield time already remaining, so taking another shield upgrade extends protection instead of replacing it.',items:['Shield Core adds its awarded seconds to the active shield timer.','Emergency Shield adds its awarded seconds to the active shield timer.','Shield Efficiency still scales added duration; ordinary shield grants keep their existing grant behavior.','The upgrade-choice fallback now skips already-picked names instead of stopping its search.']};
+const CURRENT_UPDATE_VERSION='4.7.2';
+const CURRENT_UPDATE_INFO={title:'v4.7.2 — Shield Duration Fix',summary:'Shield duration upgrades now add their awarded time to the shield time already remaining, so taking another shield upgrade extends protection instead of replacing it.',items:['Shield Core adds its awarded seconds to the active shield timer.','Emergency Shield adds its awarded seconds to the active shield timer.','Shield Efficiency still scales added duration; ordinary shield grants keep their existing grant behavior.','The upgrade-choice fallback now skips already-picked names instead of stopping its search.']};
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6534,7 +6534,7 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.7.1', LABEL='v4.7.1 • ZOMBIE NAVIGATION FIX';
+  var BUILD='4.7.2', LABEL='v4.7.2 • ZOMBIE NAVIGATION FIX';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
@@ -6900,12 +6900,12 @@ e.x=Math.max(80,Math.min((typeof W==='number'?W:4000)-80,p.x-Math.cos(a)*r));e.y
 }else if(e.bossAbility==='pulse'){if(d<220){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,12*ramp,'Storm Warden pulse',1);else p.hp=Math.max(0,p.hp-12*ramp);}catch(_){}}e.bossAbilityClock=5.5;
 }else if(e.bossAbility==='heal'){if(e.hp<e.max*.72)e.hp=Math.min(e.max,e.hp+e.max*.07);e.bossAbilityClock=7.5;}
 });};}
-window.OUTLAST_BOSS_PROFILE_AUDIT=function(){var e=bossNow();return{version:'4.7.1',installed:!!window.__v470SpawnWrapped&&!!window.__v470SpecialWrapped,profiles:profiles.map(function(p){return{name:p.name,ability:p.ability};}),activeBoss:e?{name:e.bossName,ability:e.bossAbility,hp:e.hp,max:e.max}:null};};
-function applyVersion(){window.OUTLAST_BUILD='4.7.1';window.OUTLAST_VERSION='v4.7.1';document.title='OUTLAST v4.7.1';document.querySelectorAll('meta[name="outlast-build"],meta[name="build-version"]').forEach(function(m){m.setAttribute('content','4.7.1');});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v4.7.1 • SHIELD DURATION FIX';});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v4.7.1';});}
+window.OUTLAST_BOSS_PROFILE_AUDIT=function(){var e=bossNow();return{version:'4.7.2',installed:!!window.__v470SpawnWrapped&&!!window.__v470SpecialWrapped,profiles:profiles.map(function(p){return{name:p.name,ability:p.ability};}),activeBoss:e?{name:e.bossName,ability:e.bossAbility,hp:e.hp,max:e.max}:null};};
+function applyVersion(){window.OUTLAST_BUILD='4.7.2';window.OUTLAST_VERSION='v4.7.2';document.title='OUTLAST v4.7.2';document.querySelectorAll('meta[name="outlast-build"],meta[name="build-version"]').forEach(function(m){m.setAttribute('content','4.7.2');});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent='v4.7.2 • SHIELD DURATION FIX';});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v4.7.2';});}
 applyVersion();window.addEventListener('pageshow',applyVersion);
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.7.0 — Boss Encounter Overhaul')===0}))updates.unshift(['v4.7.0 — Boss Encounter Overhaul','Started the reliability release with five distinct boss profiles: Rift Stalker blink, Iron Colossus slam, Plague Caller reinforcements, Storm Warden pulse, and Soul Reaper recovery. Existing accounts and records are untouched.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do the unique bosses work?';}))helpArticles.unshift(['How do the unique bosses work?','Bosses & Runs','Rift Stalker repositions, Iron Colossus slams nearby players, Plague Caller summons reinforcements, Storm Warden pulses nearby players, and Soul Reaper can recover health.']);
 
-if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.7.1 — Shield Duration Fix')===0}))updates.unshift(['v4.7.1 — Shield Duration Fix','Shield Core and Emergency Shield now add duration to the remaining shield timer. Shield Efficiency is applied to the added seconds, and repeated upgrades stack correctly. The rarity-card fallback also skips already-selected names.']);
+if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.7.2 — Shield Duration Fix')===0}))updates.unshift(['v4.7.2 — Shield Duration Fix','Shield Core and Emergency Shield now add duration to the remaining shield timer. Shield Efficiency is applied to the added seconds, and repeated upgrades stack correctly. The rarity-card fallback also skips already-selected names.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do shield duration upgrades stack?';}))helpArticles.unshift(['How do shield duration upgrades stack?','Upgrades & Defense','Shield Core and Emergency Shield add their awarded seconds to the time already remaining on your temporary shield. Shield Efficiency scales the added time. Other shield grants keep their normal grant behavior, so stacking upgrades will not erase time you already earned.']);
 })();</script>

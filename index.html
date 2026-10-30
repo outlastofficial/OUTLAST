@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlastofficial.github.io/OUTLAST/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.10">
-<meta name="build-version" content="4.6.10">
-<title>OUTLAST v4.6.10</title>
+<meta name="outlast-build" content="4.6.11">
+<meta name="build-version" content="4.6.11">
+<title>OUTLAST v4.6.11</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3911,7 +3911,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.6.9 — Zombie Navigation Fix','Added obstacle-aware route finding so zombies can navigate around map objects instead of getting stuck pushing into blocked paths. Existing enemy behaviors and saved progress are preserved.'], ['v4.6.6 — Version Lock & Regression Test Repair','Displays Total Upgrade Luck and adds read-only owner diagnostics. Existing progress and gameplay systems are preserved.'], ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'],  ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.6.11 — Upgrade Luck Authority Fix','Repaired the final Upgrade Luck rarity roller so the live player stat affects all 11 rarity tiers from Common through Omega. Removed the older six-tier override from control of the active roll. Existing accounts, saves, and records are preserved.'], ['v4.6.9 — Zombie Navigation Fix','Added obstacle-aware route finding so zombies can navigate around map objects instead of getting stuck pushing into blocked paths. Existing enemy behaviors and saved progress are preserved.'], ['v4.6.6 — Version Lock & Regression Test Repair','Displays Total Upgrade Luck and adds read-only owner diagnostics. Existing progress and gameplay systems are preserved.'], ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'],  ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -7034,7 +7034,7 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 <script id="outlast-v466-absolute-final-version-lock">
 (function(){
 "use strict";
-var V="4.6.9", LABEL="v4.6.9 • ZOMBIE NAVIGATION FIX";
+var V="4.6.11", LABEL="v4.6.11 • UPGRADE LUCK FIX";
 function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.7 version lock failed",e);}}
 enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.9 — Version Marker Fix")===0;}))updates.unshift(["v4.6.9 — Version Marker Fix","Fixed the final version marker so it displays the current build after older embedded scripts run. Shield duration stacking remains included."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
 })();
@@ -7071,3 +7071,5 @@ enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!he
     window.helpArticles.unshift(['How does the OUTLAST version marker stay current?','Updates & Reliability','The menu chip, page title, build metadata, and quality badge are synchronized from the current release metadata. Older scripts can no longer pin the display to the Upgrade Luck Fix release. If a tab was already open during an update, reload the page once to load the new build.']);
 })();
 </script>
+<script src="./outlast-upgrade-luck-authority.js?v=4.6.11"></script>
+

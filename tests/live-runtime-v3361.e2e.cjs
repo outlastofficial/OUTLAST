@@ -57,7 +57,12 @@ if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current
     readyState:document.readyState,
     scriptPresent:!!document.getElementById('outlast-mandatory-update-check'),
     scriptHasAssignment:(document.getElementById('outlast-mandatory-update-check')?.textContent||'').includes('window.OUTLAST_MANDATORY_UPDATE_CHECK='),
-    scriptError:window.OUTLAST_MANDATORY_UPDATE_ERROR||null
+    scriptError:window.OUTLAST_MANDATORY_UPDATE_ERROR||null,
+    scriptType:document.getElementById('outlast-mandatory-update-check')?.type||'',
+    scriptConnected:!!document.getElementById('outlast-mandatory-update-check')?.isConnected,
+    scriptParent:document.getElementById('outlast-mandatory-update-check')?.parentElement?.tagName||null,
+    scriptOuter:document.getElementById('outlast-mandatory-update-check')?.outerHTML?.slice(0,500)||null,
+    matchingGlobals:Object.keys(window).filter(k=>k.toLowerCase().includes('mandatory')).slice(0,20)
   }));
   if(updateNotice.version!==EXPECTED_BUILD||updateNotice.mode!=='update-log'||updateNotice.acknowledged!==EXPECTED_BUILD||updateNotice.popupVisible){
     throw new Error('Current release notice is not synchronized or acknowledged as expected: '+JSON.stringify({updateNotice,consoleErrors}));

@@ -21,5 +21,7 @@ assert.match(tail, /MutationObserver/,
   'authoritative marker must correct late legacy DOM rewrites');
 assert.match(tail, /pageshow/,
   'authoritative marker must resync after browser page restores');
+assert.ok(html.includes('window.OUTLAST_MANDATORY_UPDATE_CHECK'),
+  'release acknowledgement must use the current build instead of a hard-coded old version');
 
 console.log('PASS: stale v4.6.4 locks are absent and the final dynamic marker owns version display.');

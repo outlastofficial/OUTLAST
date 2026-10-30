@@ -30,6 +30,8 @@ jobs:
         run: node tests/version-sync-v3362.test.js
       - name: Run upgrade rarity integrity checks
         run: node tests/upgrade-rarity-integrity-v3373.test.js
+      - name: Verify three distinct eligible upgrade choices
+        run: node tests/upgrade-picker-distinct-v327108.test.js
       - name: Run current v3.37 critical regressions
         run: node tests/v3370-systems.test.js
       - name: Verify boss identity and prevent same-frame respawns

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.7.3">
-<meta name="build-version" content="4.7.3">
-<title>OUTLAST v4.7.3</title>
+<meta name="outlast-build" content="4.7.4">
+<meta name="build-version" content="4.7.4">
+<title>OUTLAST v4.7.4</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3908,7 +3908,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.7.2 — Zombie Navigation Fix','Added obstacle-aware route finding so zombies can navigate around map objects instead of getting stuck pushing into blocked paths. Existing enemy behaviors and saved progress are preserved.'], ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.7.4 — Upgrade Luck Authority Fix','Fixed the final Upgrade Luck rarity roller so the active player stat affects all 11 rarity tiers from Common through Omega. Prevented the older six-tier override from replacing the live roll. Existing accounts, saves, and records are preserved.'], ['v4.7.2 — Zombie Navigation Fix','Added obstacle-aware route finding so zombies can navigate around map objects instead of getting stuck pushing into blocked paths. Existing enemy behaviors and saved progress are preserved.'], ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -6768,7 +6768,7 @@ else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script src="outlast-v461-upgrade-balance-overhaul.js?v=4.6.2"></script>
-<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.7.2',L='v4.7.0 • BOSS ENCOUNTER OVERHAUL';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
+<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.7.4',L='v4.7.4 • UPGRADE LUCK FIX';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
 <script id="outlast-v463-event-countdown-removal">
 (function(){
   'use strict';
@@ -6926,3 +6926,5 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
     window.helpArticles.unshift(['How does the OUTLAST version marker stay current?','Updates & Reliability','The menu chip, page title, build metadata, and quality badge are synchronized from the current release metadata. Older scripts can no longer pin the display to the Upgrade Luck Fix release. If a tab was already open during an update, reload the page once to load the new build.']);
 })();
 </script>
+
+<script src="./outlast-upgrade-luck-authority.js?v=4.7.4"></script>

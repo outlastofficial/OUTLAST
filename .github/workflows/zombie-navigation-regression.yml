@@ -1,0 +1,21 @@
+name: OUTLAST zombie navigation regression
+on:
+  push:
+    branches: [main, testing]
+    paths:
+      - "index.html"
+      - "tests/zombie-navigation-v472.test.js"
+      - ".github/workflows/zombie-navigation-regression.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  zombie-navigation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify obstacle-aware zombie navigation
+        run: node tests/zombie-navigation-v472.test.js

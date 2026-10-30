@@ -1,5 +1,8 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const html=fs.readFileSync('index.html','utf8');
+const build=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+assert(build&& (html.includes("var V='"+build+"'")||html.includes("const V='"+build+"'")),'final runtime version lock must match the visible build');
+assert(html.includes('const nav37=zombieNavWaypoint(e,ai37.x,ai37.y);'),'enemy movement must use the obstacle-aware waypoint');
 function extractFunction(source,name){
   const start=source.indexOf('function '+name+'(');
   assert(start>=0,name+' must exist');

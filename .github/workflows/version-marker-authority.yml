@@ -1,0 +1,18 @@
+name: Version Marker Authority Regression
+on:
+  push:
+    branches: [main, testing]
+    paths:
+      - 'index.html'
+      - 'tests/version-marker-authority.test.js'
+      - '.github/workflows/version-marker-authority.yml'
+  workflow_dispatch:
+jobs:
+  marker-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node tests/version-marker-authority.test.js

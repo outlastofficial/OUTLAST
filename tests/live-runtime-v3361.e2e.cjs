@@ -443,6 +443,8 @@ if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current
     localStorage.setItem('outlastJoystickMode','off');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
+    localStorage.setItem('outlast_v453_release_popup_ack','1');
+    localStorage.setItem('outlast_v457_release_popup_ack','1');
     localStorage.setItem('outlastSeenUpdateVersion',expectedBuild);
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
     localStorage.removeItem('outlast_update_log_seen');

@@ -2455,6 +2455,77 @@ function gameAdminAction(action){
 }
 document.getElementById('gameAdminToggle').onclick=()=>{if(!adminUnlocked||!game.running)return;const panel=document.getElementById('gameAdminPanel');panel.style.display=panel.style.display==='block'?'none':'block';};
 document.querySelectorAll('[data-game-admin]').forEach(btn=>btn.addEventListener('click',()=>gameAdminAction(btn.dataset.gameAdmin)));
+function zombieNavWaypoint(e,tx,ty){
+ const radius=Math.max(12,Number(e.r)||18),cell=80,now=Number(game.time)||0,mapKey=String(save.map||'');
+ const cols=Math.ceil(W/cell),rows=Math.ceil(H/cell);
+ const clampCell=(v,max)=>Math.max(0,Math.min(max-1,Math.floor(v/cell)));
+ const sx=clampCell(e.x,cols),sy=clampCell(e.y,rows),gx=clampCell(tx,cols),gy=clampCell(ty,rows);
+ const lineClear=(x1,y1,x2,y2)=>{
+  const distance=Math.hypot(x2-x1,y2-y1),steps=Math.max(1,Math.ceil(distance/28));
+  for(let i=1;i<=steps;i++){const t=i/steps;if(blocked(x1+(x2-x1)*t,y1+(y2-y1)*t,radius+3))return false;}
+  return true;
+ };
+ if(lineClear(e.x,e.y,tx,ty)){e.__zNavPath=null;e.__zNavIndex=0;e.__zNavMap=mapKey;return{x:tx,y:ty};}
+ const key=(x,y)=>x+','+y,center=(x,y)=>({x:(x+.5)*cell,y:(y+.5)*cell});
+ const cellOpen=(x,y)=>{
+  if(x<0||y<0||x>=cols||y>=rows)return false;
+  const c=center(x,y);return !blocked(c.x,c.y,radius+7);
+ };
+ const nearestOpen=(x,y)=>{
+  if(cellOpen(x,y))return{x,y};
+  let best=null,bestD=Infinity;
+  for(let ring=1;ring<=4;ring++)for(let oy=-ring;oy<=ring;oy++)for(let ox=-ring;ox<=ring;ox++){
+   if(Math.max(Math.abs(ox),Math.abs(oy))!==ring)continue;
+   const nx=x+ox,ny=y+oy;if(!cellOpen(nx,ny))continue;
+   const c=center(nx,ny),d=(c.x-tx)*(c.x-tx)+(c.y-ty)*(c.y-ty);
+   if(d<bestD){bestD=d;best={x:nx,y:ny};}
+  }
+  return best;
+ };
+ const start=nearestOpen(sx,sy),goal=nearestOpen(gx,gy);
+ if(!start||!goal)return{x:tx,y:ty};
+ const goalKey=key(goal.x,goal.y),cacheValid=e.__zNavMap===mapKey&&e.__zNavGoal===goalKey&&Array.isArray(e.__zNavPath)&&e.__zNavPath.length>0&&(now-(Number(e.__zNavAt)||0))<.45;
+ if(!cacheValid){
+  const heuristic=(x,y)=>{const dx=Math.abs(goal.x-x),dy=Math.abs(goal.y-y);return Math.max(dx,dy)+(Math.SQRT2-1)*Math.min(dx,dy);};
+  const open=[{x:start.x,y:start.y,g:0,f:heuristic(start.x,start.y)}],came=new Map(),scores=new Map([[key(start.x,start.y),0]]),closed=new Set();
+  let found=false,expanded=0;
+  while(open.length&&expanded<850){
+   open.sort((a,b)=>b.f-a.f);const cur=open.pop(),ck=key(cur.x,cur.y);
+   if(closed.has(ck))continue;
+   if(ck===goalKey){found=true;break;}
+   closed.add(ck);expanded++;
+   for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++){
+    if(!ox&&!oy)continue;
+    const nx=cur.x+ox,ny=cur.y+oy,nk=key(nx,ny);
+    if(closed.has(nk)||!cellOpen(nx,ny))continue;
+    if(ox&&oy&&(!cellOpen(cur.x+ox,cur.y)||!cellOpen(cur.x,cur.y+oy)))continue;
+    const ng=cur.g+(ox&&oy?Math.SQRT2:1);
+    if(ng>=(scores.get(nk)??Infinity))continue;
+    scores.set(nk,ng);came.set(nk,ck);open.push({x:nx,y:ny,g:ng,f:ng+heuristic(nx,ny)});
+   }
+  }
+  let path=[];
+  if(found){
+   let cursor=goalKey,guard=0;
+   while(cursor!==key(start.x,start.y)&&guard++<cols*rows){
+    const parts=cursor.split(',').map(Number);path.push(center(parts[0],parts[1]));
+    cursor=came.get(cursor);if(!cursor){path=[];break;}
+   }
+   path.reverse();
+  }
+  e.__zNavPath=path;e.__zNavIndex=0;e.__zNavMap=mapKey;e.__zNavGoal=goalKey;e.__zNavAt=now;
+ }
+ const path=e.__zNavPath||[];
+ let index=Math.max(0,Number(e.__zNavIndex)||0);
+ while(index<path.length&&Math.hypot(path[index].x-e.x,path[index].y-e.y)<Math.max(24,radius+6))index++;
+ e.__zNavIndex=index;
+ if(index<path.length){
+  const waypoint=path[index];
+  if(lineClear(e.x,e.y,waypoint.x,waypoint.y))return waypoint;
+  e.__zNavAt=-Infinity;
+ }
+ return{x:tx,y:ty};
+}
 function zombieAI37(e,p,dt){
  if(!e||!p)return p||{x:0,y:0};
  const now=Number(game?.time||0),d0=Math.hypot(p.x-e.x,p.y-e.y)||1,ang=Math.atan2(p.y-e.y,p.x-e.x);
@@ -2567,7 +2638,7 @@ if(game.time>0&&Math.floor(game.time)%60===0&&Math.abs(game.time-Math.round(game
  if(!game.lastShot)game.lastShot=0;game.lastShot-=dt;let fireRate=p.fireRate||0.45;if(game.lastShot<=0){shoot();game.lastShot=fireRate}
  for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(b.enemy)continue;try{window.outlastInitializeBounceState&&window.outlastInitializeBounceState(b,p)}catch(_){}b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue;}if(save.mode==='1v1 Arena'&&game.player2&&b.survival){const target=b.owner===1?game.player2:game.player;if(target&&Math.hypot(b.x-target.x,b.y-target.y)<b.r+target.r){target.hp-=b.dmg;game.bullets.splice(i,1);if(target.hp<=0){target.hp=0;game.survivalWinner=b.owner===1?'PLAYER 1':'PLAYER 2';endRun(true,false,true);return}continue}}let hit=false,bouncedThisFrame=false;
 for(let j=game.enemies.length-1;j>=0;j--){const e=game.enemies[j];if((!b.bounceTargets||!b.bounceTargets.has(e))&&Math.hypot(b.x-e.x,b.y-e.y)<b.r+e.r){let dmg=b.dmg;damageEnemy(e,dmg);applyElement(e);if(p.poison)e.poison=Math.max(e.poison||0,Number(p.poisonDuration)||3);if(p.stun&&Math.random()<Math.min(.95,Number(p.stunChance)||.12))e.slowTimer=Number(p.stunDuration)||1.5;if(b.type==='GravityOrb')e.slowTimer=2.5;if(b.type==='PulseCannon'){for(let pi=game.enemies.length-1;pi>=0;pi--){if(pi===j)continue;const q=game.enemies[pi];if(Math.hypot(q.x-b.x,q.y-b.y)<115){damageEnemy(q,p.damage*1.35);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.42,r:115});burst(b.x,b.y,'#d65cff',14,130);}if(b.type==='RocketLauncher'){for(let k=game.enemies.length-1;k>=0;k--){if(k===j)continue;const q=game.enemies[k];if(Math.hypot(q.x-b.x,q.y-b.y)<95){damageEnemy(q,p.damage*1.3);if(q.hp<=0)killEnemy(q)}}game.effects.push({x:b.x,y:b.y,t:.35,r:95});}b.hits++;try{bouncedThisFrame=!!(window.outlastBounceAfterHit&&window.outlastBounceAfterHit(b,e,p))}catch(_){}hit=true;if(e.hp<=0)killEnemy(e);if(bouncedThisFrame)break;if(b.hits>p.pierce&&!bouncedThisFrame)break}}if(!bouncedThisFrame&&((hit&&b.hits>p.pierce)||b.x<-100||b.x>W+100||b.y<-100||b.y>H+100))game.bullets.splice(i,1)}
- for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*(Number(p.poisonDpsMultiplier)||.11)*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}const ai37=zombieAI37(e,p,dt);let ex=ai37.x-e.x,ey=ai37.y-e.y,d=Math.hypot(ex,ey)||1;let auraActive=p.frost&&d<(p.frostAuraRadius||130);let slow=auraActive?Math.max(.08,1-(p.frostSlow||.50)):1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=Math.max(.05,.45/Math.max(1,Number(p.slowPower)||1))}if(auraActive){e.frostAuraHitCooldown=Math.max(0,(Number(e.frostAuraHitCooldown)||0)-dt);if(e.frostAuraHitCooldown<=0){const auraDamage=Math.max(0,p.damage*(Number(p.frostAuraDps)||0));if(auraDamage>0){damageEnemy(e,auraDamage);e.frostAuraHitCooldown=.5;if(e.hp<=0){const deadIndex=game.enemies.indexOf(e);if(deadIndex>=0){killEnemy(deadIndex);continue;}}}}}const nearby=game.enemies.length>45?0:game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const moveSpeed=(e.kind==='boss'?Math.min(e.speed,140):e.speed)*Math.max(.2,Number(game.zombieSpeedMult||1));const enx=e.x+ex/d*moveSpeed*slow*squadBoost*dt,eny=e.y+ey/d*moveSpeed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if(e.kind==='boss'){e.summonTimer=(e.summonTimer||6)-dt;if(e.summonTimer<=0){e.summonTimer=e.phase>=3?4.2:(e.phase===2?5:6.5);const count=e.phase>=3?6:(e.phase===2?5:4);for(let si=0;si<count;si++){const ang=Math.random()*Math.PI*2,rad=55+Math.random()*35;spawnEnemy(Math.random()<.35?'runner':(Math.random()<.5?'ranged':'zombie'));const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){m.x=Math.max(24,Math.min(W-24,e.x+Math.cos(ang)*rad));m.y=Math.max(24,Math.min(H-24,e.y+Math.sin(ang)*rad));m.summoned=true;}}burst(e.x,e.y,'#ff8a5b',12,130);toast('⚠ BOSS SUMMONED '+count+' MINIONS!');} e.bossAttackTimer=(e.bossAttackTimer||2.2)-dt;if(e.bossAttackTimer<=0&&game.bullets.length<MAX_BULLETS){const phase=e.phase||1;const shots=phase>=3?3:(phase===2?2:1);const spread=phase>=3?.24:(phase===2?.16:0);const baseAng=Math.atan2(p.y-e.y,p.x-e.x);for(let bi=0;bi<shots;bi++){const off=shots===1?0:(bi-(shots-1)/2)*spread;const aa=baseAng+off;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(aa)*(phase>=3?390:330),vy:Math.sin(aa)*(phase>=3?390:330),r:9,dmg:e.damage*.65});}e.bossAttackTimer=phase>=3?.9:(phase===2?1.25:1.9);burst(e.x,e.y,'#ff6b6b',5,80);} if((e.bossSpecialTimer=(Number(e.bossSpecialTimer)||4.5)-dt)<=0){e.bossSpecialTimer=e.phase>=2?4.2:5.5;const special=e.bossSpecial||'hunter';if(special==='blink'){const a=Math.atan2(p.y-e.y,p.x-e.x)+Math.PI+(Math.random()-.5)*1.1;const oldX=e.x,oldY=e.y;e.x=Math.max(70,Math.min(W-70,p.x+Math.cos(a)*180));e.y=Math.max(70,Math.min(H-70,p.y+Math.sin(a)*180));ring(oldX,oldY,'#b48cff',48,.45);burst(e.x,e.y,'#b48cff',16,125);toast('◈ RIFT STALKER: PHASE SHIFT');}else if(special==='slam'){ring(e.x,e.y,'#ff9b55',110,.65);for(let bi=0;bi<8&&game.bullets.length<MAX_BULLETS;bi++){const a=bi*Math.PI/4;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(a)*250,vy:Math.sin(a)*250,r:11,dmg:e.damage*.55});}burst(e.x,e.y,'#ff9b55',20,155);toast('♜ IRON COLOSSUS: GROUND SLAM');}else if(special==='storm'){for(let bi=0;bi<8&&game.bullets.length<MAX_BULLETS;bi++){const a=bi*Math.PI/4;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(a)*360,vy:Math.sin(a)*360,r:7,dmg:e.damage*.42});}ring(e.x,e.y,'#67c7ff',82,.5);toast('ϟ STORM WARDEN: LIGHTNING BURST');}else if(special==='reap'){const recovered=Math.min(e.max*.055,Math.max(0,e.max-e.hp));e.hp+=recovered;ring(e.x,e.y,'#b48cff',70,.5);burst(e.x,e.y,'#b48cff',14,100);toast('☠ SOUL REAPER: SOUL DRAIN');}else if(special==='summon'){const count=e.phase>=2?5:3;for(let si=0;si<count;si++){if(game.enemies.length>220)break;const a=Math.random()*Math.PI*2,rad=65+Math.random()*40;spawnEnemy(Math.random()<.5?'runner':'ranged');const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){m.x=Math.max(24,Math.min(W-24,e.x+Math.cos(a)*rad));m.y=Math.max(24,Math.min(H-24,e.y+Math.sin(a)*rad));m.summoned=true;}}ring(e.x,e.y,'#7bd67b',75,.5);burst(e.x,e.y,'#7bd67b',14,105);toast('☠ PLAGUE CALLER: REINFORCEMENTS');}} }if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*p.damageTakenMult;if(actual>0)outlastTakePlayerDamage(p,actual*dt,'enemy contact')}}
+ for(const e of game.enemies){if(e.burn){e.burn-=dt;e.hp-=p.damage*.16*dt}if(e.poison){e.poison-=dt;e.hp-=p.damage*(Number(p.poisonDpsMultiplier)||.11)*dt}if(e.chainTimer){e.chainTimer-=dt;if(e.chainTimer<=0){const q=game.enemies.find(x=>x!==e&&Math.hypot(x.x-e.x,x.y-e.y)<110);if(q)damageEnemy(q,p.damage*(.65*(p.chain||1)))}}if(e.hp<=0){const dead=game.enemies.indexOf(e);if(dead>=0){killEnemy(dead);continue}}const ai37=zombieAI37(e,p,dt);const nav37=zombieNavWaypoint(e,ai37.x,ai37.y);let ex=nav37.x-e.x,ey=nav37.y-e.y,d=Math.hypot(ex,ey)||1;let auraActive=p.frost&&d<(p.frostAuraRadius||130);let slow=auraActive?Math.max(.08,1-(p.frostSlow||.50)):1;if(e.slowTimer>0){e.slowTimer-=dt;slow*=Math.max(.05,.45/Math.max(1,Number(p.slowPower)||1))}if(auraActive){e.frostAuraHitCooldown=Math.max(0,(Number(e.frostAuraHitCooldown)||0)-dt);if(e.frostAuraHitCooldown<=0){const auraDamage=Math.max(0,p.damage*(Number(p.frostAuraDps)||0));if(auraDamage>0){damageEnemy(e,auraDamage);e.frostAuraHitCooldown=.5;if(e.hp<=0){const deadIndex=game.enemies.indexOf(e);if(deadIndex>=0){killEnemy(deadIndex);continue;}}}}}const nearby=game.enemies.length>45?0:game.enemies.reduce((n,q)=>n+(q!==e&&Math.hypot(q.x-e.x,q.y-e.y)<150?1:0),0);const squadBoost=1+Math.min(.18,nearby*.045)+(game.gunfireAlert>0?.10:0);const moveSpeed=(e.kind==='boss'?Math.min(e.speed,140):e.speed)*Math.max(.2,Number(game.zombieSpeedMult||1));const enx=e.x+ex/d*moveSpeed*slow*squadBoost*dt,eny=e.y+ey/d*moveSpeed*slow*squadBoost*dt;tryMoveEntity(e,enx,eny);if(e.kind==='boss'&&e.hp<e.max*.5&&e.phase!==2){e.phase=2;e.speed=Math.max(e.speed,(55+game.level*2.2));e.damage*=1.15;ring(e.x,e.y,'#ff5b5b',85,.7);burst(e.x,e.y,'#ff5b5b',24,150);toast('⚠ BOSS ENRAGED!');}if(e.kind==='boss'){e.summonTimer=(e.summonTimer||6)-dt;if(e.summonTimer<=0){e.summonTimer=e.phase>=3?4.2:(e.phase===2?5:6.5);const count=e.phase>=3?6:(e.phase===2?5:4);for(let si=0;si<count;si++){const ang=Math.random()*Math.PI*2,rad=55+Math.random()*35;spawnEnemy(Math.random()<.35?'runner':(Math.random()<.5?'ranged':'zombie'));const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){m.x=Math.max(24,Math.min(W-24,e.x+Math.cos(ang)*rad));m.y=Math.max(24,Math.min(H-24,e.y+Math.sin(ang)*rad));m.summoned=true;}}burst(e.x,e.y,'#ff8a5b',12,130);toast('⚠ BOSS SUMMONED '+count+' MINIONS!');} e.bossAttackTimer=(e.bossAttackTimer||2.2)-dt;if(e.bossAttackTimer<=0&&game.bullets.length<MAX_BULLETS){const phase=e.phase||1;const shots=phase>=3?3:(phase===2?2:1);const spread=phase>=3?.24:(phase===2?.16:0);const baseAng=Math.atan2(p.y-e.y,p.x-e.x);for(let bi=0;bi<shots;bi++){const off=shots===1?0:(bi-(shots-1)/2)*spread;const aa=baseAng+off;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(aa)*(phase>=3?390:330),vy:Math.sin(aa)*(phase>=3?390:330),r:9,dmg:e.damage*.65});}e.bossAttackTimer=phase>=3?.9:(phase===2?1.25:1.9);burst(e.x,e.y,'#ff6b6b',5,80);} if((e.bossSpecialTimer=(Number(e.bossSpecialTimer)||4.5)-dt)<=0){e.bossSpecialTimer=e.phase>=2?4.2:5.5;const special=e.bossSpecial||'hunter';if(special==='blink'){const a=Math.atan2(p.y-e.y,p.x-e.x)+Math.PI+(Math.random()-.5)*1.1;const oldX=e.x,oldY=e.y;e.x=Math.max(70,Math.min(W-70,p.x+Math.cos(a)*180));e.y=Math.max(70,Math.min(H-70,p.y+Math.sin(a)*180));ring(oldX,oldY,'#b48cff',48,.45);burst(e.x,e.y,'#b48cff',16,125);toast('◈ RIFT STALKER: PHASE SHIFT');}else if(special==='slam'){ring(e.x,e.y,'#ff9b55',110,.65);for(let bi=0;bi<8&&game.bullets.length<MAX_BULLETS;bi++){const a=bi*Math.PI/4;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(a)*250,vy:Math.sin(a)*250,r:11,dmg:e.damage*.55});}burst(e.x,e.y,'#ff9b55',20,155);toast('♜ IRON COLOSSUS: GROUND SLAM');}else if(special==='storm'){for(let bi=0;bi<8&&game.bullets.length<MAX_BULLETS;bi++){const a=bi*Math.PI/4;game.bullets.push({enemy:true,x:e.x,y:e.y,vx:Math.cos(a)*360,vy:Math.sin(a)*360,r:7,dmg:e.damage*.42});}ring(e.x,e.y,'#67c7ff',82,.5);toast('ϟ STORM WARDEN: LIGHTNING BURST');}else if(special==='reap'){const recovered=Math.min(e.max*.055,Math.max(0,e.max-e.hp));e.hp+=recovered;ring(e.x,e.y,'#b48cff',70,.5);burst(e.x,e.y,'#b48cff',14,100);toast('☠ SOUL REAPER: SOUL DRAIN');}else if(special==='summon'){const count=e.phase>=2?5:3;for(let si=0;si<count;si++){if(game.enemies.length>220)break;const a=Math.random()*Math.PI*2,rad=65+Math.random()*40;spawnEnemy(Math.random()<.5?'runner':'ranged');const m=game.enemies[game.enemies.length-1];if(m&&!m.boss){m.x=Math.max(24,Math.min(W-24,e.x+Math.cos(a)*rad));m.y=Math.max(24,Math.min(H-24,e.y+Math.sin(a)*rad));m.summoned=true;}}ring(e.x,e.y,'#7bd67b',75,.5);burst(e.x,e.y,'#7bd67b',14,105);toast('☠ PLAGUE CALLER: REINFORCEMENTS');}} }if((e.kind==='ranged'||e.kind==='spitter')&&d<500){e.shoot-=dt;if(e.shoot<=0){if(game.bullets.length<MAX_BULLETS)game.bullets.push({enemy:true,x:e.x,y:e.y,vx:ex/d*300,vy:ey/d*300,r:7,dmg:e.damage});e.shoot=1.8}}if(d<e.r+p.r){const actual=p.godMode?0:Math.max(0,e.damage)*p.armor*p.damageTakenMult;if(actual>0)outlastTakePlayerDamage(p,actual*dt,'enemy contact')}}
  // Safety cleanup: never render or process an enemy that has already been killed.
  for(let i=game.enemies.length-1;i>=0;i--){const e=game.enemies[i];if(!e||e.__dead||e.hp<=0){if(e&&!e.__dead)killEnemy(e);else game.enemies.splice(i,1);}}
  for(let i=game.bullets.length-1;i>=0;i--){const b=game.bullets[i];if(!b.enemy)continue; b.x+=b.vx*dt;b.y+=b.vy*dt;if(bulletHitsObstacle(b.x,b.y,b.r)){game.bullets.splice(i,1);continue}if(Math.hypot(b.x-p.x,b.y-p.y)<b.r+18){outlastTakePlayerDamage(p,b.dmg,'enemy projectile');game.bullets.splice(i,1);continue}if(b.x<-100||b.x>W+100||b.y<-100||b.y>H+100)game.bullets.splice(i,1)}
@@ -3747,7 +3818,7 @@ document.getElementById('extrasBtn')?.addEventListener('click',renderExtras);
 document.getElementById('progressionBtn')?.addEventListener('click',renderProgression);
 document.getElementById('questBtn')?.addEventListener('click',renderQuestBoard);
 
-const helpArticles=[
+const helpArticles=[ ['How do zombies navigate around obstacles?','Enemies & Maps','Zombie AI now checks blocked routes and follows waypoints around trees, rocks, walls, and other map objects. Different enemy behaviors such as flanking, ambushing, sniping, and charging are preserved while moving around obstacles.'],
  ['How does Abyss Expedition work?','Progression','Open More → New Content / Collection → Abyss Expedition. Complete the listed lifetime milestones to claim permanent one-time coin and World Key rewards. Your existing save is preserved.'],
   ['How do I open GAMEVERSE from OUTLAST?','GAMEVERSE','From the OUTLAST main menu, open the Play tab and select the bright GAMEVERSE — MORE GAMES button. It opens the current GAMEVERSE hub at https://chatgpt-12b70mc0.webondemand.com/Games/ in a new browser tab, so your OUTLAST game stays open.'],
   ['What do the minimap symbols mean?','Maps','Blue arrow = player, red dot = enemy, gold star = boss, orange diamond = elite, cyan diamond = XP, yellow dollar = coin, colored square = power-up, purple diamond = shrine, gray block = object.'],
@@ -3837,7 +3908,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.7.2 — Zombie Navigation Fix','Added obstacle-aware route finding so zombies can navigate around map objects instead of getting stuck pushing into blocked paths. Existing enemy behaviors and saved progress are preserved.'], ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -6463,7 +6534,7 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.7.1', LABEL='v4.7.1 • SHIELD DURATION FIX';
+  var BUILD='4.7.1', LABEL='v4.7.1 • ZOMBIE NAVIGATION FIX';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;

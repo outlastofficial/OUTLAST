@@ -6557,7 +6557,42 @@ try{
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureBossBar,{once:true});else ensureBossBar();
 setInterval(syncBossBar,100);
 })();
-</script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">/* Disabled stale v4.6.4 update checker; the current release log is authoritative. */</script><script id="outlast-v3377-final-marker">(function(){/* Disabled stale v3.37.15 writer: it overwrote current metadata. */})();</script><script id="outlast-v3360-systems">(function(){
+</script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
+(function(){
+  'use strict';
+  var meta=document.querySelector('meta[name="outlast-build"]')||document.querySelector('meta[name="build-version"]');
+  var BUILD=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();
+  if(!BUILD)return;
+  var ACK='outlast_update_log_seen',POP='outlastMandatoryUpdateCheck';
+  function currentRelease(){
+    try{
+      var list=typeof updates!=='undefined'&&Array.isArray(updates)?updates:(Array.isArray(window.updates)?window.updates:[]);
+      var item=list.find(function(x){return x&&String(x[0]||'').indexOf('v'+BUILD)===0;})||list[0];
+      return {title:item&&item[0]||('v'+BUILD+' — OUTLAST Update'),detail:item&&item[1]||'The game has been updated. Check the Update Log for the latest changes.'};
+    }catch(_){return {title:'v'+BUILD+' — OUTLAST Update',detail:'The game has been updated. Check the Update Log for the latest changes.'};}
+  }
+  function showLog(){
+    var seen='';try{seen=localStorage.getItem(ACK)||'';}catch(_){}
+    if(seen===BUILD||document.getElementById(POP)||!document.body)return;
+    var style=document.createElement('style');
+    style.textContent='#'+POP+'{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,8,12,.84);backdrop-filter:blur(5px);z-index:2147483647;padding:18px;box-sizing:border-box;font-family:Arial,sans-serif}#'+POP+' .card{width:min(680px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(145deg,#172230,#0d141c);border:1px solid #3e607d;border-radius:20px;padding:24px;color:#fff;box-shadow:0 28px 90px rgba(0,0,0,.6)}#'+POP+' .tag{color:#82c8ff;font-size:12px;font-weight:900;letter-spacing:.08em}#'+POP+' h2{margin:10px 0 6px;font-size:25px}#'+POP+' .version{color:#9fc5df;font-size:13px;margin-bottom:14px}#'+POP+' p{color:#d6e1eb;line-height:1.5}#'+POP+' button{margin-top:12px;background:#319d68;color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:900;cursor:pointer}';
+    var box=document.createElement('div');box.id=POP;
+    var card=document.createElement('section');card.className='card';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
+    var tag=document.createElement('div');tag.className='tag';tag.textContent='OUTLAST UPDATE LOG';
+    var heading=document.createElement('h2');heading.textContent=currentRelease().title;
+    var version=document.createElement('div');version.className='version';version.textContent='v'+BUILD;
+    var detail=document.createElement('p');detail.textContent=currentRelease().detail;
+    var note=document.createElement('p');note.textContent='Your saved account and progress are preserved. No automatic reload or redirect is performed.';
+    var button=document.createElement('button');button.textContent='CONTINUE';
+    button.onclick=function(){try{localStorage.setItem(ACK,BUILD);}catch(_){}box.remove();style.remove();};
+    card.appendChild(tag);card.appendChild(heading);card.appendChild(version);card.appendChild(detail);card.appendChild(note);card.appendChild(button);box.appendChild(card);
+    document.head.appendChild(style);document.body.appendChild(box);
+  }
+  function check(){var seen='';try{seen=localStorage.getItem(ACK)||'';}catch(_){}if(seen!==BUILD){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(showLog,250);},{once:true});else setTimeout(showLog,250);}}
+  check();
+  window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,automaticNavigation:false,mode:'update-log',show:showLog};
+})();
+</script><script id="outlast-v3377-final-marker">(function(){/* Disabled stale v3.37.15 writer: it overwrote current metadata. */})();</script><script id="outlast-v3360-systems">(function(){
 'use strict';
 const CORE36={combat:'Combat',enemies:'Enemies',bosses:'Bosses',world:'World',events:'Events',progression:'Progression',cosmetics:'Cosmetics',objectives:'Objectives',economy:'Economy / Rewards',modes:'Game Modes',support:'Support Systems',generation:'Content Generation'};
 const E36=function(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');};

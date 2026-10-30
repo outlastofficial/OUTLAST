@@ -259,35 +259,17 @@
   }
 
   function setVersionAndPopup() {
-    window.OUTLAST_BUILD=VERSION;
-    window.OUTLAST_VERSION='v'+VERSION;
-    document.title='OUTLAST v'+VERSION;
-    const buildMeta=document.querySelector('meta[name="outlast-build"]');if(buildMeta)buildMeta.content=VERSION;
-    const versionMeta=document.querySelector('meta[name="build-version"]');if(versionMeta)versionMeta.content=VERSION;
-    document.querySelectorAll('[data-outlast-version]').forEach(el=>el.textContent='v'+VERSION);
-    document.querySelectorAll('.menu-chip').forEach(el=>{
-      const t=String(el.textContent||'');
-      if(/SURVIVOR HUB/i.test(t))el.textContent=t.replace(/v\d+\.\d+\.\d+/ig,'v'+VERSION);
-    });
-    const modal=document.getElementById('outlastV4000UpdatePopup');
-    if(modal){
-      const title=modal.querySelector('#outlastV4000UpdateTitle');
-      if(title)title.textContent='OUTLAST v4.2.4 — New Maps Visible First';
-      const paragraphs=modal.querySelectorAll('p');
-      if(paragraphs[0])paragraphs[0].textContent='Reliability patch: map tiles now have a dedicated selection route, Active Skills can be purchased and equipped, purchased Ascension bonuses apply at run start, and the safe AFK Lounge pauses the run and rewards.';
-      const gotIt=document.getElementById('outlastV4000GotIt'),close=document.getElementById('outlastV4000Close');
-      const acknowledge=()=>{try{localStorage.setItem('outlastSeenUpdateVersion',VERSION)}catch(_){};modal.style.display='none';};
-      if(gotIt)gotIt.onclick=acknowledge;
-      if(close)close.onclick=acknowledge;
-      let seen=false;try{seen=localStorage.getItem('outlastSeenUpdateVersion')===VERSION}catch(_){}
-      modal.style.display=seen?'none':'flex';
-    }
-    const updateNote=document.querySelector('[data-outlast-v4000-update-note]');
-    if(updateNote){
-      updateNote.innerHTML='<b>v4.2.4 — New Maps Visible First</b><div class="small">Seizure and Ribhouse are now the first two map tiles, both marked NEW, with a visible map banner. All 18 built-in maps remain available.</div>';
-    }
+    const build=String(window.OUTLAST_AUTHORITATIVE_BUILD||document.querySelector('meta[name="outlast-build"]')?.content||window.OUTLAST_BUILD||VERSION);
+    if(window.OUTLAST_BUILD!==build)window.OUTLAST_BUILD=build;
+    if(window.OUTLAST_VERSION!=='v'+build)window.OUTLAST_VERSION='v'+build;
+    if(document.title!=='OUTLAST v'+build)document.title='OUTLAST v'+build;
+    const buildMeta=document.querySelector('meta[name="outlast-build"]');if(buildMeta&&buildMeta.content!==build)buildMeta.content=build;
+    const versionMeta=document.querySelector('meta[name="build-version"]');if(versionMeta&&versionMeta.content!==build)versionMeta.content=build;
+    document.querySelectorAll('[data-outlast-version]').forEach(el=>{if(el.textContent!=='v'+build)el.textContent='v'+build;});
+    document.querySelectorAll('.menu-chip').forEach(el=>{if(/SURVIVOR HUB/i.test(String(el.textContent||''))&&el.textContent!=='v'+build+' • SURVIVOR HUB')el.textContent='v'+build+' • SURVIVOR HUB';});
+    const modal=document.getElementById('outlastV4000UpdatePopup');if(modal)modal.remove();
+    const updateNote=document.querySelector('[data-outlast-v4000-update-note]');if(updateNote)updateNote.remove();
   }
-
 
   function installPermanentApplyHook() {
     const original=window.startGame;

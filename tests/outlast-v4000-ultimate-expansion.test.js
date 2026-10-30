@@ -8,6 +8,7 @@ assert(source.includes("const VERSION = '4.0.0'"), 'major expansion exposes the 
 assert(source.includes('function awardBossDefeat'), 'boss trophy awards are implemented');
 assert(source.includes('outlastV4000BossTrophiesBtn'), 'Boss Trophies is reachable from Progress');
 assert(source.includes('outlastSeenUpdateVersion'), 'the update notice is remembered per version');
+assert(source.includes('if (!window.OUTLAST_MANDATORY_UPDATE_CHECK) window.OUTLAST_MANDATORY_UPDATE_CHECK = true;'), 'the expansion must not overwrite the current structured update-check object');
 
 const nodes = Object.create(null);
 const storage = Object.create(null);

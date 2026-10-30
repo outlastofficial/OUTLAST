@@ -244,7 +244,7 @@
 
   function installPopup() {
     if (popupInstalled || !document.body) return;
-    window.OUTLAST_MANDATORY_UPDATE_CHECK = true;
+    if (!window.OUTLAST_MANDATORY_UPDATE_CHECK) window.OUTLAST_MANDATORY_UPDATE_CHECK = true;
 
     const oldPopup = document.getElementById('updatePopup');
     if (oldPopup) oldPopup.style.display = 'none';

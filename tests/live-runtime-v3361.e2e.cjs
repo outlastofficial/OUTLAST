@@ -1,4 +1,8 @@
 const { chromium } = require('playwright');
+const fs=require('fs'),path=require('path');
+const source=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const EXPECTED_BUILD=(source.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current build marker');
 
 (async()=>{
   const browser=await chromium.launch({headless:true});
@@ -8,7 +12,7 @@ const { chromium } = require('playwright');
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
   page.on('pageerror',e=>consoleErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));page.on('response',r=>{if(r.status()===404)http404.push(r.url())});
 
-  await page.addInitScript(()=>{
+  await page.addInitScript((expectedBuild)=>{
     localStorage.setItem('outlastUsername','E2EPlayer');
     localStorage.setItem('outlastDeviceMode','pc');
     localStorage.setItem('outlastJoystickMode','off');
@@ -20,9 +24,10 @@ const { chromium } = require('playwright');
     localStorage.setItem('outlast_update_ack_v4.5.3','1');
     localStorage.setItem('outlast_v453_release_popup_ack','1');
     localStorage.setItem('outlast_v457_release_popup_ack','1');
-    localStorage.setItem('outlast_update_ack_v4528','1');
-    localStorage.setItem('outlastSeenUpdateVersion','4.5.28');
-  });
+    localStorage.setItem('outlast_update_log_seen',expectedBuild);
+    localStorage.setItem('outlastSeenUpdateVersion',expectedBuild);
+    localStorage.setItem('outlast_update_log_seen',expectedBuild);
+  }, EXPECTED_BUILD);
 
   const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
   let url='',servedTitle='',servedBuild=null;
@@ -34,17 +39,35 @@ const { chromium } = require('playwright');
     await page.waitForTimeout(500);
     servedTitle=await page.title();
     servedBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-    if(servedTitle.includes('v4.5.28')&&servedBuild==='4.5.28')break;
+    if(servedTitle.includes('v'+EXPECTED_BUILD)&&servedBuild===EXPECTED_BUILD)break;
     if(attempt<19)await page.waitForTimeout(3000);
   }
-  if(!servedTitle.includes('v4.5.28')||servedBuild!=='4.5.28'){
-    throw new Error('Expected v4.5.28 was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
+  if(!servedTitle.includes('v'+EXPECTED_BUILD)||servedBuild!==EXPECTED_BUILD){
+    throw new Error('Expected current build was not served after fresh-load retries: '+JSON.stringify({servedTitle,servedBuild,url,consoleErrors,http404}));
   }
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
-  await page.locator('#outlastV4000GotIt').waitFor({state:'visible',timeout:8000});
-  await page.locator('#outlastV4000GotIt').click();
+  const updateNotice=await page.evaluate(()=>({
+    version:window.OUTLAST_MANDATORY_UPDATE_CHECK?.version||null,
+    mode:window.OUTLAST_MANDATORY_UPDATE_CHECK?.mode||null,
+    acknowledged:localStorage.getItem('outlast_update_log_seen')||'',
+    popupVisible:!!document.getElementById('outlastMandatoryUpdateCheck'),
+    legacyPopupVisible:!!document.getElementById('outlastV454ReleasePopup'),
+    build:window.OUTLAST_BUILD||null,
+    readyState:document.readyState,
+    scriptPresent:!!document.getElementById('outlast-mandatory-update-check'),
+    scriptHasAssignment:(document.getElementById('outlast-mandatory-update-check')?.textContent||'').includes('window.OUTLAST_MANDATORY_UPDATE_CHECK='),
+    scriptError:window.OUTLAST_MANDATORY_UPDATE_ERROR||null,
+    scriptType:document.getElementById('outlast-mandatory-update-check')?.type||'',
+    scriptConnected:!!document.getElementById('outlast-mandatory-update-check')?.isConnected,
+    scriptParent:document.getElementById('outlast-mandatory-update-check')?.parentElement?.tagName||null,
+    scriptOuter:document.getElementById('outlast-mandatory-update-check')?.outerHTML?.slice(0,500)||null,
+    matchingGlobals:Object.keys(window).filter(k=>k.toLowerCase().includes('mandatory')).slice(0,20)
+  }));
+  if(updateNotice.version!==EXPECTED_BUILD||updateNotice.mode!=='update-log'||updateNotice.acknowledged!==EXPECTED_BUILD||updateNotice.popupVisible||updateNotice.legacyPopupVisible){
+    throw new Error('Current release notice is not synchronized or acknowledged as expected: '+JSON.stringify({updateNotice,consoleErrors}));
+  }
   const releaseState=await page.evaluate(()=>({
     audit:typeof window.OUTLAST_ULTIMATE_EXPANSION_AUDIT==='function'?window.OUTLAST_ULTIMATE_EXPANSION_AUDIT():null,
     readyState:document.readyState,
@@ -67,8 +90,8 @@ const { chromium } = require('playwright');
     const visualAudit=typeof window.OUTLAST_MAP_VISUAL_AUDIT_V434==='function'?window.OUTLAST_MAP_VISUAL_AUDIT_V434():null;
     return {build:window.OUTLAST_BUILD||null,title:document.title,uiHotfix:window.OUTLAST_UI_HOTFIX_V432===true,upgradeCardRedesign:!!window.OUTLAST_UPGRADE_CARD_DESIGN_V435?.ready,gearRoom:!!window.OUTLAST_GEAR_ROOM_V435?.ready,ownerPanelEntrypoint:typeof window.openOwnerPanel==='function',visualAudit,visualReady:window.OUTLAST_MAP_VISUAL_READY_V434===true,audit};
   });
-  if(worldAndUiAudit.build!=='4.5.28'||!worldAndUiAudit.title.includes('v4.5.28')||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
-    throw new Error('v4.5.28 UI, owner and map renderer modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
+  if(worldAndUiAudit.build!==EXPECTED_BUILD||!worldAndUiAudit.title.includes('v'+EXPECTED_BUILD)||!worldAndUiAudit.uiHotfix||!worldAndUiAudit.upgradeCardRedesign||!worldAndUiAudit.gearRoom||!worldAndUiAudit.ownerPanelEntrypoint||!worldAndUiAudit.visualReady||!worldAndUiAudit.visualAudit?.ready){
+    throw new Error('Current-build UI, owner and map renderer modules did not remain active after delayed initialization: '+JSON.stringify(worldAndUiAudit));
   }
   if(!worldAndUiAudit.visualAudit||worldAndUiAudit.visualAudit.added!==82||worldAndUiAudit.visualAudit.distinctPalettes!==82||worldAndUiAudit.visualAudit.distinctLayouts!==82){
     throw new Error('Distinct visual map audit failed: '+JSON.stringify(worldAndUiAudit.visualAudit));
@@ -89,12 +112,13 @@ const { chromium } = require('playwright');
   }
   const expansionAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT==='function'?window.OUTLAST_MAP_UPGRADE_EXPANSION_AUDIT():null);
   if(!expansionAudit||expansionAudit.version!=='4.2.4'||expansionAudit.permanentChoices<500||expansionAudit.inRunChoices<500||expansionAudit.mapRegistryCount<18){
-    throw new Error('v4.5.28 map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
+    throw new Error('Current-build map/upgrades expansion incomplete: '+JSON.stringify(expansionAudit));
   }
+  await page.evaluate(()=>{window.__OUTLAST_VERSION_TRACE=[];let previous='';window.__OUTLAST_VERSION_TRACE_TIMER=setInterval(()=>{const v={build:window.OUTLAST_BUILD||null,title:document.title,meta:document.querySelector('meta[name="outlast-build"]')?.content||null,versionMeta:document.querySelector('meta[name="build-version"]')?.content||null,lockTimer:!!window.__OUTLAST_V469_LOCK_TIMER};const key=JSON.stringify(v);if(key!==previous){window.__OUTLAST_VERSION_TRACE.push({at:Math.round(performance.now()),...v});previous=key;}},20);});
   await page.locator('#mapBtn').click();
   await page.waitForTimeout(1250); // allow the legacy version guards to settle after the map overlay opens
-  const pickerBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(pickerBuild!=='4.5.28')throw new Error('Opening Choose Map reverted the current build marker: '+pickerBuild);
+  const pickerState=await page.evaluate(()=>({build:window.OUTLAST_BUILD||null,title:document.title,meta:document.querySelector('meta[name="outlast-build"]')?.content||null,versionMeta:document.querySelector('meta[name="build-version"]')?.content||null,lockTimer:window.__OUTLAST_V469_LOCK_TIMER||null,href:location.href,readyState:document.readyState,guard:window.OUTLAST_MAP_PICKER_VERSION_GUARD||null,trace:(window.__OUTLAST_VERSION_TRACE||[]).slice(-25)}));
+  if(pickerState.build!==EXPECTED_BUILD)throw new Error('Opening Choose Map changed the current build marker: '+JSON.stringify(pickerState));
   const pickerAudit=await page.evaluate(()=>typeof window.OUTLAST_MAP_PICKER_AUDIT==='function'?window.OUTLAST_MAP_PICKER_AUDIT():{missingAudit:true,ready:!!window.OUTLAST_MAP_SELECTION_READY});
   if(!pickerAudit.visible||!pickerAudit.ribhouse||pickerAudit.buttonCount<100)throw new Error('100-map picker did not render all selectable tiles: '+JSON.stringify(pickerAudit));
   const mapVisualAudit=await page.evaluate(()=>{
@@ -146,7 +170,7 @@ const { chromium } = require('playwright');
   const creatorAudit=await page.evaluate(()=>({unlock:!!document.getElementById('mcUnlock'),audit:typeof window.OUTLAST_MAP_CREATOR_AUDIT==='function'?window.OUTLAST_MAP_CREATOR_AUDIT():null}));
   if(!creatorAudit.unlock||!creatorAudit.audit)throw new Error('Map Creator did not open its unlock/editor screen: '+JSON.stringify(creatorAudit));
   const creatorBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null);
-  if(creatorBuild!=='4.5.28')throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
+  if(creatorBuild!==EXPECTED_BUILD)throw new Error('Opening Map Creator reverted the current build marker: '+creatorBuild);
   await page.locator('#closeSub').click();
   const skillPrep=await page.evaluate(()=>{save.coins=Math.max(Number(save.coins)||0,10000);persist();return {coins:save.coins};});
   if(skillPrep.coins<900)throw new Error('Skill test could not fund Blink: '+JSON.stringify(skillPrep));
@@ -226,6 +250,8 @@ const { chromium } = require('playwright');
   if(!(displacement>10))throw new Error('WASD did not move the player after Start Run: '+JSON.stringify({beforeMove,afterMove,layoutAudit}));
   const afkReady=await page.locator('#outlastAFKSpotButton').waitFor({state:'visible',timeout:8000}).then(()=>true).catch(()=>false);
   if(!afkReady)throw new Error('AFK Spot button did not appear during gameplay.');
+  const afkLayout=await page.evaluate(()=>{const spot=document.getElementById('outlastAFKSpotButton'),lounge=document.getElementById('outlastV443AFK');if(!spot||!lounge||getComputedStyle(lounge).display==='none')return {ready:false};const a=spot.getBoundingClientRect(),b=lounge.getBoundingClientRect();return {ready:true,overlap:a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top,spot:{x:a.x,y:a.y,width:a.width,height:a.height},lounge:{x:b.x,y:b.y,width:b.width,height:b.height}};});
+  if(afkLayout.ready&&afkLayout.overlap)throw new Error('AFK Lounge must not cover the AFK Spot button: '+JSON.stringify(afkLayout));
   await page.locator('#outlastAFKSpotButton').click();
   await page.locator('#outlastAFKLounge').waitFor({state:'visible',timeout:3000});
   const afkBefore=await page.evaluate(()=>({paused:game.paused,active:window.OUTLAST_AFK_ACTIVE,time:game.time}));
@@ -312,18 +338,19 @@ const { chromium } = require('playwright');
   mobilePage.on('console',m=>{if(m.type()==='error')mobileErrors.push(m.text())});
   mobilePage.on('pageerror',e=>mobileErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));
   mobilePage.on('response',r=>{if(r.status()===404)mobile404.push(r.url())});
-  await mobilePage.addInitScript(()=>{
+  await mobilePage.addInitScript((expectedBuild)=>{
     localStorage.setItem('outlastUsername','E2EMobile');
     localStorage.setItem('outlastDeviceMode','mobile');
     localStorage.setItem('outlastJoystickMode','on');
     localStorage.setItem('outlast_update_ack_v4.0.0','1');
     localStorage.setItem('outlast_update_ack_v4.5.3','1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
-    localStorage.setItem('outlast_update_ack_v4528','1');
+    localStorage.setItem('outlast_update_log_seen',expectedBuild);
     localStorage.setItem('outlast_v457_release_popup_ack','1');
-    localStorage.setItem('outlastSeenUpdateVersion','4.5.28');
+    localStorage.setItem('outlastSeenUpdateVersion',expectedBuild);
+    localStorage.setItem('outlast_update_log_seen',expectedBuild);
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
-  });
+  }, EXPECTED_BUILD);
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();
   await mobilePage.goto(mobileUrl,{waitUntil:'domcontentloaded',timeout:30000});
   await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
@@ -384,12 +411,14 @@ const { chromium } = require('playwright');
         error:audit?.error||window.OUTLAST_V435_CARD_ERROR||null,visibleTitle,visibleFooter,visibleInteractionHint,build:window.OUTLAST_BUILD,renderedText:renderedText.slice(-45)};
     } finally {if(ctx&&baseFill)ctx.fillText=baseFill;game.running=before.running;game.paused=before.paused;game.over=before.over;game.upgradeOpen=before.open;game.upgradeChoices=before.choices;game.__upgradeRollActive=before.rolling;draw();}
   });
-  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('v4.5.28 redesigned upgrade cards failed the long-title/text rendering check: '+JSON.stringify(cardRendererAudit));
+  if(!cardRendererAudit.ready||cardRendererAudit.error)throw new Error('Current-build redesigned upgrade cards failed the long-title/text rendering check: '+JSON.stringify(cardRendererAudit));
   await mobilePage.evaluate(()=>{if(game.upgradeOpen){if(typeof chooseUpgrade!=='function')throw new Error('Upgrade choice function missing');chooseUpgrade(0)}if(game.paused&&!game.upgradeOpen)game.paused=false;});
   await mobilePage.waitForTimeout(250);
   if(!await mobilePage.locator('#mobileControls').isVisible())throw new Error('Mobile movement/actions did not appear during gameplay.');
   const mobileUlt=mobilePage.locator('[data-mobile-action="ult"]');
   if(!await mobileUlt.isVisible())throw new Error('Mobile ULT button is not visible during gameplay.');
+  const mobileAFKLayout=await mobilePage.evaluate(()=>{const lounge=document.getElementById('outlastV443AFK'),ult=document.querySelector('[data-mobile-action="ult"]');if(!lounge||!ult||getComputedStyle(lounge).display==='none')return {ready:false};const a=lounge.getBoundingClientRect(),b=ult.getBoundingClientRect();return {ready:true,overlap:a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top,lounge:{x:a.x,y:a.y,width:a.width,height:a.height},ult:{x:b.x,y:b.y,width:b.width,height:b.height}};});
+  if(mobileAFKLayout.ready&&mobileAFKLayout.overlap)throw new Error('AFK Lounge must not cover the mobile ULT control: '+JSON.stringify(mobileAFKLayout));
   const mobileUltimatePrep=await mobilePage.evaluate(()=>{
     const p=game.player,probe={__outlastMobileUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
     game.enemies=[probe];p.ult=100;return {hp:probe.hp,charge:p.ult};
@@ -404,9 +433,47 @@ const { chromium } = require('playwright');
   }
   if(mobileErrors.length||mobile404.length)throw new Error('Mobile browser errors: '+mobileErrors.join(' | ')+' HTTP404='+mobile404.join(' | '));
   await mobilePage.close();
+
+  const noticePage=await browser.newPage({viewport:{width:1280,height:900}});
+  const noticeErrors=[];
+  noticePage.on('console',m=>{if(m.type()==='error')noticeErrors.push(m.text())});
+  noticePage.on('pageerror',e=>noticeErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));
+  await noticePage.addInitScript((expectedBuild)=>{
+    localStorage.setItem('outlastUsername','UpdateNoticeE2E');
+    localStorage.setItem('outlastDeviceMode','pc');
+    localStorage.setItem('outlastJoystickMode','off');
+    localStorage.setItem('outlast_update_ack_v4.0.0','1');
+    localStorage.setItem('outlast_update_ack_v3.37.0','1');
+    localStorage.setItem('outlast_v453_release_popup_ack','1');
+    localStorage.setItem('outlastSeenUpdateVersion',expectedBuild);
+    localStorage.setItem('outlastNewPlayerTutorialV317','1');
+    localStorage.removeItem('outlast_update_log_seen');
+  },EXPECTED_BUILD);
+  const noticeBase=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
+  await noticePage.goto(noticeBase+'?noticeE2E='+Date.now(),{waitUntil:'domcontentloaded',timeout:30000});
+  await noticePage.waitForSelector('#outlastMandatoryUpdateCheck #outlastUpdateLogClose',{state:'visible',timeout:10000});
+  const visibleNotice=await noticePage.evaluate(()=>({
+    version:window.OUTLAST_MANDATORY_UPDATE_CHECK?.version||null,
+    mode:window.OUTLAST_MANDATORY_UPDATE_CHECK?.mode||null,
+    text:document.getElementById('outlastMandatoryUpdateCheck')?.innerText||'',
+    visible:getComputedStyle(document.getElementById('outlastMandatoryUpdateCheck')).display!=='none'
+  }));
+  if(visibleNotice.version!==EXPECTED_BUILD||visibleNotice.mode!=='update-log'||!visibleNotice.visible||!visibleNotice.text.includes('Regression & Update Popup Fix')||!visibleNotice.text.includes('three distinct eligible upgrades')){
+    throw new Error('New-player update notice did not show the current release: '+JSON.stringify(visibleNotice));
+  }
+  await noticePage.locator('#outlastUpdateLogClose').click();
+  const closedNotice=await noticePage.evaluate(()=>({
+    popupVisible:!!document.getElementById('outlastMandatoryUpdateCheck'),
+    acknowledged:localStorage.getItem('outlast_update_log_seen')||''
+  }));
+  if(closedNotice.popupVisible||closedNotice.acknowledged!==EXPECTED_BUILD){
+    throw new Error('Current release notice did not close and save its acknowledgement: '+JSON.stringify(closedNotice));
+  }
+  if(noticeErrors.length)throw new Error('Update notice browser errors: '+noticeErrors.join(' | '));
+  await noticePage.close();
   if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | ')+' HTTP404='+http404.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,mobileMenuCheck,mobileMapSelected,mobileUltimatePrep,mobileUltimateResult,consoleErrors,http404,mobileErrors,mobile404}));
+  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,mobileMenuCheck,mobileMapSelected,mobileUltimatePrep,mobileUltimateResult,visibleNotice,closedNotice,consoleErrors,http404,mobileErrors,mobile404,noticeErrors}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});
 

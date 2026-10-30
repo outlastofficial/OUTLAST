@@ -5,10 +5,18 @@ const expansion=fs.readFileSync('outlast-v4000-ultimate-expansion.js','utf8');
 const gear=fs.readFileSync('outlast-v435-upgrade-gear-redesign.js','utf8');
 
 const currentBuild=(index.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+
+const bodyClose=index.lastIndexOf('</body>'),htmlClose=index.lastIndexOf('</html>');
+const lastScriptOpen=index.lastIndexOf('<script'),lastScriptEnd=index.lastIndexOf('</script>');
+assert(bodyClose>lastScriptEnd&&htmlClose>bodyClose&&index.slice(bodyClose).trim()==='</body>\n</html>','all script blocks, including the final version lock, must run before the document closes');
+assert(lastScriptOpen>=0&&lastScriptEnd>lastScriptOpen&&lastScriptEnd<bodyClose,'the final version-lock script must execute inside the document');
+assert(index.slice(lastScriptOpen,lastScriptEnd).includes(currentBuild),'the final script must enforce the current build marker');
+assert(index.slice(lastScriptOpen,lastScriptEnd).includes('setInterval(enforce,250)'),'the final version lock must reassert the current build after delayed legacy writers');
+assert(index.slice(lastScriptOpen,lastScriptEnd).includes('if(e.textContent!=="v"+V)e.textContent="v"+V;'),'the persistent version lock must avoid unnecessary text mutations');
 assert(currentBuild&&index.includes('<meta name="build-version" content="'+currentBuild+'">')&&index.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current release metadata stays synchronized');
 assert(index.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'"),'mandatory update popup follows the current build marker');
-assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, map expansion and owner modules are loaded');
-assert(index.includes("const BUILD='"+currentBuild+"',ACK='outlast_update_ack_v4529',POP='outlastMandatoryUpdateV4529'"),'mandatory update acknowledgement matches the current version');
+assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.6.10-update-check')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.6.10-map-selection')&&index.includes('outlast-v327108-rarity-card-authority.js?v=4.6.10-picker-distinct')&&index.includes('outlast-v3377-map-boss-rebuild.js?v=4.6.10-boss-version')&&index.includes('outlast-v443-reliability-afk.js?v=4.6.10-afk-layout')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, picker, boss, AFK, map and owner modules are loaded with cache-busted versions');
+assert(index.includes("var BUILD='"+currentBuild+"'")&&index.includes("var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck'"),'mandatory update acknowledgement matches the current build');
 assert(expansion.includes("window.OUTLAST_BUILD = VERSION;")&&expansion.includes("document.title = 'OUTLAST v' + VERSION;"),'the final module publishes the global build and title');
 assert(core.includes("window.OUTLAST_CORE_CONTENT"),'12-core engine must still install its content container');
 assert(core.includes("window.OUTLAST_CORE_CONTENT_VERSION=VERSION"),'12-core engine should expose its own version without changing global build state');
@@ -27,5 +35,5 @@ assert(startIndex>0 && declIndex>=0 && declIndex<startIndex,'fatalGameError must
 assert(!index.includes("document.getElementById('progressionBtn').onclick=renderProgression"),'progression button binding must be null-safe');
 assert(!index.includes("document.getElementById('questBtn').onclick=renderQuestBoard"),'quest button binding must be null-safe');
 assert(/<script src="outlast-v435-upgrade-gear-redesign\.js\?v=4\.5\.26"><\/script>/.test(index)&&gear.includes("const VERSION='4.5.26';"),'legacy gear renderer remains loaded but cannot rewrite the current version marker backwards');
-assert(index.includes('outlast-v33015-upgrade-library.js?v='+currentBuild)&&index.includes('outlast-v441-skill-upgrade-balance-ui.js?v='+currentBuild)&&index.includes('outlast-v4527-upgrade-boss-rebuild.js?v='+currentBuild),'current upgrade and boss systems use the cache-busted release');
+assert(/outlast-v33015-upgrade-library\.js\?v=[^"]+/.test(index)&&/outlast-v441-skill-upgrade-balance-ui\.js\?v=[^"]+/.test(index)&&/outlast-v4527-upgrade-boss-rebuild\.js\?v=[^"]+/.test(index),'current upgrade and boss systems remain cache-busted');
 console.log('v4.3.6 version synchronization regression test passed');

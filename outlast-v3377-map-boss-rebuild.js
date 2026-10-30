@@ -105,7 +105,7 @@ function setVersion(){
  const cmp=(a,b)=>{for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0))return (a[i]||0)>(b[i]||0)?1:-1}return 0};
  const meta=document.querySelector('meta[name="outlast-build"]'),versionMeta=document.querySelector('meta[name="build-version"]');
  const fromTitle=(document.title.match(/v(\d+(?:\.\d+){1,3})/i)||[])[1]||'0';
- const candidates=[VERSION,window.OUTLAST_BUILD,meta&&meta.content,versionMeta&&versionMeta.content,fromTitle].filter(Boolean);
+ const candidates=[window.OUTLAST_AUTHORITATIVE_BUILD,VERSION,window.OUTLAST_BUILD,meta&&meta.content,versionMeta&&versionMeta.content,fromTitle].filter(Boolean);
  let release=candidates[0]||VERSION;
  for(const candidate of candidates.slice(1))if(cmp(parts(candidate),parts(release))>0)release=label(candidate);
  release=label(release);

@@ -1,5 +1,9 @@
 const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const localHtml=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
+const EXPECTED_BUILD=(localHtml.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current build marker');
 
 (async()=>{
   const browser=await chromium.launch({headless:true});
@@ -13,7 +17,7 @@ const assert = require('node:assert/strict');
         {id:'chat-e2e-owner',username:'BestGamer',role:'OWNER',message:'owner badge smoke test',at:Date.now()},
         {id:'chat-e2e-tester',username:'SS',role:'TESTER',message:'tester badge smoke test',at:Date.now()+1}
       ];
-      await page.addInitScript(()=>{
+      await page.addInitScript((expectedBuild)=>{
         localStorage.setItem('outlastUsername','E2EPlayer');
         localStorage.setItem('outlastDeviceMode','pc');
         localStorage.setItem('outlastJoystickMode','off');
@@ -21,10 +25,11 @@ const assert = require('node:assert/strict');
         localStorage.setItem('outlast_update_ack_v4526','1');
         localStorage.setItem('outlast_v451_release_popup_ack','1');
         localStorage.setItem('outlast_v457_release_popup_ack','1');
-        localStorage.setItem('outlastSeenUpdateVersion','4.5.26');
+        localStorage.setItem('outlastSeenUpdateVersion',expectedBuild);
+        localStorage.setItem('outlast_update_log_seen',expectedBuild);
         localStorage.setItem('outlast_update_ack_v4.0.0','1');
         localStorage.setItem('outlastNewPlayerTutorialV317','1');
-      });
+      }, EXPECTED_BUILD);
       await page.route(/^https:\/\/outlast(?:-test)?-server\.onrender\.com\/api\/chat(?:\?.*)?$/,async route=>{
         const req=route.request();
         if(req.method()==='POST'){
@@ -47,10 +52,10 @@ const assert = require('node:assert/strict');
         await page.waitForTimeout(350);
         lastBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
         lastTitle=await page.title().catch(()=> '');
-        if(lastBuild==='4.5.26'&&lastTitle.includes('v4.5.26')){served=true;break;}
+        if(lastBuild===EXPECTED_BUILD&&lastTitle.includes('v'+EXPECTED_BUILD)){served=true;break;}
         if(attempt<19)await page.waitForTimeout(2500);
       }
-      assert.ok(served,'Expected v4.5.26 page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
+      assert.ok(served,'Expected current build '+EXPECTED_BUILD+' page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
       // The page has a legacy release gate from v4.0.0 that can sit above the chat launcher.
       // Clear it in this isolated smoke test so the test can exercise chat rather than click interception.
       await page.evaluate(()=>{

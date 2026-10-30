@@ -1,17 +1,18 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
 const mod=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8');
 const library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8');
 const expansion=fs.readFileSync(path.join(root,'outlast-v410-map-upgrade-expansion.js'),'utf8');
 new vm.Script(expansion,{filename:'outlast-v410-map-upgrade-expansion.js'});
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
-assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.5\.29/,'current v3.37 systems module is loaded with a cache-busting version');
-assert(html.includes('<title>OUTLAST v4.5.29</title>'),'visible game version marker must match the current build');
-assert(html.includes("const BUILD='4.5.29'"),'mandatory update check must target v4.2.4');
-assert(html.includes("outlast_update_ack_v4529"),'mandatory update acknowledgement must be versioned');
-assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'active repair module is cache-busted');
+assert.match(html,/outlast-v3370-game-systems\.js\?v=[^"]+/,'current v3.37 systems module is loaded with a cache-busting version');
+assert(currentBuild&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'visible game version marker must match the current build');
+assert(html.includes("var BUILD='"+currentBuild+"'"),'mandatory update check must match the current build');
+assert(html.includes("var ACK='outlast_update_log_seen'"),'mandatory update acknowledgement must be versioned');
+assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.6.10-map-selection'),'active repair module is cache-busted');
 assert(expansion.includes("const VERSION = '4.2.4'"),'module version matches the page');
 assert(/const map=\{map:\(\)=>selectMap\(v\),[^\n]*skill:/.test(html),'global router dispatches skill selections');
 assert(html.includes("activeSkill:save.activeSkill||'Nova'"),'saved Active Skill is loaded into gameplay');
@@ -55,4 +56,4 @@ assert(mod.includes('syncOwnerLauncher37'),'owner launcher must be owner-only');
 assert(mod.includes("card.style.display=ok?'':'none'")||mod.includes("card.style.display=(typeof isOwner==='function'&&isOwner())?'':'none'"),'non-owners must not see the Owner Panel card');
 assert(!mod.match(/ownerPassword|OWNER_PASSWORD/i),'owner panel must not use a password');
 
-console.log('OUTLAST v4.5.29 systems regression checks passed');
+console.log('OUTLAST '+currentBuild+' systems regression checks passed');

@@ -9,9 +9,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://outlastofficial.github.io/OUTLAST/">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.6.9">
-<meta name="build-version" content="4.6.9">
-<title>OUTLAST v4.6.9</title>
+<meta name="outlast-build" content="4.6.10">
+<meta name="build-version" content="4.6.10">
+<title>OUTLAST v4.6.10</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -3911,7 +3911,7 @@ function openHelp(){
 
 function renderUpdates(){
  
-const updates=[ ['v4.6.9 — Zombie Navigation Fix','Added obstacle-aware route finding so zombies can navigate around map objects instead of getting stuck pushing into blocked paths. Existing enemy behaviors and saved progress are preserved.'], ['v4.6.6 — Version Lock & Regression Test Repair','Displays Total Upgrade Luck and adds read-only owner diagnostics. Existing progress and gameplay systems are preserved.'], ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'],  ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
+const updates=[ ['v4.6.10 — Regression & Update Popup Fix','The upgrade picker skips duplicate names and offers three distinct eligible choices. Update notices now match the current build, shield duration stacks, AFK Lounge stays clear of the AFK Spot and mobile controls, and existing progress is preserved.'], ['v4.6.9 — Zombie Navigation Fix','Added obstacle-aware route finding so zombies can navigate around map objects instead of getting stuck pushing into blocked paths. Existing enemy behaviors and saved progress are preserved.'], ['v4.6.6 — Version Lock & Regression Test Repair','Displays Total Upgrade Luck and adds read-only owner diagnostics. Existing progress and gameplay systems are preserved.'], ['v4.6.4 — Upgrade Luck Fix','Upgrade Luck now shifts the rarity roll toward the full Rare-to-Omega ladder. The effect is capped; high-rarity choices remain rare and random.'],  ['v4.6.0 — Abyss Expedition','Added a permanent Expedition Board with three milestone contracts, progress indicators, one-time coin and World Key rewards, and an updated version marker and How-To guide.'], ['v4.5.0 — The Survival Overhaul','Release foundation: synchronized build metadata/update checks and searchable map selection. Roadmap covers stability, combat, upgrades, maps, content, progression, menus, online systems, and release testing. Items remain in progress until implemented and verified; this entry does not claim the full overhaul is complete.'],
     ['v4.4.5 — Reload Freeze Fix','Stopped the version-marker observer from repeatedly rewriting unchanged labels, which could create a continuous mutation loop during reload. Version labels now update only when they actually differ.'],
     ['v4.4.4 — Version Marker Repair','Fixed competing version-label writers and strengthened the final version marker so the menu chip, quality badge, page title, metadata, and update notice all stay on the current build. Added this repair to the Update Log and How-To guide.'],
     ['v4.4.2 — GAMEVERSE Hub Link','Added a prominent GAMEVERSE — MORE GAMES button to the Play page. It opens the GAMEVERSE hub in a new tab. Added the shortcut to the How-To guide.'],
@@ -4058,8 +4058,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.6.7';
-const CURRENT_UPDATE_INFO={title:'v4.6.7 — Shield Duration Fix',summary:'Shield Core and Emergency Shield now add their awarded duration to any shield time already remaining instead of only replacing it when the new duration is longer.',items:['Shield Core adds its awarded seconds to the current shield timer.','Emergency Shield adds its awarded seconds to the current shield timer.','Existing player saves and other shield sources are preserved.']}
+const CURRENT_UPDATE_VERSION='4.6.10';
+const CURRENT_UPDATE_INFO={title:'v4.6.10 — Regression & Update Popup Fix',summary:'The upgrade picker, release notices, shield timer, and AFK controls have been hardened without resetting existing progress.',items:['The upgrade picker skips duplicate names and offers three distinct eligible upgrades when at least three are available.','The Update News popup and mandatory update notice now match the visible v4.6.10 build.','Shield Core and Emergency Shield add their awarded seconds to the active shield timer.','AFK Lounge stays clear of the AFK Spot and mobile action controls.','Existing accounts, login, saves, player lists, and leaderboard records are preserved; no automatic reloads or redirects were added.']}
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6314,7 +6314,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script src="outlast-v327101-all-upgrade-balance.js?v=3.29.1"></script>
 <script src="outlast-v327102-bouncing-bullets.js?v=3.29.1"></script>
 <script src="outlast-v327103-coin-farm-hardening.js?v=3.29.1"></script>
-<script src="outlast-v327108-rarity-card-authority.js?v=4.5.27"></script>
+<script src="outlast-v327108-rarity-card-authority.js?v=4.6.10-picker-distinct"></script>
 
 <script src="outlast-v3292-collision-restore.js?v=3.29.2"></script>
 <script id="outlast-upgrade-restoration-v3-30-12">
@@ -6560,14 +6560,14 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var BUILD='4.6.4', LABEL='v4.6.4 • UPGRADE LUCK FIX';
+  var BUILD='4.6.10', LABEL='v4.6.10 • REGRESSION & UPDATE POPUP FIX';
   var ACK='outlast_update_log_seen', POP='outlastMandatoryUpdateCheck';
   function showLog(){
     if(document.getElementById(POP))return;
     var style=document.createElement('style');
     style.textContent='#'+POP+'{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,10,.92);backdrop-filter:blur(6px);z-index:2147483647;padding:18px;box-sizing:border-box;font-family:Arial,sans-serif}#'+POP+' .card{width:min(720px,94vw);max-height:86vh;overflow:auto;background:linear-gradient(145deg,#142231,#0b121a);border:2px solid #4d9bd0;border-radius:22px;padding:28px;color:#fff;box-shadow:0 30px 100px rgba(0,0,0,.8)}#'+POP+' .tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#193951;color:#8fd1ff;border:1px solid #315f84;font-size:11px;font-weight:900;letter-spacing:.06em}#'+POP+' h2{margin:12px 0 8px;font-size:32px}#'+POP+' .ver{color:#82c8ff;font-weight:900;margin-bottom:16px}#'+POP+' li{margin:10px 0;color:#dce8f2;line-height:1.45}#'+POP+' button{margin:18px 8px 0 0;background:#3da96b;color:white;border:0;border-radius:10px;padding:12px 22px;font-weight:900;cursor:pointer}';
     var box=document.createElement('div');box.id=POP;
-    box.innerHTML='<div class="card"><span class="tag">OUTLAST UPDATE LOG</span><h2>Rarity Scaling Fix</h2><div class="ver">'+LABEL+'</div><p>Here is what changed in this release:</p><ul><li>Upgrade effects now use a softer scaling curve to reduce overpowered rarity jumps.</li><li>Added safeguards for critical chance, regeneration, shields, projectile count, pierce, XP, and coin multipliers.</li><li>Kept existing accounts, saved progress, player lists, and leaderboard records.</li><li>No automatic reloads or redirects were added.</li><li>Difficulty scaling remains 2× from level 60 onward.</li></ul><button id="outlastUpdateLogClose">CONTINUE</button></div>';
+    box.innerHTML='<div class="card"><span class="tag">OUTLAST UPDATE LOG</span><h2>Regression &amp; Update Popup Fix</h2><div class="ver">'+LABEL+'</div><p>Here is what changed in this release:</p><ul><li>The upgrade picker skips duplicates and offers three distinct eligible upgrades when at least three are available.</li><li>The Update News popup and mandatory update notice now match the visible v4.6.10 build.</li><li>Shield Core and Emergency Shield add their awarded seconds to the active shield timer.</li><li>AFK Lounge stays clear of the AFK Spot and mobile action controls.</li><li>Existing accounts, login, saves, player lists, and leaderboard records are preserved. No automatic reloads or redirects were added.</li></ul><button id="outlastUpdateLogClose">CONTINUE</button></div>';
     document.head.appendChild(style);document.body.appendChild(box);
     document.getElementById('outlastUpdateLogClose').onclick=function(){
       try{localStorage.setItem(ACK,BUILD)}catch(_){}
@@ -6619,10 +6619,10 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&String(x[0]).includes('Why are bosses not spawning consistently?')}))helpArticles.unshift(['Why are bosses not spawning consistently?','Bosses & Runs','The first scheduled boss appears after about 20 seconds. Later bosses wait for the current boss to be defeated, then appear after about 40 seconds. Only one boss can be active at once. If a boss entity disappears but its ID remains stuck, the stale lock is cleared so the scheduler can retry.']);
 })();</script><script src="outlast-v3360-focused-systems.js?v=4.4.0"></script><script src="outlast-v3370-game-systems.js?v=4.5.29"></script>
 <script src="outlast-v3376-interaction-fixes.js?v=3.37.6"></script>
-<script src="outlast-v3377-map-boss-rebuild.js?v=4.3.6"></script>
+<script src="outlast-v3377-map-boss-rebuild.js?v=4.6.10-boss-version"></script>
 <script src="outlast-v3378-expansion.js?v=4.4.0"></script>
-<script src="outlast-v4000-ultimate-expansion.js?v=4.0.0"></script>
-<script src="outlast-v410-map-upgrade-expansion.js?v=4.4.0"></script>
+<script src="outlast-v4000-ultimate-expansion.js?v=4.6.10-update-check"></script>
+<script src="outlast-v410-map-upgrade-expansion.js?v=4.6.10-map-selection"></script>
 <script src="outlast-v430-world-maps.js?v=4.3.3"></script>
 <script src="outlast-v430-owner-control-center.js?v=4.3.4"></script>
 <script src="outlast-v432-upgrade-ui-hotfix.js?v=4.4.0"></script>
@@ -6631,13 +6631,13 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 <script src="outlast-v435-upgrade-gear-redesign.js?v=4.5.26"></script>
 <script src="outlast-v440-skill-upgrade-menu-rework.js?v=4.4.0"></script>
 <script src="outlast-v441-skill-upgrade-balance-ui.js?v=4.5.29"></script>
-<script src="outlast-v443-reliability-afk.js?v=4.6.2-afk-100-coins"></script>
+<script src="outlast-v443-reliability-afk.js?v=4.6.10-afk-layout"></script>
 <script id="outlast-v445-final-version-marker">(function(){/* Disabled stale v4.5.15 interval/observer writer: it conflicted with current release metadata. */})();</script>
 <script id="outlast-v445-version-howto">if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles))helpArticles.unshift(['What changed in v4.5.0?','Updates & Reliability','The build marker and update checks are synchronized. The map picker now includes a search field to find maps faster. This is the first verified slice of the Survival Overhaul; additional gameplay systems still need implementation and testing. This is a reliability patch; the larger Survival Overhaul is still being implemented and is not represented as complete.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'});if(h)h[2]='The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.']);}</script>
 <script id="outlast-v451-release-popup-hotfix">(function(){'use strict';
 var KEY='outlast_v457_release_popup_ack';
-function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(document.getElementById('outlastV454ReleasePopup'))return;
+function show(){if(window.OUTLAST_MANDATORY_UPDATE_CHECK&&typeof window.OUTLAST_MANDATORY_UPDATE_CHECK==='object'&&window.OUTLAST_MANDATORY_UPDATE_CHECK.version)return;try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(document.getElementById('outlastV454ReleasePopup'))return;
 if(!document.body){setTimeout(show,100);return;}
 var shade=document.createElement('div');shade.id='outlastV454ReleasePopup';
 shade.style.cssText='position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,6,10,.96);font-family:Arial,sans-serif;color:#fff;pointer-events:auto';
@@ -6790,7 +6790,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script id="outlast-v463-event-countdown-removal">
 (function(){
   'use strict';
-  var BUILD='4.6.6', LABEL='v4.6.6 • SURVIVOR HUB';
+  var BUILD='4.6.10', LABEL='v4.6.10 • REGRESSION & UPDATE POPUP FIX';
   var selectors=[
     '#outlastEventCountdown','#eventCountdown','#event-countdown','#nightfallCountdown',
     '#nightfall-countdown','#halloweenCountdown','#halloween-countdown',
@@ -6957,8 +6957,8 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 <script id="outlast-v460-absolute-final-version-marker">
 (function(){
   'use strict';
-  var VERSION='4.6.6';
-  var LABEL='v4.6.6 • SURVIVOR HUB';
+  var VERSION='4.6.10';
+  var LABEL='v4.6.10 • REGRESSION & UPDATE POPUP FIX';
   function enforce(){
     try{
       window.OUTLAST_BUILD=VERSION;
@@ -7026,8 +7026,21 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 <script id="outlast-v466-absolute-final-version-lock">
 (function(){
 "use strict";
-var V="4.6.9", LABEL="v4.6.9 • ZOMBIE NAVIGATION FIX";
-function enforce(){try{window.OUTLAST_BUILD=V;window.OUTLAST_VERSION="v"+V;document.title="OUTLAST v"+V;['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent="v"+V;});document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\d/i.test(e.textContent||""))e.textContent=LABEL;});}catch(e){console.error("OUTLAST v4.6.7 version lock failed",e);}}
-enforce();if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="Why does the version marker change?";}))helpArticles.unshift(["Why does the version marker change?","Updates & Reliability","The displayed OUTLAST version is synchronized to the current build after older embedded scripts run. If the title, menu badge, and build metadata disagree, reload once with a fresh URL and report the version shown in each location."]);if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.9 — Version Marker Fix")===0;}))updates.unshift(["v4.6.9 — Version Marker Fix","Fixed the final version marker so it displays the current build after older embedded scripts run. Shield duration stacking remains included."]);if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});window.addEventListener("pageshow",enforce);
+var V="4.6.10", LABEL="v4.6.10 • REGRESSION & UPDATE POPUP FIX";
+function enforce(){try{
+window.OUTLAST_AUTHORITATIVE_BUILD=V;
+if(window.OUTLAST_BUILD!==V)window.OUTLAST_BUILD=V;
+if(window.OUTLAST_VERSION!=="v"+V)window.OUTLAST_VERSION="v"+V;
+if(document.title!=="OUTLAST v"+V)document.title="OUTLAST v"+V;
+['meta[name="build-version"]','meta[name="outlast-build"]'].forEach(function(sel){var e=document.querySelector(sel);if(e&&e.getAttribute("content")!==V)e.setAttribute("content",V);});
+document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){if(e.textContent!=="v"+V)e.textContent="v"+V;});
+document.querySelectorAll("#menu .menu-chip,.menu-chip").forEach(function(e){if(/v\d/i.test(e.textContent||"")&&e.textContent!==LABEL)e.textContent=LABEL;});
+}catch(e){console.error("OUTLAST v4.6.10 version lock failed",e);}}
+enforce();
+if(typeof helpArticles!=="undefined"&&Array.isArray(helpArticles)&&!helpArticles.some(function(a){return a&&a[0]==="What changed in v4.6.10?";}))helpArticles.unshift(["What changed in v4.6.10?","Updates & Reliability","The upgrade picker skips duplicate names and offers three distinct eligible upgrades when available. The Update News popup and mandatory update notice match v4.6.10. Shield duration upgrades add their awarded seconds, AFK Lounge stays clear of the AFK Spot and mobile action controls, and existing progress is preserved."]);
+if(typeof updates!=="undefined"&&Array.isArray(updates)&&!updates.some(function(a){return a&&String(a[0]||"").indexOf("v4.6.10 — Regression & Update Popup Fix")===0;}))updates.unshift(["v4.6.10 — Regression & Update Popup Fix","The upgrade picker skips duplicate names and offers three distinct eligible upgrades. Update notices match the current build, shield duration stacks, AFK Lounge stays clear of controls, and existing progress is preserved."]);
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",enforce,{once:true});
+window.addEventListener("pageshow",enforce);
+setInterval(enforce,250);
 })();
 </script>

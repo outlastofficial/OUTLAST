@@ -14,3 +14,5 @@ test('installer tolerates a minimal page and missing optional UI nodes',()=>{
  const storage=new Map(),win={document:doc,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)},addEventListener(){},requestAnimationFrame:fn=>1,save:{settings:{}},persist(){},toast(){},MutationObserver:null};
  tools.install(win);assert.equal(win.__OUTLAST_SETTINGS_EXPANSION_INSTALLED,true);assert.equal(win.OUTLAST_MOBILE_SENSITIVITY,1);assert.ok(styleNodes.length>=1);assert.ok(listeners.click);
 });
+
+test('rejects array-shaped backup settings',()=>{assert.equal(tools.applySettingsBackup({}, {}, {schemaVersion:1,settings:{core:[],quality:{}}}).ok,false);});

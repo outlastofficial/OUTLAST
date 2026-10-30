@@ -1220,7 +1220,7 @@ function setupMobileControls(){
  const controls=document.getElementById('mobileControls'),stick=document.getElementById('mobileStick'),knob=document.getElementById('mobileStickKnob');
  if(!controls||!stick||!knob)return;
  mobileControlsReady=true;
- const setDir=(dx,dy)=>{for(const k of ['w','a','s','d'])keys[k]=false;const mag=Math.hypot(dx,dy);if(mag<12)return;const x=dx/mag,y=dy/mag;if(Math.abs(x)>.28)keys[x>0?'d':'a']=true;if(Math.abs(y)>.28)keys[y>0?'s':'w']=true;};
+ const setDir=(dx,dy)=>{for(const k of ['w','a','s','d'])keys[k]=false;const mag=Math.hypot(dx,dy);if(mag<(12/Math.max(.5,Math.min(2,Number(window.OUTLAST_MOBILE_SENSITIVITY)||1))))return;const x=dx/mag,y=dy/mag;if(Math.abs(x)>.28)keys[x>0?'d':'a']=true;if(Math.abs(y)>.28)keys[y>0?'s':'w']=true;};
  const reset=()=>{for(const k of ['w','a','s','d'])keys[k]=false;knob.style.transform='translate(0px,0px)';};
  let active=null;
  const pointId=e=>Number.isFinite(e.pointerId)?e.pointerId:'touch';
@@ -6930,3 +6930,5 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 </script>
 
 <script src="./outlast-upgrade-luck-authority.js?v=4.7.4"></script>
+
+<script src="./outlast-settings-expansion.js?v=1"></script>

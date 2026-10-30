@@ -48,8 +48,15 @@ if(!EXPECTED_BUILD)throw new Error('Repository index.html is missing its current
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
-  await page.locator('#outlastV4000GotIt').waitFor({state:'visible',timeout:8000});
-  await page.locator('#outlastV4000GotIt').click();
+  const updateNotice=await page.evaluate(()=>({
+    version:window.OUTLAST_MANDATORY_UPDATE_CHECK?.version||null,
+    mode:window.OUTLAST_MANDATORY_UPDATE_CHECK?.mode||null,
+    acknowledged:localStorage.getItem('outlast_update_log_seen')||'',
+    popupVisible:!!document.getElementById('outlastMandatoryUpdateCheck')
+  }));
+  if(updateNotice.version!==EXPECTED_BUILD||updateNotice.mode!=='update-log'||updateNotice.acknowledged!==EXPECTED_BUILD||updateNotice.popupVisible){
+    throw new Error('Current release notice is not synchronized or acknowledged as expected: '+JSON.stringify(updateNotice));
+  }
   const releaseState=await page.evaluate(()=>({
     audit:typeof window.OUTLAST_ULTIMATE_EXPANSION_AUDIT==='function'?window.OUTLAST_ULTIMATE_EXPANSION_AUDIT():null,
     readyState:document.readyState,

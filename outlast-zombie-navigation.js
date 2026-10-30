@@ -1,6 +1,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;if(root&&root.document)root.OUTLAST_ZOMBIE_NAV=api;})(typeof window!=='undefined'?window:globalThis,function(){
 'use strict';
 const finite=(v,f=0)=>Number.isFinite(Number(v))?Number(v):f;
+function behaviorForKind(kind){const k=String(kind||'normal').toLowerCase();return({ranged:'Sniper',spitter:'Sniper',volt:'Sniper',runner:'Rammer',fast:'Rammer',leaper:'Rammer',charger:'Rammer',volatile:'Rammer',phantom:'Ambusher',leech:'Ambusher',mimic:'Ambusher',reaper:'Ambusher',tank:'Chaser',armored:'Chaser',brute:'Chaser',juggernaut:'Chaser',warden:'Chaser',shielder:'Support',summoner:'Support',siren:'Support',toxic:'Flanker',splitter:'Flanker',swarm:'Flanker'}[k]||'Hunter');}
 function isCacheFresh(cache,mapKey,goalKey,now,maxAge=.45){
  return !!cache&&cache.map===mapKey&&cache.goal===goalKey&&Array.isArray(cache.path)&&Number.isFinite(Number(cache.at))&&finite(now)-finite(cache.at)<maxAge;
 }
@@ -26,5 +27,5 @@ function pickRecoveryStep(x,y,targetX,targetY,step,radius,isBlocked){
  }
  return best;
 }
-return{isCacheFresh,trackStuck,pickRecoveryStep};
+return{behaviorForKind,isCacheFresh,trackStuck,pickRecoveryStep};
 });

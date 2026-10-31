@@ -1,7 +1,8 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),system=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8'),expansion=fs.readFileSync(path.join(root,'outlast-v3378-expansion.js'),'utf8');
-assert(html.includes('<meta name="outlast-build" content="4.7.1">'),'current metadata');
-assert(html.includes("var BUILD='4.7.1', LABEL='v4.7.1 • SHIELD DURATION FIX'")&&html.includes("var ACK='outlast_update_log_seen'"),'mandatory update');
+const currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current metadata');
+assert(html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Zombie Navigation Overhaul'"),'mandatory update follows current build');
 assert(expansion.includes('v3.37.16 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes')&&expansion.includes("window.OUTLAST_VERSION='v'+VERSION"),'current release marker and log');
 assert(!html.includes('id="coreBtn"')&&!system.includes("['progressCore37','🧩 12 Core Systems','core']"),'remove the one-button core hub');
 assert(system.includes("weaponBtn:'combat'")&&system.includes("codexBtn:'enemies'")&&system.includes("worldBossBtn:'bosses'")&&system.includes("mapBtn:'world'")&&system.includes("shopBtn:'economy'")&&system.includes("missionBtn:'objectives'"),'route core content into existing feature areas');
@@ -24,4 +25,8 @@ const mythicXP=apply('XP Hunter','Mythic').p.xpBonus-1;
 assert(mythicXP>commonXP,'Mythic XP must be stronger than Common XP for the same effect');
 const families=[['Might 01',p=>p.damage],['Haste 02',p=>1/p.fireRate],['Vital Core 03',p=>p.max-100],['Fleet 04',p=>p.speed-300],['Magnet 05',p=>p.magnet],['Renewal 06',p=>p.regen],['Breach 07',p=>p.pierce],['Volley 08',p=>p.multiShot],['Velocity 09',p=>p.projectileSpeed-1],['Deadeye 10',p=>p.crit],['Fortune 11',p=>p.coinMult-1],['Scholar 12',p=>p.xpBonus-1],['Piercer 13',p=>p.armorPierce],['Bossbane 14',p=>p.bossMult-1],['Arcane 15',p=>p.ultDamage-1],['Medic 16',p=>p.healMult-1],['Luck 17',p=>p.upgradeLuck],['Cache 18',p=>p.lootLuck],['Treasure 19',p=>p.treasureLuck],['Aegis 20',p=>p.shield]];
 for(const [name,metric] of families){const vals=tiers.map((t,i)=>{const card=s.tempUp.find(x=>x&&x[0]===t+' '+name);assert(card,'missing '+t+' '+name);s.game.player=p();const d=String(card[1](mult[i]));const result=card[2](mult[i]);if(typeof result==='function')result();return {value:metric(s.game.player),desc:d};});for(let i=1;i<vals.length;i++)assert(vals[i].value>vals[i-1].value,name+' applied effect ties at '+tiers[i]);}
-console.log('OUTLAST v4.7.1 rarity, boss reliability, and core placement checks passed');
+s.game.player=p();s.game.player.shield=2;
+const commonAegis=s.tempUp.find(x=>x&&x[0]==='Common Aegis 20'),omegaAegis=s.tempUp.find(x=>x&&x[0]==='Omega Aegis 20');
+assert(commonAegis&&omegaAegis,'Common and Omega Aegis entries exist');commonAegis[2](1);omegaAegis[2](8);
+assert(Math.abs(s.game.player.shield-7.85)<1e-9,'Aegis duration upgrades add to existing shield time across rarities');
+console.log('OUTLAST '+currentBuild+' rarity, additive shield stacking, boss reliability, and core placement checks passed');

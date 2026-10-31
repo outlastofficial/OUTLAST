@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const html=fs.readFileSync('index.html','utf8');
+const currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
 function check(ok,message){assert.ok(ok,message);}
 const start=html.indexOf('<style id="globalChatEverywhereStyles">');
 const end=html.indexOf('<script src="outlast-v32797',start);
@@ -22,8 +23,8 @@ check(scriptOpen>=0&&scriptEnd>scriptStart,'Chat backend helper is inside a vali
 new vm.Script(html.slice(scriptStart,scriptEnd),{filename:'OUTLAST chat backend inline script'});
 check(html.includes("role:String(entry.role||'')"),'Client message state preserves server roles');
 check(html.includes("badge.textContent=owner?' 👑 OWNER':' 🧪 TESTER'"),'In-game chat renders OWNER and TESTER badges');
-check(html.includes("const CURRENT_UPDATE_VERSION='4.7.1'"),'Maintenance version is incremented');
-check(html.includes("L='v4.7.1 • SHIELD DURATION FIX'"),'Visible Survivor Hub marker matches');
+check(currentBuild&&html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Zombie Navigation Overhaul'"),'Update popup follows the current release');
+check(html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'Visible Survivor Hub marker matches the release metadata');
 check(html.includes('v4.5.1 — Global Chat Repair'),'Release notes include chat repair');
 const inline=overlay.match(/<script>([\s\S]*?)<\/script>/i);
 check(inline&&inline[1],'Floating chat script exists');

@@ -17,9 +17,10 @@ function extractFunction(source,name){
 }
 const navSource=extractFunction(html,'zombieNavWaypoint');
 function makeWorld(obstacles){
-  const sandbox={W:4000,H:3000,game:{time:0},save:{map:'Test'},blocked(x,y,r){
+  const sandbox={W:4000,H:3000,game:{time:0},save:{map:'Test'},window:null,blocked(x,y,r){
     return obstacles.some(o=>{const cx=Math.max(o.x,Math.min(x,o.x+o.w)),cy=Math.max(o.y,Math.min(y,o.y+o.h));return Math.hypot(x-cx,y-cy)<r;});
   }};
+  sandbox.window=sandbox;
   vm.createContext(sandbox);vm.runInContext(navSource+';this.nav=zombieNavWaypoint;',sandbox);return sandbox;
 }
 function stepToward(a,b,max){const d=Math.hypot(b.x-a.x,b.y-a.y)||1;return{x:a.x+(b.x-a.x)/d*Math.min(max,d),y:a.y+(b.y-a.y)/d*Math.min(max,d)};}

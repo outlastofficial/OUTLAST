@@ -2,13 +2,17 @@ const fs = require('node:fs');
 const assert = require('node:assert/strict');
 
 const html = fs.readFileSync('index.html', 'utf8');
+const currentBuild = (html.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
+assert.ok(currentBuild, 'current build metadata must exist');
 
 assert.ok(!html.includes("var CHIP='v4.6.4 • UPGRADE LUCK FIX'"),
   'legacy Survivor Hub observer must not force the v4.6.4 chip');
 assert.ok(!html.includes("var BUILD='4.6.4', LABEL='v4.6.4 • UPGRADE LUCK FIX'"),
   'legacy mandatory update checker must not advertise v4.6.4 as the current build');
-assert.ok(!html.includes("var V='4.6.4';"),
-  'legacy final-version guard must not pin the whole app to v4.6.4');
+assert.ok(html.includes("var V='"+currentBuild+"'"),
+  'final-version guard must match the current build metadata');
+assert.ok(!html.includes("var V='4.7.4';"),
+  'old Upgrade Luck marker must not roll the app back from the current release');
 
 const marker = html.lastIndexOf('outlast-authoritative-version-marker');
 assert.ok(marker >= 0, 'one authoritative marker must be installed at the end of the page');
@@ -22,4 +26,4 @@ assert.match(tail, /MutationObserver/,
 assert.match(tail, /pageshow/,
   'authoritative marker must resync after browser page restores');
 
-console.log('PASS: stale v4.6.4 locks are absent and the final dynamic marker owns version display.');
+console.log('PASS: final version marker matches OUTLAST '+currentBuild+' and owns version display.');

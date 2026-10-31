@@ -25,6 +25,7 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
         localStorage.setItem('outlast_v451_release_popup_ack','1');
         localStorage.setItem('outlastSeenUpdateVersion',build);
         localStorage.setItem('outlast_update_log_seen',build);
+        localStorage.setItem('outlast_update_log_seen_v2',build);
         localStorage.setItem('outlast_update_ack_v4.0.0','1');
         localStorage.setItem('outlastNewPlayerTutorialV317','1');
       },expectedBuild);

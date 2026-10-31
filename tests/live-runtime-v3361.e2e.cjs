@@ -25,6 +25,7 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
     localStorage.setItem('outlast_v453_release_popup_ack','1');
     localStorage.setItem('outlastSeenUpdateVersion',build);
     localStorage.setItem('outlast_update_log_seen',build);
+        localStorage.setItem('outlast_update_log_seen_v2',build);
   },expectedBuild);
 
   const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
@@ -336,6 +337,7 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion',build);
     localStorage.setItem('outlast_update_log_seen',build);
+        localStorage.setItem('outlast_update_log_seen_v2',build);
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   },expectedBuild);
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();

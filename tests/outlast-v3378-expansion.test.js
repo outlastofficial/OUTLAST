@@ -1,6 +1,7 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
 const expansion=fs.readFileSync(path.join(root,'outlast-v3378-expansion.js'),'utf8');
 const mapPicker=fs.readFileSync(path.join(root,'outlast-v3377-map-boss-rebuild.js'),'utf8');
 const mapCreator=fs.readFileSync(path.join(root,'outlast-v33018-map-creator.js'),'utf8');
@@ -36,7 +37,7 @@ assert(expansion.includes('Why was the old event overlay removed?'),'How To docu
 assert(expansion.includes('v3.37.14 — Fix Floating Chat Layering'),'release log records the chat fix');
 assert(expansion.includes('v3.37.18 — Restore Global Chat Tags'),'release log records restored chat tags');
 assert(expansion.includes('Why is Chat at the top of the screen?'),'How To documents the chat placement');
-assert(html.includes('<meta name="outlast-build" content="4.7.1">')&&html.includes('<meta name="build-version" content="4.7.1">')&&html.includes('<title>OUTLAST v4.7.1</title>'),'current version metadata');
+assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current version metadata');
 assert(/<script src="outlast-v432-upgrade-ui-hotfix\.js\?v=[^"]+"><\/script>/.test(html),'upgrade UI hotfix is loaded with an explicit cache-busting key');
 assert(uiHotfix.includes('const VERSION=\'4.3.6\'')&&uiHotfix.includes('const compare=')&&uiHotfix.includes('window.OUTLAST_BUILD=release'),'hotfix preserves the declared build marker after opening Choose Map');
 assert(uiHotfix.includes('activeUpgrade()&&!window.__OUTLAST_CUSTOM_UPGRADE_RENDER')&&gearRedesign.includes('window.__OUTLAST_CUSTOM_UPGRADE_RENDER=true'),'redesigned card labels bypass the legacy overlap filter');

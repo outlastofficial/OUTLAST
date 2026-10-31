@@ -1,9 +1,10 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
 const maps=fs.readFileSync(path.join(root,'outlast-v430-world-maps.js'),'utf8');
 const renderer=fs.readFileSync(path.join(root,'outlast-v434-distinct-map-renderer.js'),'utf8');
-assert(/<meta name="outlast-build" content="4\.7\.3">/.test(html),'tester build metadata must match the active tester release');
+assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'tester build metadata must match the active tester release');
 assert(html.includes('id="outlast-authoritative-version-marker"'),'tester version display must use the authoritative marker');
 assert(html.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'distinct map renderer is wired into the game');
 assert(html.indexOf('outlast-v434-distinct-map-renderer.js')>html.indexOf('outlast-v433-upgrade-choice-redesign.js'),'renderer loads after previous UI modules');

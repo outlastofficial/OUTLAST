@@ -1,7 +1,7 @@
-/* OUTLAST v4.4.3 — Reliability Guards, AFK Lounge, Runtime Audit */
+/* OUTLAST v4.4.4 — AFK Lounge mobile action-control placement */
 (function(){
 'use strict';
-const VERSION='4.4.3';
+const VERSION='4.4.4';
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
 const getSave=()=>{try{return typeof save!=='undefined'?save:(window.save||null)}catch(_){return window.save||null}};
 const getGame=()=>{try{return typeof game!=='undefined'?game:(window.game||null)}catch(_){return window.game||null}};
@@ -54,7 +54,7 @@ function installMapRoute(){
 }
 function addAFKLounge(){
  if(document.getElementById('outlastV443AFK'))return;
- const style=document.createElement('style');style.id='outlastV443AFKStyle';style.textContent='#outlastV443AFK{position:fixed;right:14px;bottom:16px;z-index:39;background:#142b36;border:1px solid #4b8aa0;color:#e9fbff;border-radius:12px;padding:10px 13px;font:800 12px Arial;box-shadow:0 5px 18px #0008;display:none}#outlastV443AFKPanel{position:fixed;inset:0;z-index:2147482000;background:#061019eF;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}#outlastV443AFKPanel .afk-card{width:min(560px,96vw);padding:22px;border:1px solid #3d7185;border-radius:18px;background:linear-gradient(145deg,#172a36,#0c151e);color:#f1f8fc;box-shadow:0 20px 70px #0009}#outlastV443AFKPanel p{color:#b4c8d5;line-height:1.5}#outlastV443AFKPanel button{margin:5px}@media(max-width:650px){#outlastV443AFK{right:8px;bottom:8px;padding:9px;font-size:11px}}';
+ const style=document.createElement('style');style.id='outlastV443AFKStyle';style.textContent='#outlastV443AFK{position:fixed;right:14px;bottom:16px;z-index:39;background:#142b36;border:1px solid #4b8aa0;color:#e9fbff;border-radius:12px;padding:10px 13px;font:800 12px Arial;box-shadow:0 5px 18px #0008;display:none}#outlastV443AFKPanel{position:fixed;inset:0;z-index:2147482000;background:#061019eF;display:none;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}#outlastV443AFKPanel .afk-card{width:min(560px,96vw);padding:22px;border:1px solid #3d7185;border-radius:18px;background:linear-gradient(145deg,#172a36,#0c151e);color:#f1f8fc;box-shadow:0 20px 70px #0009}#outlastV443AFKPanel p{color:#b4c8d5;line-height:1.5}#outlastV443AFKPanel button{margin:5px}@media(max-width:760px){#outlastV443AFK{right:8px;bottom:8px;padding:9px;font-size:11px}#outlastV443AFK.outlastV443AFKInGame{right:18px;bottom:calc(24px + 56px + 12px + env(safe-area-inset-bottom,0px));z-index:34}}';
  document.head.appendChild(style);
  const btn=document.createElement('button');btn.id='outlastV443AFK';btn.type='button';btn.textContent='☕ AFK LOUNGE';btn.title='Open the safe AFK lounge';document.body.appendChild(btn);
  const panel=document.createElement('div');panel.id='outlastV443AFKPanel';panel.innerHTML='<div class="afk-card"><h2 style="margin:0 0 8px">☕ AFK Lounge</h2><p>Take a break without accidentally spending coins or changing your loadout. Earn 100 coins for every complete minute you remain in the AFK Lounge. Coins are saved through your existing game save; AFK time does not grant XP, score, or boss progress.</p><p><b>Safety:</b> entering the lounge pauses your current run when supported. Resume only when you are ready to play again.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" id="outlastV443AFKEnter">ENTER LOUNGE</button><button type="button" id="outlastV443AFKResume">RESUME RUN</button><button type="button" id="outlastV443AFKClose">BACK</button></div><div id="outlastV443AFKStatus" class="small" style="margin-top:8px"></div></div>';document.body.appendChild(panel);
@@ -69,7 +69,7 @@ function addAFKLounge(){
  });
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.style.display==='flex')close()});
  // Show only after a run begins or while the main menu is visible; never cover primary controls.
- const sync=()=>{const g=getGame(),menu=document.getElementById('menu');btn.style.display=(g&&g.running)|| (menu&&getComputedStyle(menu).display!=='none')?'block':'none'};
+ const sync=()=>{const g=getGame(),menu=document.getElementById('menu'),menuVisible=!!menu&&getComputedStyle(menu).display!=='none',inRun=!!(g&&g.running&&!menuVisible);btn.classList.toggle('outlastV443AFKInGame',inRun);btn.style.display=(g&&g.running)||menuVisible?'block':'none'};
  setInterval(()=>{try{sync()}catch(_){}},1200);sync();
 }
 
@@ -113,7 +113,7 @@ function install(){
  if(!getSave()||!getGame()||typeof window.startGame!=='function'){window.__OUTLAST_V443_RETRIES=num(window.__OUTLAST_V443_RETRIES)+1;if(window.__OUTLAST_V443_RETRIES<100)setTimeout(install,120);return}
  try{installSkillRoute();installMapRoute();addAFKLounge();installAFKCoinRewards();window.OUTLAST_V443_AUDIT=audit;window.__OUTLAST_V443_INSTALLED=true;
   if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(x=>x&&String(x[0]||'').includes('v4.4.3')))updates.unshift(['v4.4.3 — Reliability & AFK Lounge','Added runtime checks for equipped skills, map selection, rarity scaling and boss state; reinforced skill click routing and introduced a safe AFK Lounge; it grants 100 coins for each complete minute spent in the lounge.']);
-  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(x=>x&&String(x[0]||'').includes('How does the AFK Lounge work?')))helpArticles.unshift(['How does the AFK Lounge work?','Controls & Safety','Open AFK Lounge from the lower-right button. It is designed for breaks and grants 100 coins per complete minute while active. It does not generate score, XP, or boss progress. The lounge attempts to pause an active run when the game exposes pause state.']);
+  if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var afkHelp=helpArticles.find(x=>x&&String(x[0]||'').includes('How does the AFK Lounge work?'));var afkText='Open AFK Lounge from the lower-right button on desktop. During a mobile run, it sits above the DASH, SKILL, and ULT controls so it does not block gameplay taps. It grants 100 coins per complete minute while active and does not generate score, XP, or boss progress. The lounge pauses an active run when supported.';if(afkHelp)afkHelp[2]=afkText;else helpArticles.unshift(['How does the AFK Lounge work?','Controls & Safety',afkText]);}
  }catch(e){window.OUTLAST_V443_INSTALL_ERROR=String(e&&e.message||e)}
 }
 window.OUTLAST_V443_AUDIT=audit;

@@ -13,6 +13,8 @@ assert.ok(html.includes("var V='"+currentBuild+"'"),
   'final-version guard must match the current build metadata');
 assert.ok(!html.includes("var V='4.7.4';"),
   'old Upgrade Luck marker must not roll the app back from the current release');
+assert.ok(!html.includes("window.OUTLAST_BUILD='3.37.15'")&&!html.includes("a.content='3.37.15'"),
+  'legacy v3.37.15 marker must not overwrite current build metadata');
 
 const marker = html.lastIndexOf('outlast-authoritative-version-marker');
 assert.ok(marker >= 0, 'one authoritative marker must be installed at the end of the page');

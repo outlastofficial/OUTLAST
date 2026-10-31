@@ -8,6 +8,7 @@ assert(currentBuild&&index.includes('<meta name="build-version" content="'+curre
 assert(index.includes('outlast-v4000-ultimate-expansion.js?v=4.0.0')&&index.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0')&&index.includes('outlast-v430-world-maps.js?v=4.3.3')&&index.includes('outlast-v430-owner-control-center.js?v=4.3.4')&&index.includes('outlast-v434-distinct-map-renderer.js?v=4.3.4'),'current release, map expansion and owner modules are loaded');
 assert(index.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&index.includes("title:'v"+currentBuild+" — Zombie Navigation Overhaul'"),'mandatory update popup follows the current build');
 assert(index.includes("var V='"+currentBuild+"'"),'final release writer follows the current build metadata');
+assert(index.includes("var ACK='outlast_update_log_seen_v2', POP='outlastMandatoryUpdateCheck'")&&index.includes("var LABEL='v'+BUILD+' • UPDATE NOTICE REPAIR'"),'mandatory update notice uses the current release marker');
 assert(!index.includes("window.OUTLAST_BUILD='4.7.2'")&&!index.includes("document.title='OUTLAST v4.7.2'"),'legacy release writer cannot roll the build marker backward');
 assert(expansion.includes("window.OUTLAST_BUILD = VERSION;")&&expansion.includes("document.title = 'OUTLAST v' + VERSION;"),'the final module publishes the global build and title');
 assert(core.includes("window.OUTLAST_CORE_CONTENT"),'12-core engine must still install its content container');

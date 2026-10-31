@@ -25,7 +25,6 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
         localStorage.setItem('outlast_v451_release_popup_ack','1');
         localStorage.setItem('outlastSeenUpdateVersion',build);
         localStorage.setItem('outlast_update_log_seen',build);
-        localStorage.setItem('outlast_update_log_seen_v2',build);
         localStorage.setItem('outlast_update_ack_v4.0.0','1');
         localStorage.setItem('outlastNewPlayerTutorialV317','1');
       },expectedBuild);
@@ -67,6 +66,13 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
         if(attempt<19)await page.waitForTimeout(2500);
       }
       assert.ok(served,'Expected '+expectedBuild+' page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
+      await page.waitForTimeout(600);
+      const updateNotice=page.locator('#outlastMandatoryUpdateCheck');
+      if(await updateNotice.count()){
+        const noticeVersion=(await page.locator('#outlastMandatoryUpdateCheck .ver').textContent())||'';
+        assert.ok(noticeVersion.includes('v'+expectedBuild),'Mandatory update notice displays the current build');
+        await page.locator('#outlastUpdateLogClose').click();
+      }
       // The page has a legacy release gate from v4.0.0 that can sit above the chat launcher.
       // Clear it in this isolated smoke test so the test can exercise chat rather than click interception.
       await page.evaluate(()=>{

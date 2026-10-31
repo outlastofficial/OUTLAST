@@ -25,7 +25,6 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
     localStorage.setItem('outlast_v453_release_popup_ack','1');
     localStorage.setItem('outlastSeenUpdateVersion',build);
     localStorage.setItem('outlast_update_log_seen',build);
-        localStorage.setItem('outlast_update_log_seen_v2',build);
   },expectedBuild);
 
   const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
@@ -57,6 +56,12 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
 
   await page.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
+  const updateNotice=page.locator('#outlastMandatoryUpdateCheck');
+  if(await updateNotice.count()){
+    const noticeVersion=(await page.locator('#outlastMandatoryUpdateCheck .ver').textContent())||'';
+    if(!noticeVersion.includes('v'+expectedBuild))throw new Error('Mandatory update notice displays a stale version: '+noticeVersion);
+    await page.locator('#outlastUpdateLogClose').click();
+  }
   await page.locator('#outlastV4000GotIt').waitFor({state:'visible',timeout:8000});
   await page.locator('#outlastV4000GotIt').click();
   const obsoleteReleaseGate=await page.evaluate(()=>{const el=document.getElementById('outlastV454ReleasePopup');return !!el&&getComputedStyle(el).display!=='none';});
@@ -337,7 +342,6 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion',build);
     localStorage.setItem('outlast_update_log_seen',build);
-        localStorage.setItem('outlast_update_log_seen_v2',build);
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   },expectedBuild);
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();

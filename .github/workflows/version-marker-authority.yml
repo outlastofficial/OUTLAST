@@ -5,6 +5,7 @@ on:
     paths:
       - 'index.html'
       - 'tests/version-marker-authority.test.js'
+      - 'tests/outlast-release-marker.test.js'
       - '.github/workflows/version-marker-authority.yml'
   workflow_dispatch:
 jobs:
@@ -16,3 +17,4 @@ jobs:
         with:
           node-version: 20
       - run: node tests/version-marker-authority.test.js
+      - run: node tests/outlast-release-marker.test.js

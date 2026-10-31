@@ -23,7 +23,7 @@ check(scriptOpen>=0&&scriptEnd>scriptStart,'Chat backend helper is inside a vali
 new vm.Script(html.slice(scriptStart,scriptEnd),{filename:'OUTLAST chat backend inline script'});
 check(html.includes("role:String(entry.role||'')"),'Client message state preserves server roles');
 check(html.includes("badge.textContent=owner?' 👑 OWNER':' 🧪 TESTER'"),'In-game chat renders OWNER and TESTER badges');
-check(currentBuild&&html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Zombie Navigation Overhaul'"),'Update popup follows the current release');
+check(currentBuild&&html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Shield Stacking & Mobile Control Fix'"),'Update popup follows the current release');
 check(html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'Visible Survivor Hub marker matches the release metadata');
 check(html.includes('v4.5.1 — Global Chat Repair'),'Release notes include chat repair');
 const inline=overlay.match(/<script>([\s\S]*?)<\/script>/i);

@@ -9,6 +9,8 @@ assert.ok(!html.includes("var CHIP='v4.6.4 • UPGRADE LUCK FIX'"),
   'legacy Survivor Hub observer must not force the v4.6.4 chip');
 assert.ok(!html.includes("var BUILD='4.6.4', LABEL='v4.6.4 • UPGRADE LUCK FIX'"),
   'legacy mandatory update checker must not advertise v4.6.4 as the current build');
+assert.ok(html.includes("typeof window.OUTLAST_MANDATORY_UPDATE_CHECK==='object'"),
+  'update notice sync must guard the optional state object before writing its version');
 assert.ok(html.includes("var V='"+currentBuild+"'"),
   'final-version guard must match the current build metadata');
 assert.ok(!html.includes("var V='4.7.4';"),

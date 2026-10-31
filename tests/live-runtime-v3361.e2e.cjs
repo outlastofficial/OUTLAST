@@ -58,6 +58,8 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
   await page.locator('#outlastV4000GotIt').waitFor({state:'visible',timeout:8000});
   await page.locator('#outlastV4000GotIt').click();
+  const obsoleteReleaseGate=await page.evaluate(()=>{const el=document.getElementById('outlastV454ReleasePopup');return !!el&&getComputedStyle(el).display!=='none';});
+  if(obsoleteReleaseGate)throw new Error('Obsolete v4.5.15 release popup still blocks the current build.');
   const releaseState=await page.evaluate(()=>({
     audit:typeof window.OUTLAST_ULTIMATE_EXPANSION_AUDIT==='function'?window.OUTLAST_ULTIMATE_EXPANSION_AUDIT():null,
     readyState:document.readyState,

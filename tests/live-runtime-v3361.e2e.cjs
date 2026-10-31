@@ -349,8 +349,8 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
   await mobilePage.waitForSelector('meta[name="outlast-build"]',{state:'attached',timeout:15000});
   await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await mobilePage.locator('#outlastMandatoryUpdateCheck').waitFor({state:'visible',timeout:10000});
-  const updateNotice=await mobilePage.evaluate(()=>({title:document.querySelector('#outlastMandatoryUpdateCheck h2')?.textContent||'',version:document.querySelector('#outlastMandatoryUpdateCheck .ver')?.textContent||'',summary:document.querySelector('#outlastMandatoryUpdateCheck .card p')?.textContent||''}));
-  if(!updateNotice.title.includes('Shield Stacking & Mobile Control Fix')||!updateNotice.version.includes(expectedBuild)||!updateNotice.summary.includes('Shield Core'))throw new Error('Update popup did not show the current release notes/version: '+JSON.stringify(updateNotice));
+  const mobileUpdateNoticeInfo=await mobilePage.evaluate(()=>({title:document.querySelector('#outlastMandatoryUpdateCheck h2')?.textContent||'',version:document.querySelector('#outlastMandatoryUpdateCheck .ver')?.textContent||'',summary:document.querySelector('#outlastMandatoryUpdateCheck .card p')?.textContent||''}));
+  if(!mobileUpdateNoticeInfo.title.includes('Shield Stacking & Mobile Control Fix')||!mobileUpdateNoticeInfo.version.includes(expectedBuild)||!mobileUpdateNoticeInfo.summary.includes('Shield Core'))throw new Error('Update popup did not show the current release notes/version: '+JSON.stringify(mobileUpdateNoticeInfo));
   await mobilePage.locator('#outlastUpdateLogClose').click();
   await mobilePage.locator('#outlastMandatoryUpdateCheck').waitFor({state:'detached',timeout:5000});
   if (await mobilePage.locator('#outlastV4000GotIt').isVisible().catch(()=>false)) {

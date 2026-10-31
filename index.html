@@ -6534,11 +6534,19 @@ setInterval(syncBossBar,100);
 </script><script id="outlast-v3356-metadata">(function(){try{if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).includes('v3.35.6')}))updates.unshift(['v3.35.6 — Persistent Boss Bar','Rebuilt the boss HUD so the boss health bar stays visible for the entire lifetime of the active boss and only hides after the boss is actually gone.']);if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How does the Boss Bar work?';}))helpArticles.unshift(['How does the Boss Bar work?','Bosses','The Boss Bar stays on screen while a live boss is present. It shows the boss HP, phase, and boss count, and disappears only when no live boss remains.']);}catch(_){}})();</script><script id="outlast-mandatory-update-check">
 (function(){
   'use strict';
-  var META=document.querySelector('meta[name="outlast-build"]')||document.querySelector('meta[name="build-version"]');
-  var BUILD=String(META&&META.getAttribute('content')||window.OUTLAST_BUILD||'').replace(/^v/i,'').trim();
-  var LABEL='v'+BUILD+' • UPDATE NOTICE REPAIR';
+  var BUILD='', LABEL='';
   var ACK='outlast_update_log_seen_v2', POP='outlastMandatoryUpdateCheck';
+  function syncBuild(){
+    var meta=document.querySelector('meta[name="outlast-build"]')||document.querySelector('meta[name="build-version"]');
+    var latest=String(meta&&meta.getAttribute('content')||window.OUTLAST_BUILD||BUILD||'').replace(/^v/i,'').trim();
+    if(latest)BUILD=latest;
+    LABEL='v'+BUILD+' • UPDATE NOTICE REPAIR';
+    if(window.OUTLAST_MANDATORY_UPDATE_CHECK)window.OUTLAST_MANDATORY_UPDATE_CHECK.version=BUILD;
+  }
+  function alreadySeen(){var seen='';try{seen=localStorage.getItem(ACK)||''}catch(_){}return seen===BUILD;}
   function showLog(){
+    syncBuild();
+    if(alreadySeen())return;
     if(document.getElementById(POP))return;
     var style=document.createElement('style');
     style.textContent='#'+POP+'{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(2,6,10,.92);backdrop-filter:blur(6px);z-index:2147483647;padding:18px;box-sizing:border-box;font-family:Arial,sans-serif}#'+POP+' .card{width:min(720px,94vw);max-height:86vh;overflow:auto;background:linear-gradient(145deg,#142231,#0b121a);border:2px solid #4d9bd0;border-radius:22px;padding:28px;color:#fff;box-shadow:0 30px 100px rgba(0,0,0,.8)}#'+POP+' .tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#193951;color:#8fd1ff;border:1px solid #315f84;font-size:11px;font-weight:900;letter-spacing:.06em}#'+POP+' h2{margin:12px 0 8px;font-size:32px}#'+POP+' .ver{color:#82c8ff;font-weight:900;margin-bottom:16px}#'+POP+' li{margin:10px 0;color:#dce8f2;line-height:1.45}#'+POP+' button{margin:18px 8px 0 0;background:#3da96b;color:white;border:0;border-radius:10px;padding:12px 22px;font-weight:900;cursor:pointer}';
@@ -6551,11 +6559,11 @@ setInterval(syncBossBar,100);
     };
   }
   function check(){
-    var seen='';
-    try{seen=localStorage.getItem(ACK)||''}catch(_){}
-    if(seen!==BUILD){
-      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',showLog,{once:true});
-      else setTimeout(showLog,350);
+    syncBuild();
+    if(!alreadySeen()){
+      var defer=function(){setTimeout(showLog,600);};
+      if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',defer,{once:true});
+      else setTimeout(showLog,600);
     }
   }
   check();

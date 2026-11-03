@@ -56,6 +56,8 @@ async function testViewport(name, viewport, isMobile) {
     assert.ok(response && response.ok(), name + ': tester game page should load');
     await page.waitForSelector('#outlastLiveContentButton', { state: 'visible', timeout: 60000 });
     await closeReleaseNotices(page);
+    await page.waitForTimeout(900);
+    assert.equal(await page.locator('#outlastV454ReleasePopup').count(), 0, name + ': obsolete v4.5.15 release popup must stay hidden on the current build');
     await completeTestPlayerSetup(page);
     await page.locator('#outlastLiveContentButton').click();
     await page.waitForFunction(() => {

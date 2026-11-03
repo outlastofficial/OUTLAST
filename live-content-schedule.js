@@ -91,7 +91,7 @@
     panelBody.appendChild(weeklyCard);
 
     var monthly = data.monthlyEvent || {};
-    var monthlyCard = section('Monthly Major Event: ' + (monthly.title || 'Monthly Finale'), monthly.active ? 'FINAL EVENT LIVE' : 'END-OF-MONTH', monthly.objective || 'The month’s discoveries will shape the final operation.');
+    var monthlyCard = section('Monthly Major Event: ' + (monthly.title || 'Monthly Finale'), monthly.active ? 'LIVE ALL MONTH' : 'NEXT MONTH', monthly.objective || 'This month’s ongoing investigation builds toward a final operation.');
     monthlyCard.className += ' olc-month';
     monthlyCard.appendChild(el('div', 'olc-meta', 'Theme: ' + (monthly.theme || 'Monthly outbreak') + ' • ' + dateText(monthly.startsAt) + ' → ' + dateText(monthly.endsAt)));
     var recap = Array.isArray(monthly.monthlyRecap) ? monthly.monthlyRecap : [];
@@ -145,7 +145,7 @@
       updates.unshift(['v4.9.4 — Saturday-to-Saturday Updates', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Saturday-to-Saturday weekly story updates, and a major monthly story event running all month. Existing saves and leaderboards are unchanged. Existing saves and leaderboards are unchanged.']);
     }
     if (typeof helpArticles !== 'undefined' && Array.isArray(helpArticles) && !helpArticles.some(function (item) { return item && item[0] === 'How does the OUTLAST Live Content schedule work?'; })) {
-      helpArticles.unshift(['How does the OUTLAST Live Content schedule work?', 'Events & Live Content', 'Open LIVE CONTENT from the game screen. A small addition rotates every 72 hours. Weekend events run Friday through Monday and continue the story in numbered parts. The major monthly event runs during the final three days of the month and recaps that month’s additions and weekend chapters. The server controls all unlock times; dates are displayed in your local timezone.']);
+      helpArticles.unshift(['How does the OUTLAST Live Content schedule work?', 'Events & Live Content', 'Open LIVE CONTENT from the game screen. A small addition rotates every 72 hours. Weekly updates run from Saturday to the following Saturday and continue the story in numbered parts. The major monthly event stays active from the first day through the last day of the month, with weekly updates and three-day additions layered on top. The server controls all unlock times; dates are displayed in your local timezone.']);
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once: true });

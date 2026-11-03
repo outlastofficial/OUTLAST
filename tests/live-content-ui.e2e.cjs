@@ -5,13 +5,15 @@ const { chromium } = require('playwright');
 const baseUrl = process.env.OUTLAST_RUNTIME_TEST_URL || 'https://outlast-test.onrender.com/index.html';
 
 async function closeReleaseNotices(page) {
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(1000);
+  await page.locator('#outlastV4000UpdatePopup').waitFor({ state: 'visible', timeout: 2500 }).catch(() => {});
   for (const selector of ['#outlastUpdateLogClose', '#updatePopupClose', '#outlastV4000GotIt']) {
     const button = page.locator(selector).first();
     if (await button.count() && await button.isVisible().catch(() => false)) {
-      await button.click({ timeout: 5000 }).catch(() => {});
+      await button.click({ timeout: 5000, force: selector === '#outlastV4000GotIt' }).catch(() => {});
     }
   }
+  await page.keyboard.press('Escape').catch(() => {});
 }
 
 async function testViewport(name, viewport, isMobile) {

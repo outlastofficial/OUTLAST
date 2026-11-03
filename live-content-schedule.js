@@ -30,6 +30,16 @@
     card.appendChild(el('p', 'olc-description', description));
     return card;
   }
+  function syncReleaseBadge() {
+    var meta = document.querySelector('meta[name="outlast-build"]') || document.querySelector('meta[name="build-version"]');
+    var build = String(meta && meta.getAttribute('content') || '').replace(/^v/i, '').trim();
+    if (!build) return;
+    if (window.OUTLAST_MANDATORY_UPDATE_CHECK && typeof window.OUTLAST_MANDATORY_UPDATE_CHECK === 'object') {
+      window.OUTLAST_MANDATORY_UPDATE_CHECK.version = build;
+    }
+    var badge = document.querySelector('#outlastMandatoryUpdateCheck .ver');
+    if (badge) badge.textContent = 'v' + build + ' • CURRENT BUILD';
+  }
   function buildShell() {
     if (overlay) return overlay;
     var style = el('style');
@@ -122,6 +132,12 @@
   function closePanel() { if (overlay) overlay.style.display = 'none'; }
   function install() {
     buildShell();
+    syncReleaseBadge();
+    try {
+      var releaseObserver = new MutationObserver(syncReleaseBadge);
+      releaseObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['content'] });
+      window.OUTLAST_LIVE_CONTENT_RELEASE_OBSERVER = releaseObserver;
+    } catch (_) {}
     refresh();
     window.OUTLAST_LIVE_CONTENT_REFRESH = refresh;
     if (typeof window.updates !== 'undefined' && Array.isArray(window.updates) && !window.updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.2 — Live Content Cycle') === 0; })) {

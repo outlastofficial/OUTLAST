@@ -141,7 +141,7 @@
     } catch (_) {}
     refresh();
     window.OUTLAST_LIVE_CONTENT_REFRESH = refresh;
-    if (typeof updates !== 'undefined' && Array.isArray(updates) && !updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.2 — Live Content Cycle') === 0; })) {
+    if (typeof updates !== 'undefined' && Array.isArray(updates) && !updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.3 — Full-Month Events') === 0; })) {
       updates.unshift(['v4.9.2 — Live Content Cycle', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Friday-to-Monday weekend story events with continuing chapters, and a major finale during the final three days of each month. Existing saves and leaderboards are unchanged.']);
     }
     if (typeof helpArticles !== 'undefined' && Array.isArray(helpArticles) && !helpArticles.some(function (item) { return item && item[0] === 'How does the OUTLAST Live Content schedule work?'; })) {

@@ -55,8 +55,8 @@ async function testViewport(name, viewport, isMobile) {
     });
     assert.ok(response && response.ok(), name + ': tester game page should load');
     await page.waitForSelector('#outlastLiveContentButton', { state: 'visible', timeout: 60000 });
-    await completeTestPlayerSetup(page);
     await closeReleaseNotices(page);
+    await completeTestPlayerSetup(page);
     await page.locator('#outlastLiveContentButton').click();
     await page.waitForFunction(() => {
       const overlay = document.querySelector('#outlastLiveContentOverlay');

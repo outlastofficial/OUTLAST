@@ -9,5 +9,7 @@ assert.match(source, /5 \* 60 \* 1000/);
 assert.match(source, /v4\.9\.2 — Live Content Cycle/);
 assert.match(source, /How does the OUTLAST Live Content schedule work\?/);
 assert.match(source, /cache: 'no-store'/);
-assert.match(source, /OUTLAST LIVE OPERATIONS/);\nassert.match(source, /syncReleaseBadge/);\nassert.match(source, /MutationObserver/);
+assert.match(source, /OUTLAST LIVE OPERATIONS/);
+assert.match(source, /syncReleaseBadge/);
+assert.match(source, /MutationObserver/);
 console.log('Live content UI integration checks passed.');

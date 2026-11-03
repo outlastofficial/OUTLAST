@@ -35,10 +35,10 @@
     var build = String(meta && meta.getAttribute('content') || '').replace(/^v/i, '').trim();
     if (!build) return;
     if (window.OUTLAST_MANDATORY_UPDATE_CHECK && typeof window.OUTLAST_MANDATORY_UPDATE_CHECK === 'object') {
-      window.OUTLAST_MANDATORY_UPDATE_CHECK.version = build;
+      if (window.OUTLAST_MANDATORY_UPDATE_CHECK.version !== build) window.OUTLAST_MANDATORY_UPDATE_CHECK.version = build;
     }
     var badge = document.querySelector('#outlastMandatoryUpdateCheck .ver');
-    if (badge) badge.textContent = 'v' + build + ' • CURRENT BUILD';
+    var label = 'v' + build + ' • CURRENT BUILD';\n    if (badge && badge.textContent !== label) badge.textContent = label;
   }
   function buildShell() {
     if (overlay) return overlay;

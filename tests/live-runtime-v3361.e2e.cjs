@@ -28,6 +28,14 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
   },expectedBuild);
 
   const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
+  const localRuntime=/^http:\/\/(127\.0\.0\.1|localhost)(:|\/)/i.test(baseUrl);
+  const liveContentFixture={
+    ok:true,serverTime:new Date().toISOString(),
+    smallAddition:{title:'Local smoke fixture',cycle:1,description:'Local-only schedule fixture.',category:'Test',startsAt:Date.now(),endsAt:Date.now()+86400000},
+    weekendEvent:{title:'Local weekend fixture',active:false,subtitle:'Test chapter',objective:'Verify the local content panel.',reward:'No reward',startsAt:Date.now(),endsAt:Date.now()+86400000},
+    monthlyEvent:{title:'Local monthly fixture',active:false,objective:'Verify the monthly content panel.',theme:'Local test',startsAt:Date.now(),endsAt:Date.now()+86400000,monthlyRecap:[]}
+  };
+  if(localRuntime)await page.route('https://outlast-server.onrender.com/api/live-content',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(liveContentFixture)}));
   let url='',servedTitle='',servedBuild=null;
   // Auto-deploy services and GitHub Pages can briefly serve the prior build while a push is deploying.
   // Always reload with a fresh query until the active release and runtime marker agree.
@@ -329,6 +337,7 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
   // Mobile smoke test: verify menu/chat layout, map selection, gameplay controls, and touch ultimate.
   const mobilePage=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await mobilePage.setExtraHTTPHeaders({'Cache-Control':'no-cache, no-store, max-age=0','Pragma':'no-cache'});
+  if(localRuntime)await mobilePage.route('https://outlast-server.onrender.com/api/live-content',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(liveContentFixture)}));
   const mobileErrors=[],mobile404=[];
   mobilePage.on('console',m=>{if(m.type()==='error')mobileErrors.push(m.text())});
   mobilePage.on('pageerror',e=>mobileErrors.push('PAGEERROR: '+e.message+' STACK: '+(e.stack||'')));

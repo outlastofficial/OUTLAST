@@ -142,7 +142,7 @@
     refresh();
     window.OUTLAST_LIVE_CONTENT_REFRESH = refresh;
     if (typeof updates !== 'undefined' && Array.isArray(updates) && !updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.4 — Saturday-to-Saturday Updates') === 0; })) {
-      updates.unshift(['v4.9.4 — Saturday-to-Saturday Updates', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Saturday-to-Saturday weekly story updates, and a major monthly story event running all month. Existing saves and leaderboards are unchanged. Existing saves and leaderboards are unchanged.']);
+      updates.unshift(['v4.9.4 — Saturday-to-Saturday Updates', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Saturday-to-Saturday weekly story updates, and a major monthly story event running all month. Existing saves and leaderboards are unchanged.']);
     }
     if (typeof helpArticles !== 'undefined' && Array.isArray(helpArticles) && !helpArticles.some(function (item) { return item && item[0] === 'How does the OUTLAST Live Content schedule work?'; })) {
       helpArticles.unshift(['How does the OUTLAST Live Content schedule work?', 'Events & Live Content', 'Open LIVE CONTENT from the game screen. A small addition rotates every 72 hours. Weekly updates run from Saturday to the following Saturday and continue the story in numbered parts. The major monthly event stays active from the first day through the last day of the month, with weekly updates and three-day additions layered on top. The server controls all unlock times; dates are displayed in your local timezone.']);

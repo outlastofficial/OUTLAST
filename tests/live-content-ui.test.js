@@ -13,3 +13,7 @@ assert.match(source, /OUTLAST LIVE OPERATIONS/);
 assert.match(source, /syncReleaseBadge/);
 assert.match(source, /MutationObserver/);
 console.log('Live content UI integration checks passed.');
+
+assert.match(source, /Saturday-to-Saturday weekly updates/);
+assert.match(source, /data\.weeklyEvent/);
+assert.doesNotMatch(source, /data\.weekendEvent/);

@@ -2,7 +2,14 @@ const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require(
 const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),system=fs.readFileSync(path.join(root,'outlast-v3370-game-systems.js'),'utf8'),library=fs.readFileSync(path.join(root,'outlast-v33015-upgrade-library.js'),'utf8'),expansion=fs.readFileSync(path.join(root,'outlast-v3378-expansion.js'),'utf8');
 const currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
 assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'current metadata');
-assert(html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Shield Stacking & Mobile Control Fix'"),'mandatory update follows current build');
+const popupStart=html.indexOf('<script id="outlast-mandatory-update-check">');
+const popupEnd=html.indexOf('</script>',popupStart);
+const popup=popupStart>=0&&popupEnd>popupStart?html.slice(popupStart,popupEnd):'';
+assert(popupStart>=0&&popupEnd>popupStart,'mandatory update check exists');
+assert(popup.includes("var BUILD=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();'),'mandatory update reads current build metadata');
+assert(popup.includes("indexOf('v'+BUILD)===0"),'mandatory update selects release notes matching the current build');
+assert(popup.includes("window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,automaticNavigation:false,mode:'update-log',show:showLog};"),'mandatory update acknowledgement is scoped to the current build');
+assert(html.includes('v'+currentBuild+' — Live Content Cycle'),'current release appears in the Update Log');
 assert(expansion.includes('v3.37.16 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes')&&expansion.includes("window.OUTLAST_VERSION='v'+VERSION"),'current release marker and log');
 assert(!html.includes('id="coreBtn"')&&!system.includes("['progressCore37','🧩 12 Core Systems','core']"),'remove the one-button core hub');
 assert(system.includes("weaponBtn:'combat'")&&system.includes("codexBtn:'enemies'")&&system.includes("worldBossBtn:'bosses'")&&system.includes("mapBtn:'world'")&&system.includes("shopBtn:'economy'")&&system.includes("missionBtn:'objectives'"),'route core content into existing feature areas');

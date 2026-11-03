@@ -1,0 +1,25 @@
+name: OUTLAST Live Content UI regression
+on:
+  push:
+    branches: [testing]
+    paths:
+      - 'live-content-schedule.js'
+      - 'tests/live-content-ui.test.js'
+      - 'index.html'
+      - '.github/workflows/live-content-ui.yml'
+  pull_request:
+    branches: [testing]
+    paths:
+      - 'live-content-schedule.js'
+      - 'tests/live-content-ui.test.js'
+      - 'index.html'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check live-content-schedule.js
+      - run: node --test tests/live-content-ui.test.js

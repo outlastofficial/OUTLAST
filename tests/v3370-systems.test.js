@@ -10,6 +10,7 @@ new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on mal
 
 assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.6\.12-shield-stack/,'current v3.37 systems module is loaded with a cache-busting version');
 assert(currentBuild&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'visible game version marker must match the current build');
+assert(html.includes("typeof CURRENT_UPDATE_VERSION!=='undefined'")&&html.includes("legacy=[4,5,26]"),'obsolete v4.5.26 popup is suppressed when the current release is newer');
 assert(html.includes("var BUILD=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();"),'mandatory update check reads the current build metadata');
 assert(html.includes("var ACK='outlast_update_log_seen'"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'active repair module is cache-busted');

@@ -1,7 +1,7 @@
-/* OUTLAST v3.37.16 — Progress Deck, Core UI, Upgrade Authority, Skin Reliability, Shop, Stats, Modifiers, Zombie AI */
+/* OUTLAST v3.37.17 — Additive Shield Upgrade Duration */
 (function(){
 'use strict';
-const VERSION='3.37.16';
+const VERSION='3.37.17';
 const SCALE=Object.freeze({Common:1,Uncommon:1.15,Rare:1.35,Epic:1.6,Legendary:1.9,Mythic:2.25,Divine:4,Celestial:5,Transcendent:6,Eternal:7,Omega:8});
 const TIER_ORDER=Object.keys(SCALE);
 const E=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
@@ -46,6 +46,7 @@ function upgradeBase37(name,desc,apply,rarity){
  const add=(k,v)=>{const q=p();if(q)q[k]=(Number(q[k])||0)+v;},ratio=(k,b)=>{const q=p();if(q){const current=Number(q[k])||1,delta=b*mult/100;q[k]=['coinMult','xpBonus','bossMult','ultDamage','healMult'].includes(k)?current+delta:current*(1+delta);}};
  const faster=b=>{const q=p();if(q)q.fireRate=Math.max(.045,(Number(q.fireRate)||.45)*(1-b*mult/100));},heal=h=>{const q=p();if(q){q.max=(Number(q.max)||0)+h;q.hp=Math.min(q.max,(Number(q.hp)||0)+h);}};
  const shield=s=>{if(typeof outlastGrantTempShield==='function')return outlastGrantTempShield(s);const q=p();if(q)q.shield=Math.max(Number(q.shield)||0,s);};
+ const extendShield=s=>{if(typeof outlastExtendTempShield==='function')return outlastExtendTempShield(s);const q=p();if(q){const eff=Math.max(1,Number(q.shieldEfficiency)||1);q.shield=Math.max(0,Number(q.shield)||0)+Math.max(0,Number(s)||0)*eff;return q.shield;}return 0;};
  const luck=()=>{const q=p();if(q)q.luck=(Number(q.upgradeLuck)||0)+(Number(q.lootLuck)||0)+(Number(q.treasureLuck)||0);};
  if(name==='Power Shot')return {desc:'+'+nv(3)+' damage',apply:()=>add('damage',3*mult)};
  if(name==='Rapid Fire'||name==='Quick Reload')return {desc:'+'+np(2.2)+'% faster attacks',apply:()=>faster(2.2)};
@@ -65,7 +66,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Chain Reaction'||name==='Shock Circuit')return {desc:'+'+np(3)+'% chain effect',apply:()=>{const q=p();if(q)q.chain=(Number(q.chain)||1)*(1+.03*mult);}};
  if(name==='Lucky Coins')return {desc:'+'+np(3)+'% coins',apply:()=>ratio('coinMult',3)};
  if(name==='Adrenaline')return {desc:'+'+np(2)+'% speed below 50% HP',apply:()=>{const q=p();if(q){q.adrenaline=true;q.adrenalineSpeedBonus=(Number(q.adrenalineSpeedBonus)||0)+.02*mult;}}};
- if(name==='Shield Core'||name==='Emergency Shield')return {desc:'Gain '+nv(.65)+'s shield',apply:()=>shield(.65*mult)};
+ if(name==='Shield Core'||name==='Emergency Shield'){const seconds=scaledInteger37(name==='Shield Core'?3:5,mult);return {desc:'Gain '+seconds+'s shield',apply:()=>extendShield(seconds)};}
  if(name==='Rapid Recovery')return {desc:'+'+np(5)+'% pickup healing',apply:()=>ratio('healMult',5)};
  if(name==='Berserker')return {desc:'+'+np(12)+'% damage below 50% HP',apply:()=>{const q=p();if(q){q.berserk=true;q.berserkDamageBonus=(Number(q.berserkDamageBonus)||0)+.12*mult;}}};
  if(name==='Bloodrush')return {desc:'+'+np(8)+'% damage below 50% HP',apply:()=>{const q=p();if(q){q.bloodrush=true;q.berserk=true;q.berserkDamageBonus=(Number(q.berserkDamageBonus)||0)+.08*mult;}}};
@@ -104,7 +105,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Piercing'||name==='Rift Pierce'){const amount=scaledDiscrete37('pierce',mult);return {desc:'+'+amount+(name==='Piercing'?' pierce':' projectile pierce'),apply:function(){const p=player();if(p)p.pierce=(Number(p.pierce)||0)+amount;}};}
  if(name==='Multi-Shot'||name==='Ammo Surge'){const amount=scaledDiscrete37('projectiles',mult);return {desc:'+'+amount+(name==='Multi-Shot'?' projectiles':' extra projectiles'),apply:function(){const p=player();if(p)p.multiShot=(Number(p.multiShot)||0)+amount;}};}
  if(name==='Second Wind'){const amount=scaledInteger37(2,mult);return {desc:'+'+amount+' HP/s',apply:function(){const p=player();if(p)p.regen=(Number(p.regen)||0)+amount;}};}
- if(name==='Shield Core'||name==='Emergency Shield')return {desc:'Gain '+nv(.65)+'s shield',apply:()=>shield(.65*mult)};
+ if(name==='Shield Core'||name==='Emergency Shield'){const seconds=scaledInteger37(name==='Shield Core'?3:5,mult);return {desc:'Gain '+seconds+'s shield',apply:()=>extendShield(seconds)};}
  if(name==='Berserker'){const bonus=.12*mult;return {desc:'+'+pct(12,mult)+'% damage below 50% HP',apply:function(){const p=player();if(p){p.berserk=true;p.berserkDamageBonus=(Number(p.berserkDamageBonus)||0)+bonus;}}};}
  if(name==='Bloodrush'){const bonus=.08*mult;return {desc:'+'+pct(8,mult)+'% damage below 50% HP',apply:function(){const p=player();if(p){p.bloodrush=true;p.berserk=true;p.berserkDamageBonus=(Number(p.berserkDamageBonus)||0)+bonus;}}};}
  if(name==='Lucky Hunter'){const chance=Math.min(.50,.06*mult);return {desc:pct(Math.min(50,6*mult),1)+'% chance for double XP',apply:function(){const p=player();if(p){p.lucky=true;p.luckyXpChance=chance;}}};}

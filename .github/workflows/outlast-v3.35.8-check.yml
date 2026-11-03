@@ -26,8 +26,12 @@ jobs:
         run: node tests/outlast-v434-map-visuals.test.js
       - name: Verify current build and version marker synchronization
         run: node tests/version-sync-v3362.test.js
+      - name: Run Global Chat source regression checks
+        run: node tests/global-chat-repair-v451.test.js
       - name: Run upgrade rarity integrity checks
         run: node tests/upgrade-rarity-integrity-v3373.test.js
+      - name: Verify rarity scaling, shield stacking, and three eligible choices
+        run: node tests/upgrade-rarity-monotonicity-v453.test.js
       - name: Run current v3.37 critical regressions
         run: node tests/v3370-systems.test.js
       - name: Verify boss identity and prevent same-frame respawns

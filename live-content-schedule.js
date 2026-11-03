@@ -63,7 +63,7 @@
     var top = el('div', 'olc-top');
     var heading = el('div');
     heading.appendChild(el('h2', '', '📡 OUTLAST LIVE OPERATIONS'));
-    heading.appendChild(el('p', 'olc-sub', 'Fresh content every 3 days • Weekend story events • Monthly finales'));
+    heading.appendChild(el('p', 'olc-sub', 'Fresh content every 3 days • Saturday-to-Saturday weekly updates • Monthly finales'));
     var close = el('button', 'olc-close', 'CLOSE');
     close.type = 'button';
     close.addEventListener('click', closePanel);
@@ -85,10 +85,10 @@
     smallCard.appendChild(el('div', 'olc-meta', (small.category || 'New content') + ' • Available: ' + dateText(small.startsAt) + ' → ' + dateText(small.endsAt)));
     panelBody.appendChild(smallCard);
 
-    var weekend = data.weekendEvent || {};
-    var weekendCard = section('Weekend Event: ' + (weekend.title || 'Next Operation'), weekend.active ? 'LIVE NOW' : 'UPCOMING', (weekend.subtitle ? weekend.subtitle + ' — ' : '') + (weekend.objective || 'A new weekend operation is on the way.'));
-    weekendCard.appendChild(el('div', 'olc-meta', 'Reward: ' + (weekend.reward || 'Event archive entry') + ' • ' + dateText(weekend.startsAt) + ' → ' + dateText(weekend.endsAt)));
-    panelBody.appendChild(weekendCard);
+    var weekly = data.weeklyEvent || {};
+    var weeklyCard = section('Weekly Update: ' + (weekly.title || 'Next Operation'), weekly.active ? 'LIVE NOW' : 'UPCOMING', (weekly.subtitle ? weekly.subtitle + ' — ' : '') + (weekly.objective || 'A new weekly operation is on the way.'));
+    weeklyCard.appendChild(el('div', 'olc-meta', 'Reward: ' + (weekly.reward || 'Event archive entry') + ' • Saturday → Saturday • ' + dateText(weekly.startsAt) + ' → ' + dateText(weekly.endsAt)));
+    panelBody.appendChild(weeklyCard);
 
     var monthly = data.monthlyEvent || {};
     var monthlyCard = section('Monthly Major Event: ' + (monthly.title || 'Monthly Finale'), monthly.active ? 'FINAL EVENT LIVE' : 'END-OF-MONTH', monthly.objective || 'The month’s discoveries will shape the final operation.');
@@ -101,7 +101,7 @@
       monthlyCard.appendChild(el('div', 'olc-meta', 'THIS MONTH’S FIELD REPORTS'));
       monthlyCard.appendChild(list);
     } else {
-      monthlyCard.appendChild(el('div', 'olc-meta', 'The finale will bring together this month’s small additions and weekend chapters.'));
+      monthlyCard.appendChild(el('div', 'olc-meta', 'The finale will bring together this month’s small additions and weekly update chapters.'));
     }
     panelBody.appendChild(monthlyCard);
     statusLine.className = 'olc-footer';
@@ -113,7 +113,7 @@
       var response = await fetch(API, { method: 'GET', cache: 'no-store', headers: { Accept: 'application/json' } });
       if (!response.ok) throw new Error('Live schedule unavailable (' + response.status + ')');
       var data = await response.json();
-      if (!data || !data.ok || !data.smallAddition || !data.weekendEvent || !data.monthlyEvent) throw new Error('Live schedule response was incomplete');
+      if (!data || !data.ok || !data.smallAddition || !data.weeklyEvent || !data.monthlyEvent) throw new Error('Live schedule response was incomplete');
       render(data);
       return data;
     } catch (error) {
@@ -141,8 +141,8 @@
     } catch (_) {}
     refresh();
     window.OUTLAST_LIVE_CONTENT_REFRESH = refresh;
-    if (typeof updates !== 'undefined' && Array.isArray(updates) && !updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.3 — Full-Month Events') === 0; })) {
-      updates.unshift(['v4.9.2 — Live Content Cycle', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Friday-to-Monday weekend story events with continuing chapters, and a major finale during the final three days of each month. Existing saves and leaderboards are unchanged.']);
+    if (typeof updates !== 'undefined' && Array.isArray(updates) && !updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.4 — Saturday-to-Saturday Updates') === 0; })) {
+      updates.unshift(['v4.9.4 — Saturday-to-Saturday Updates', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Saturday-to-Saturday weekly story updates, and a major monthly story event running all month. Existing saves and leaderboards are unchanged. Existing saves and leaderboards are unchanged.']);
     }
     if (typeof helpArticles !== 'undefined' && Array.isArray(helpArticles) && !helpArticles.some(function (item) { return item && item[0] === 'How does the OUTLAST Live Content schedule work?'; })) {
       helpArticles.unshift(['How does the OUTLAST Live Content schedule work?', 'Events & Live Content', 'Open LIVE CONTENT from the game screen. A small addition rotates every 72 hours. Weekend events run Friday through Monday and continue the story in numbered parts. The major monthly event runs during the final three days of the month and recaps that month’s additions and weekend chapters. The server controls all unlock times; dates are displayed in your local timezone.']);

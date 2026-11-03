@@ -5,6 +5,7 @@ on:
     paths:
       - 'live-content-schedule.js'
       - 'tests/live-content-ui.test.js'
+      - 'tests/live-content-ui.e2e.cjs'
       - 'index.html'
       - '.github/workflows/live-content-ui.yml'
   pull_request:
@@ -23,6 +24,9 @@ jobs:
           node-version: 22
       - run: node --check live-content-schedule.js
       - run: node --test tests/live-content-ui.test.js
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/live-content-ui.e2e.cjs
       - name: Smoke-test the deployed tester game build
         run: |
           node --input-type=module -e '

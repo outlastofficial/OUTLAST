@@ -43,8 +43,8 @@ async function testViewport(name, viewport, isMobile) {
 
   try {
     await page.addInitScript((deviceMode) => {
-      localStorage.setItem('outlast_update_log_seen_v2', '4.9.2');
-      localStorage.setItem('outlastSeenUpdateVersion', '4.9.2');
+      localStorage.setItem('outlast_update_log_seen_v2', '4.9.4');
+      localStorage.setItem('outlastSeenUpdateVersion', '4.9.4');
       localStorage.setItem('outlastNewPlayerTutorialV317', '1');
       localStorage.setItem('outlastDeviceMode', deviceMode);
       localStorage.setItem('outlastJoystickMode', deviceMode === 'mobile' ? 'on' : 'off');
@@ -75,8 +75,8 @@ async function testViewport(name, viewport, isMobile) {
 
     const panelText = await page.locator('#outlastLiveContentOverlay').innerText();
     assert.match(panelText, /Every 3 Days:/, name + ': small content rotation should be visible');
-    assert.match(panelText, /Weekend Event:/, name + ': weekend event should be visible');
-    assert.match(panelText, /Monthly Major Event:/, name + ': monthly finale should be visible');
+    assert.match(panelText, /Weekly Update:/, name + ': Saturday-to-Saturday weekly update should be visible');
+    assert.match(panelText, /Monthly Major Event:/, name + ': all-month monthly event should be visible');
     assert.match(panelText, /Project Blackout/, name + ': November event theme should be visible');
     assert.equal(liveContentErrors.length, 0, name + ': live content script should not throw browser errors');
 

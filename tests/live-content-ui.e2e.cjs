@@ -4,10 +4,24 @@ const { chromium } = require('playwright');
 
 const baseUrl = process.env.OUTLAST_RUNTIME_TEST_URL || 'https://outlast-test.onrender.com/index.html';
 
+async function completeTestPlayerSetup(page) {
+  const login = page.locator('#loginPopup');
+  if (await login.isVisible().catch(() => false)) {
+    await page.locator('#usernameInput').fill('AItester');
+    await page.locator('#loginBtn').click();
+    await login.waitFor({ state: 'hidden', timeout: 10000 });
+  }
+  const device = page.locator('#deviceModePopup');
+  if (await device.isVisible().catch(() => false)) {
+    await page.locator('#deviceModeContinueBtn').click();
+    await device.waitFor({ state: 'hidden', timeout: 10000 });
+  }
+}
+
 async function closeReleaseNotices(page) {
   await page.waitForTimeout(1000);
   await page.locator('#outlastV4000UpdatePopup').waitFor({ state: 'visible', timeout: 2500 }).catch(() => {});
-  for (const selector of ['#outlastUpdateLogClose', '#updatePopupClose', '#outlastV4000GotIt']) {
+  for (const selector of ['#outlastMandatoryUpdateCheck button', '#outlastUpdateLogClose', '#updatePopupClose', '#outlastV4000GotIt']) {
     const button = page.locator(selector).first();
     if (await button.count() && await button.isVisible().catch(() => false)) {
       await button.click({ timeout: 5000, force: selector === '#outlastV4000GotIt' }).catch(() => {});
@@ -28,17 +42,20 @@ async function testViewport(name, viewport, isMobile) {
   });
 
   try {
-    await page.addInitScript(() => {
+    await page.addInitScript((deviceMode) => {
       localStorage.setItem('outlast_update_log_seen_v2', '4.9.2');
       localStorage.setItem('outlastSeenUpdateVersion', '4.9.2');
       localStorage.setItem('outlastNewPlayerTutorialV317', '1');
-    });
+      localStorage.setItem('outlastDeviceMode', deviceMode);
+      localStorage.setItem('outlastJoystickMode', deviceMode === 'mobile' ? 'on' : 'off');
+    }, isMobile ? 'mobile' : 'pc');
     const response = await page.goto(baseUrl + '?live-content-e2e=' + Date.now(), {
       waitUntil: 'domcontentloaded',
       timeout: 90000
     });
     assert.ok(response && response.ok(), name + ': tester game page should load');
     await page.waitForSelector('#outlastLiveContentButton', { state: 'visible', timeout: 60000 });
+    await completeTestPlayerSetup(page);
     await closeReleaseNotices(page);
     await page.locator('#outlastLiveContentButton').click();
     await page.waitForFunction(() => {

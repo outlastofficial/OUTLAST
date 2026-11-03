@@ -6,7 +6,7 @@ const baseUrl = process.env.OUTLAST_RUNTIME_TEST_URL || 'https://outlast-test.on
 
 async function closeReleaseNotices(page) {
   await page.waitForTimeout(1200);
-  for (const selector of ['#outlastUpdateLogClose', '#updatePopupClose']) {
+  for (const selector of ['#outlastUpdateLogClose', '#updatePopupClose', '#outlastV4000GotIt']) {
     const button = page.locator(selector).first();
     if (await button.count() && await button.isVisible().catch(() => false)) {
       await button.click({ timeout: 5000 }).catch(() => {});
@@ -26,6 +26,11 @@ async function testViewport(name, viewport, isMobile) {
   });
 
   try {
+    await page.addInitScript(() => {
+      localStorage.setItem('outlast_update_log_seen_v2', '4.9.2');
+      localStorage.setItem('outlastSeenUpdateVersion', '4.9.2');
+      localStorage.setItem('outlastNewPlayerTutorialV317', '1');
+    });
     const response = await page.goto(baseUrl + '?live-content-e2e=' + Date.now(), {
       waitUntil: 'domcontentloaded',
       timeout: 90000

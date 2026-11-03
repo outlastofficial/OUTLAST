@@ -10,7 +10,12 @@ new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on mal
 
 assert.match(html,/outlast-v3370-game-systems\.js\?v=[^"]+/,'current v3.37 systems module is loaded with a cache-busting version');
 assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'visible game version marker must match the current build');
-assert(html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Shield Stacking & Mobile Control Fix'"),'mandatory update check must target the current build');
+const popupStart=html.indexOf('<script id="outlast-mandatory-update-check">');
+const popupEnd=html.indexOf('</script>',popupStart);
+const popup=popupStart>=0&&popupEnd>popupStart?html.slice(popupStart,popupEnd):'';
+assert(popup.includes("var BUILD='', LABEL=''")&&popup.includes("var latest=String(meta&&meta.getAttribute('content')||window.OUTLAST_BUILD||BUILD||'').replace(/^v/i,'').trim();"),'mandatory update check reads the current build marker');
+assert(popup.includes("var info=window.OUTLAST_CURRENT_UPDATE_INFO||null;")&&popup.includes("window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,automaticNavigation:false,mode:'update-log',show:showLog};"),'mandatory update uses current release notes and version-scoped acknowledgement');
+assert(html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Live Content Cycle'"),'mandatory update content matches the current build');
 assert(html.includes("outlast_update_log_seen"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'active repair module is cache-busted');
 assert(expansion.includes("const VERSION = '4.2.4'"),'module internal version remains explicit');

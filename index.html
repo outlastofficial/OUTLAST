@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.9.2">
-<meta name="build-version" content="4.9.2">
-<title>OUTLAST v4.9.2</title>
+<meta name="outlast-build" content="4.9.3">
+<meta name="build-version" content="4.9.3">
+<title>OUTLAST v4.9.3</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -4055,8 +4055,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.9.2';
-const CURRENT_UPDATE_INFO={title:'v4.9.2 — Live Content Cycle',summary:'OUTLAST now has a permanent server-timed content schedule: a small new addition every 72 hours, a continuing weekend story event, and a major monthly finale built from that month’s discoveries.',items:['A small content addition rotates every 3 days using server time.','Weekend story events run Friday through Monday and continue in numbered parts.','The monthly major event runs during the final 3 days of the month and recaps that month’s additions and weekend chapters.','The Live Content board refreshes from the server and displays dates in your local timezone.','Existing accounts, saved progress, coins, and leaderboards are left untouched.']};window.OUTLAST_CURRENT_UPDATE_INFO=CURRENT_UPDATE_INFO;
+const CURRENT_UPDATE_VERSION='4.9.3';
+const CURRENT_UPDATE_INFO={title:'v4.9.3 — Full-Month Events',summary:'OUTLAST now runs a major monthly story event for the entire month, with weekend chapters and three-day additions layered on top.',items:['A small content addition rotates every 3 days using server time.','Weekend story events run Friday through Monday and continue in numbered parts.','The monthly major event stays active from the first day through the last day of each month; weekend chapters and three-day additions run alongside it.','The Live Content board refreshes from the server and displays dates in your local timezone.','Existing accounts, saved progress, coins, and leaderboards are left untouched.']};window.OUTLAST_CURRENT_UPDATE_INFO=CURRENT_UPDATE_INFO;
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6778,7 +6778,7 @@ else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script src="outlast-v461-upgrade-balance-overhaul.js?v=4.6.2"></script>
-<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.9.2',L='v4.9.2 • LIVE CONTENT CYCLE';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
+<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.9.3',L='v4.9.3 • FULL-MONTH EVENTS';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
 <script id="outlast-v463-event-countdown-removal">
 (function(){
   'use strict';
@@ -6942,4 +6942,4 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var shieldHow
 <script src="./outlast-settings-expansion.js?v=4.8.0.1"></script>
 <script src="./outlast-zombie-navigation.js?v=4.9.0"></script>
 
-<script src="./live-content-schedule.js?v=4.9.2"></script>
+<script src="./live-content-schedule.js?v=4.9.3"></script>

@@ -38,7 +38,8 @@
       if (window.OUTLAST_MANDATORY_UPDATE_CHECK.version !== build) window.OUTLAST_MANDATORY_UPDATE_CHECK.version = build;
     }
     var badge = document.querySelector('#outlastMandatoryUpdateCheck .ver');
-    var label = 'v' + build + ' • CURRENT BUILD';\n    if (badge && badge.textContent !== label) badge.textContent = label;
+    var label = 'v' + build + ' • CURRENT BUILD';
+    if (badge && badge.textContent !== label) badge.textContent = label;
   }
   function buildShell() {
     if (overlay) return overlay;

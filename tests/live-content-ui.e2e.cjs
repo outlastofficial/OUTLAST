@@ -44,6 +44,9 @@ async function testViewport(name, viewport, isMobile) {
         document.querySelectorAll('#outlastLiveContentOverlay .olc-card').length === 3;
     }, { timeout: 60000 });
 
+    const hasHowToArticle = await page.evaluate(() => typeof helpArticles !== 'undefined' && helpArticles.some(item => item && item[0] === 'How does the OUTLAST Live Content schedule work?'));
+    assert.equal(hasHowToArticle, true, name + ': How To should include the live content schedule instructions');
+
     const panelText = await page.locator('#outlastLiveContentOverlay').innerText();
     assert.match(panelText, /Every 3 Days:/, name + ': small content rotation should be visible');
     assert.match(panelText, /Weekend Event:/, name + ': weekend event should be visible');

@@ -141,11 +141,11 @@
     } catch (_) {}
     refresh();
     window.OUTLAST_LIVE_CONTENT_REFRESH = refresh;
-    if (typeof window.updates !== 'undefined' && Array.isArray(window.updates) && !window.updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.2 — Live Content Cycle') === 0; })) {
-      window.updates.unshift(['v4.9.2 — Live Content Cycle', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Friday-to-Monday weekend story events with continuing chapters, and a major finale during the final three days of each month. Existing saves and leaderboards are unchanged.']);
+    if (typeof updates !== 'undefined' && Array.isArray(updates) && !updates.some(function (item) { return item && String(item[0]).indexOf('v4.9.2 — Live Content Cycle') === 0; })) {
+      updates.unshift(['v4.9.2 — Live Content Cycle', 'Added the server-timed Live Operations board: small content rotations every 72 hours, Friday-to-Monday weekend story events with continuing chapters, and a major finale during the final three days of each month. Existing saves and leaderboards are unchanged.']);
     }
-    if (typeof window.helpArticles !== 'undefined' && Array.isArray(window.helpArticles) && !window.helpArticles.some(function (item) { return item && item[0] === 'How does the OUTLAST Live Content schedule work?'; })) {
-      window.helpArticles.unshift(['How does the OUTLAST Live Content schedule work?', 'Events & Live Content', 'Open LIVE CONTENT from the game screen. A small addition rotates every 72 hours. Weekend events run Friday through Monday and continue the story in numbered parts. The major monthly event runs during the final three days of the month and recaps that month’s additions and weekend chapters. The server controls all unlock times; dates are displayed in your local timezone.']);
+    if (typeof helpArticles !== 'undefined' && Array.isArray(helpArticles) && !helpArticles.some(function (item) { return item && item[0] === 'How does the OUTLAST Live Content schedule work?'; })) {
+      helpArticles.unshift(['How does the OUTLAST Live Content schedule work?', 'Events & Live Content', 'Open LIVE CONTENT from the game screen. A small addition rotates every 72 hours. Weekend events run Friday through Monday and continue the story in numbered parts. The major monthly event runs during the final three days of the month and recaps that month’s additions and weekend chapters. The server controls all unlock times; dates are displayed in your local timezone.']);
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once: true });

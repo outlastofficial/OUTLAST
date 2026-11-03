@@ -6,7 +6,7 @@ const popupStart=html.indexOf('<script id="outlast-mandatory-update-check">');
 const popupEnd=html.indexOf('</script>',popupStart);
 const popup=popupStart>=0&&popupEnd>popupStart?html.slice(popupStart,popupEnd):'';
 assert(popupStart>=0&&popupEnd>popupStart,'mandatory update check exists');
-assert(popup.includes("var BUILD=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();'),'mandatory update reads current build metadata');
+assert(popup.includes("var BUILD=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();"),'mandatory update reads current build metadata');
 assert(popup.includes("indexOf('v'+BUILD)===0"),'mandatory update selects release notes matching the current build');
 assert(popup.includes("window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,automaticNavigation:false,mode:'update-log',show:showLog};"),'mandatory update acknowledgement is scoped to the current build');
 assert(html.includes('v'+currentBuild+' — Live Content Cycle'),'current release appears in the Update Log');

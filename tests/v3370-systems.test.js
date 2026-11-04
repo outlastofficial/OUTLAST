@@ -8,9 +8,9 @@ new vm.Script(expansion,{filename:'outlast-v410-map-upgrade-expansion.js'});
 new vm.Script(mod,{filename:'outlast-v3370-game-systems.js'}); // Fail CI on malformed external runtime modules.
 
 assert.match(html,/outlast-v3370-game-systems\.js\?v=4\.5\.29/,'current v3.37 systems module is loaded with a cache-busting version');
-assert(html.includes('<title>OUTLAST v4.5.29</title>'),'visible game version marker must match the current build');
-assert(html.includes("const BUILD='4.5.29'"),'mandatory update check must target v4.2.4');
-assert(html.includes("outlast_update_ack_v4529"),'mandatory update acknowledgement must be versioned');
+assert(html.includes('<title>OUTLAST v4.6.12</title>'),'visible game version marker must match the current build');
+assert(html.includes("var BUILD=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();"),'mandatory update check reads the current build metadata');
+assert(html.includes("var ACK='outlast_update_log_seen',POP='outlastMandatoryUpdateCheck';"),'mandatory update acknowledgement uses the current build key');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'active repair module is cache-busted');
 assert(expansion.includes("const VERSION = '4.2.4'"),'module version matches the page');
 assert(/const map=\{map:\(\)=>selectMap\(v\),[^\n]*skill:/.test(html),'global router dispatches skill selections');

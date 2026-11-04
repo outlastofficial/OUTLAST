@@ -4,7 +4,7 @@ new vm.Script(design,{filename:'outlast-v435-upgrade-gear-redesign.js'});
 assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'redesign is tied to the current visible build');
 const updateVersion=(html.match(/const CURRENT_UPDATE_VERSION='([^']+)'/)||[])[1];
 const updateTitle=(html.match(/const CURRENT_UPDATE_INFO=\{title:'([^']+)'/)||[])[1];
-assert(updateVersion===currentBuild&&updateTitle&&updateTitle.indexOf('v'+currentBuild+' — ')===0),'mandatory update check follows the visible version and current release title');
+assert(updateVersion===currentBuild&&updateTitle&&updateTitle.indexOf('v'+currentBuild+' — ')===0,'mandatory update check follows the visible version and current release title');
 assert(html.includes('<script src="outlast-v435-upgrade-gear-redesign.js?v=4.4.5-r1-test-test"></script>'),'current redesign is cache-busted and loaded');
 assert(html.indexOf('outlast-v435-upgrade-gear-redesign.js')>html.indexOf('outlast-v434-distinct-map-renderer.js'),'card redraw runs after the legacy renderer');
 assert(design.includes('function drawCard')&&design.includes('function rollingFX'),'redesigned card painter and tier animations are present');

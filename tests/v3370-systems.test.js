@@ -18,7 +18,7 @@ assert(html.includes("typeof CURRENT_UPDATE_VERSION!=='undefined'"),'legacy rele
 assert(popup.includes("var info=window.OUTLAST_CURRENT_UPDATE_INFO||null;")&&popup.includes("window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,automaticNavigation:false,mode:'update-log',show:showLog};"),'mandatory update uses current release notes and version-scoped acknowledgement');
 const updateVersion=(html.match(/const CURRENT_UPDATE_VERSION='([^']+)'/)||[])[1];
 const updateTitle=(html.match(/const CURRENT_UPDATE_INFO=\{title:'([^']+)'/)||[])[1];
-assert(updateVersion===currentBuild&&updateTitle&&updateTitle.indexOf('v'+currentBuild+' — ')===0),'mandatory update content matches the current build');
+assert(updateVersion===currentBuild&&updateTitle&&updateTitle.indexOf('v'+currentBuild+' — ')===0,'mandatory update content matches the current build');
 assert(html.includes("outlast_update_log_seen"),'mandatory update acknowledgement must be versioned');
 assert(html.includes('outlast-v410-map-upgrade-expansion.js?v=4.4.0'),'active repair module is cache-busted');
 assert(expansion.includes("const VERSION = '4.2.4'"),'module internal version remains explicit');

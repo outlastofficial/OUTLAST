@@ -1,0 +1,32 @@
+name: OUTLAST production live content UI
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'live-content-schedule.js'
+      - 'tests/live-content-ui.test.js'
+      - 'tests/live-content-ui.e2e.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-content-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --no-save playwright@1.52.0
+          npx playwright install --with-deps chromium
+      - name: Verify live content UI wiring
+        run: node tests/live-content-ui.test.js
+      - name: Verify production live content panel on PC and mobile
+        env:
+          OUTLAST_RUNTIME_TEST_URL: https://outlastofficial.github.io/OUTLAST/index.html
+        run: node tests/live-content-ui.e2e.cjs

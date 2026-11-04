@@ -6,7 +6,7 @@ const source = fs.readFileSync(path.join(__dirname, '..', 'live-content-schedule
 assert.match(source, /outlast-test-server\.onrender\.com\/api\/live-content/);
 assert.match(source, /outlast-server\.onrender\.com\/api\/live-content/);
 assert.match(source, /5 \* 60 \* 1000/);
-assert.match(source, /v4\.9\.4 — Saturday-to-Saturday Updates/);
+assert.match(source, /v4\.9\.5 — Live Event Countdowns/);
 assert.match(source, /How does the OUTLAST Live Content schedule work\?/);
 assert.match(source, /cache: 'no-store'/);
 assert.match(source, /OUTLAST LIVE OPERATIONS/);

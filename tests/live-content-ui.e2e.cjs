@@ -83,6 +83,10 @@ async function testViewport(name, viewport, isMobile) {
     assert.match(panelText, /Weekly Update:/, name + ': Saturday-to-Saturday weekly update should be visible');
     assert.match(panelText, /Monthly Major Event:/, name + ': all-month monthly event should be visible');
     assert.match(panelText, /Project Blackout/, name + ': November event theme should be visible');
+    assert.match(panelText, /Next content drop in:/, name + ': three-day countdown should be visible');
+    assert.match(panelText, /Weekly update starts in:|Next weekly chapter in:/, name + ': weekly countdown should be visible');
+    assert.match(panelText, /Monthly event ends in:|Monthly event starts in:/, name + ': monthly countdown should be visible');
+    assert.equal(await page.locator('#outlastLiveContentOverlay .olc-countdown').count(), 3, name + ': all three live countdowns should render');
     assert.equal(liveContentErrors.length, 0, name + ': live content script should not throw browser errors');
 
     const shell = await page.locator('#outlastLiveContentOverlay .olc-shell').boundingBox();

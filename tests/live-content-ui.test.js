@@ -26,3 +26,6 @@ assert.match(source, /Monthly event ends in|Monthly event starts in/);
 assert.match(source, /window\.setInterval\(updateCountdowns, 1000\)/);
 
 assert.match(source, /midnight Eastern/);
+
+assert.match(source, /OUTLAST_CURRENT_RELEASE/);
+assert.match(source, /version: '4\.6\.12'/);

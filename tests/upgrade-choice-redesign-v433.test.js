@@ -2,7 +2,9 @@ const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require(
 const root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8'),design=fs.readFileSync(path.join(root,'outlast-v435-upgrade-gear-redesign.js'),'utf8'),currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
 new vm.Script(design,{filename:'outlast-v435-upgrade-gear-redesign.js'});
 assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'redesign is tied to the current visible build');
-assert(html.includes("const CURRENT_UPDATE_VERSION='"+currentBuild+"'")&&html.includes("title:'v"+currentBuild+" — Live Content Cycle'"),'mandatory update check follows the visible version');
+const updateVersion=(html.match(/const CURRENT_UPDATE_VERSION='([^']+)'/)||[])[1];
+const updateTitle=(html.match(/const CURRENT_UPDATE_INFO=\{title:'([^']+)'/)||[])[1];
+assert(updateVersion===currentBuild&&updateTitle&&updateTitle.indexOf('v'+currentBuild+' — ')===0),'mandatory update check follows the visible version and current release title');
 assert(html.includes('<script src="outlast-v435-upgrade-gear-redesign.js?v=4.4.5-r1-test-test"></script>'),'current redesign is cache-busted and loaded');
 assert(html.indexOf('outlast-v435-upgrade-gear-redesign.js')>html.indexOf('outlast-v434-distinct-map-renderer.js'),'card redraw runs after the legacy renderer');
 assert(design.includes('function drawCard')&&design.includes('function rollingFX'),'redesigned card painter and tier animations are present');
@@ -15,4 +17,4 @@ assert(design.includes('outlastGearRoom435')&&design.includes('GEAR ROOM')&&desi
 assert(design.includes('function overlayCollisionFix')&&design.includes('outlastQualityBadge')&&design.includes('OCTOBER EVENT')&&design.includes('THREAT'),'stale badge and floating overlays are handled during level-up');
 assert(design.includes("if(!up)document.querySelectorAll('.outlastV435HideOnUpgrade')")&&design.includes("!tl.some(line=>line.endsWith('…'))"),'overlay badges return after selection and title fitting tries smaller text before truncating');
 assert(design.includes('How do Gear Room presets work?'),'Gear Room instructions are added to How-To');
-console.log('OUTLAST v4.3.6 upgrade-choice and Gear Room checks passed');
+console.log('OUTLAST '+currentBuild+' upgrade-choice and Gear Room checks passed');

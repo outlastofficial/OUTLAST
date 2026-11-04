@@ -60,6 +60,9 @@ async function testViewport(name, viewport, isMobile) {
     });
     assert.ok(response && response.ok(), name + ': production game page should load');
     await page.waitForSelector('#outlastLiveContentButton', { state: 'visible', timeout: 60000 });
+    await page.waitForSelector('#outlastMandatoryUpdateCheck', { state: 'visible', timeout: 15000 });
+    const releaseTitle = await page.locator('#outlastMandatoryUpdateCheck h2').innerText();
+    assert.equal(releaseTitle, 'v4.6.12 — Saturday-to-Saturday Live Operations', name + ': update acknowledgement should show the current release');
     await closeReleaseNotices(page);
     await page.waitForTimeout(900);
     assert.equal(await page.locator('#outlastV454ReleasePopup').isVisible().catch(() => false), false, name + ': obsolete v4.5.15 release popup must stay hidden on the current build');

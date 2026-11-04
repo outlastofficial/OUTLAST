@@ -11,7 +11,7 @@ assert(popup.includes("var info=window.OUTLAST_CURRENT_UPDATE_INFO||null;"),'man
 assert(popup.includes("window.OUTLAST_MANDATORY_UPDATE_CHECK={version:BUILD,automaticNavigation:false,mode:'update-log',show:showLog};"),'mandatory update acknowledgement is scoped to the current build');
 const updateVersion=(html.match(/const CURRENT_UPDATE_VERSION='([^']+)'/)||[])[1];
 const updateTitle=(html.match(/const CURRENT_UPDATE_INFO=\{title:'([^']+)'/)||[])[1];
-assert(updateVersion===currentBuild&&updateTitle&&updateTitle.indexOf('v'+currentBuild+' — ')===0),'current update title and version match the build marker');
+assert(updateVersion===currentBuild&&updateTitle&&updateTitle.indexOf('v'+currentBuild+' — ')===0,'current update title and version match the build marker');
 assert(expansion.includes('v3.37.16 — Thorns, 133 Extra Upgrades, Expanded Maps + Combat Fixes')&&expansion.includes("window.OUTLAST_VERSION='v'+VERSION"),'current release marker and log');
 assert(!html.includes('id="coreBtn"')&&!system.includes("['progressCore37','🧩 12 Core Systems','core']"),'remove the one-button core hub');
 assert(system.includes("weaponBtn:'combat'")&&system.includes("codexBtn:'enemies'")&&system.includes("worldBossBtn:'bosses'")&&system.includes("mapBtn:'world'")&&system.includes("shopBtn:'economy'")&&system.includes("missionBtn:'objectives'"),'route core content into existing feature areas');

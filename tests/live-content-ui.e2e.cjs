@@ -2,6 +2,11 @@
 const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 
+const fs = require('node:fs');
+const path = require('node:path');
+const source = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const expectedBuild = (source.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
+if (!expectedBuild) throw new Error('Checked-out OUTLAST build marker is missing');
 const baseUrl = process.env.OUTLAST_RUNTIME_TEST_URL || 'https://outlast-test.onrender.com/index.html';
 
 async function completeTestPlayerSetup(page) {
@@ -42,13 +47,13 @@ async function testViewport(name, viewport, isMobile) {
   });
 
   try {
-    await page.addInitScript((deviceMode) => {
-      localStorage.setItem('outlast_update_log_seen_v2', '4.9.4');
-      localStorage.setItem('outlastSeenUpdateVersion', '4.9.4');
+    await page.addInitScript(({ deviceMode, build }) => {
+      localStorage.setItem('outlast_update_log_seen_v2', build);
+      localStorage.setItem('outlastSeenUpdateVersion', build);
       localStorage.setItem('outlastNewPlayerTutorialV317', '1');
       localStorage.setItem('outlastDeviceMode', deviceMode);
       localStorage.setItem('outlastJoystickMode', deviceMode === 'mobile' ? 'on' : 'off');
-    }, isMobile ? 'mobile' : 'pc');
+    }, { deviceMode: isMobile ? 'mobile' : 'pc', build: expectedBuild });
     const response = await page.goto(baseUrl + '?live-content-e2e=' + Date.now(), {
       waitUntil: 'domcontentloaded',
       timeout: 90000

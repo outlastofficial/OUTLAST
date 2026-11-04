@@ -34,8 +34,8 @@ jobs:
               const pageResponse = await fetch("https://outlastofficial.github.io/OUTLAST/index.html?pages-check=" + Date.now(), { cache: "no-store" });
               if (!pageResponse.ok) throw new Error("page HTTP " + pageResponse.status);
               const html = await pageResponse.text();
-              if (!html.includes("<meta name=\"outlast-build\" content=\"4.6.12\">") || !html.includes("live-content-schedule.js?v=4.6.12")) throw new Error("waiting for v4.6.12 page");
-              const scriptResponse = await fetch("https://outlastofficial.github.io/OUTLAST/live-content-schedule.js?v=4.6.12&pages-check=" + Date.now(), { cache: "no-store" });
+              if (!html.includes("<meta name=\"outlast-build\" content=\"4.6.12\">") || !html.includes("live-content-schedule.js?v=4.6.12-liveops")) throw new Error("waiting for v4.6.12 page");
+              const scriptResponse = await fetch("https://outlastofficial.github.io/OUTLAST/live-content-schedule.js?v=4.6.12-liveops&pages-check=" + Date.now(), { cache: "no-store" });
               if (!scriptResponse.ok) throw new Error("script HTTP " + scriptResponse.status);
               const script = await scriptResponse.text();
               if (!script.includes("OUTLAST_CURRENT_RELEASE") || !script.includes("Next content drop in")) throw new Error("waiting for live schedule script");

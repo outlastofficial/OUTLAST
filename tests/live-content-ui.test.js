@@ -17,3 +17,10 @@ console.log('Live content UI integration checks passed.');
 assert.match(source, /Saturday-to-Saturday weekly updates/);
 assert.match(source, /data\.weeklyEvent/);
 assert.doesNotMatch(source, /data\.weekendEvent/);
+
+assert.match(source, /function formatCountdown/);
+assert.match(source, /function updateCountdowns/);
+assert.match(source, /Next content drop in/);
+assert.match(source, /Weekly update starts in|Next weekly chapter in/);
+assert.match(source, /Monthly event ends in|Monthly event starts in/);
+assert.match(source, /window\.setInterval\(updateCountdowns, 1000\)/);

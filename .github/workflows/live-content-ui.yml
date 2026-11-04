@@ -33,6 +33,7 @@ jobs:
           const r = await fetch("https://outlast-test.onrender.com/?live-content-smoke=" + Date.now(), { cache: "no-store" });
           if (!r.ok) throw new Error("Tester site returned " + r.status);
           const h = await r.text();
-          if (!h.includes("outlast-build") || !h.includes("4.9.2") || !h.includes("live-content-schedule.js?v=4.9.2")) throw new Error("Tester site is missing the v4.9.2 Live Content release");
-          console.log("Tester game build smoke test passed.");
+          const build = (h.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
+          if (!build || !h.includes("live-content-schedule.js?v=" + build)) throw new Error("Tester build marker and Live Content schedule reference are not synchronized");
+          console.log("Tester game build smoke test passed: " + build);
           '

@@ -6563,6 +6563,8 @@ setInterval(syncBossBar,100);
   'use strict';
   var meta=document.querySelector('meta[name="outlast-build"]')||document.querySelector('meta[name="build-version"]');
   var BUILD=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();
+  var liveRelease=window.OUTLAST_CURRENT_RELEASE;
+  if(liveRelease&&liveRelease.version)BUILD=String(liveRelease.version).replace(/^v/i,'').trim();
   if(!BUILD)return;
   var ACK='outlast_update_log_seen',POP='outlastMandatoryUpdateCheck';
   function currentRelease(){

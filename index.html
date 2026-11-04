@@ -6566,6 +6566,8 @@ setInterval(syncBossBar,100);
   var ACK='outlast_update_log_seen',POP='outlastMandatoryUpdateCheck';
   function currentRelease(){
     try{
+      var live=window.OUTLAST_CURRENT_RELEASE;
+      if(live&&String(live.version||'')===BUILD)return {title:live.title,detail:live.detail};
       var list=typeof updates!=='undefined'&&Array.isArray(updates)?updates:(Array.isArray(window.updates)?window.updates:[]);
       var item=list.find(function(x){return x&&String(x[0]||'').indexOf('v'+BUILD)===0;})||list[0];
       return {title:item&&item[0]||('v'+BUILD+' — OUTLAST Update'),detail:item&&item[1]||'The game has been updated. Check the Update Log for the latest changes.'};

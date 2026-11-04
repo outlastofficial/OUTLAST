@@ -358,8 +358,11 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
   await mobilePage.waitForSelector('meta[name="outlast-build"]',{state:'attached',timeout:15000});
   await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await mobilePage.locator('#outlastMandatoryUpdateCheck').waitFor({state:'visible',timeout:10000});
-  const mobileUpdateNoticeInfo=await mobilePage.evaluate(()=>({title:document.querySelector('#outlastMandatoryUpdateCheck h2')?.textContent||'',version:document.querySelector('#outlastMandatoryUpdateCheck .ver')?.textContent||'',summary:document.querySelector('#outlastMandatoryUpdateCheck .card p')?.textContent||''}));
-  if(!mobileUpdateNoticeInfo.title.includes('Live Content Cycle')||!mobileUpdateNoticeInfo.version.includes(expectedBuild)||!mobileUpdateNoticeInfo.summary.includes('server-timed content schedule'))throw new Error('Update popup did not show the current release notes/version: '+JSON.stringify(mobileUpdateNoticeInfo));
+  const mobileUpdateNoticeInfo=await mobilePage.evaluate(()=>{
+    const info=window.OUTLAST_CURRENT_UPDATE_INFO||{};
+    return {title:document.querySelector('#outlastMandatoryUpdateCheck h2')?.textContent||'',version:document.querySelector('#outlastMandatoryUpdateCheck .ver')?.textContent||'',summary:document.querySelector('#outlastMandatoryUpdateCheck .card p')?.textContent||'',releaseTitle:String(info.title||''),releaseSummary:String(info.summary||'')};
+  });
+  if(!mobileUpdateNoticeInfo.version.includes(expectedBuild)||!mobileUpdateNoticeInfo.releaseTitle.startsWith('v'+expectedBuild+' — ')||mobileUpdateNoticeInfo.title!==mobileUpdateNoticeInfo.releaseTitle||!mobileUpdateNoticeInfo.releaseSummary||mobileUpdateNoticeInfo.summary!==mobileUpdateNoticeInfo.releaseSummary)throw new Error('Update popup did not display the active release metadata: '+JSON.stringify(mobileUpdateNoticeInfo));
   await mobilePage.locator('#outlastUpdateLogClose').click();
   await mobilePage.locator('#outlastMandatoryUpdateCheck').waitFor({state:'detached',timeout:5000});
   if (await mobilePage.locator('#outlastV4000GotIt').isVisible().catch(()=>false)) {

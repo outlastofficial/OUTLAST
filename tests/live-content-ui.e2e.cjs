@@ -60,6 +60,8 @@ async function testViewport(name, viewport, isMobile) {
     });
     assert.ok(response && response.ok(), name + ': production game page should load');
     await page.waitForSelector('#outlastLiveContentButton', { state: 'visible', timeout: 60000 });
+    const currentRelease = await page.evaluate(() => window.OUTLAST_CURRENT_RELEASE || null);
+    assert.equal(currentRelease && currentRelease.version, expectedBuild, name + ': page should expose its authoritative current release');
     await page.waitForSelector('#outlastMandatoryUpdateCheck', { state: 'visible', timeout: 15000 });
     const releaseTitle = await page.locator('#outlastMandatoryUpdateCheck h2').innerText();
     assert.equal(releaseTitle, 'v4.6.12 — Saturday-to-Saturday Live Operations', name + ': update acknowledgement should show the current release');

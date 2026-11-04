@@ -90,6 +90,10 @@ async function testViewport(name, viewport, isMobile) {
     assert.match(panelText, /Weekly update starts in:|Next weekly chapter in:/, name + ': weekly countdown should be visible');
     assert.match(panelText, /Monthly event ends in:|Monthly event starts in:/, name + ': monthly countdown should be visible');
     assert.equal(await page.locator('#outlastLiveContentOverlay .olc-countdown').count(), 3, name + ': all three live countdowns should render');
+    const countdownBefore = await page.locator('#outlastLiveContentOverlay .olc-countdown').allInnerTexts();
+    await page.waitForTimeout(1200);
+    const countdownAfter = await page.locator('#outlastLiveContentOverlay .olc-countdown').allInnerTexts();
+    assert.notDeepEqual(countdownAfter, countdownBefore, name + ': countdown values should tick without reopening the panel');
     assert.equal(liveContentErrors.length, 0, name + ': live content script should not throw browser errors');
 
     const shell = await page.locator('#outlastLiveContentOverlay .olc-shell').boundingBox();

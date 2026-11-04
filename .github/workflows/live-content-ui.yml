@@ -24,6 +24,31 @@ jobs:
           npm init -y >/dev/null 2>&1
           npm install --no-save playwright@1.52.0
           npx playwright install --with-deps chromium
+      - name: Wait for the production Pages release to be live
+        run: |
+          node --input-type=module -e '
+          const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+          let last = "page or script not updated yet";
+          for (let attempt = 1; attempt <= 36; attempt++) {
+            try {
+              const pageResponse = await fetch("https://outlastofficial.github.io/OUTLAST/index.html?pages-check=" + Date.now(), { cache: "no-store" });
+              if (!pageResponse.ok) throw new Error("page HTTP " + pageResponse.status);
+              const html = await pageResponse.text();
+              if (!html.includes("<meta name=\"outlast-build\" content=\"4.6.12\">") || !html.includes("live-content-schedule.js?v=4.6.12")) throw new Error("waiting for v4.6.12 page");
+              const scriptResponse = await fetch("https://outlastofficial.github.io/OUTLAST/live-content-schedule.js?v=4.6.12&pages-check=" + Date.now(), { cache: "no-store" });
+              if (!scriptResponse.ok) throw new Error("script HTTP " + scriptResponse.status);
+              const script = await scriptResponse.text();
+              if (!script.includes("OUTLAST_CURRENT_RELEASE") || !script.includes("Next content drop in")) throw new Error("waiting for live schedule script");
+              console.log("Production Pages v4.6.12 and live schedule script are live.");
+              process.exit(0);
+            } catch (error) {
+              last = error.message;
+              console.log("Waiting for Pages deployment (" + attempt + "/36): " + last);
+              await delay(10000);
+            }
+          }
+          throw new Error("Production Pages did not become ready: " + last);
+          '
       - name: Verify live content UI wiring
         run: node tests/live-content-ui.test.js
       - name: Verify production live content panel on PC and mobile

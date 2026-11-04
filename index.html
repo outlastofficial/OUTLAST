@@ -12,6 +12,7 @@
 <meta name="outlast-build" content="4.6.12">
 <meta name="build-version" content="4.6.12">
 <title>OUTLAST v4.6.12</title>
+<script id="outlast-current-release-metadata">(function(){window.OUTLAST_CURRENT_RELEASE={version:'4.6.12',title:'v4.6.12 — Saturday-to-Saturday Live Operations',detail:'Added a production-server live schedule with three-day content rotations, weekly Saturday-to-Saturday chapters, and a month-long major event. Countdown timers synchronize to server time. Weekly chapters start at midnight Eastern and adjust for daylight-saving time. Existing logins, saves, and leaderboards are preserved.'};})();</script>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -6650,6 +6651,8 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var h=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?'});if(h)h[2]='The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.';else helpArticles.unshift(['How do I know which OUTLAST build is running?','Updates & Reliability','The main-menu chip and quality badge should match the page title. The marker now changes labels only when needed to avoid reload loops. If a page remains stuck, close that tab and open the game again.']);}</script>
 <script id="outlast-v451-release-popup-hotfix">(function(){'use strict';
 var KEY='outlast_v457_release_popup_ack';
+var currentRelease=window.OUTLAST_CURRENT_RELEASE;
+if(currentRelease&&currentRelease.version&&currentRelease.version!=='4.5.26')return;
 function show(){try{if(localStorage.getItem(KEY)==='1')return;}catch(_){}if(document.getElementById('outlastV454ReleasePopup'))return;
 if(!document.body){setTimeout(show,100);return;}
 var shade=document.createElement('div');shade.id='outlastV454ReleasePopup';

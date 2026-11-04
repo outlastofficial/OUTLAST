@@ -3,6 +3,11 @@
   if (window.__OUTLAST_LIVE_CONTENT_UI__) return;
   window.__OUTLAST_LIVE_CONTENT_UI__ = true;
 
+  window.OUTLAST_CURRENT_RELEASE = {
+    version: '4.6.12',
+    title: 'v4.6.12 — Saturday-to-Saturday Live Operations',
+    detail: 'Added a production-server live schedule with three-day content rotations, weekly Saturday-to-Saturday chapters, and a month-long major event. Countdown timers synchronize to server time. Weekly chapters start at midnight Eastern and adjust for daylight-saving time. Existing logins, saves, and leaderboards are preserved.'
+  };
   var host = String(window.location && window.location.hostname || '').toLowerCase();
   var isTester = host === 'outlast-test.onrender.com' || host.indexOf('outlast-test-') === 0;
   var API = isTester

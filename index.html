@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta name="outlast-build" content="4.10.1">
-<meta name="build-version" content="4.10.1">
-<title>OUTLAST v4.10.1</title>
+<meta name="outlast-build" content="4.10.2">
+<meta name="build-version" content="4.10.2">
+<title>OUTLAST v4.10.2</title>
 <!-- v3.37.13 removes the stale full-screen October-event overlay styles -->
 
 <style>
@@ -4055,8 +4055,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.10.1';
-const CURRENT_UPDATE_INFO={title:'v4.10.1 — OWNER PANEL AI SETUP',summary:'Owner Panel now includes secure AI key setup and a connection test.',items:['Open Owner Panel → AI Setup and unlock it with the private owner token.','Paste the replacement API key into the masked field and select Save API Key. The field clears after the server accepts it.','Select Test AI Connection to verify the OpenAI connection and read any setup error.','The key stays server-side in memory only; it is not written to disk and is cleared when the server restarts.','The tester AI client now talks to the tester server, keeping tester setup separate from production.','Existing accounts, saved progress, coins, and leaderboards are left untouched.']};window.OUTLAST_CURRENT_UPDATE_INFO=CURRENT_UPDATE_INFO;
+const CURRENT_UPDATE_VERSION='4.10.2';
+const CURRENT_UPDATE_INFO={title:'v4.10.2 — OWNER PANEL AI SETUP VISIBILITY FIX',summary:'Fixed the Owner Panel AI Setup section so its key-entry field is inserted reliably when the Owner Panel opens.',items:['Open Owner Panel and scroll down to AI Setup.','The masked Paste API Key Here field is displayed directly in the Owner Panel.','Use Unlock & Refresh, Save API Key, and Test AI Connection.','The setup section is inserted into the live Owner Panel after it is created; it no longer depends on the old subContent observer or a separate owner-page lookup.','Server-side owner-token checks still protect saving and connection testing.','The key is held in tester-server memory only and must be entered again after a server restart.']};window.OUTLAST_CURRENT_UPDATE_INFO=CURRENT_UPDATE_INFO;
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6778,7 +6778,7 @@ else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script src="outlast-v461-upgrade-balance-overhaul.js?v=4.6.2"></script>
-<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.10.1',L='v4.10.1 • AI SETUP';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
+<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.10.2',L='v4.10.2 • AI SETUP FIX';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
 <script id="outlast-v463-event-countdown-removal">
 (function(){
   'use strict';
@@ -6944,4 +6944,4 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var shieldHow
 <script src="./outlast-zombie-navigation.js?v=4.9.0"></script>
 
 <script src="./live-content-schedule.js?v=4.9.5"></script>
-<script src="./outlast-ai-assistant.js?v=4.10.3"></script>
+<script src="./outlast-ai-assistant.js?v=4.10.4"></script>

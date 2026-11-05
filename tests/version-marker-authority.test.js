@@ -29,5 +29,11 @@ assert.match(tail, /MutationObserver/,
   'authoritative marker must correct late legacy DOM rewrites');
 assert.match(tail, /pageshow/,
   'authoritative marker must resync after browser page restores');
+assert.match(tail, /#outlastMandatoryUpdateCheck \.ver/,
+  'authoritative marker must synchronize the mandatory popup version line');
+assert.match(tail, /CURRENT BUILD/,
+  'mandatory popup version line must use the current build label');
+assert.match(tail, /typeof helpArticles!=='undefined'/,
+  'authoritative marker must update the How To guide through the shared help list');
 
 console.log('PASS: final version marker matches OUTLAST '+currentBuild+' and owns version display.');

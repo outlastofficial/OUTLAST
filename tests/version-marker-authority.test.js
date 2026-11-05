@@ -33,7 +33,7 @@ assert.match(tail, /window\.OUTLAST_VERSION_MARKER_READY=BUILD/,
   'runtime smoke tests can wait for the authoritative marker to finish');
 assert.ok(html.includes('How do shield duration upgrades stack?') && html.includes('Shield Nova at 4 seconds'),
   'How To explains additive Shield Nova duration');
-assert.ok(html.includes('How do the live content rotations and events work?'),
+assert.ok(html.includes('How does the OUTLAST Live Content schedule work?'),
   'How To explains the live content schedule');
 assert.match(tail, /OUTLAST_VERSION_MARKER_READY=BUILD/,
   'authoritative marker exposes a readiness signal after applying the current release');

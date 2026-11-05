@@ -66,7 +66,21 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
   const updateNotice=page.locator('#outlastMandatoryUpdateCheck');
   if(await updateNotice.count()){
-    await page.waitForFunction(build=>window.OUTLAST_VERSION_MARKER_READY===build,expectedBuild,{timeout:15000});
+    try{
+      await page.waitForFunction(build=>window.OUTLAST_VERSION_MARKER_READY===build,expectedBuild,{timeout:15000});
+    }catch(error){
+      const markerDiagnostic=await page.evaluate(()=>({
+        ready:window.OUTLAST_VERSION_MARKER_READY||null,
+        build:window.OUTLAST_BUILD||null,
+        meta:document.querySelector('meta[name="outlast-build"]')?.content||null,
+        title:document.title,
+        markerScript:!!document.getElementById('outlast-authoritative-version-marker'),
+        popup:!!document.getElementById('outlastMandatoryUpdateCheck'),
+        popupVersion:document.querySelector('#outlastMandatoryUpdateCheck .ver')?.textContent||null,
+        readyState:document.readyState
+      })).catch(e=>({diagnosticError:String(e&&e.message||e)}));
+      throw new Error('Authoritative marker did not become ready: '+JSON.stringify({markerDiagnostic,consoleErrors:consoleErrors.slice(-10)})+'; '+String(error&&error.message||error));
+    }
     await page.waitForFunction(build=>{const el=document.querySelector('#outlastMandatoryUpdateCheck .ver');return !!el&&el.textContent.includes('v'+build);},expectedBuild,{timeout:15000});
     const noticeVersion=(await page.locator('#outlastMandatoryUpdateCheck .ver').textContent())||'';
     if(!noticeVersion.includes('v'+expectedBuild))throw new Error('Mandatory update notice displays a stale version: '+noticeVersion);

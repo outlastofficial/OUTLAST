@@ -6926,6 +6926,7 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var shieldHow
       document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(el){setText(el,'v'+BUILD);});
       document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(el){setText(el,LABEL);});
       setText(document.querySelector('#outlastMandatoryUpdateCheck .ver'),'v'+BUILD+' • CURRENT BUILD');
+      window.OUTLAST_VERSION_MARKER_READY=BUILD;
       if(window.OUTLAST_MANDATORY_UPDATE_CHECK&&typeof window.OUTLAST_MANDATORY_UPDATE_CHECK==='object')window.OUTLAST_MANDATORY_UPDATE_CHECK.version=BUILD;
       if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){
         var buildHowTo=helpArticles.find(function(x){return x&&x[0]==='How do I know which OUTLAST build is running?';});

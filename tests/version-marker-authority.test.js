@@ -29,6 +29,8 @@ assert.match(tail, /MutationObserver/,
   'authoritative marker must correct late legacy DOM rewrites');
 assert.match(tail, /pageshow/,
   'authoritative marker must resync after browser page restores');
+assert.match(tail, /OUTLAST_VERSION_MARKER_READY=BUILD/,
+  'authoritative marker exposes a readiness signal after applying the current release');
 assert.match(tail, /#outlastMandatoryUpdateCheck \.ver/,
   'authoritative marker must synchronize the mandatory popup version line');
 assert.match(tail, /CURRENT BUILD/,

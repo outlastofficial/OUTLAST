@@ -66,7 +66,8 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
   await page.waitForTimeout(850); // Let delayed modules and the release notice initialize.
   const updateNotice=page.locator('#outlastMandatoryUpdateCheck');
   if(await updateNotice.count()){
-    await page.waitForFunction(build=>{const el=document.querySelector('#outlastMandatoryUpdateCheck .ver');return !!el&&el.textContent.includes('v'+build);},expectedBuild,{timeout:5000});
+    await page.waitForFunction(build=>window.OUTLAST_VERSION_MARKER_READY===build,expectedBuild,{timeout:15000});
+    await page.waitForFunction(build=>{const el=document.querySelector('#outlastMandatoryUpdateCheck .ver');return !!el&&el.textContent.includes('v'+build);},expectedBuild,{timeout:15000});
     const noticeVersion=(await page.locator('#outlastMandatoryUpdateCheck .ver').textContent())||'';
     if(!noticeVersion.includes('v'+expectedBuild))throw new Error('Mandatory update notice displays a stale version: '+noticeVersion);
     await page.locator('#outlastUpdateLogClose').click();
@@ -355,11 +356,12 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   },expectedBuild);
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();
-  await mobilePage.goto(mobileUrl,{waitUntil:'commit',timeout:30000});
+  await mobilePage.goto(mobileUrl,{waitUntil:'domcontentloaded',timeout:30000});
   await mobilePage.waitForSelector('meta[name="outlast-build"]',{state:'attached',timeout:15000});
   await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
   await mobilePage.locator('#outlastMandatoryUpdateCheck').waitFor({state:'visible',timeout:10000});
-  await mobilePage.waitForFunction(build=>{const el=document.querySelector('#outlastMandatoryUpdateCheck .ver');return !!el&&el.textContent.includes('v'+build);},expectedBuild,{timeout:5000});
+  await mobilePage.waitForFunction(build=>window.OUTLAST_VERSION_MARKER_READY===build,expectedBuild,{timeout:15000});
+  await mobilePage.waitForFunction(build=>{const el=document.querySelector('#outlastMandatoryUpdateCheck .ver');return !!el&&el.textContent.includes('v'+build);},expectedBuild,{timeout:15000});
   const mobileUpdateNoticeInfo=await mobilePage.evaluate(()=>{
     const info=window.OUTLAST_CURRENT_UPDATE_INFO||{};
     return {title:document.querySelector('#outlastMandatoryUpdateCheck h2')?.textContent||'',version:document.querySelector('#outlastMandatoryUpdateCheck .ver')?.textContent||'',summary:document.querySelector('#outlastMandatoryUpdateCheck .card p')?.textContent||'',releaseTitle:String(info.title||''),releaseSummary:String(info.summary||'')};

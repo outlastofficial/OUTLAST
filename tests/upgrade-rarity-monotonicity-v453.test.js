@@ -14,6 +14,19 @@ assert.strictEqual(vm.runInNewContext('outlastExtendTempShield(3)',shieldState),
 assert.strictEqual(vm.runInNewContext('outlastExtendTempShield(5)',shieldState),14,'Emergency Shield stacks after Shield Core');
 assert.strictEqual(vm.runInNewContext('outlastExtendTempShield(0)',shieldState),0,'invalid duration is ignored');
 assert.strictEqual(shieldState.game.player.shield,14,'invalid duration does not change shield time');
+const shieldNovaEntries=[...html.matchAll(/\['Shield Nova',[^\]]+\]/g)].map(m=>m[0]);
+assert.strictEqual(shieldNovaEntries.length,2,'both Shield Nova definitions remain available');
+assert(shieldNovaEntries.every(entry=>entry.includes('outlastExtendTempShield(4*v)')&&!entry.includes('outlastGrantTempShield(4*v)')),'Shield Nova adds duration instead of replacing existing shield time');
+assert(html.includes("if(q.type==='shield')outlastGrantTempShield(4.5)")&&html.includes("if(s==='Fortify')outlastGrantTempShield(8)"),'one-time shield pickups and Fortify keep their refresh/grant behavior');
+for(const [i,entry] of shieldNovaEntries.entries()){
+  const applyBody=entry.match(/,v=>\{([\s\S]*)\}\]$/)?.[1];
+  assert(applyBody,'Shield Nova effect factory is present '+i);
+  const state={game:{player:{shield:10,shieldEfficiency:1.5,shieldNova:false},effects:[]}};
+  vm.runInNewContext(shieldHelper,state);
+  vm.runInNewContext('(function(v){'+applyBody+'})(1)',state);
+  vm.runInNewContext('(function(v){'+applyBody+'})(1)',state);
+  assert.strictEqual(state.game.player.shield,22,'repeated Shield Nova selections add the full scaled duration');
+}
 assert(currentBuild&&html.includes('<meta name="build-version" content="'+currentBuild+'">')&&html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'visible version marker must match the current build');assert(html.includes('outlast-v3370-game-systems.js?v=4.9.1-shield-stack')&&html.includes('outlast-v441-skill-upgrade-balance-ui.js?v=4.5.3')&&html.includes('outlast-v327108-rarity-card-authority.js?v=4.5.3'),'patched scripts must have cache-busting refs');assert(html.includes('How is upgrade rarity scaling kept consistent?')&&html.includes('OUTLAST_RARITY_MONOTONICITY_AUDIT_V453'),'How To and live audit must exist');assert(balance.includes('Celestial 4.8×, Transcendent 5.6×, Eternal 6.8×'),'How To scale must match the live scale');
 const makePlayer=()=>({damage:0,fireRate:.45,max:100,hp:100,speed:300,speedCap:500,magnet:0,regen:0,pierce:0,multiShot:0,range:0,projectileSpeed:1,crit:0,coinMult:1,xpBonus:1,armorPierce:0,bossMult:1,ultDamage:1,healMult:1,upgradeLuck:0,lootLuck:0,treasureLuck:0,shield:0,chain:1,vampire:0,bulletSize:1,slowPower:1,armor:1,critMult:1.8,effects:[]});
 const pools=Object.fromEntries(tiers.map(t=>[t,[]])),doc={readyState:'complete',title:'OUTLAST v'+currentBuild,querySelectorAll:()=>[],querySelector:()=>null,addEventListener:()=>{},getElementById:()=>null,head:{appendChild:()=>{}},body:{classList:{toggle:()=>{}},appendChild:()=>{}},documentElement:{classList:{toggle:()=>{}},dataset:{}}};

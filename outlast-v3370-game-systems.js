@@ -91,7 +91,7 @@ function upgradeBase37(name,desc,apply,rarity){
  if(name==='Bossbreaker')return {desc:'+'+np(3)+'% damage to bosses',apply:()=>add('bossDamageBonus',.03*mult)};
  if(name==='Lifesteal'||name==='Vampiric Surge')return {desc:'+'+nv(.2)+' HP per kill',apply:()=>add('vampire',.2*mult)};
  if(name==='Vampire Core')return {desc:'+'+nv(.2)+' HP per kill and +'+ni(15)+' max HP',apply:()=>{add('vampire',.2*mult);heal(ni(15));}};
- if(name==='Shield Nova')return {desc:'Gain '+nv(.65)+'s shield and +'+np(8)+'% shield efficiency',apply:()=>{shield(.65*mult);const q=p(),g=G();if(q)q.shieldEfficiency=(Number(q.shieldEfficiency)||1)*(1+.08*mult);if(g&&Array.isArray(g.effects)&&q)g.effects.push({x:q.x,y:q.y,t:.45,r:145*Math.sqrt(mult),color:'#72a8ff',fill:false});}};
+ if(name==='Shield Nova')return {desc:'Gain '+nv(4)+'s shield and +'+np(8)+'% shield efficiency',apply:()=>{extendShield(4*mult);const q=p(),g=G();if(q)q.shieldEfficiency=(Number(q.shieldEfficiency)||1)*(1+.08*mult);if(g&&Array.isArray(g.effects)&&q)g.effects.push({x:q.x,y:q.y,t:.45,r:145*Math.sqrt(mult),color:'#72a8ff',fill:false});}};
  if(name==='Overclock')return {desc:'+'+np(2.2)+'% attack speed and +'+nv(3)+' damage',apply:()=>{faster(2.2);add('damage',3*mult);}};
  if(name==='Last Stand')return {desc:'+'+np(10)+'% damage below 25% HP',apply:()=>{const q=p();if(q){q.lastStand=true;q.lastStandBonus=(Number(q.lastStandBonus)||0)+.1*mult;}}};
  if(name==='Treasure Engine')return {desc:'+'+nv(2)+' Treasure Luck and '+nv(3)+'x drop chance',apply:()=>{const q=p();if(q){q.treasureLuck=(Number(q.treasureLuck)||0)+2*mult;q.treasure=true;q.treasureDropMultiplier=3*mult;luck();}}};

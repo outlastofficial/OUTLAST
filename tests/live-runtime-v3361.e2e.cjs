@@ -352,7 +352,7 @@ if(!expectedBuild)throw new Error('Checked-out OUTLAST build marker is missing')
     localStorage.setItem('outlast_update_ack_'+build,'1');
     localStorage.setItem('outlast_update_ack_v3.37.0','1');
     localStorage.setItem('outlastSeenUpdateVersion',build);
-    localStorage.setItem('outlast_update_log_seen',build);
+    // Keep the mandatory update notice unacknowledged in this isolated mobile test so its current version line is exercised.
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   },expectedBuild);
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();

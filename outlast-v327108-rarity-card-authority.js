@@ -41,7 +41,7 @@
       const mult=Number(upgradeRarities?.[rarity]?.mult||1),desc=typeof item[1]==='function'?item[1](mult):String(item[1]||''),apply=typeof item[2]==='function'?item[2]:()=>{},cat=category(name);
       out.push([name,desc,()=>apply(mult),rarity,cat]);usedNames.add(name);usedCats.add(cat);
     }
-    if(out.length<3)for(const rarity of Object.keys(POOLS)){for(const name of POOLS[rarity]){if(out.length>=3||usedNames.has(name))break;const item=tempUp.find(u=>u&&u[0]===name);if(!item||active(item))continue;const mult=Number(upgradeRarities?.[rarity]?.mult||1),desc=typeof item[1]==='function'?item[1](mult):String(item[1]||''),apply=typeof item[2]==='function'?item[2]:()=>{};out.push([name,desc,()=>apply(mult),rarity,category(name)]);usedNames.add(name);}if(out.length>=3)break;}
+    if(out.length<3)for(const rarity of Object.keys(POOLS)){for(const name of POOLS[rarity]){if(out.length>=3)break;if(usedNames.has(name))continue;const item=tempUp.find(u=>u&&u[0]===name);if(!item||active(item))continue;const mult=Number(upgradeRarities?.[rarity]?.mult||1),desc=typeof item[1]==='function'?item[1](mult):String(item[1]||''),apply=typeof item[2]==='function'?item[2]:()=>{};out.push([name,desc,()=>apply(mult),rarity,category(name)]);usedNames.add(name);}if(out.length>=3)break;}
     return out;
   }
   window.makeChoices=authoritativeMakeChoices;

@@ -118,9 +118,10 @@ function authoritativeUpgradeChoice37(){
   const poolMap=window.OUTLAST_UPGRADE_RARITY_POOLS||{};
   const source=typeof tempUp!=='undefined'&&Array.isArray(tempUp)?tempUp:[];
   const used=new Set(),out=[];
+  const isUpgradeAlreadyActive37=name=>{try{return typeof upgradeAlreadyActive==='function'&&!!upgradeAlreadyActive(name)}catch(_){return false;}};
   function candidates(r){
     const names=Array.isArray(poolMap[r])?poolMap[r]:[];
-    return names.map(n=>({name:n,item:source.find(x=>x&&x[0]===n)})).filter(x=>x.item&&!used.has(x.name));
+    return names.map(n=>({name:n,item:source.find(x=>x&&x[0]===n)})).filter(x=>x.item&&!used.has(x.name)&&!isUpgradeAlreadyActive37(x.name));
   }
   while(out.length<3){
     let rarity;

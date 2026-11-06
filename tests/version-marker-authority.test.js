@@ -8,11 +8,11 @@ const finalLockStart = html.indexOf('<script id="outlast-v466-absolute-final-ver
 assert.ok(finalLockStart >= 0, 'final version lock must exist');
 const finalLockEnd = html.indexOf('</script>', finalLockStart);
 const finalLock = html.slice(finalLockStart, finalLockEnd);
-assert.match(finalLock, /var meta=document\\.querySelector\\('meta\\[name="outlast-build"\\]'\\)/,
+assert.ok(finalLock.includes("var meta=document.querySelector('meta[name=\"outlast-build\"]')"),
   'final version lock must read the current build metadata');
-assert.match(finalLock, /var V=String\\(meta&&meta\\.content/,
+assert.ok(finalLock.includes('var V=String(meta&&meta.content'),
   'final version lock must derive its version dynamically');
-assert.ok(!/var V=["']4\\.6\\.\\d+/.test(finalLock),
+assert.ok(!finalLock.includes('var V="4.6.'),
   'final version lock must not pin the app to a stale hard-coded release');
 
 assert.ok(!html.includes("var CHIP='v4.6.4 • UPGRADE LUCK FIX'"),

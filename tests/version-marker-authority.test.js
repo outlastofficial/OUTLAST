@@ -2,6 +2,18 @@ const fs = require('node:fs');
 const assert = require('node:assert/strict');
 
 const html = fs.readFileSync('index.html', 'utf8');
+const currentBuild = (html.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
+assert.ok(currentBuild, 'current build metadata must exist');
+const finalLockStart = html.indexOf('<script id="outlast-v466-absolute-final-version-lock">');
+assert.ok(finalLockStart >= 0, 'final version lock must exist');
+const finalLockEnd = html.indexOf('</script>', finalLockStart);
+const finalLock = html.slice(finalLockStart, finalLockEnd);
+assert.ok(finalLock.includes("var meta=document.querySelector('meta[name=\"outlast-build\"]')"),
+  'final version lock must read the current build metadata');
+assert.ok(finalLock.includes('var V=String(meta&&meta.content'),
+  'final version lock must derive its version dynamically');
+assert.ok(!finalLock.includes('var V="4.6.'),
+  'final version lock must not pin the app to a stale hard-coded release');
 
 assert.ok(!html.includes("var CHIP='v4.6.4 • UPGRADE LUCK FIX'"),
   'legacy Survivor Hub observer must not force the v4.6.4 chip');

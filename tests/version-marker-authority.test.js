@@ -36,6 +36,8 @@ assert.ok(html.includes('outlast-v443-reliability-afk.js?v=4.6.13-mobile-afk-lay
   'the updated mobile AFK layout must use a fresh script cache key');
 assert.ok(liveRuntime.includes('AFK Lounge must remain visible without covering mobile ULT'),
   'Mobile browser smoke must protect the AFK Lounge and ULT control from overlap');
+assert.ok(liveRuntime.includes('Saved progression did not survive a browser reload') && liveRuntime.includes('persisted.coins') && liveRuntime.includes('persisted.map'),
+  'Start Run smoke must verify saved currency and map progression survive a reload');
 assert.ok(!finalLock.includes('var V="4.6.'),
   'final version lock must not pin the app to a stale hard-coded release');
 

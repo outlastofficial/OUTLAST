@@ -5,6 +5,7 @@ const html = fs.readFileSync('index.html', 'utf8');
 const schedule = fs.readFileSync('live-content-schedule.js', 'utf8');
 const chatRuntime = fs.readFileSync('tests/global-chat-runtime-v451.e2e.cjs', 'utf8');
 const liveRuntime = fs.readFileSync('tests/live-runtime-v3361.e2e.cjs', 'utf8');
+const afk = fs.readFileSync('outlast-v443-reliability-afk.js', 'utf8');
 const currentBuild = (html.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
 assert.ok(currentBuild, 'current build metadata must exist');
 const finalLockStart = html.indexOf('<script id="outlast-v466-absolute-final-version-lock">');
@@ -29,6 +30,10 @@ assert.ok(!chatRuntime.includes("lastBuild==='4.5.26'") && !chatRuntime.includes
   'Global Chat smoke must not pin the runtime test to the old v4.5.26 release');
 assert.ok(liveRuntime.includes("localStorage.setItem('outlast_update_log_seen',build);"),
   'Start Run smoke must acknowledge the current update popup before exercising gameplay');
+assert.ok(afk.includes('@media(max-width:760px){#outlastV443AFK{right:10px;top:58px;bottom:auto;z-index:34'),
+  'AFK Lounge must move above the mobile action area on phone/tablet widths');
+assert.ok(liveRuntime.includes('AFK Lounge must remain visible without covering mobile ULT'),
+  'Mobile browser smoke must protect the AFK Lounge and ULT control from overlap');
 assert.ok(!finalLock.includes('var V="4.6.'),
   'final version lock must not pin the app to a stale hard-coded release');
 

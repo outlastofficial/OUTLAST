@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 
 const html = fs.readFileSync('index.html', 'utf8');
 const schedule = fs.readFileSync('live-content-schedule.js', 'utf8');
+const chatRuntime = fs.readFileSync('tests/global-chat-runtime-v451.e2e.cjs', 'utf8');
 const currentBuild = (html.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
 assert.ok(currentBuild, 'current build metadata must exist');
 const finalLockStart = html.indexOf('<script id="outlast-v466-absolute-final-version-lock">');
@@ -21,6 +22,10 @@ assert.ok(schedule.includes('var releaseVersion = String(existingRelease.version
   'live schedule must derive its version from the active release metadata');
 assert.ok(!/version:\\s*['"]4\\.6\\.12['"]/.test(schedule),
   'live schedule must not pin a newer release back to v4.6.12');
+assert.ok(chatRuntime.includes('runtimeBuild===lastVersionState.metaBuild') && chatRuntime.includes("lastVersionState.title.includes('v'+lastVersionState.metaBuild)"),
+  'Global Chat smoke must validate version consistency without hard-coding a release number');
+assert.ok(!chatRuntime.includes("lastBuild==='4.5.26'") && !chatRuntime.includes("lastTitle.includes('v4.5.26')"),
+  'Global Chat smoke must not pin the runtime test to the old v4.5.26 release');
 assert.ok(!finalLock.includes('var V="4.6.'),
   'final version lock must not pin the app to a stale hard-coded release');
 

@@ -10,8 +10,10 @@ const finalLockEnd = html.indexOf('</script>', finalLockStart);
 const finalLock = html.slice(finalLockStart, finalLockEnd);
 assert.ok(finalLock.includes("var meta=document.querySelector('meta[name=\"outlast-build\"]')"),
   'final version lock must read the current build metadata');
-assert.ok(finalLock.includes('var V=String(meta&&meta.content'),
-  'final version lock must derive its version dynamically');
+assert.ok(finalLock.includes('var V=String(window.OUTLAST_CURRENT_RELEASE&&window.OUTLAST_CURRENT_RELEASE.version||meta&&meta.content'),
+  'final version lock must prefer current release metadata over stale metadata left by legacy scripts');
+assert.ok(html.includes("window.OUTLAST_CURRENT_RELEASE={version:'"+currentBuild+"'"),
+  'current release metadata must match the build marker');
 assert.ok(!finalLock.includes('var V="4.6.'),
   'final version lock must not pin the app to a stale hard-coded release');
 

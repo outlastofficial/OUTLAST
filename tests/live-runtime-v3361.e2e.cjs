@@ -25,6 +25,7 @@ if(!expectedBuild)throw new Error('Current OUTLAST build metadata is missing');
     localStorage.setItem('outlast_v457_release_popup_ack','1');
     localStorage.setItem('outlast_update_ack_v4528','1');
     localStorage.setItem('outlastSeenUpdateVersion',build);
+    localStorage.setItem('outlast_update_log_seen',build);
   },expectedBuild);
 
   const baseUrl=process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html';
@@ -325,6 +326,7 @@ if(!expectedBuild)throw new Error('Current OUTLAST build metadata is missing');
     localStorage.setItem('outlast_update_ack_v4528','1');
     localStorage.setItem('outlast_v457_release_popup_ack','1');
     localStorage.setItem('outlastSeenUpdateVersion',build);
+    localStorage.setItem('outlast_update_log_seen',build);
     localStorage.setItem('outlastNewPlayerTutorialV317','1');
   },expectedBuild);
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();

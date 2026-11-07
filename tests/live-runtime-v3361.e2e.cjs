@@ -404,6 +404,10 @@ if(!expectedBuild)throw new Error('Current OUTLAST build metadata is missing');
     return {afkPresent:true,ultPresent:true,visible,overlap,afk:{left:a.left,top:a.top,right:a.right,bottom:a.bottom},ult:{left:u.left,top:u.top,right:u.right,bottom:u.bottom}};
   });
   if(!mobileAfkLayout.visible||mobileAfkLayout.overlap)throw new Error('AFK Lounge must remain visible without covering mobile ULT: '+JSON.stringify(mobileAfkLayout));
+  await mobilePage.locator('#outlastV443AFK').tap();
+  await mobilePage.locator('#outlastV443AFKPanel').waitFor({state:'visible',timeout:5000});
+  await mobilePage.locator('#outlastV443AFKClose').tap();
+  await mobilePage.locator('#outlastV443AFKPanel').waitFor({state:'hidden',timeout:5000});
   const mobileUltimatePrep=await mobilePage.evaluate(()=>{
     const p=game.player,probe={__outlastMobileUltimateProbe:true,x:p.x+35,y:p.y,hp:1000000000,max:1000000000,r:14,kind:'zombie',speed:0,damage:0,xp:1,boss:false,phase:1,aiBehavior:'Hunter',aiPhase:0,slowTimer:0,burn:0,poison:0,chainTimer:0};
     game.enemies=[probe];p.ult=100;return {hp:probe.hp,charge:p.ult};

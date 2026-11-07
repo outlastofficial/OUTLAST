@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const assert = require('node:assert/strict');
 
 const html = fs.readFileSync('index.html', 'utf8');
+const schedule = fs.readFileSync('live-content-schedule.js', 'utf8');
 const currentBuild = (html.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
 assert.ok(currentBuild, 'current build metadata must exist');
 const finalLockStart = html.indexOf('<script id="outlast-v466-absolute-final-version-lock">');
@@ -14,6 +15,12 @@ assert.ok(finalLock.includes('var V=String(window.OUTLAST_CURRENT_RELEASE&&windo
   'final version lock must prefer current release metadata over stale metadata left by legacy scripts');
 assert.ok(html.includes("window.OUTLAST_CURRENT_RELEASE={version:'"+currentBuild+"'"),
   'current release metadata must match the build marker');
+assert.ok(schedule.includes('var existingRelease = window.OUTLAST_CURRENT_RELEASE || {};'),
+  'live schedule must preserve the release metadata set by the current page');
+assert.ok(schedule.includes('var releaseVersion = String(existingRelease.version || releaseMeta'),
+  'live schedule must derive its version from the active release metadata');
+assert.ok(!/version:\\s*['"]4\\.6\\.12['"]/.test(schedule),
+  'live schedule must not pin a newer release back to v4.6.12');
 assert.ok(!finalLock.includes('var V="4.6.'),
   'final version lock must not pin the app to a stale hard-coded release');
 

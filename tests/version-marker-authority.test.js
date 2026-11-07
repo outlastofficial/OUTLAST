@@ -32,6 +32,8 @@ assert.ok(liveRuntime.includes("localStorage.setItem('outlast_update_log_seen',b
   'Start Run smoke must acknowledge the current update popup before exercising gameplay');
 assert.ok(afk.includes('@media(max-width:760px){#outlastV443AFK{right:10px;top:58px;bottom:auto;z-index:34'),
   'AFK Lounge must move above the mobile action area on phone/tablet widths');
+assert.ok(html.includes('outlast-v443-reliability-afk.js?v=4.6.13-mobile-afk-layout'),
+  'the updated mobile AFK layout must use a fresh script cache key');
 assert.ok(liveRuntime.includes('AFK Lounge must remain visible without covering mobile ULT'),
   'Mobile browser smoke must protect the AFK Lounge and ULT control from overlap');
 assert.ok(!finalLock.includes('var V="4.6.'),

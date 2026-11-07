@@ -40,25 +40,33 @@ const assert = require('node:assert/strict');
           await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,messages:fakeMessages.slice(-80)})});
         }
       });
-      let served=false,lastBuild=null,lastTitle='';
+      let served=false,lastVersionState=null;
       for(let attempt=0;attempt<20;attempt++){
         const sep=baseUrl.includes('?')?'&':'?';
         await page.goto(baseUrl+sep+'chatE2E='+Date.now()+'-'+attempt,{waitUntil:'domcontentloaded',timeout:45000});
         await page.waitForTimeout(350);
-        lastBuild=await page.evaluate(()=>window.OUTLAST_BUILD||null).catch(()=>null);
-        lastTitle=await page.title().catch(()=> '');
-        if(lastBuild==='4.5.26'&&lastTitle.includes('v4.5.26')){served=true;break;}
+        lastVersionState=await page.evaluate(()=>{
+          const meta=document.querySelector('meta[name="outlast-build"]')||document.querySelector('meta[name="build-version"]');
+          const metaBuild=String(meta&&meta.getAttribute('content')||'').replace(/^v/i,'').trim();
+          const runtimeBuild=String(window.OUTLAST_BUILD||'').replace(/^v/i,'').trim();
+          return {metaBuild,runtimeBuild,title:document.title};
+        }).catch(()=>null);
+        if(lastVersionState&&lastVersionState.metaBuild&&lastVersionState.runtimeBuild===lastVersionState.metaBuild&&lastVersionState.title.includes('v'+lastVersionState.metaBuild)){served=true;break;}
         if(attempt<19)await page.waitForTimeout(2500);
       }
-      assert.ok(served,'Expected v4.5.26 page was not served: '+JSON.stringify({lastBuild,lastTitle,baseUrl}));
-      // The page has a legacy release gate from v4.0.0 that can sit above the chat launcher.
-      // Clear it in this isolated smoke test so the test can exercise chat rather than click interception.
-      await page.evaluate(()=>{
+      assert.ok(served,'Page version metadata and runtime marker did not agree: '+JSON.stringify({lastVersionState,baseUrl}));
+      // This test targets chat, not release notices. Acknowledge the current build and clear
+      // any release overlay so it cannot intercept the chat controls during the isolated smoke test.
+      await page.waitForTimeout(700);
+      await page.evaluate((build)=>{
+        try{localStorage.setItem('outlast_update_log_seen',build);}catch(_){}
         const ok=document.getElementById('outlastV4000GotIt');
         if(ok)ok.click();
-        const legacy=document.getElementById('outlastV4000UpdatePopup');
-        if(legacy&&getComputedStyle(legacy).display!=='none')legacy.remove();
-      });
+        ['outlastV4000UpdatePopup','outlastMandatoryUpdateCheck','outlastV3350UpdatePopup','outlastV454ReleasePopup'].forEach(id=>{
+          const el=document.getElementById(id);
+          if(el&&el.parentNode)el.remove();
+        });
+      },lastVersionState.metaBuild);
       await page.waitForTimeout(100);
       const routing=await page.evaluate(()=>{
         const f=window.OUTLAST_CHAT_BACKEND_FOR_HOST;

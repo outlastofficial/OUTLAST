@@ -30,8 +30,8 @@ assert.ok(!chatRuntime.includes("lastBuild==='4.5.26'") && !chatRuntime.includes
   'Global Chat smoke must not pin the runtime test to the old v4.5.26 release');
 assert.ok(liveRuntime.includes("localStorage.setItem('outlast_update_log_seen',build);"),
   'Start Run smoke must acknowledge the current update popup before exercising gameplay');
-assert.ok(afk.includes('@media(max-width:760px){#outlastV443AFK{right:10px;top:58px;bottom:auto;z-index:34'),
-  'AFK Lounge must move above the mobile action area on phone/tablet widths');
+assert.ok(afk.includes('#outlastV443AFK.outlastV443AFKInGame{right:18px;bottom:calc(24px + 56px + 12px + env(safe-area-inset-bottom,0px));z-index:34}') && afk.includes("btn.classList.toggle('outlastV443AFKInGame',inRun)"),
+  'AFK Lounge must move above the mobile action area during a run on phone/tablet widths');
 assert.ok(html.includes('outlast-v443-reliability-afk.js?v=4.6.13-mobile-afk-layout'),
   'the updated mobile AFK layout must use a fresh script cache key');
 assert.ok(liveRuntime.includes('AFK Lounge must remain visible without covering mobile ULT'),

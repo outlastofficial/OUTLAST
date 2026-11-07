@@ -422,9 +422,19 @@ if(!expectedBuild)throw new Error('Current OUTLAST build metadata is missing');
   }
   if(mobileErrors.length||mobile404.length)throw new Error('Mobile browser errors: '+mobileErrors.join(' | ')+' HTTP404='+mobile404.join(' | '));
   await mobilePage.close();
+  const saveProbe=await page.evaluate(()=>{
+    if(typeof persist!=='function'||typeof save==='undefined')throw new Error('Save persistence function is unavailable');
+    const coins=(Number(save.coins)||0)+137,map=String(save.map||'Forest');
+    save.coins=coins;persist();
+    return {coins,map};
+  });
+  await page.reload({waitUntil:'domcontentloaded',timeout:30000});
+  await page.waitForFunction(()=>typeof save!=='undefined'&&typeof persist==='function',null,{timeout:15000});
+  const persisted=await page.evaluate(()=>({coins:Number(save.coins)||0,map:String(save.map||'Forest')}));
+  if(persisted.coins!==saveProbe.coins||persisted.map!==saveProbe.map)throw new Error('Saved progression did not survive a browser reload: '+JSON.stringify({saveProbe,persisted}));
   if(consoleErrors.length) throw new Error('Browser console errors: '+consoleErrors.join(' | ')+' HTTP404='+http404.join(' | '));
 
-  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,mobileMenuCheck,mobileMapSelected,mobileUltimatePrep,mobileUltimateResult,consoleErrors,http404,mobileErrors,mobile404}));
+  console.log(JSON.stringify({ok:true,state,flags,liveChecks,skinPrep,layoutAudit,beforeMove,afterMove,displacement,firePrep,fireResult,mobileMenuCheck,mobileMapSelected,mobileUltimatePrep,mobileUltimateResult,saveProbe,persisted,consoleErrors,http404,mobileErrors,mobile404}));
   await browser.close();
 })().catch(async err=>{console.error(err);process.exit(1)});
 

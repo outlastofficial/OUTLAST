@@ -6974,8 +6974,9 @@ window.OUTLAST_REFRESH_ANNOUNCEMENTS=poll;
 <script id="outlast-v460-absolute-final-version-marker">
 (function(){
   'use strict';
-  var VERSION='4.6.6';
-  var LABEL='v4.6.6 • SURVIVOR HUB';
+  var releaseMeta=document.querySelector('meta[name="outlast-build"]')||document.querySelector('meta[name="build-version"]');
+  var VERSION=String(window.OUTLAST_CURRENT_RELEASE&&window.OUTLAST_CURRENT_RELEASE.version||releaseMeta&&releaseMeta.getAttribute('content')||'').replace(/^v/i,'').trim();
+  var LABEL='v'+VERSION+' • SATURDAY-TO-SATURDAY UPDATES';
   function enforce(){
     try{
       window.OUTLAST_BUILD=VERSION;

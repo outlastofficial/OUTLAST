@@ -62,4 +62,16 @@ assert.match(tail, /pageshow/,
 assert.ok(html.includes('window.OUTLAST_MANDATORY_UPDATE_CHECK'),
   'release acknowledgement must use the current build instead of a hard-coded old version');
 
+
+const legacyLockStart=html.indexOf('<script id="outlast-v460-absolute-final-version-marker">');
+assert.ok(legacyLockStart>=0,'legacy absolute version lock must remain available for compatibility');
+const legacyLockEnd=html.indexOf('</script>',legacyLockStart);
+const legacyLock=html.slice(legacyLockStart,legacyLockEnd);
+assert.ok(legacyLock.includes("var releaseMeta=document.querySelector('meta[name=\"outlast-build\"]')||document.querySelector('meta[name=\"build-version\"]')"),
+  'legacy delayed version lock must read current build metadata');
+assert.ok(legacyLock.includes('var VERSION=String(window.OUTLAST_CURRENT_RELEASE&&window.OUTLAST_CURRENT_RELEASE.version||releaseMeta&&releaseMeta.getAttribute(\'content\')'),
+  'legacy delayed version lock must prefer current release metadata');
+assert.ok(!legacyLock.includes("var VERSION='4.6.6'"),
+  'legacy delayed version lock must not overwrite a newer build with v4.6.6');
+
 console.log('PASS: stale v4.6.4 locks are absent and the final dynamic marker owns version display.');

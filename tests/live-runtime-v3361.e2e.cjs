@@ -332,7 +332,7 @@ if(!expectedBuild)throw new Error('Current OUTLAST build metadata is missing');
   const mobileUrl=(process.env.OUTLAST_RUNTIME_TEST_URL||'https://outlast-game.onrender.com/index.html')+'?mobileE2E='+Date.now();
   await mobilePage.goto(mobileUrl,{waitUntil:'domcontentloaded',timeout:30000});
   await mobilePage.waitForSelector('#startBtn',{state:'visible',timeout:15000});
-  await mobilePage.waitForTimeout(400);
+  await mobilePage.waitForTimeout(3200); // Exercise all delayed legacy marker retries through 3 seconds.
   if (await mobilePage.locator('#outlastV4000GotIt').isVisible().catch(()=>false)) {
     await mobilePage.locator('#outlastV4000GotIt').click();
   }

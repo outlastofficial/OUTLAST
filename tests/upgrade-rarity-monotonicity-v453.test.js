@@ -22,4 +22,35 @@ s.game.player=makePlayer();legacy=game.upgradeBase37('Piercing','',()=>{},'Omega
 s.game.player=makePlayer();legacy=game.upgradeBase37('Treasure Radar','',()=>{},'Omega');legacy.apply();assert.strictEqual(s.game.player.treasureDropMultiplier,3,'Omega treasure drop multiplier must cap at 3x');assert(legacy.desc.includes('+200%'),'Treasure Radar description matches its applied effect');
 s.game.player=makePlayer();legacy=game.upgradeBase37('XP Boost','',()=>{},'Omega');legacy.apply();assert(Math.abs(s.game.player.xpBonus-1.32)<1e-9,'Omega XP boost must apply 32%, not 64%');
 s.upgradeAlreadyActive=name=>name==='Vampiric Surge';s.window.rollUpgradeRarity=()=> 'Celestial';const choices=game.authoritativeUpgradeChoice37();assert.strictEqual(choices.length,3,'picker returns three choices when enough eligible upgrades remain');assert.strictEqual(new Set(choices.map(x=>x[0])).size,3,'picker choices must have distinct names');assert(!choices.some(x=>x[0]==='Vampiric Surge'),'active upgrades must not be offered again');assert(choices.every(x=>x[3]==='Celestial'&&x[4]&&x[4].rarity==='Celestial'&&x[4].multiplier===5),'rarity metadata and multiplier agree');assert(authority.includes('if(out.length>=3)break;if(usedNames.has(name))continue;'),'legacy picker fallback skips duplicate candidates instead of stopping early');
+
+const pickerWindow={};
+const pickerTempUp=[];
+const pickerMath=Object.create(Math);
+pickerMath.random=()=>0;
+const pickerContext={
+  window:pickerWindow,
+  document:doc,
+  tempUp:pickerTempUp,
+  game:{upgradeChoices:[]},
+  upgradeRarities:Object.fromEntries(tiers.map(r=>[r,{weight:1,mult:expected[r]}])),
+  upgradeAlreadyActive:name=>name==='Power Shot'||name==='Vitality',
+  upgradeCategory:name=>name==='Swift Feet'?'mobility':name==='Magnet'?'utility':'recovery',
+  rollUpgradeRarity:()=> 'Common',
+  updates:[],
+  helpArticles:[],
+  setTimeout:()=>{},
+  console,
+  Math:pickerMath
+};
+pickerWindow.window=pickerWindow;
+vm.runInNewContext(authority,pickerContext,{timeout:1500});
+for(const name of ['Power Shot','Vitality','Swift Feet','Magnet','Regeneration']){
+  pickerTempUp.push([name,mult=>name+' '+mult,()=>{}]);
+}
+const runtimeChoices=pickerWindow.makeChoices();
+assert.strictEqual(runtimeChoices.length,3,'the actual window.makeChoices runtime returns three choices when three eligible upgrades remain');
+assert.strictEqual(new Set(runtimeChoices.map(x=>x[0])).size,3,'the actual window.makeChoices runtime never duplicates a choice');
+assert(!runtimeChoices.some(x=>pickerContext.upgradeAlreadyActive(x[0])),'the actual window.makeChoices runtime excludes already-active upgrades');
+assert.strictEqual(runtimeChoices.map(x=>x[0]).join('|'),'Swift Feet|Magnet|Regeneration','the actual window.makeChoices runtime fills all remaining eligible choices in deterministic order');
+
 console.log('OUTLAST '+currentBuild+' rarity regression passed: 220 cards, additive shields, and 3 distinct eligible choices.');

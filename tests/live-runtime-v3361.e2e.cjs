@@ -338,12 +338,13 @@ if(!expectedBuild)throw new Error('Current OUTLAST build metadata is missing');
   }
   const mobileMenuCheck=await mobilePage.evaluate(()=>{
     const b=document.getElementById('gecToggle'),r=b&&b.getBoundingClientRect(),controls=document.getElementById('mobileControls');
-    return {build:window.OUTLAST_BUILD||null,chatExists:!!b,chatTop:r?r.top:null,chatBottom:r?r.bottom:null,
+    const metaBuild=document.querySelector('meta[name="outlast-build"]')?.getAttribute('content')||null;
+    return {build:window.OUTLAST_BUILD||null,metaBuild,title:document.title,chatExists:!!b,chatTop:r?r.top:null,chatBottom:r?r.bottom:null,
       controlsVisible:!!controls&&getComputedStyle(controls).display!=='none'&&controls.getBoundingClientRect().width>0,
       eventOverlay:!!document.querySelector('.oeb-overlay')};
   });
-  if(!mobileMenuCheck.chatExists||!(mobileMenuCheck.chatTop>=0&&mobileMenuCheck.chatTop<175)||mobileMenuCheck.eventOverlay||mobileMenuCheck.controlsVisible){
-    throw new Error('Mobile menu layout/control visibility regression: '+JSON.stringify(mobileMenuCheck));
+  if(!mobileMenuCheck.chatExists||!(mobileMenuCheck.chatTop>=0&&mobileMenuCheck.chatTop<175)||mobileMenuCheck.eventOverlay||mobileMenuCheck.controlsVisible||mobileMenuCheck.build!==expectedBuild||mobileMenuCheck.metaBuild!==expectedBuild||mobileMenuCheck.title!=='OUTLAST v'+expectedBuild){
+    throw new Error('Mobile menu layout/version marker regression: '+JSON.stringify({expectedBuild,...mobileMenuCheck}));
   }
   // Explicitly show onboarding and verify Chat remains clickable above it.
   await mobilePage.evaluate(()=>window.openNewPlayerTutorial?.());

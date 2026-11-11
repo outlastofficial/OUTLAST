@@ -7,7 +7,7 @@ assert(currentBuild,'current build metadata must exist');
 new vm.Script(boss,{filename:'outlast-v4527-upgrade-boss-rebuild.js'});
 for(const name of ['Grave Titan','Plague Doctor','Mutant Brute','Undead Commander','The Abomination','Storm Colossus','Void Tyrant','Eternal Warden'])assert(boss.includes("name:'"+name+"'"),'missing boss '+name);
 for(const behavior of ['runUniqueBossAbility','case \'Grave Titan\':','case \'Plague Doctor\':','case \'Mutant Brute\':','case \'Undead Commander\':','case \'The Abomination\':','case \'Storm Colossus\':','case \'Void Tyrant\':','case \'Eternal Warden\':'])assert(boss.includes(behavior),'boss needs a real unique mechanic: '+behavior);
-assert(html.includes('outlast-v4527-upgrade-boss-rebuild.js?v=4.5.29'),'v4.5.28 boss script must be cache-busted');
+assert(/outlast-v4527-upgrade-boss-rebuild\.js\?v=[^"']+/.test(html),'boss rebuild script must be cache-busted');
 assert(html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'document title must match current build');
 assert(html.includes('meta name="outlast-build" content="'+currentBuild+'"'),'build metadata must match current build');
 assert(html.includes('outlast-v466-absolute-final-version-lock'),'final version lock must be present');

@@ -34,6 +34,8 @@ jobs:
         run: node tests/upgrade-rarity-monotonicity-v453.test.js
       - name: Run current v3.37 critical regressions
         run: node tests/v3370-systems.test.js
+      - name: Verify eight unique boss profiles and mechanics
+        run: node tests/boss-uniqueness-v4528.test.js
       - name: Verify boss identity and prevent same-frame respawns
         run: node tests/boss-intermission-race-v4529.test.js
       - name: Run v4.0.0 boss trophy and release gate checks

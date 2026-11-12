@@ -1,7 +1,7 @@
 name: OUTLAST Global Chat regression
 on:
   push:
-    branches: [main, testing]
+    branches: [main, testing, "audit/**"]
     paths:
       - "index.html"
       - "tests/global-chat-repair-v451.test.js"

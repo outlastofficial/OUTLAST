@@ -1955,7 +1955,7 @@ function outlastChooseSafeHazardPoint(radius){
   const players=[game&&game.player,...(save.mode==='1v1 Arena'&&game&&game.player2?[game.player2]:[])].filter(Boolean);
   const safe=(x,y)=>players.every(p=>Math.hypot(x-p.x,y-p.y)>margin+(Number(p.r)||20)+55);
   for(let i=0;i<48;i++){
-    const point=outlastChooseSafeHazardPoint(save.mode==='1v1 Arena'?70:78),x=point.x,y=point.y;
+    const x=70+Math.random()*(W-140),y=80+Math.random()*(H-160);
     if(safe(x,y))return{x,y};
   }
   let best=null,bestDistance=-1;
@@ -1968,7 +1968,7 @@ function outlastChooseSafeHazardPoint(radius){
 }
 function triggerMapEvent(){
   const hz=mapHazards[save.map]||mapHazards.Forest;game.mapEvent=hz;game.mapEventTimer=hz.interval;
-  const x=70+Math.random()*(W-140),y=80+Math.random()*(H-160);
+  const point=outlastChooseSafeHazardPoint(save.mode==='1v1 Arena'?70:78),x=point.x,y=point.y;
   const r=save.mode==='1v1 Arena'?70:78;
   game.pendingMapHazards=Array.isArray(game.pendingMapHazards)?game.pendingMapHazards:[];
   game.pendingMapHazards.push({x,y,r,damage:hz.damage,slow:hz.slow||0,remaining:1.15});

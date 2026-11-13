@@ -46,9 +46,10 @@ assert.match(tail, /typeof helpArticles!=='undefined'/,
 
 const popupVersion=(html.match(/const CURRENT_UPDATE_VERSION='([^']+)'/)||[])[1];
 assert.strictEqual(popupVersion,currentBuild,'mandatory update popup version must match the visible build');
-const popupTitle=(html.match(/const CURRENT_UPDATE_INFO=\\{title:'([^']+)'/)||[])[1];
-assert.ok(popupTitle&&popupTitle.indexOf('v'+currentBuild+' — ')===0,'mandatory update popup title must match the visible build');
-const scheduleVersion=(html.match(/live-content-schedule\\.js\\?v=([^"]+)/)||[])[1];
+const popupInfoStart=html.indexOf("const CURRENT_UPDATE_INFO={");
+const popupInfo=popupInfoStart>=0?html.slice(popupInfoStart,html.indexOf(";",popupInfoStart)):"";
+assert.ok(popupInfo.includes("title:'v"+currentBuild+" — "),'mandatory update popup title must match the visible build');
+const scheduleVersion=(html.match(/live-content-schedule[.]js[?]v=([^"]+)/)||[])[1];
 assert.strictEqual(scheduleVersion,currentBuild,'live-content schedule cache key must match the visible build');
 
 console.log('PASS: final version marker matches OUTLAST '+currentBuild+' and owns version display.');

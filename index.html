@@ -4071,8 +4071,8 @@ const BUGFIX_UPDATE_ENTRY=['v3.15.1 — Small Bug Fixes','Fixed stale leaderboar
 try{ if(Array.isArray(updates)) updates.unshift(BUGFIX_UPDATE_ENTRY); }catch(_){ }
 const VISUAL_UPDATE_ENTRY=['v3.16.0 — Survivor & Zombie Visual Overhaul','Redesigned all zombie silhouettes and player character rendering with distinct class visuals, stronger boss silhouettes, animated effects, and clearer character gear without changing gameplay stats or controls.'];
 try{ if(Array.isArray(updates)) updates.unshift(VISUAL_UPDATE_ENTRY); }catch(_){ }
-const CURRENT_UPDATE_VERSION='4.10.7';
-const CURRENT_UPDATE_INFO={title:'v4.10.7 — CO-OP SPAWN SHIELD',summary:'Online co-op players now receive 10 seconds of spawn protection at the start of every run.',items:['All incoming damage is blocked for each co-op player during the first 10 seconds.','The protection expires automatically, and normal enemy and hazard damage resumes.','Solo runs, accounts, saved progress, upgrades, and leaderboard records are unchanged.']};window.OUTLAST_CURRENT_UPDATE_INFO=CURRENT_UPDATE_INFO;
+const CURRENT_UPDATE_VERSION='4.10.8';
+const CURRENT_UPDATE_INFO={title:'v4.10.8 — IDLE DAMAGE FIX',summary:'Map hazards now show a warning zone and give players 1.15 seconds to move before damage is applied. Standing inside the marked zone when it resolves still causes the map hazard. Removed the unconditional Subway timer hit and fixed enemy-contact damage so damage-taken modifiers are applied only once.',items:['Map hazards warn players for about 1.15 seconds before applying damage.','Standing inside the marked warning zone when it resolves still causes the map hazard.','Removed unconditional Subway timer damage and prevented enemy-contact damage modifiers from being applied twice.']};window.OUTLAST_CURRENT_UPDATE_INFO=CURRENT_UPDATE_INFO;
 function showUpdatePopup(force=false){if(window.OUTLAST_MANDATORY_UPDATE_CHECK)return;
   let seen='';
   try{seen=outlastStorage.getItem('outlastSeenUpdateVersion')||'';}catch(_){ }
@@ -6794,7 +6794,7 @@ else helpArticles.unshift(['How do I open Global Chat in v4.5.14?','Menus & Chat
 if(typeof updates!=='undefined'&&Array.isArray(updates)&&!updates.some(function(x){return x&&String(x[0]).indexOf('v4.5.11 — Global Chat Restored')===0}))updates.unshift(['v4.5.11 — Global Chat Restored','Restored visibility of the Global Chat panel and toggle by removing the temporary CSS hide rule. Existing chat connection code was preserved.']);
 if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)&&!helpArticles.some(function(x){return x&&x[0]==='How do I open Global Chat in v4.5.11?'}))helpArticles.unshift(['How do I open Global Chat in v4.5.11?','Global Chat','Use the CHAT toggle on the main menu or during a run. The chat panel should appear when the toggle is opened. If messages remain stuck on Connecting, that is a separate connection issue from the visibility fix.']);
 }catch(e){console.error('OUTLAST chat restore notes failed',e);}})();</script><script src="outlast-v461-upgrade-balance-overhaul.js?v=4.6.2"></script>
-<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.10.7',L='v4.10.8 • IDLE DAMAGE FIX';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
+<script id="outlast-v461-final-version-marker">(function(){'use strict';var V='4.10.8',L='v4.10.8 • IDLE DAMAGE FIX';function apply(){window.OUTLAST_BUILD=V;window.OUTLAST_VERSION='v'+V;document.title='OUTLAST v'+V;['meta[name="outlast-build"]','meta[name="build-version"]'].forEach(function(s){var e=document.querySelector(s);if(e)e.setAttribute('content',V)});document.querySelectorAll('#menu .menu-chip,.menu-chip').forEach(function(e){e.textContent=L});document.querySelectorAll('[data-outlast-version],#versionLabel,#buildVersion,#versionMarker,.version-marker,.build-version,#outlastQualityBadge').forEach(function(e){e.textContent='v'+V})}apply();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});window.addEventListener('pageshow',apply);})();</script>
 <script id="outlast-v463-event-countdown-removal">
 (function(){
   'use strict';
@@ -6972,5 +6972,5 @@ if(typeof helpArticles!=='undefined'&&Array.isArray(helpArticles)){var shieldHow
 <script src="./outlast-settings-expansion.js?v=4.8.0.1"></script>
 <script src="./outlast-zombie-navigation.js?v=4.9.0"></script>
 
-<script src="./live-content-schedule.js?v=4.10.6"></script>
+<script src="./live-content-schedule.js?v=4.10.8"></script>
 <script src="./outlast-ai-assistant.js?v=4.10.6"></script>

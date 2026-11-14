@@ -1,5 +1,9 @@
 const fs=require('fs'),assert=require('assert'),path=require('path'),vm=require('vm');
 const root=path.join(__dirname,'..'),boss=fs.readFileSync(path.join(root,'outlast-v4527-upgrade-boss-rebuild.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const currentBuild=(html.match(/<meta name="outlast-build" content="([^"]+)"/)||[])[1];
+assert(currentBuild,'current build metadata must exist');
+assert(html.includes('<title>OUTLAST v'+currentBuild+'</title>'),'document title must match current build');
 const clock={now:100000};class FakeDate extends Date{static now(){return clock.now}}
 let intervalFn=null,spawnCalls=0;
 const game={running:true,paused:false,over:false,time:20,player:{x:100,y:100,hp:100,max:100,r:16},enemies:[{boss:true,hp:100,max:100,speed:100,r:42,x:400,y:400}],bullets:[],effects:[],bossClock:0,bossSpawnRetryTimer:0};
@@ -23,4 +27,4 @@ clock.now+=2;
 assert.strictEqual(window.spawnBoss(),true,'a boss may spawn after the full intermission');
 assert.strictEqual(spawnCalls,1,'exactly one spawn attempt is allowed after the intermission');
 assert.strictEqual(game.enemies.filter(e=>e&&e.boss&&e.hp>0).length,1,'the scheduler must not create duplicate living bosses');
-console.log('OUTLAST boss intermission race regression passed (current build v4.6.6).');
+console.log('OUTLAST boss intermission race regression passed (current build v'+currentBuild+').');

@@ -1,7 +1,7 @@
 name: OUTLAST Global Chat regression
 on:
   push:
-    branches: [main, testing]
+    branches: [main, testing, "audit/**"]
     paths:
       - "index.html"
       - "tests/global-chat-repair-v451.test.js"
@@ -13,7 +13,7 @@ permissions:
   contents: read
 jobs:
   global-chat:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

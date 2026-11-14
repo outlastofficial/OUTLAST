@@ -1,7 +1,46 @@
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
+const vm = require('node:vm');
 
 const html = fs.readFileSync('index.html', 'utf8');
+const schedule = fs.readFileSync('live-content-schedule.js', 'utf8');
+const chatRuntime = fs.readFileSync('tests/global-chat-runtime-v451.e2e.cjs', 'utf8');
+const liveRuntime = fs.readFileSync('tests/live-runtime-v3361.e2e.cjs', 'utf8');
+const afk = fs.readFileSync('outlast-v443-reliability-afk.js', 'utf8');
+const currentBuild = (html.match(/<meta name="outlast-build" content="([^"]+)"/) || [])[1];
+assert.ok(currentBuild, 'current build metadata must exist');
+const finalLockStart = html.indexOf('<script id="outlast-v466-absolute-final-version-lock">');
+assert.ok(finalLockStart >= 0, 'final version lock must exist');
+const finalLockEnd = html.indexOf('</script>', finalLockStart);
+const finalLock = html.slice(finalLockStart, finalLockEnd);
+assert.ok(finalLock.includes("var meta=document.querySelector('meta[name=\"outlast-build\"]')"),
+  'final version lock must read the current build metadata');
+assert.ok(finalLock.includes('var V=String(window.OUTLAST_CURRENT_RELEASE&&window.OUTLAST_CURRENT_RELEASE.version||meta&&meta.content'),
+  'final version lock must prefer current release metadata over stale metadata left by legacy scripts');
+assert.ok(html.includes("window.OUTLAST_CURRENT_RELEASE={version:'"+currentBuild+"'"),
+  'current release metadata must match the build marker');
+assert.ok(schedule.includes('var existingRelease = window.OUTLAST_CURRENT_RELEASE || {};'),
+  'live schedule must preserve the release metadata set by the current page');
+assert.ok(schedule.includes('var releaseVersion = String(existingRelease.version || releaseMeta'),
+  'live schedule must derive its version from the active release metadata');
+assert.ok(!/version:\\s*['"]4\\.6\\.12['"]/.test(schedule),
+  'live schedule must not pin a newer release back to v4.6.12');
+assert.ok(chatRuntime.includes('runtimeBuild===lastVersionState.metaBuild') && chatRuntime.includes("lastVersionState.title.includes('v'+lastVersionState.metaBuild)"),
+  'Global Chat smoke must validate version consistency without hard-coding a release number');
+assert.ok(!chatRuntime.includes("lastBuild==='4.5.26'") && !chatRuntime.includes("lastTitle.includes('v4.5.26')"),
+  'Global Chat smoke must not pin the runtime test to the old v4.5.26 release');
+assert.ok(liveRuntime.includes("localStorage.setItem('outlast_update_log_seen',build);"),
+  'Start Run smoke must acknowledge the current update popup before exercising gameplay');
+assert.ok(afk.includes('#outlastV443AFK.outlastV443AFKInGame{right:18px;bottom:calc(24px + 56px + 12px + env(safe-area-inset-bottom,0px));z-index:34}') && afk.includes("btn.classList.toggle('outlastV443AFKInGame',inRun)"),
+  'AFK Lounge must move above the mobile action area during a run on phone/tablet widths');
+assert.ok(html.includes('outlast-v443-reliability-afk.js?v=4.6.13-mobile-afk-layout'),
+  'the updated mobile AFK layout must use a fresh script cache key');
+assert.ok(liveRuntime.includes('AFK Lounge must remain visible without covering mobile ULT'),
+  'Mobile browser smoke must protect the AFK Lounge and ULT control from overlap');
+assert.ok(liveRuntime.includes('Saved progression did not survive a browser reload') && liveRuntime.includes('persisted.coins') && liveRuntime.includes('persisted.map'),
+  'Start Run smoke must verify saved currency and map progression survive a reload');
+assert.ok(!finalLock.includes('var V="4.6.'),
+  'final version lock must not pin the app to a stale hard-coded release');
 
 assert.ok(!html.includes("var CHIP='v4.6.4 • UPGRADE LUCK FIX'"),
   'legacy Survivor Hub observer must not force the v4.6.4 chip');
@@ -24,4 +63,47 @@ assert.match(tail, /pageshow/,
 assert.ok(html.includes('window.OUTLAST_MANDATORY_UPDATE_CHECK'),
   'release acknowledgement must use the current build instead of a hard-coded old version');
 
-console.log('PASS: stale v4.6.4 locks are absent and the final dynamic marker owns version display.');
+
+const legacyLockStart=html.indexOf('<script id="outlast-v460-absolute-final-version-marker">');
+assert.ok(legacyLockStart>=0,'legacy absolute version lock must remain available for compatibility');
+const legacyLockEnd=html.indexOf('</script>',legacyLockStart);
+const legacyLock=html.slice(legacyLockStart,legacyLockEnd);
+assert.ok(legacyLock.includes("var releaseMeta=document.querySelector('meta[name=\"outlast-build\"]')||document.querySelector('meta[name=\"build-version\"]')"),
+  'legacy delayed version lock must read current build metadata');
+assert.ok(legacyLock.includes('var VERSION=String(window.OUTLAST_CURRENT_RELEASE&&window.OUTLAST_CURRENT_RELEASE.version||releaseMeta&&releaseMeta.getAttribute(\'content\')'),
+  'legacy delayed version lock must prefer current release metadata');
+assert.ok(!legacyLock.includes("var VERSION='4.6.6'"),
+  'legacy delayed version lock must not overwrite a newer build with v4.6.6');
+
+
+const updateSorterStart = html.indexOf('function sortUpdateEntriesNewestFirst(entries){');
+assert.ok(updateSorterStart >= 0, 'Update Log must sort entries by semantic version');
+const updateSorterEnd = html.indexOf(String.fromCharCode(10) + '}', updateSorterStart);
+assert.ok(updateSorterEnd > updateSorterStart, 'Update Log sorter function must be complete');
+const updateSorterSource = html.slice(updateSorterStart, updateSorterEnd + 2);
+const sortUpdates = vm.runInNewContext('(' + updateSorterSource + ')');
+const updateProbe = [
+  ['v3.37.5 — Older module note', ''],
+  ['v4.6.12 — Previous release', ''],
+  ['v4.10.0 — Numeric version probe', ''],
+  ['v4.6.13 — Current candidate', ''],
+  ['Update Log', '']
+];
+const orderedProbe = sortUpdates(updateProbe);
+assert.strictEqual(orderedProbe.map(entry => entry[0]).join('|'),
+  'v4.10.0 — Numeric version probe|v4.6.13 — Current candidate|v4.6.12 — Previous release|v3.37.5 — Older module note|Update Log',
+  'Update Log sorts numeric versions newest-first and keeps unversioned notes last');
+assert.strictEqual(updateProbe[0][0], 'v3.37.5 — Older module note',
+  'sorting must not mutate the source update list');
+const updateLogStart = html.indexOf('function renderUpdates(){');
+const updateLogEnd = html.indexOf(String.fromCharCode(10) + '}' + String.fromCharCode(10) + String.fromCharCode(10) + 'const V3352_UPDATE_ENTRY', updateLogStart);
+assert.ok(updateLogStart >= 0 && updateLogEnd > updateLogStart, 'Update Log renderer is present');
+const updateLogSource = html.slice(updateLogStart, updateLogEnd);
+assert.ok(updateLogSource.includes('const displayUpdates=sortUpdateEntriesNewestFirst(updates);'),
+  'Update Log must render the sorted copy, not the insertion order');
+assert.ok(updateLogSource.includes('displayUpdates.map('),
+  'Update Log markup must use the sorted display list');
+assert.ok(html.includes('How is the Update Log ordered?'),
+  'How To must explain the newest-first Update Log ordering');
+
+console.log('PASS: stale version locks are absent, the dynamic marker owns display, and the Update Log sorts newest-first.');

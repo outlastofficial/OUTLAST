@@ -76,9 +76,12 @@ assert.ok(!legacyLock.includes("var VERSION='4.6.6'"),
   'legacy delayed version lock must not overwrite a newer build with v4.6.6');
 
 
-const updateSorterMatch = html.match(/function sortUpdateEntriesNewestFirst\\(entries\\)\\{[\\s\\S]*?\\n\\}/);
-assert.ok(updateSorterMatch, 'Update Log must sort entries by semantic version');
-const sortUpdates = vm.runInNewContext('(' + updateSorterMatch[0] + ')');
+const updateSorterStart = html.indexOf('function sortUpdateEntriesNewestFirst(entries){');
+assert.ok(updateSorterStart >= 0, 'Update Log must sort entries by semantic version');
+const updateSorterEnd = html.indexOf(String.fromCharCode(10) + '}', updateSorterStart);
+assert.ok(updateSorterEnd > updateSorterStart, 'Update Log sorter function must be complete');
+const updateSorterSource = html.slice(updateSorterStart, updateSorterEnd + 2);
+const sortUpdates = vm.runInNewContext('(' + updateSorterSource + ')');
 const updateProbe = [
   ['v3.37.5 — Older module note', ''],
   ['v4.6.12 — Previous release', ''],
@@ -93,7 +96,7 @@ assert.strictEqual(orderedProbe.map(entry => entry[0]).join('|'),
 assert.strictEqual(updateProbe[0][0], 'v3.37.5 — Older module note',
   'sorting must not mutate the source update list');
 const updateLogStart = html.indexOf('function renderUpdates(){');
-const updateLogEnd = html.indexOf('\\n}\\n\\nconst V3352_UPDATE_ENTRY', updateLogStart);
+const updateLogEnd = html.indexOf(String.fromCharCode(10) + '}' + String.fromCharCode(10) + String.fromCharCode(10) + 'const V3352_UPDATE_ENTRY', updateLogStart);
 assert.ok(updateLogStart >= 0 && updateLogEnd > updateLogStart, 'Update Log renderer is present');
 const updateLogSource = html.slice(updateLogStart, updateLogEnd);
 assert.ok(updateLogSource.includes('const displayUpdates=sortUpdateEntriesNewestFirst(updates);'),

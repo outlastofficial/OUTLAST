@@ -3913,7 +3913,7 @@ function openHelp(){
 
 function sortUpdateEntriesNewestFirst(entries){
   const versionOf=entry=>{
-    const match=String(entry&&entry[0]||'').match(/(?:^|\\s)v(\\d+)\\.(\\d+)\\.(\\d+)\\b/i);
+    const match=String(entry&&entry[0]||'').match(/v([0-9]+)[.]([0-9]+)[.]([0-9]+)/i);
     return match?match.slice(1).map(Number):[-1,-1,-1];
   };
   return (Array.isArray(entries)?entries:[]).map((entry,index)=>({entry,index,version:versionOf(entry)})).sort((a,b)=>{

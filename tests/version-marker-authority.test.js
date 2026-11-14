@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
+const vm = require('node:vm');
 
 const html = fs.readFileSync('index.html', 'utf8');
 const schedule = fs.readFileSync('live-content-schedule.js', 'utf8');
@@ -74,4 +75,32 @@ assert.ok(legacyLock.includes('var VERSION=String(window.OUTLAST_CURRENT_RELEASE
 assert.ok(!legacyLock.includes("var VERSION='4.6.6'"),
   'legacy delayed version lock must not overwrite a newer build with v4.6.6');
 
-console.log('PASS: stale v4.6.4 locks are absent and the final dynamic marker owns version display.');
+
+const updateSorterMatch = html.match(/function sortUpdateEntriesNewestFirst\\(entries\\)\\{[\\s\\S]*?\\n\\}/);
+assert.ok(updateSorterMatch, 'Update Log must sort entries by semantic version');
+const sortUpdates = vm.runInNewContext('(' + updateSorterMatch[0] + ')');
+const updateProbe = [
+  ['v3.37.5 — Older module note', ''],
+  ['v4.6.12 — Previous release', ''],
+  ['v4.10.0 — Numeric version probe', ''],
+  ['v4.6.13 — Current candidate', ''],
+  ['Update Log', '']
+];
+const orderedProbe = sortUpdates(updateProbe);
+assert.strictEqual(orderedProbe.map(entry => entry[0]).join('|'),
+  'v4.10.0 — Numeric version probe|v4.6.13 — Current candidate|v4.6.12 — Previous release|v3.37.5 — Older module note|Update Log',
+  'Update Log sorts numeric versions newest-first and keeps unversioned notes last');
+assert.strictEqual(updateProbe[0][0], 'v3.37.5 — Older module note',
+  'sorting must not mutate the source update list');
+const updateLogStart = html.indexOf('function renderUpdates(){');
+const updateLogEnd = html.indexOf('\\n}\\n\\nconst V3352_UPDATE_ENTRY', updateLogStart);
+assert.ok(updateLogStart >= 0 && updateLogEnd > updateLogStart, 'Update Log renderer is present');
+const updateLogSource = html.slice(updateLogStart, updateLogEnd);
+assert.ok(updateLogSource.includes('const displayUpdates=sortUpdateEntriesNewestFirst(updates);'),
+  'Update Log must render the sorted copy, not the insertion order');
+assert.ok(updateLogSource.includes('displayUpdates.map('),
+  'Update Log markup must use the sorted display list');
+assert.ok(html.includes('How is the Update Log ordered?'),
+  'How To must explain the newest-first Update Log ordering');
+
+console.log('PASS: stale version locks are absent, the dynamic marker owns display, and the Update Log sorts newest-first.');

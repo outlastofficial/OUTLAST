@@ -52,4 +52,26 @@ assert.ok(popupInfo.includes("title:'v"+currentBuild+" — "),'mandatory update 
 const scheduleVersion=(html.match(/live-content-schedule[.]js[?]v=([^"]+)/)||[])[1];
 assert.strictEqual(scheduleVersion,currentBuild,'live-content schedule cache key must match the visible build');
 
+const vm = require('node:vm');
+const sorterStart = html.indexOf('function sortUpdateEntriesNewestFirst(entries){');
+assert.ok(sorterStart >= 0, 'Update Log numeric sorter must exist');
+const sorterEnd = html.indexOf('\n}', sorterStart);
+assert.ok(sorterEnd > sorterStart, 'Update Log numeric sorter must be complete');
+const sorter = vm.runInNewContext('(' + html.slice(sorterStart, sorterEnd + 2) + ')');
+const sortedTitles = Array.from(sorter([
+  ['v4.9.2 — older', ''],
+  ['v4.10.9 — previous', ''],
+  ['v4.10.10 — current', ''],
+  ['v3.34.0 — legacy', ''],
+  ['v3.30.17 — older legacy', ''],
+  ['Unversioned historical note', '']
+]), entry => entry[0]);
+assert.deepStrictEqual(sortedTitles, [
+  'v4.10.10 — current', 'v4.10.9 — previous', 'v4.9.2 — older',
+  'v3.34.0 — legacy', 'v3.30.17 — older legacy', 'Unversioned historical note'
+], 'Update Log must sort by numeric semantic version and keep unversioned notes last');
+assert.ok(html.includes('const displayUpdates=sortUpdateEntriesNewestFirst(updates);') && html.includes('${displayUpdates.map('),
+  'Update Log renderer must display the sorted copy');
+assert.ok(html.includes('How is the Update Log ordered?'), 'How To must explain the corrected Update Log ordering');
+
 console.log('PASS: final version marker matches OUTLAST '+currentBuild+' and owns version display.');

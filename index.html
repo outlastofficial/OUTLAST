@@ -2410,26 +2410,36 @@ function outlastOmegaShieldBlock(amount){
   return true;
 }
 function outlastTakePlayerDamage(player,amount,reason,minHp=0){
-  if(!player||!Number.isFinite(amount)||amount<=0)return false;
-  if(player.godMode||player.god)return false;
-  if(player===game?.player&&coopLaunchActive&&game?.running&&Number(game.time)<10)return true;
-  if(player===game?.player&&outlastOmegaShieldBlock(amount))return true;
-  if(player===game?.player&&game.oneHitWonder){player.hp=Math.max(0,minHp);toast('☠ ONE HIT WONDER');return false;}
-  if(player===game?.player&&Number(player.shield||0)>0){
-    ring(player.x,player.y,'#9feeff',38,.22);
-    toast('🛡️ SHIELD ABSORBED HIT');
-    return true;
-  }
-  const mult=Math.max(0,Number(player.damageTakenMult)||1);
-  const hp=Math.max(0,Number(player.hp)||0),incoming=amount*mult;
-  if(player===game?.player&&hp>0&&hp<=Math.max(1,Number(player.max)||1)*.25&&Math.random()<Math.min(.5,Math.max(0,Number(player.emergencyShieldChance)||0))){
-    ring(player.x,player.y,'#9feeff',42,.28);burst(player.x,player.y,'#8fe8ff',8,85);toast('🛡️ EMERGENCY GUARD');return true;
-  }
-  if(player===game?.player&&!player.__outlastRebirthUsed&&incoming>=hp&&hp>0&&Math.random()<Math.min(.4,Math.max(0,Number(player.reviveChance)||0))){
-    player.__outlastRebirthUsed=true;player.hp=Math.max(minHp,Math.max(1,Number(player.max)||1)*.2);ring(player.x,player.y,'#baffb2',52,.4);toast('✨ REBIRTH RESERVE');return true;
-  }
-  player.hp=Math.max(minHp,hp-incoming);
-  return false;
+ if(!player||!Number.isFinite(amount)||amount<=0)return false;
+ const before=Math.max(0,Number(player.hp)||0);
+ const recordDamage=(prevented)=>{
+  try{
+   const events=window.__outlastDamageAudit||(window.__outlastDamageAudit=[]);
+   events.push({
+    time:Date.now(),
+    gameTime:Number(game?.time)||0,
+    mode:String(save?.mode||'unknown').slice(0,32),
+    source:String(reason||'unknown').slice(0,64),
+    amount,
+    before,
+    after:Math.max(0,Number(player.hp)||0),
+    prevented:!!prevented
+   });
+   if(events.length>100)events.splice(0,events.length-100);
+  }catch(_){}
+ };
+ if(player.godMode||player.god){recordDamage(true);return false;}
+ if(player===game?.player&&coopLaunchActive&&game?.running&&Number(game.time)<10){recordDamage(true);return true;}
+ if(player===game?.player&&outlastOmegaShieldBlock(amount)){recordDamage(true);return true;}
+ if(player===game?.player&&game.oneHitWonder){player.hp=Math.max(0,minHp);toast('☠ ONE HIT WONDER');recordDamage(false);return false;}
+ if(player===game?.player&&Number(player.shield||0)>0){ring(player.x,player.y,'#9feeff',38,.22);toast('🛡️ SHIELD ABSORBED HIT');recordDamage(true);return true;}
+ const mult=Math.max(0,Number(player.damageTakenMult)||1);
+ const hp=Math.max(0,Number(player.hp)||0),incoming=amount*mult;
+ if(player===game?.player&&hp>0&&hp<=Math.max(1,Number(player.max)||1)*.25&&Math.random()<Math.min(.5,Math.max(0,Number(player.emergencyShieldChance)||0))){ring(player.x,player.y,'#9feeff',42,.28);burst(player.x,player.y,'#8fe8ff',8,85);toast('🛡️ EMERGENCY GUARD');recordDamage(true);return true;}
+ if(player===game?.player&&!player.__outlastRebirthUsed&&incoming>=hp&&hp>0&&Math.random()<Math.min(.4,Math.max(0,Number(player.reviveChance)||0))){player.__outlastRebirthUsed=true;player.hp=Math.max(minHp,Math.max(1,Number(player.max)||1)*.2);ring(player.x,player.y,'#baffb2',52,.4);toast('✨ REBIRTH RESERVE');recordDamage(true);return true;}
+ player.hp=Math.max(minHp,hp-incoming);
+ recordDamage(false);
+ return false;
 }
 function outlastGrantTempShield(seconds){
   const p=game&&game.player;

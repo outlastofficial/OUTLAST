@@ -73,6 +73,8 @@ function damageHarness(options = {}) {
   };
   const sandbox = {
     game: { player, running: true, time: options.time ?? 0, oneHitWonder: false },
+    save: { mode: 'QA' },
+    window: null,
     coopLaunchActive: options.coop ?? true,
     outlastOmegaShieldBlock: () => false,
     ring: () => {},
@@ -80,6 +82,7 @@ function damageHarness(options = {}) {
     toast: () => {},
     Math: Object.assign(Object.create(Math), { random: () => 1 })
   };
+  sandbox.window = sandbox;
   vm.createContext(sandbox);
   const fn = extractFunction(html, 'outlastTakePlayerDamage');
   vm.runInContext(fn + '; globalThis.__outlastDamage = outlastTakePlayerDamage;', sandbox);
@@ -172,4 +175,37 @@ test('1v1 Arena projectiles route player damage through the central handler', ()
 test('Survival player contact routes both players through the central handler', () => {
   assert.match(html, /outlastTakePlayerDamage\(p2,p\.damage\*\.35\*dt,'survival player contact'\)/);
   assert.doesNotMatch(html, /p2\.hp\s*=\s*Math\.max\(0,p2\.hp-p\.damage\*\.35\*dt\)/);
+});
+
+test('damage audit records source, mode, amount, and before/after health', () => {
+  const h = damageHarness({ time: 20, coop: true });
+  h.damage(h.player, 25, 'qa source');
+  const events = h.sandbox.__outlastDamageAudit;
+  assert.equal(events.length, 1);
+  assert.equal(events[0].source, 'qa source');
+  assert.equal(events[0].mode, 'QA');
+  assert.equal(events[0].amount, 25);
+  assert.equal(events[0].before, 100);
+  assert.equal(events[0].after, 75);
+  assert.equal(events[0].prevented, false);
+});
+
+test('damage audit records protected hits without reducing health', () => {
+  const h = damageHarness({ time: 1, coop: true });
+  h.damage(h.player, 25, 'co-op start protection');
+  const events = h.sandbox.__outlastDamageAudit;
+  assert.equal(events.length, 1);
+  assert.equal(events[0].source, 'co-op start protection');
+  assert.equal(events[0].before, 100);
+  assert.equal(events[0].after, 100);
+  assert.equal(events[0].prevented, true);
+});
+
+test('damage audit keeps only the most recent 100 events', () => {
+  const h = damageHarness({ time: 20, coop: true });
+  for (let i = 0; i < 110; i += 1) h.damage(h.player, 0.01, 'event ' + i);
+  const events = h.sandbox.__outlastDamageAudit;
+  assert.equal(events.length, 100);
+  assert.equal(events[0].source, 'event 10');
+  assert.equal(events[99].source, 'event 109');
 });

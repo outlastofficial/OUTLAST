@@ -158,3 +158,18 @@ test('all inline JavaScript blocks parse successfully', () => {
   }
   assert.ok(checked > 0, 'Expected to parse at least one inline JavaScript block');
 });
+
+test('map hazards route every player through the central damage handler', () => {
+  assert.match(html, /outlastTakePlayerDamage\(target,h\.damage,'map hazard'\)/);
+  assert.doesNotMatch(html, /target\.hp\s*=\s*Math\.max\(0,\(Number\(target\.hp\)\|\|0\)-h\.damage\)/);
+});
+
+test('1v1 Arena projectiles route player damage through the central handler', () => {
+  assert.match(html, /outlastTakePlayerDamage\(target,b\.dmg,'1v1 arena projectile'\)/);
+  assert.doesNotMatch(html, /target\.hp\s*-\s*=\s*b\.dmg/);
+});
+
+test('Survival player contact routes both players through the central handler', () => {
+  assert.match(html, /outlastTakePlayerDamage\(p2,p\.damage\*\.35\*dt,'survival player contact'\)/);
+  assert.doesNotMatch(html, /p2\.hp\s*=\s*Math\.max\(0,p2\.hp-p\.damage\*\.35\*dt\)/);
+});

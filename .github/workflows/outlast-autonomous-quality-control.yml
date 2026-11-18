@@ -1,0 +1,30 @@
+name: OUTLAST Autonomous Quality Control
+
+on:
+  push:
+    branches:
+      - testing
+      - "qa/**"
+  pull_request:
+    branches:
+      - testing
+  workflow_dispatch:
+  schedule:
+    - cron: "0 15 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  static-regression:
+    name: Static and damage regression checks
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run OUTLAST quality-control tests
+        run: node --test tests/outlast-quality-control.test.mjs

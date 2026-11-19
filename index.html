@@ -6937,9 +6937,9 @@ e.bossAbilityClock=(Number(e.bossAbilityClock)||5)-delta;if(e.bossAbilityClock>0
 var d=Math.hypot(p.x-e.x,p.y-e.y),ramp=typeof levelDifficultyRamp==='function'?levelDifficultyRamp(g.level):1;
 if(e.bossAbility==='blink'){var a=Math.atan2(p.y-e.y,p.x-e.x)+(.5-Math.random()),r=190;
 e.x=Math.max(80,Math.min((typeof W==='number'?W:4000)-80,p.x-Math.cos(a)*r));e.y=Math.max(80,Math.min((typeof H==='number'?H:3000)-80,p.y-Math.sin(a)*r));e.bossAbilityClock=7;
-}else if(e.bossAbility==='slam'){if(d<145){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,18*ramp,'Iron Colossus slam',1);else p.hp=Math.max(0,p.hp-18*ramp);}catch(_){}}e.bossAbilityClock=6.5;
+}else if(e.bossAbility==='slam'){if(d<145){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,18*ramp,'Iron Colossus slam',1);}catch(_){}}e.bossAbilityClock=6.5;
 }else if(e.bossAbility==='summon'){if(typeof spawnEnemy==='function'&&g.enemies.length<100){spawnEnemy('fast');var m=g.enemies[g.enemies.length-1];if(m&&!m.boss){m.x=e.x+60;m.y=e.y+40;m.summoned=true;}}e.bossAbilityClock=8;
-}else if(e.bossAbility==='pulse'){if(d<220){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,12*ramp,'Storm Warden pulse',1);else p.hp=Math.max(0,p.hp-12*ramp);}catch(_){}}e.bossAbilityClock=5.5;
+}else if(e.bossAbility==='pulse'){if(d<220){try{if(typeof outlastTakePlayerDamage==='function')outlastTakePlayerDamage(p,12*ramp,'Storm Warden pulse',1);}catch(_){}}e.bossAbilityClock=5.5;
 }else if(e.bossAbility==='heal'){if(e.hp<e.max*.72)e.hp=Math.min(e.max,e.hp+e.max*.07);e.bossAbilityClock=7.5;}
 });};}
 window.OUTLAST_BOSS_PROFILE_AUDIT=function(){var e=bossNow();return{version:'4.7.2',installed:!!window.__v470SpawnWrapped&&!!window.__v470SpecialWrapped,profiles:profiles.map(function(p){return{name:p.name,ability:p.ability};}),activeBoss:e?{name:e.bossName,ability:e.bossAbility,hp:e.hp,max:e.max}:null};};

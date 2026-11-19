@@ -209,3 +209,10 @@ test('damage audit keeps only the most recent 100 events', () => {
   assert.equal(events[0].source, 'event 10');
   assert.equal(events[99].source, 'event 109');
 });
+
+test('boss slam and pulse damage never bypass the central damage handler', () => {
+  assert.ok(html.includes("outlastTakePlayerDamage(p,18*ramp,'Iron Colossus slam',1)"));
+  assert.ok(html.includes("outlastTakePlayerDamage(p,12*ramp,'Storm Warden pulse',1)"));
+  assert.ok(!html.includes("else p.hp=Math.max(0,p.hp-18*ramp)"));
+  assert.ok(!html.includes("else p.hp=Math.max(0,p.hp-12*ramp)"));
+});

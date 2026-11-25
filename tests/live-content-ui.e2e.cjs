@@ -73,12 +73,12 @@ async function testViewport(name, viewport, isMobile) {
     await page.waitForFunction(() => {
       const overlay = document.querySelector('#outlastLiveContentOverlay');
       return overlay && overlay.style.display === 'flex';
-    }, { timeout: 15000 });
+    }, null, { timeout: 15000 });
     await page.waitForFunction(() => {
       return window.OUTLAST_LIVE_CONTENT &&
         window.OUTLAST_LIVE_CONTENT.ok === true &&
         document.querySelectorAll('#outlastLiveContentOverlay .olc-card').length === 3;
-    }, { timeout: 60000 });
+    }, null, { timeout: 60000 });
 
     const hasHowToArticle = await page.evaluate(() => typeof helpArticles !== 'undefined' && helpArticles.some(item => item && item[0] === 'How does the OUTLAST Live Content schedule work?'));
     assert.equal(hasHowToArticle, true, name + ': How To should include the live content schedule instructions');
@@ -101,7 +101,7 @@ async function testViewport(name, viewport, isMobile) {
     await page.waitForFunction(() => {
       const overlay = document.querySelector('#outlastLiveContentOverlay');
       return overlay && overlay.style.display === 'none';
-    }, { timeout: 5000 });
+    }, null, { timeout: 5000 });
     if (blockedProductionRequests.length) console.log(name + ' blocked ' + blockedProductionRequests.length + ' production API request(s) from tester context.');
     console.log(name + ' Live Content panel smoke test passed.');
   } finally {

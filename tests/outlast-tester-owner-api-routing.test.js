@@ -33,6 +33,7 @@ test('production Owner Panel keeps its production server route', () => {
 
 const ai = fs.readFileSync(path.join(root, 'outlast-ai-assistant.js'), 'utf8');
 const liveContent = fs.readFileSync(path.join(root, 'live-content-schedule.js'), 'utf8');
+const e2e = fs.readFileSync(path.join(root, 'tests', 'live-content-ui.e2e.cjs'), 'utf8');
 
 test('shared API resolver selects the isolated tester backend and production backend by host', () => {
   const declaration = html.match(/function outlastApiBaseForHost\(hostname\)\s*\{[\s\S]*?\n\}/);
@@ -61,4 +62,11 @@ test('AI assistant selects the backend matching the current site instead of alwa
 test('live-content API routing remains host-aware for production and tester', () => {
   assert.match(liveContent, /https:\/\/outlast-test-server\.onrender\.com\/api\/live-content/);
   assert.match(liveContent, /https:\/\/outlast-server\.onrender\.com\/api\/live-content/);
+});
+
+test('tester browser E2E blocks every production backend request before login setup', () => {
+  const guard = e2e.indexOf("page.route('https://outlast-server.onrender.com/**'");
+  const navigation = e2e.indexOf('page.goto(baseUrl');
+  assert.ok(guard >= 0, 'Production backend requests are blocked in the tester browser context');
+  assert.ok(navigation >= 0 && guard < navigation, 'The production API guard is installed before the tester page loads');
 });

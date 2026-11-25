@@ -39,6 +39,11 @@ async function testViewport(name, viewport, isMobile) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport, isMobile, hasTouch: isMobile });
   const page = await context.newPage();
+  const blockedProductionRequests = [];
+  await page.route('https://outlast-server.onrender.com/**', async route => {
+    blockedProductionRequests.push(route.request().url());
+    await route.abort('blockedbyclient');
+  });
   const liveContentErrors = [];
   page.on('pageerror', error => {
     if (/live-content-schedule\.js/i.test(String(error && error.stack || error))) {
@@ -97,6 +102,7 @@ async function testViewport(name, viewport, isMobile) {
       const overlay = document.querySelector('#outlastLiveContentOverlay');
       return overlay && overlay.style.display === 'none';
     }, { timeout: 5000 });
+    if (blockedProductionRequests.length) console.log(name + ' blocked ' + blockedProductionRequests.length + ' production API request(s) from tester context.');
     console.log(name + ' Live Content panel smoke test passed.');
   } finally {
     await context.close();

@@ -30,3 +30,35 @@ test('production Owner Panel keeps its production server route', () => {
   });
   assert.equal(fn(), 'https://outlast-server.onrender.com');
 });
+
+const ai = fs.readFileSync(path.join(root, 'outlast-ai-assistant.js'), 'utf8');
+const liveContent = fs.readFileSync(path.join(root, 'live-content-schedule.js'), 'utf8');
+
+test('shared API resolver selects the isolated tester backend and production backend by host', () => {
+  const declaration = html.match(/function outlastApiBaseForHost\(hostname\)\s*\{[\s\S]*?\n\}/);
+  assert.ok(declaration, 'Shared backend resolver is present');
+  const resolve = vm.runInNewContext(declaration[0] + ';outlastApiBaseForHost', {
+    window: { location: { hostname: 'outlast-test.onrender.com' } }
+  });
+  assert.equal(resolve('outlast-test.onrender.com'), 'https://outlast-test-server.onrender.com');
+  assert.equal(resolve('outlast-game.onrender.com'), 'https://outlast-server.onrender.com');
+});
+
+test('non-auth inline API clients use the shared host-aware backend resolver', () => {
+  const leaderboard = html.match(/async function leaderboardFetch[\s\S]*?\n\}/);
+  assert.ok(leaderboard, 'Leaderboard API client is present');
+  assert.match(leaderboard[0], /outlastApiBaseForHost\(\)\+path/);
+  assert.doesNotMatch(leaderboard[0], /https:\/\/outlast-server\.onrender\.com/);
+  assert.match(html, /const OWNER_API=outlastApiBaseForHost\(\);/);
+  assert.match(html, /const OUTLAST_HTTP_SERVER=outlastApiBaseForHost\(\);/);
+  assert.match(html, /const API_BASE=outlastApiBaseForHost\(\);/);
+});
+
+test('AI assistant selects the backend matching the current site instead of always using tester', () => {
+  assert.match(ai, /const API=String\(window\.location&&window\.location\.hostname\|\|''\)\.toLowerCase\(\)\.indexOf\('outlast-test'\)!==-1\?'https:\/\/outlast-test-server\.onrender\.com':'https:\/\/outlast-server\.onrender\.com'/);
+});
+
+test('live-content API routing remains host-aware for production and tester', () => {
+  assert.match(liveContent, /https:\/\/outlast-test-server\.onrender\.com\/api\/live-content/);
+  assert.match(liveContent, /https:\/\/outlast-server\.onrender\.com\/api\/live-content/);
+});

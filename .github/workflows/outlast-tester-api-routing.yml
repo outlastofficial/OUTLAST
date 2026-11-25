@@ -1,0 +1,35 @@
+name: OUTLAST tester API routing regression
+on:
+  push:
+    branches:
+      - "qa/**"
+    paths:
+      - "index.html"
+      - "outlast-ai-assistant.js"
+      - "outlast-v430-owner-control-center.js"
+      - "live-content-schedule.js"
+      - "tests/outlast-tester-owner-api-routing.test.js"
+      - ".github/workflows/outlast-tester-api-routing.yml"
+  pull_request:
+    branches:
+      - testing
+    paths:
+      - "index.html"
+      - "outlast-ai-assistant.js"
+      - "outlast-v430-owner-control-center.js"
+      - "live-content-schedule.js"
+      - "tests/outlast-tester-owner-api-routing.test.js"
+      - ".github/workflows/outlast-tester-api-routing.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  api-routing:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify isolated tester and production API routing
+        run: node --test tests/outlast-tester-owner-api-routing.test.js

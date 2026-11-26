@@ -74,7 +74,7 @@ test('tester browser E2E blocks every production backend request before login se
 test('tester browser E2E fails if the tested flow attempts a production backend request', () => {
   assert.match(
     e2e,
-    /assert\\.equal\\(\\s*blockedProductionRequests\\.length,\\s*0,/,
+    /assert\.equal\(\s*blockedProductionRequests\.length,\s*0,/,
     'Blocked production requests must fail the tester E2E instead of being silently logged'
   );
 });

@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const API='https://outlast-test-server.onrender.com',history={player:[],developer:[]};let mode='player',lastReply='',status={};
+const API=String(window.location&&window.location.hostname||'').toLowerCase().indexOf('outlast-test')!==-1?'https://outlast-test-server.onrender.com':'https://outlast-server.onrender.com',history={player:[],developer:[]};let mode='player',lastReply='',status={};
 const owner=()=>typeof window.isOwner==='function'&&window.isOwner();
 const token=()=>{try{return sessionStorage.getItem('outlast_ai_owner_token')||''}catch(_){return''}};
 const headers=()=>({'Content-Type':'application/json',...(token()?{Authorization:'Bearer '+token()}:{})});

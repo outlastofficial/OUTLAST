@@ -74,6 +74,11 @@ async function testViewport(name, viewport, isMobile) {
       const overlay = document.querySelector('#outlastLiveContentOverlay');
       return overlay && overlay.style.display === 'flex';
     }, null, { timeout: 15000 });
+    assert.equal(
+      blockedProductionRequests.length,
+      0,
+      name + ': tester UI must not attempt any request to the production backend'
+    );
     await page.waitForFunction(() => {
       return window.OUTLAST_LIVE_CONTENT &&
         window.OUTLAST_LIVE_CONTENT.ok === true &&

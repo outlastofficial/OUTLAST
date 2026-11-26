@@ -71,6 +71,14 @@ test('tester browser E2E blocks every production backend request before login se
   assert.ok(navigation >= 0 && guard < navigation, 'The production API guard is installed before the tester page loads');
 });
 
+test('tester browser E2E fails if the tested flow attempts a production backend request', () => {
+  assert.match(
+    e2e,
+    /assert\\.equal\\(\\s*blockedProductionRequests\\.length,\\s*0,/,
+    'Blocked production requests must fail the tester E2E instead of being silently logged'
+  );
+});
+
 test('tester live-content E2E passes timeout options in the Playwright options slot', () => {
   const calls = e2e.match(/page\.waitForFunction\(/g) || [];
   const optionSlots = e2e.match(/\}, null, \{ timeout: \d+ \}\);/g) || [];

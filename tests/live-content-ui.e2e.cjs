@@ -77,7 +77,7 @@ async function testViewport(name, viewport, isMobile) {
     assert.equal(
       blockedProductionRequests.length,
       0,
-      name + ': tester UI must not attempt any request to the production backend'
+      name + ': tester UI attempted production backend request(s): ' + blockedProductionRequests.join(', ')
     );
     await page.waitForFunction(() => {
       return window.OUTLAST_LIVE_CONTENT &&
